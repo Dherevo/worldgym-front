@@ -45,14 +45,17 @@
             <div v-else-if="exercises.length === 0" class="empty-text">{{ $t('exercises.empty') }}</div>
             <div v-else class="exercise-list">
                 <div v-for="ex in exercises" :key="ex.id" class="exercise-card">
-                    <div class="exercise-info">
-                        <div class="exercise-name">{{ ex.name }}</div>
-                        <div class="exercise-meta">
-                            <span v-if="ex.is_bodyweight">{{ $t('exercises.bodyweight') }}</span>
-                            <span v-else-if="ex.equipment">{{ ex.equipment.name }}</span>
-                            <span v-if="ex.muscles?.length"> · {{ primaryMuscles(ex) }}</span>
-                            <span class="badge global" v-if="ex.is_global">{{ $t('exercises.badgeGlobal') }}</span>
-                            <span class="badge bw" v-if="ex.is_bodyweight">{{ $t('exercises.badgeBodyweight') }}</span>
+                    <div class="exercise-main" @click="openDetail(ex)">
+                        <img v-if="ex.gif_url" class="exercise-thumb" :src="ex.gif_url" :alt="ex.name" loading="lazy" />
+                        <div class="exercise-info">
+                            <div class="exercise-name">{{ ex.name }}</div>
+                            <div class="exercise-meta">
+                                <span v-if="ex.is_bodyweight">{{ $t('exercises.bodyweight') }}</span>
+                                <span v-else-if="ex.equipment">{{ ex.equipment.name }}</span>
+                                <span v-if="ex.muscles?.length"> · {{ primaryMuscles(ex) }}</span>
+                                <span class="badge global" v-if="ex.is_global">{{ $t('exercises.badgeGlobal') }}</span>
+                                <span class="badge bw" v-if="ex.is_bodyweight">{{ $t('exercises.badgeBodyweight') }}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="exercise-actions" v-if="!ex.is_global">
@@ -67,6 +70,33 @@
                 <button @click="prevPage()" :disabled="!hasPrev">&larr;</button>
                 <span class="page-info">{{ $t('exercises.pageInfo', { page: currentPage, pages: totalPages }) }} <small>{{ $t('exercises.totalExercises', { n: total }) }}</small></span>
                 <button @click="nextPage()" :disabled="!hasNext">&rarr;</button>
+            </div>
+
+            <!-- Detail Modal -->
+            <div v-if="detailExercise" class="modal-overlay" @click.self="detailExercise = null">
+                <div class="modal detail-modal">
+                    <h2>{{ detailExercise.name }}</h2>
+                    <div class="detail-meta">
+                        <span v-if="detailExercise.is_bodyweight">{{ $t('exercises.bodyweight') }}</span>
+                        <span v-else-if="detailExercise.equipment">{{ detailExercise.equipment.name }}</span>
+                        <span v-if="detailExercise.muscles?.length"> · {{ primaryMuscles(detailExercise) }}</span>
+                    </div>
+                    <template v-if="detailExercise.gif_url">
+                        <img class="detail-gif" :src="detailExercise.gif_url" :alt="detailExercise.name" width="180" height="180" />
+                        <div class="detail-credit">
+                            {{ $t('exercises.detail.gifCredit') }}
+                            <a href="https://gymvisual.com/" target="_blank" rel="noopener">Gym visual</a>
+                        </div>
+                    </template>
+                    <div v-if="detailExercise.description" class="detail-description">
+                        <h3>{{ $t('exercises.detail.instructions') }}</h3>
+                        <p>{{ detailExercise.description }}</p>
+                    </div>
+                    <div v-else-if="!detailExercise.gif_url" class="empty-text">{{ $t('exercises.detail.noInfo') }}</div>
+                    <div class="form-actions">
+                        <button class="btn-cancel" @click="detailExercise = null">{{ $t('exercises.detail.close') }}</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Form Modal -->

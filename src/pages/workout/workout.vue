@@ -122,6 +122,7 @@
                 <div class="exercise-card" v-if="currentExercise && state !== 'pick-exercise'">
 
                     <!-- Info exercici -->
+                    <img v-if="currentExercise.exercise?.gif_url" class="exercise-gif" :src="currentExercise.exercise.gif_url" :alt="currentExercise.exercise.name" width="140" height="140" />
                     <div class="exercise-name">{{ currentExercise.exercise?.name }}</div>
                     <div class="exercise-eq" v-if="currentExercise.exercise?.equipment">
                         {{ currentExercise.exercise.equipment.name }}

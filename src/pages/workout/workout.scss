@@ -200,6 +200,13 @@
             align-items: center;
             gap: 1.25rem;
 
+            .exercise-gif {
+                width: 140px;
+                height: 140px;
+                border-radius: 12px;
+                object-fit: cover;
+                background: #ffffff;
+            }
             .exercise-name { font-size: 1.6rem; font-weight: 700; color: var(--text-color); margin: 0; }
             .exercise-eq { color: var(--text-secondary); font-size: 0.9rem; margin: 0; }
             .set-info {

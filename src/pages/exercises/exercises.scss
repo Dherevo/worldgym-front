@@ -88,6 +88,21 @@
             justify-content: space-between;
             border: 1px solid var(--border-color);
 
+            .exercise-main {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                min-width: 0;
+                cursor: pointer;
+            }
+            .exercise-thumb {
+                width: 56px;
+                height: 56px;
+                flex-shrink: 0;
+                border-radius: 8px;
+                object-fit: cover;
+                background: #ffffff;
+            }
             .exercise-name { font-weight: 600; }
             .exercise-meta { font-size: 0.85rem; color: var(--text-secondary); margin-top: 3px; }
             .badge.global {
@@ -205,6 +220,28 @@
             max-height: 85vh;
             overflow-y: auto;
             h2 { margin: 0 0 1.5rem; }
+
+            &.detail-modal {
+                h2 { margin-bottom: 0.25rem; }
+                .detail-meta { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; }
+                .detail-gif {
+                    display: block;
+                    border-radius: 10px;
+                    background: #ffffff;
+                    margin: 0 auto 0.4rem;
+                }
+                .detail-credit {
+                    text-align: center;
+                    font-size: 0.75rem;
+                    color: var(--text-muted);
+                    margin-bottom: 1rem;
+                    a { color: inherit; text-decoration: underline; }
+                }
+                .detail-description {
+                    h3 { font-size: 0.95rem; margin: 0 0 0.4rem; }
+                    p { margin: 0; white-space: pre-line; line-height: 1.5; font-size: 0.9rem; }
+                }
+            }
 
             .form-group {
                 margin-bottom: 1rem;

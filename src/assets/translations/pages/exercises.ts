@@ -1,5 +1,11 @@
 export default {
     ca: {
+        detail: {
+            gifCredit: 'GIF ©',
+            instructions: 'Instruccions',
+            close: 'Tanca',
+            noInfo: "Aquest exercici encara no té imatge ni instruccions.",
+        },
         title: 'Exercicis',
         newExercise: '+ Nou exercici',
         tabs: { all: 'Tots', global: 'Globals', mine: 'Els meus' },
@@ -43,6 +49,12 @@ export default {
         confirmDelete: 'Vols eliminar "{{name}}"?',
     },
     es: {
+        detail: {
+            gifCredit: 'GIF ©',
+            instructions: 'Instrucciones',
+            close: 'Cerrar',
+            noInfo: "Este ejercicio todavía no tiene imagen ni instrucciones.",
+        },
         title: 'Ejercicios',
         newExercise: '+ Nuevo ejercicio',
         tabs: { all: 'Todos', global: 'Globales', mine: 'Los míos' },
@@ -86,6 +98,12 @@ export default {
         confirmDelete: '¿Quieres eliminar "{{name}}"?',
     },
     en: {
+        detail: {
+            gifCredit: 'GIF ©',
+            instructions: 'Instructions',
+            close: 'Close',
+            noInfo: "This exercise doesn't have an image or instructions yet.",
+        },
         title: 'Exercises',
         newExercise: '+ New exercise',
         tabs: { all: 'All', global: 'Global', mine: 'Mine' },

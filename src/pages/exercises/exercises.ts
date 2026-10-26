@@ -26,6 +26,8 @@ class ExercisesPage extends Vue {
     pageSize = 10;
     total = 0;
 
+    detailExercise: any = null;
+
     showForm = false;
     editingExercise: any = null;
     form: any = {
@@ -111,6 +113,10 @@ class ExercisesPage extends Vue {
     onFilterChange() {
         this.offset = 0;
         this.fetchExercises();
+    }
+
+    openDetail(ex: any) {
+        this.detailExercise = ex;
     }
 
     openCreate() {
