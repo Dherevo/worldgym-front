@@ -58,7 +58,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="exercise-actions" v-if="!ex.is_global">
+                    <div class="exercise-actions" v-if="canEdit(ex)">
                         <button @click="openEdit(ex)">{{ $t('exercises.edit') }}</button>
                         <button class="danger" @click="deleteExercise(ex)">{{ $t('exercises.delete') }}</button>
                     </div>
@@ -104,19 +104,40 @@
                 <div class="modal">
                     <h2>{{ editingExercise ? $t('exercises.form.titleEdit') : $t('exercises.form.titleNew') }}</h2>
 
-                    <div class="form-group">
-                        <label>{{ $t('exercises.form.name') }}</label>
-                        <input type="text" v-model="form.name" :placeholder="$t('exercises.form.namePlaceholder')" />
+                    <div class="form-group lang-block" v-for="l in locales" :key="l">
+                        <label>
+                            <span class="lang-tag">{{ l.toUpperCase() }}</span>
+                            {{ $t('exercises.form.name') }}
+                        </label>
+                        <input type="text" v-model="texts[l].name" :placeholder="$t('exercises.form.namePlaceholder')" />
+                        <textarea v-model="texts[l].description" :placeholder="$t('exercises.form.descriptionPlaceholder')" rows="3"></textarea>
+                    </div>
+                    <div class="form-hint">{{ $t('exercises.form.langHint') }}</div>
+
+                    <div class="form-group" v-if="isAdmin && !editingExercise">
+                        <label class="check-row">
+                            <input type="checkbox" v-model="form.is_global" />
+                            {{ $t('exercises.form.isGlobal') }}
+                        </label>
                     </div>
 
                     <div class="form-group">
-                        <label>{{ $t('exercises.form.description') }}</label>
-                        <textarea v-model="form.description" :placeholder="$t('exercises.form.descriptionPlaceholder')" rows="2"></textarea>
+                        <label>{{ $t('exercises.form.image') }}</label>
+                        <div class="gif-field">
+                            <img v-if="gifPreview" class="gif-preview" :src="gifPreview" alt="" />
+                            <div class="gif-buttons">
+                                <label class="btn-file">
+                                    {{ $t('exercises.form.imageChoose') }}
+                                    <input type="file" accept="image/gif,image/png,image/jpeg,image/webp" @change="onGifPicked($event)" hidden />
+                                </label>
+                                <button v-if="gifPreview" type="button" class="btn-cancel" @click="clearGif()">{{ $t('exercises.form.imageRemove') }}</button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer">
-                            <input type="checkbox" v-model="form.is_bodyweight" style="cursor:pointer" />
+                        <label class="check-row">
+                            <input type="checkbox" v-model="form.is_bodyweight" />
                             {{ $t('exercises.form.isBodyweight') }}
                         </label>
                     </div>
@@ -156,7 +177,7 @@
 
                     <div class="form-actions">
                         <button class="btn-cancel" @click="showForm = false">{{ $t('exercises.form.cancel') }}</button>
-                        <button class="btn-primary" @click="saveExercise()" :disabled="savingExercise">
+                        <button class="btn-primary" @click="saveExercise()" :disabled="savingExercise || !hasName">
                             {{ savingExercise ? $t('exercises.form.saving') : $t('exercises.form.save') }}
                         </button>
                     </div>

@@ -1,5 +1,6 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
+import userStore from "@/modules/userStore";
 
 @Component({})
 class ExercisesPage extends Vue {
@@ -39,6 +40,24 @@ class ExercisesPage extends Vue {
         muscles: []
     };
     savingExercise = false;
+
+    readonly locales = ['ca', 'es', 'en'];
+    texts: any = this.emptyTexts();
+    gifFile: File | null = null;
+    gifPreview = '';
+    removeGif = false;
+
+    get isAdmin(): boolean {
+        return !!userStore.data?.isAdmin;
+    }
+
+    canEdit(ex: any): boolean {
+        return !ex.is_global || this.isAdmin;
+    }
+
+    emptyTexts() {
+        return { ca: { name: '', description: '' }, es: { name: '', description: '' }, en: { name: '', description: '' } };
+    }
 
     get currentPage() { return Math.floor(this.offset / this.pageSize) + 1; }
     get totalPages() { return Math.ceil(this.total / this.pageSize) || 1; }
@@ -119,9 +138,17 @@ class ExercisesPage extends Vue {
         this.detailExercise = ex;
     }
 
+    resetMedia(currentGif: string | null) {
+        this.gifFile = null;
+        this.gifPreview = currentGif ?? '';
+        this.removeGif = false;
+    }
+
     openCreate() {
         this.editingExercise = null;
         this.form = { name: '', description: '', equipment_id: null, is_global: false, is_bodyweight: false, muscles: [] };
+        this.texts = this.emptyTexts();
+        this.resetMedia(null);
         this.showForm = true;
     }
 
@@ -135,7 +162,37 @@ class ExercisesPage extends Vue {
             is_bodyweight: ex.is_bodyweight ?? false,
             muscles: ex.muscles?.map((m: any) => ({ muscle_id: m.id, is_primary: !!m.pivot?.is_primary })) || []
         };
+        this.texts = this.emptyTexts();
+        this.resetMedia(ex.gif_url);
         this.showForm = true;
+
+        // Stored texts per language (the list only carries the one of the current language)
+        http.get(`/exercises/${ex.id}/translations`)
+        .then((res: any) => {
+            for (const l of this.locales) {
+                this.texts[l].name = res?.[l]?.name ?? '';
+                this.texts[l].description = res?.[l]?.description ?? '';
+            }
+        })
+        .catch(() => {});
+    }
+
+    onGifPicked(e: Event) {
+        const file = (e.target as HTMLInputElement).files?.[0] ?? null;
+        this.gifFile = file;
+        this.removeGif = false;
+        if (file) this.gifPreview = URL.createObjectURL(file);
+    }
+
+    clearGif() {
+        this.gifFile = null;
+        this.gifPreview = '';
+        this.removeGif = true;
+    }
+
+    // Base name of a new exercise: the first language that has one
+    get hasName(): boolean {
+        return this.locales.some((l: string) => this.texts[l].name.trim());
     }
 
     isMuscleSelected(muscleId: number) {
@@ -162,19 +219,51 @@ class ExercisesPage extends Vue {
     }
 
     saveExercise() {
-        if (!this.form.name.trim()) return;
+        if (!this.hasName) return;
         this.savingExercise = true;
-        const body = { ...this.form };
-        const req = this.editingExercise
-            ? http.put(`/exercises/${this.editingExercise.id}`).data(body)
-            : http.post('/exercises').data(body);
 
-        req.then(() => {
+        // Names and descriptions live in the translations: the base name is only set on creation,
+        // because it is what the seeds and sync-media use to find global exercises.
+        const first = (field: string) => this.locales.map((l: string) => this.texts[l][field].trim()).find(Boolean) ?? null;
+        const body: any = {
+            equipment_id: this.form.is_bodyweight ? null : this.form.equipment_id,
+            muscles: this.form.muscles,
+        };
+        if (!this.editingExercise) {
+            body.name = first('name');
+            body.description = first('description');
+            body.is_global = this.isAdmin && this.form.is_global;
+        }
+
+        const save = this.editingExercise
+            ? http.put(`/exercises/${this.editingExercise.id}`).data(body).promise()
+            : http.post('/exercises').data(body).promise();
+
+        save.then((saved: any) => {
+            const id = saved?.id ?? this.editingExercise?.id;
+            return Promise.all(this.locales.map((l: string) =>
+                http.put(`/exercises/${id}/translations/${l}`).data({
+                    name: this.texts[l].name,
+                    description: this.texts[l].description,
+                }).promise()
+            )).then(() => this.saveMedia(id));
+        })
+        .then(() => {
             this.showForm = false;
             this.fetchExercises();
         })
         .catch(() => App.notification(translate.get('exercises.errors.save')).setType('error').show())
         .finally(() => { this.savingExercise = false; });
+    }
+
+    saveMedia(id: number) {
+        if (this.gifFile) {
+            return http.post(`/exercises/${id}/gif`).setDataFormat('formData').data({ gif: this.gifFile }).promise();
+        }
+        if (this.removeGif && this.editingExercise?.gif_url) {
+            return http.delete(`/exercises/${id}/gif`).promise();
+        }
+        return Promise.resolve();
     }
 
     deleteExercise(ex: any) {
