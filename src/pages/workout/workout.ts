@@ -1,5 +1,5 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
-import { http, App } from "lib";
+import { http, App, translate } from "lib";
 
 type State = 'loading' | 'pick-exercise' | 'idle' | 'active' | 'logging' | 'resting' | 'choose' | 'done';
 
@@ -83,8 +83,8 @@ class WorkoutPage extends Vue {
         const secs = Math.round((Date.now() - new Date(this.workoutStartedAt).getTime()) / 1000);
         const h = Math.floor(secs / 3600);
         const m = Math.floor((secs % 3600) / 60);
-        if (h > 0) return `${h}h ${m}min`;
-        return `${m} min`;
+        if (h > 0) return translate.get('workout.duration.hoursMinutes', { h, m });
+        return translate.get('workout.duration.minutes', { m });
     }
 
     get targetRestLabel() {
@@ -92,9 +92,11 @@ class WorkoutPage extends Vue {
         if (!secs) return null;
         const m = Math.floor(secs / 60);
         const s = secs % 60;
-        if (m === 0) return `${s}s de descans`;
-        if (s === 0) return `${m} min de descans`;
-        return `${m}min ${s}s de descans`;
+        let time: string;
+        if (m === 0) time = translate.get('workout.restTime.seconds', { s });
+        else if (s === 0) time = translate.get('workout.restTime.minutes', { m });
+        else time = translate.get('workout.restTime.minutesSeconds', { m, s });
+        return translate.get('workout.card.restLabel', { time });
     }
 
     created() {
@@ -219,7 +221,7 @@ class WorkoutPage extends Vue {
             this.loadExerciseHistory();
             this.state = 'idle';
         })
-        .catch(() => App.notification('Error al afegir exercici').setType('error').show())
+        .catch(() => App.notification(translate.get('workout.errors.addExercise')).setType('error').show())
         .finally(() => { this.addingExercise = false; });
     }
 
@@ -273,7 +275,7 @@ class WorkoutPage extends Vue {
             this.saveProgress();
             this.startRest(restSecs);
         })
-        .catch(() => App.notification('Error al desar la sèrie').setType('error').show())
+        .catch(() => App.notification(translate.get('workout.errors.saveSet')).setType('error').show())
         .finally(() => { this.savingSet = false; });
     }
 
@@ -354,11 +356,11 @@ class WorkoutPage extends Vue {
     }
 
     formatHistoryDate(date: string) {
-        return new Date(date).toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' });
+        return new Date(date).toLocaleDateString(({ ca: 'ca-ES', es: 'es-ES', en: 'en-GB' } as any)[translate.currentLanguage] ?? 'ca-ES', { day: 'numeric', month: 'short' });
     }
 
     finishWorkout() {
-        App.confirm('Finalitzar l\'entrenament?')
+        App.confirm(translate.get('workout.finishConfirm'))
         .then((ok: boolean) => {
             if (ok) {
                 http.put(`/workouts/${this.workoutId}`)

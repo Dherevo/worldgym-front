@@ -3,31 +3,31 @@
         <div class="routine-detail-page">
 
             <div class="page-header">
-                <button class="btn-back" @click="to('/routines')">&larr; Rutines</button>
+                <button class="btn-back" @click="to('/routines')">{{ $t('routineDetail.back') }}</button>
                 <h1 v-if="routine">{{ routine.name }}</h1>
                 <div class="header-actions" v-if="routine">
-                    <button class="btn-secondary" @click="openAddDay()">+ Afegir dia</button>
+                    <button class="btn-secondary" @click="openAddDay()">{{ $t('routineDetail.addDay') }}</button>
                 </div>
             </div>
 
-            <div v-if="loading" class="loading-text">Carregant...</div>
+            <div v-if="loading" class="loading-text">{{ $t('routineDetail.loading') }}</div>
 
             <div v-else-if="routine" class="days-list">
                 <div v-if="routine.days?.length === 0" class="empty-text">
-                    No hi ha dies configurats. Afegeix-ne un!
+                    {{ $t('routineDetail.noDays') }}
                 </div>
                 <div v-for="day in routine.days" :key="day.id" class="day-card">
                     <div class="day-header">
                         <div>
-                            <span class="day-number">Dia {{ day.day_number }}</span>
+                            <span class="day-number">{{ $t('routineDetail.dayNumber', { n: day.day_number }) }}</span>
                             <span class="day-name">{{ day.name }}</span>
                         </div>
                         <div class="day-actions">
                             <button class="btn-train" @click="startDay(day)" :disabled="starting">
-                                {{ starting ? '...' : 'Entrenar' }}
+                                {{ starting ? '...' : $t('routineDetail.train') }}
                             </button>
-                            <button @click="openEditDay(day)">Editar</button>
-                            <button class="danger" @click="deleteDay(day)">Eliminar</button>
+                            <button @click="openEditDay(day)">{{ $t('routineDetail.edit') }}</button>
+                            <button class="danger" @click="deleteDay(day)">{{ $t('routineDetail.delete') }}</button>
                         </div>
                     </div>
 
@@ -35,11 +35,11 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Exercici</th>
-                                    <th>Sets</th>
-                                    <th>Reps</th>
-                                    <th>Pes (kg)</th>
-                                    <th>Descans</th>
+                                    <th>{{ $t('routineDetail.table.exercise') }}</th>
+                                    <th>{{ $t('routineDetail.table.sets') }}</th>
+                                    <th>{{ $t('routineDetail.table.reps') }}</th>
+                                    <th>{{ $t('routineDetail.table.weight') }}</th>
+                                    <th>{{ $t('routineDetail.table.rest') }}</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -51,34 +51,34 @@
                                     <td>{{ ex.weight_target }}</td>
                                     <td>{{ ex.rest_seconds }}s</td>
                                     <td>
-                                        <button @click="openEditExercise(day, ex)">Ed.</button>
-                                        <button class="danger" @click="deleteExercise(day, ex)">Elim.</button>
+                                        <button @click="openEditExercise(day, ex)">{{ $t('routineDetail.table.editShort') }}</button>
+                                        <button class="danger" @click="deleteExercise(day, ex)">{{ $t('routineDetail.table.deleteShort') }}</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div v-else class="empty-exercises">Cap exercici. <span class="link" @click="openAddExercise(day)">Afegeix-ne un</span></div>
-                    <button class="btn-add-exercise" @click="openAddExercise(day)">+ Afegir exercici</button>
+                    <div v-else class="empty-exercises">{{ $t('routineDetail.noExercises') }} <span class="link" @click="openAddExercise(day)">{{ $t('routineDetail.addOne') }}</span></div>
+                    <button class="btn-add-exercise" @click="openAddExercise(day)">{{ $t('routineDetail.addExercise') }}</button>
                 </div>
             </div>
 
             <!-- Day Form Modal -->
             <div v-if="showDayForm" class="modal-overlay" @click.self="showDayForm = false">
                 <div class="modal">
-                    <h2>{{ editingDay ? 'Editar dia' : 'Nou dia' }}</h2>
+                    <h2>{{ editingDay ? $t('routineDetail.dayForm.titleEdit') : $t('routineDetail.dayForm.titleNew') }}</h2>
                     <div class="form-group">
-                        <label>Número de dia</label>
+                        <label>{{ $t('routineDetail.dayForm.dayNumber') }}</label>
                         <input type="number" v-model.number="dayForm.day_number" min="1" />
                     </div>
                     <div class="form-group">
-                        <label>Nom</label>
-                        <input type="text" v-model="dayForm.name" placeholder="Ex: Dia 1 - Pit i Tríceps" />
+                        <label>{{ $t('routineDetail.dayForm.name') }}</label>
+                        <input type="text" v-model="dayForm.name" :placeholder="$t('routineDetail.dayForm.namePlaceholder')" />
                     </div>
                     <div class="form-actions">
-                        <button class="btn-cancel" @click="showDayForm = false">Cancel·lar</button>
+                        <button class="btn-cancel" @click="showDayForm = false">{{ $t('routineDetail.cancel') }}</button>
                         <button class="btn-primary" @click="saveDay()" :disabled="savingDay">
-                            {{ savingDay ? 'Desant...' : 'Desar' }}
+                            {{ savingDay ? $t('routineDetail.saving') : $t('routineDetail.save') }}
                         </button>
                     </div>
                 </div>
@@ -87,36 +87,36 @@
             <!-- Exercise Form Modal -->
             <div v-if="showExerciseForm" class="modal-overlay" @click.self="showExerciseForm = false">
                 <div class="modal">
-                    <h2>{{ editingExercise ? 'Editar exercici' : 'Afegir exercici' }}</h2>
+                    <h2>{{ editingExercise ? $t('routineDetail.exerciseForm.titleEdit') : $t('routineDetail.exerciseForm.titleNew') }}</h2>
                     <div class="form-group">
-                        <label>Exercici *</label>
+                        <label>{{ $t('routineDetail.exerciseForm.exercise') }}</label>
                         <select v-model.number="exerciseForm.exercise_id">
-                            <option :value="null">Selecciona exercici</option>
+                            <option :value="null">{{ $t('routineDetail.exerciseForm.selectExercise') }}</option>
                             <option v-for="ex in allExercises" :key="ex.id" :value="ex.id">{{ ex.name }}</option>
                         </select>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Sets</label>
+                            <label>{{ $t('routineDetail.exerciseForm.sets') }}</label>
                             <input type="number" v-model.number="exerciseForm.sets_target" min="1" />
                         </div>
                         <div class="form-group">
-                            <label>Reps</label>
+                            <label>{{ $t('routineDetail.exerciseForm.reps') }}</label>
                             <input type="number" v-model.number="exerciseForm.reps_target" min="1" />
                         </div>
                         <div class="form-group">
-                            <label>Pes (kg)</label>
+                            <label>{{ $t('routineDetail.exerciseForm.weight') }}</label>
                             <input type="number" v-model.number="exerciseForm.weight_target" min="0" step="0.5" />
                         </div>
                         <div class="form-group">
-                            <label>Descans (s)</label>
+                            <label>{{ $t('routineDetail.exerciseForm.rest') }}</label>
                             <input type="number" v-model.number="exerciseForm.rest_seconds" min="0" step="15" />
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button class="btn-cancel" @click="showExerciseForm = false">Cancel·lar</button>
+                        <button class="btn-cancel" @click="showExerciseForm = false">{{ $t('routineDetail.cancel') }}</button>
                         <button class="btn-primary" @click="saveExercise()" :disabled="savingExercise">
-                            {{ savingExercise ? 'Desant...' : 'Desar' }}
+                            {{ savingExercise ? $t('routineDetail.saving') : $t('routineDetail.save') }}
                         </button>
                     </div>
                 </div>

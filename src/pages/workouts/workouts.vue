@@ -3,24 +3,24 @@
         <div class="workouts-page">
 
             <div class="page-header">
-                <h1>Historial d'entrenaments</h1>
-                <button class="btn-new" @click="openCreate()">+ Nou entrenament</button>
+                <h1>{{ $t('workouts.title') }}</h1>
+                <button class="btn-new" @click="openCreate()">{{ $t('workouts.newWorkout') }}</button>
             </div>
 
             <div class="filters">
                 <div class="filter-group">
-                    <label>Des de</label>
+                    <label>{{ $t('workouts.dateFrom') }}</label>
                     <input type="date" v-model="dateFrom" @change="fetchWorkouts()" />
                 </div>
                 <div class="filter-group">
-                    <label>Fins a</label>
+                    <label>{{ $t('workouts.dateTo') }}</label>
                     <input type="date" v-model="dateTo" @change="fetchWorkouts()" />
                 </div>
-                <button class="btn-clear" @click="dateFrom = ''; dateTo = ''; fetchWorkouts()">Netejar</button>
+                <button class="btn-clear" @click="dateFrom = ''; dateTo = ''; fetchWorkouts()">{{ $t('workouts.clear') }}</button>
             </div>
 
-            <div v-if="loading" class="loading-text">Carregant...</div>
-            <div v-else-if="workouts.length === 0" class="empty-text">Cap entrenament trobat</div>
+            <div v-if="loading" class="loading-text">{{ $t('workouts.loading') }}</div>
+            <div v-else-if="workouts.length === 0" class="empty-text">{{ $t('workouts.empty') }}</div>
             <div v-else class="workout-list">
                 <div
                     v-for="w in workouts"
@@ -32,12 +32,12 @@
                         <div class="workout-date">
                             {{ formatDate(w.date) }}
                             <span class="duration-badge" v-if="formatDuration(w)">{{ formatDuration(w) }}</span>
-                            <span class="status-badge active" v-if="w.status === 'active'">En curs</span>
+                            <span class="status-badge active" v-if="w.status === 'active'">{{ $t('workouts.statusActive') }}</span>
                         </div>
-                        <div class="workout-notes">{{ w.notes || 'Sense notes' }}</div>
+                        <div class="workout-notes">{{ w.notes || $t('workouts.noNotes') }}</div>
                     </div>
-                    <button class="btn-edit" @click.stop="openEdit(w)" title="Editar">✎</button>
-                    <button class="btn-delete" @click.stop="deleteWorkout(w)" title="Eliminar">✕</button>
+                    <button class="btn-edit" @click.stop="openEdit(w)" :title="$t('workouts.edit')">✎</button>
+                    <button class="btn-delete" @click.stop="deleteWorkout(w)" :title="$t('workouts.delete')">✕</button>
                     <div class="workout-arrow">&rsaquo;</div>
                 </div>
             </div>
@@ -45,19 +45,19 @@
         <!-- Create / Edit modal -->
         <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
             <div class="modal">
-                <h3>{{ editingWorkout ? 'Editar entrenament' : 'Nou entrenament' }}</h3>
+                <h3>{{ editingWorkout ? $t('workouts.modal.editTitle') : $t('workouts.modal.newTitle') }}</h3>
                 <div class="form-group">
-                    <label>Data</label>
+                    <label>{{ $t('workouts.modal.date') }}</label>
                     <input type="date" v-model="editDate" />
                 </div>
                 <div class="form-group">
-                    <label>Notes</label>
-                    <input type="text" v-model="editNotes" placeholder="Sense notes" />
+                    <label>{{ $t('workouts.modal.notes') }}</label>
+                    <input type="text" v-model="editNotes" :placeholder="$t('workouts.noNotes')" />
                 </div>
                 <div class="modal-actions">
-                    <button class="btn-cancel" @click="showModal = false">Cancel·lar</button>
+                    <button class="btn-cancel" @click="showModal = false">{{ $t('workouts.modal.cancel') }}</button>
                     <button class="btn-save" @click="editingWorkout ? saveEdit() : saveCreate()" :disabled="saving">
-                        {{ saving ? 'Desant...' : 'Desar' }}
+                        {{ saving ? $t('workouts.modal.saving') : $t('workouts.modal.save') }}
                     </button>
                 </div>
             </div>

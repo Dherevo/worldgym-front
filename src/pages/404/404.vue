@@ -2,7 +2,7 @@
     <AppPage>
         <div id="not-found-page" class="center-content flex-grow">
             <div>
-                <h1>404 NOT FOUND</h1>
+                <h1>{{ $t('notFound.title') }}</h1>
             </div>
         </div>
     </AppPage>

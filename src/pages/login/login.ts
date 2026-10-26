@@ -1,5 +1,5 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
-import { LoginPageV2 as Login } from "lib";
+import { LoginPageV2 as Login, translate } from "lib";
 import auth from "@/modules/auth";
 
 @Component({
@@ -20,7 +20,7 @@ class LoginPage extends Vue {
             $e.success();
         })
         .catch(() => {
-            $e.error('Credencials incorrectes')
+            $e.error(translate.get('login.invalidCredentials'))
         })
     }
 }

@@ -1,5 +1,5 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
-import { http, App } from "lib";
+import { http, App, translate } from "lib";
 
 @Component({})
 class HomePage extends Vue {
@@ -70,7 +70,7 @@ class HomePage extends Vue {
         http.post(`/routines/${this.defaultRoutine.id}/days/${this.nextDay.id}/start`)
         .data({ date: today, notes: this.nextDay.name })
         .then((res: any) => { this.to(`/workout/${res.id}`); })
-        .catch(() => App.notification('Error al iniciar l\'entrenament').setType('error').show())
+        .catch(() => App.notification(translate.get('home.errors.start')).setType('error').show())
         .finally(() => { this.starting = false; });
     }
 
@@ -98,7 +98,7 @@ class HomePage extends Vue {
         http.post(`/routines/${this.pickerRoutine.id}/days/${this.pickerNextDay.id}/start`)
         .data({ date: today, notes: this.pickerNextDay.name })
         .then((res: any) => { this.to(`/workout/${res.id}`); })
-        .catch(() => App.notification('Error al iniciar l\'entrenament').setType('error').show())
+        .catch(() => App.notification(translate.get('home.errors.start')).setType('error').show())
         .finally(() => { this.startingPicker = false; });
     }
 
@@ -106,7 +106,7 @@ class HomePage extends Vue {
         const today = new Date().toISOString().split('T')[0];
         http.post('/workouts').data({ date: today, notes: null })
         .then((res: any) => { this.to(`/workout/${res.id}`); })
-        .catch(() => App.notification('Error al crear l\'entrenament').setType('error').show());
+        .catch(() => App.notification(translate.get('home.errors.create')).setType('error').show());
     }
 
     fetchRecentWorkouts() {
@@ -118,7 +118,9 @@ class HomePage extends Vue {
     }
 
     formatDate(date: string) {
-        return new Date(date).toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+        const l = translate.currentLanguage;
+        const locale = l === 'es' ? 'es-ES' : l === 'en' ? 'en-GB' : 'ca-ES';
+        return new Date(date).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
     }
 }
 export default toNative(HomePage);

@@ -3,7 +3,7 @@
         <div class="workout-detail-page">
 
             <div class="page-header">
-                <button class="btn-back" @click="to('/workouts')">&larr; Historial</button>
+                <button class="btn-back" @click="to('/workouts')">&larr; {{ $t('workoutDetail.back') }}</button>
                 <div v-if="workout" class="header-info">
                     <div>
                         <h1 class="capitalize">
@@ -12,11 +12,11 @@
                         </h1>
                         <p class="notes" v-if="workout.notes">{{ workout.notes }}</p>
                     </div>
-                    <button class="btn-add-exercise" @click="showExerciseSearch = true">+ Afegir exercici</button>
+                    <button class="btn-add-exercise" @click="showExerciseSearch = true">{{ $t('workoutDetail.addExercise') }}</button>
                 </div>
             </div>
 
-            <div v-if="loading" class="loading-text">Carregant...</div>
+            <div v-if="loading" class="loading-text">{{ $t('workoutDetail.loading') }}</div>
 
             <div v-else-if="workout" class="exercises-list">
                 <div
@@ -31,26 +31,26 @@
                     @dragend="dragEnd()"
                 >
                     <div class="exercise-header">
-                        <div class="drag-handle" title="Arrossega per reordenar">⠿</div>
+                        <div class="drag-handle" :title="$t('workoutDetail.dragToReorder')">⠿</div>
                         <div>
                             <span class="exercise-name">{{ we.exercise?.name }}</span>
                             <span class="exercise-eq" v-if="we.exercise?.equipment"> · {{ we.exercise.equipment.name }}</span>
                         </div>
                         <div class="exercise-header-right">
-                            <span class="volume-tag">Vol: {{ totalVolume(we.sets) }}</span>
-                            <button class="btn-delete-exercise" @click="deleteExercise(we)" title="Eliminar exercici">✕</button>
+                            <span class="volume-tag">{{ $t('workoutDetail.volumeShort', { v: totalVolume(we.sets) }) }}</span>
+                            <button class="btn-delete-exercise" @click="deleteExercise(we)" :title="$t('workoutDetail.deleteExercise')">✕</button>
                         </div>
                     </div>
 
                     <table v-if="we.sets?.length > 0 || addingSetWeId == we.id">
                         <thead>
                             <tr>
-                                <th>Set</th>
-                                <th>Reps</th>
-                                <th>Pes (kg)</th>
-                                <th>Descans (s)</th>
-                                <th>Notes</th>
-                                <th>Flags</th>
+                                <th>{{ $t('workoutDetail.table.set') }}</th>
+                                <th>{{ $t('workoutDetail.table.reps') }}</th>
+                                <th>{{ $t('workoutDetail.table.weight') }}</th>
+                                <th>{{ $t('workoutDetail.table.rest') }}</th>
+                                <th>{{ $t('workoutDetail.table.notes') }}</th>
+                                <th>{{ $t('workoutDetail.table.flags') }}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -63,8 +63,8 @@
                                     <td>{{ s.rest_seconds ?? '—' }}</td>
                                     <td>{{ s.notes || '—' }}</td>
                                     <td>
-                                        <span class="set-badge failed" v-if="s.is_failed">Fallada</span>
-                                        <span class="set-badge dropset" v-if="s.is_dropset">Drop</span>
+                                        <span class="set-badge failed" v-if="s.is_failed">{{ $t('workoutDetail.badges.failed') }}</span>
+                                        <span class="set-badge dropset" v-if="s.is_dropset">{{ $t('workoutDetail.badges.dropset') }}</span>
                                     </td>
                                     <td class="row-actions">
                                         <button class="btn-row-edit" @click="openSetEdit(we, s)">✎</button>
@@ -78,8 +78,8 @@
                                     <td><input type="number" v-model.number="editRest" min="0" class="cell-input" /></td>
                                     <td><input type="text" v-model="editSetNotes" class="cell-input wide" /></td>
                                     <td>
-                                        <label class="flag-check"><input type="checkbox" v-model="editFailed" /> F</label>
-                                        <label class="flag-check"><input type="checkbox" v-model="editDropset" /> D</label>
+                                        <label class="flag-check"><input type="checkbox" v-model="editFailed" /> {{ $t('workoutDetail.flagFailedShort') }}</label>
+                                        <label class="flag-check"><input type="checkbox" v-model="editDropset" /> {{ $t('workoutDetail.flagDropsetShort') }}</label>
                                     </td>
                                     <td class="row-actions">
                                         <button class="btn-row-save" @click="saveSetEdit(we)" :disabled="savingSet">✓</button>
@@ -93,10 +93,10 @@
                                 <td><input type="number" v-model.number="newReps" min="1" class="cell-input" /></td>
                                 <td><input type="number" v-model.number="newWeight" min="0" step="0.5" class="cell-input" /></td>
                                 <td><input type="number" v-model.number="newRest" min="0" class="cell-input" /></td>
-                                <td><input type="text" v-model="newSetNotes" class="cell-input wide" placeholder="Notes" /></td>
+                                <td><input type="text" v-model="newSetNotes" class="cell-input wide" :placeholder="$t('workoutDetail.table.notes')" /></td>
                                 <td>
-                                    <label class="flag-check"><input type="checkbox" v-model="newFailed" /> F</label>
-                                    <label class="flag-check"><input type="checkbox" v-model="newDropset" /> D</label>
+                                    <label class="flag-check"><input type="checkbox" v-model="newFailed" /> {{ $t('workoutDetail.flagFailedShort') }}</label>
+                                    <label class="flag-check"><input type="checkbox" v-model="newDropset" /> {{ $t('workoutDetail.flagDropsetShort') }}</label>
                                 </td>
                                 <td class="row-actions">
                                     <button class="btn-row-save" @click="saveNewSet(we)" :disabled="savingSet">✓</button>
@@ -105,21 +105,21 @@
                             </tr>
                         </tbody>
                     </table>
-                    <div v-else-if="addingSetWeId != we.id" class="empty-sets">Cap sèrie registrada</div>
+                    <div v-else-if="addingSetWeId != we.id" class="empty-sets">{{ $t('workoutDetail.emptySets') }}</div>
 
-                    <button class="btn-add-set" @click="openAddSet(we)">+ Afegir sèrie</button>
+                    <button class="btn-add-set" @click="openAddSet(we)">{{ $t('workoutDetail.addSet') }}</button>
                 </div>
             </div>
 
             <!-- Exercise search modal -->
             <div v-if="showExerciseSearch" class="modal-overlay" @click.self="showExerciseSearch = false">
                 <div class="modal">
-                    <h3>Afegir exercici</h3>
+                    <h3>{{ $t('workoutDetail.modal.title') }}</h3>
                     <div class="search-wrapper">
                         <input
                             type="text"
                             v-model="exerciseQuery"
-                            placeholder="Cerca un exercici..."
+                            :placeholder="$t('workoutDetail.modal.searchPlaceholder')"
                             @input="filterExercises()"
                             autofocus
                         />
@@ -134,10 +134,10 @@
                             <span>{{ ex.name }}</span>
                             <small v-if="ex.equipment">{{ ex.equipment.name }}</small>
                         </div>
-                        <div v-if="filteredExercises.length === 0 && exerciseQuery" class="no-results">Cap resultat</div>
+                        <div v-if="filteredExercises.length === 0 && exerciseQuery" class="no-results">{{ $t('workoutDetail.modal.noResults') }}</div>
                     </div>
                     <div class="modal-actions">
-                        <button class="btn-cancel" @click="showExerciseSearch = false">Tancar</button>
+                        <button class="btn-cancel" @click="showExerciseSearch = false">{{ $t('workoutDetail.modal.close') }}</button>
                     </div>
                 </div>
             </div>

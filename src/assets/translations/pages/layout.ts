@@ -1,0 +1,44 @@
+export default {
+    ca: {
+        menu: {
+            menu: 'Menú',
+            dashboard: 'Dashboard',
+            exercises: 'Exercicis',
+            routines: 'Rutines',
+            history: 'Historial',
+            stats: 'Estadístiques',
+        },
+        lightMode: 'Mode clar',
+        darkMode: 'Mode fosc',
+        logout: 'Sortir',
+        logoutConfirm: 'Vols tancar la sessió?',
+    },
+    es: {
+        menu: {
+            menu: 'Menú',
+            dashboard: 'Dashboard',
+            exercises: 'Ejercicios',
+            routines: 'Rutinas',
+            history: 'Historial',
+            stats: 'Estadísticas',
+        },
+        lightMode: 'Modo claro',
+        darkMode: 'Modo oscuro',
+        logout: 'Salir',
+        logoutConfirm: '¿Quieres cerrar la sesión?',
+    },
+    en: {
+        menu: {
+            menu: 'Menu',
+            dashboard: 'Dashboard',
+            exercises: 'Exercises',
+            routines: 'Routines',
+            history: 'History',
+            stats: 'Stats',
+        },
+        lightMode: 'Light mode',
+        darkMode: 'Dark mode',
+        logout: 'Log out',
+        logoutConfirm: 'Do you want to log out?',
+    },
+};

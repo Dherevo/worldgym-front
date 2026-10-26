@@ -1,5 +1,5 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
-import { http, App } from "lib";
+import { http, App, translate } from "lib";
 
 @Component({})
 class RoutinesPage extends Vue {
@@ -46,23 +46,23 @@ class RoutinesPage extends Vue {
             this.showForm = false;
             this.fetchRoutines();
         })
-        .catch(() => App.notification('Error al desar la rutina').setType('error').show())
+        .catch(() => App.notification(translate.get('routines.errors.save')).setType('error').show())
         .finally(() => { this.saving = false; });
     }
 
     setDefault(r: any) {
         http.put(`/routines/${r.id}/set-default`)
         .then(() => this.fetchRoutines())
-        .catch(() => App.notification('Error al assignar rutina per defecte').setType('error').show());
+        .catch(() => App.notification(translate.get('routines.errors.setDefault')).setType('error').show());
     }
 
     deleteRoutine(r: any) {
-        App.confirm(`Vols eliminar "${r.name}"?`)
+        App.confirm(translate.get('routines.confirmDelete', { name: r.name }))
         .then((ok: boolean) => {
             if (!ok) return;
             http.delete(`/routines/${r.id}`)
             .then(() => this.fetchRoutines())
-            .catch(() => App.notification('Error al eliminar').setType('error').show());
+            .catch(() => App.notification(translate.get('routines.errors.delete')).setType('error').show());
         });
     }
 }

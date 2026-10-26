@@ -1,5 +1,5 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
-import { http, App } from "lib";
+import { http, App, translate } from "lib";
 
 @Component({})
 class RoutineDetailPage extends Vue {
@@ -58,14 +58,14 @@ class RoutineDetailPage extends Vue {
         .then((res: any) => {
             this.to(`/workout/${res.id}`);
         })
-        .catch(() => App.notification('Error al iniciar l\'entrenament').setType('error').show())
+        .catch(() => App.notification(translate.get('routineDetail.errors.start')).setType('error').show())
         .finally(() => { this.starting = false; });
     }
 
     openAddDay() {
         this.editingDay = null;
         const nextNum = (this.routine?.days?.length || 0) + 1;
-        this.dayForm = { day_number: nextNum, name: `Dia ${nextNum}` };
+        this.dayForm = { day_number: nextNum, name: translate.get('routineDetail.defaultDayName', { n: nextNum }) };
         this.showDayForm = true;
     }
 
@@ -86,17 +86,17 @@ class RoutineDetailPage extends Vue {
             this.showDayForm = false;
             this.fetchRoutine();
         })
-        .catch(() => App.notification('Error al desar el dia').setType('error').show())
+        .catch(() => App.notification(translate.get('routineDetail.errors.saveDay')).setType('error').show())
         .finally(() => { this.savingDay = false; });
     }
 
     deleteDay(day: any) {
-        App.confirm(`Eliminar "${day.name}"?`)
+        App.confirm(translate.get('routineDetail.confirmDelete', { name: day.name }))
         .then((ok: boolean) => {
             if (!ok) return;
             http.delete(`/routines/${this.routineId}/days/${day.id}`)
             .then(() => this.fetchRoutine())
-            .catch(() => App.notification('Error al eliminar el dia').setType('error').show());
+            .catch(() => App.notification(translate.get('routineDetail.errors.deleteDay')).setType('error').show());
         });
     }
 
@@ -133,17 +133,17 @@ class RoutineDetailPage extends Vue {
             this.showExerciseForm = false;
             this.fetchRoutine();
         })
-        .catch(() => App.notification('Error al desar l\'exercici').setType('error').show())
+        .catch(() => App.notification(translate.get('routineDetail.errors.saveExercise')).setType('error').show())
         .finally(() => { this.savingExercise = false; });
     }
 
     deleteExercise(day: any, ex: any) {
-        App.confirm(`Eliminar "${ex.exercise?.name}"?`)
+        App.confirm(translate.get('routineDetail.confirmDelete', { name: ex.exercise?.name }))
         .then((ok: boolean) => {
             if (!ok) return;
             http.delete(`/routines/${this.routineId}/days/${day.id}/exercises/${ex.id}`)
             .then(() => this.fetchRoutine())
-            .catch(() => App.notification('Error al eliminar').setType('error').show());
+            .catch(() => App.notification(translate.get('routineDetail.errors.delete')).setType('error').show());
         });
     }
 }

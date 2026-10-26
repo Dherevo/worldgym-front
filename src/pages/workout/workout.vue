@@ -4,31 +4,31 @@
 
             <!-- Loading -->
             <div v-if="state === 'loading'" class="center-state">
-                <div class="loading-text">Carregant entrenament...</div>
+                <div class="loading-text">{{ $t('workout.loading') }}</div>
             </div>
 
             <!-- Done -->
             <div v-else-if="state === 'done'" class="done-state">
                 <div class="done-hero">
                     <div class="done-icon">🏆</div>
-                    <h1>Enhorabona!</h1>
-                    <p class="done-subtitle">Has completat la rutina d'avui</p>
+                    <h1>{{ $t('workout.done.title') }}</h1>
+                    <p class="done-subtitle">{{ $t('workout.done.subtitle') }}</p>
                     <div class="done-duration" v-if="workoutDuration">⏱ {{ workoutDuration }}</div>
                 </div>
 
                 <div class="done-summary" v-if="completedExercises.length">
-                    <div class="done-summary-title">Resum</div>
+                    <div class="done-summary-title">{{ $t('workout.done.summary') }}</div>
                     <div class="done-exercise" v-for="ex in completedExercises" :key="ex.name" v-if="ex.sets.length">
                         <div class="done-ex-name">{{ ex.name }}</div>
                         <div class="done-ex-sets">
                             <span v-for="(s, i) in ex.sets" :key="i" class="done-set-pill" :class="{ failed: s.is_failed, dropset: s.is_dropset }">
-                                {{ s.reps }} × {{ s.weight > 0 ? s.weight + ' kg' : 'PC' }}
+                                {{ s.reps }} × {{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}
                             </span>
                         </div>
                     </div>
                 </div>
 
-                <button class="btn-primary" @click="to('/')">Tornar al Dashboard</button>
+                <button class="btn-primary" @click="to('/')">{{ $t('workout.done.backToDashboard') }}</button>
             </div>
 
             <!-- Guided flow -->
@@ -37,10 +37,10 @@
                 <!-- Header -->
                 <div class="workout-header">
                     <div>
-                        <div class="workout-label">Entrenament actiu</div>
+                        <div class="workout-label">{{ $t('workout.header.active') }}</div>
                         <div class="workout-notes" v-if="workout?.notes">{{ workout.notes }}</div>
                     </div>
-                    <button class="btn-finish-small" @click="finishWorkout()">Finalitzar</button>
+                    <button class="btn-finish-small" @click="finishWorkout()">{{ $t('workout.header.finish') }}</button>
                 </div>
 
                 <!-- Mini exercise plan (només rutina) -->
@@ -64,17 +64,17 @@
                     ></div>
                 </div>
                 <div class="progress-label" v-if="!isFreeWorkout">
-                    Exercici {{ currentExerciseIdx + 1 }} de {{ exercises.length }}
+                    {{ $t('workout.exerciseProgress', { current: currentExerciseIdx + 1, total: exercises.length }) }}
                 </div>
 
                 <!-- STATE: pick-exercise -->
                 <div v-if="state === 'pick-exercise'" class="action-block pick-exercise-block">
-                    <p class="action-label">Quin exercici fas?</p>
+                    <p class="action-label">{{ $t('workout.pick.question') }}</p>
                     <div class="exercise-search-wrap">
                         <input
                             type="text"
                             v-model="exerciseQuery"
-                            placeholder="Cerca un exercici..."
+                            :placeholder="$t('workout.pick.searchPlaceholder')"
                             @input="filterExercises()"
                         />
                         <div class="exercise-dropdown" v-if="exerciseResults.length">
@@ -89,20 +89,20 @@
                             </div>
                         </div>
                     </div>
-                    <div v-if="addingExercise" class="loading-text">Afegint...</div>
+                    <div v-if="addingExercise" class="loading-text">{{ $t('workout.pick.adding') }}</div>
                     <button
                         v-if="exercises.length > 0"
                         class="btn-action skip"
                         @click="finishWorkout()"
-                    >Finalitzar entrenament</button>
+                    >{{ $t('workout.pick.finishWorkout') }}</button>
                 </div>
 
                 <!-- Historial últimes sessions (exercici actual) -->
                 <div class="exercise-history" v-if="exerciseHistory.length && state !== 'pick-exercise'">
                     <div class="history-title">
-                        Últimes sessions
+                        {{ $t('workout.history.title') }}
                         <span class="record-badge" v-if="exerciseRecord">
-                            🏆 {{ exerciseRecord.weight }} kg × {{ exerciseRecord.reps }} reps
+                            🏆 {{ exerciseRecord.weight }} kg × {{ exerciseRecord.reps }} {{ $t('workout.history.reps') }}
                         </span>
                     </div>
                     <div class="history-rows">
@@ -110,10 +110,10 @@
                             <span class="history-date">{{ formatHistoryDate(s.date) }}</span>
                             <template v-if="parseInt(s.total_reps) > 0">
                                 <span class="history-stat"><b>{{ s.max_weight }} kg</b></span>
-                                <span class="history-stat">{{ parseFloat(s.avg_reps).toFixed(0) }} reps</span>
-                                <span class="history-stat muted">{{ s.total_sets }} sèries</span>
+                                <span class="history-stat">{{ parseFloat(s.avg_reps).toFixed(0) }} {{ $t('workout.history.reps') }}</span>
+                                <span class="history-stat muted">{{ s.total_sets }} {{ $t('workout.history.sets') }}</span>
                             </template>
-                            <span v-else class="history-empty">Sense dades</span>
+                            <span v-else class="history-empty">{{ $t('workout.history.noData') }}</span>
                         </div>
                     </div>
                 </div>
@@ -127,35 +127,35 @@
                         {{ currentExercise.exercise.equipment.name }}
                     </div>
                     <div class="set-info" v-if="totalSets > 0">
-                        Sèrie {{ doneCount + 1 }} de {{ totalSets }}
+                        {{ $t('workout.card.setOf', { current: doneCount + 1, total: totalSets }) }}
                     </div>
                     <div class="set-info" v-else>
-                        Sèrie {{ doneCount + 1 }}
+                        {{ $t('workout.card.set', { current: doneCount + 1 }) }}
                     </div>
                     <div class="target-hint" v-if="targetSet">
-                        Objectiu: {{ targetSet.reps }} reps<template v-if="targetSet.weight > 0"> · {{ targetSet.weight }} kg</template><template v-if="targetRestLabel"> · {{ targetRestLabel }}</template>
+                        {{ $t('workout.card.target') }}: {{ targetSet.reps }} {{ $t('workout.history.reps') }}<template v-if="targetSet.weight > 0"> · {{ targetSet.weight }} kg</template><template v-if="targetRestLabel"> · {{ targetRestLabel }}</template>
                     </div>
 
                     <div class="card-divider"></div>
 
                     <!-- STATE: idle -->
                     <template v-if="state === 'idle'">
-                        <button class="btn-action start" @click="startSet()">Començar sèrie</button>
+                        <button class="btn-action start" @click="startSet()">{{ $t('workout.card.start') }}</button>
                     </template>
 
                     <!-- STATE: active -->
                     <template v-else-if="state === 'active'">
                         <div class="big-timer">{{ exerciseFormatted }}</div>
-                        <p class="action-label">Sèrie en curs...</p>
-                        <button class="btn-action stop" @click="stopSet()">Parar</button>
+                        <p class="action-label">{{ $t('workout.card.inProgress') }}</p>
+                        <button class="btn-action stop" @click="stopSet()">{{ $t('workout.card.stop') }}</button>
                     </template>
 
                     <!-- STATE: logging -->
                     <template v-else-if="state === 'logging'">
-                        <p class="action-label">Quantes reps i quin pes has fet?</p>
+                        <p class="action-label">{{ $t('workout.log.question') }}</p>
                         <div class="log-form">
                             <div class="log-field">
-                                <label>Repeticions</label>
+                                <label>{{ $t('workout.log.repetitions') }}</label>
                                 <div class="number-input">
                                     <button @click="logReps = Math.max(1, logReps - 1)">−</button>
                                     <input type="number" v-model.number="logReps" min="1" />
@@ -163,7 +163,7 @@
                                 </div>
                             </div>
                             <div class="log-field" v-if="!isBodyweight">
-                                <label>Pes (kg)</label>
+                                <label>{{ $t('workout.log.weightKg') }}</label>
                                 <div class="number-input">
                                     <button @click="logWeight = Math.max(0, logWeight - 2.5)">−</button>
                                     <input type="number" v-model.number="logWeight" min="0" step="0.5" />
@@ -171,8 +171,8 @@
                                 </div>
                             </div>
                             <div class="log-field" v-else>
-                                <label>Pes</label>
-                                <span class="bw-badge">Pes corporal</span>
+                                <label>{{ $t('workout.log.weight') }}</label>
+                                <span class="bw-badge">{{ $t('workout.log.bodyweight') }}</span>
                             </div>
                         </div>
                         <div class="set-flags">
@@ -181,45 +181,45 @@
                                 :class="{ active: logFailed }"
                                 @click="logFailed = !logFailed"
                                 type="button"
-                                data-tooltip="Has arribat al límit: no podies fer cap rep més"
-                            >✕ Fallada</button>
+                                :data-tooltip="$t('workout.log.failedTooltip')"
+                            >✕ {{ $t('workout.log.failed') }}</button>
                             <button
                                 class="flag-btn dropset"
                                 :class="{ active: logDropset }"
                                 @click="logDropset = !logDropset"
                                 type="button"
-                                data-tooltip="Has baixat el pes i continuat sense descansar"
-                            >↓ Dropset</button>
+                                :data-tooltip="$t('workout.log.dropsetTooltip')"
+                            >↓ {{ $t('workout.log.dropset') }}</button>
                         </div>
                         <input
                             type="text"
                             class="log-notes"
                             v-model="logNotes"
-                            placeholder="Notes (opcional)..."
+                            :placeholder="$t('workout.log.notesPlaceholder')"
                         />
                         <button class="btn-action confirm" @click="submitSet()" :disabled="savingSet">
-                            {{ savingSet ? 'Desant...' : 'Confirmar i descansar' }}
+                            {{ savingSet ? $t('workout.log.saving') : $t('workout.log.confirm') }}
                         </button>
                     </template>
 
                     <!-- STATE: resting -->
                     <template v-else-if="state === 'resting'">
-                        <p class="action-label">Descansa!</p>
+                        <p class="action-label">{{ $t('workout.rest.title') }}</p>
                         <div class="big-timer rest">{{ restFormatted }}</div>
                         <div class="rest-adjust">
                             <button class="btn-adjust" @click="adjustRest(-30)">−30s</button>
                             <button class="btn-adjust" @click="adjustRest(30)">+30s</button>
                         </div>
-                        <button class="btn-action skip" @click="skipRest()">Saltar descans</button>
+                        <button class="btn-action skip" @click="skipRest()">{{ $t('workout.rest.skip') }}</button>
                     </template>
 
                     <!-- STATE: choose -->
                     <template v-else-if="state === 'choose'">
-                        <p class="action-label">Vols fer una altra sèrie?</p>
+                        <p class="action-label">{{ $t('workout.choose.question') }}</p>
                         <div class="choose-buttons">
-                            <button class="btn-action start" @click="continueSet()">Una altra sèrie</button>
+                            <button class="btn-action start" @click="continueSet()">{{ $t('workout.choose.anotherSet') }}</button>
                             <button class="btn-action skip" @click="nextExercise()">
-                                {{ isFreeWorkout ? 'Exercici següent' : (currentExerciseIdx + 1 < exercises.length ? 'Exercici següent' : 'Acabar') }}
+                                {{ isFreeWorkout || currentExerciseIdx + 1 < exercises.length ? $t('workout.choose.nextExercise') : $t('workout.choose.end') }}
                             </button>
                         </div>
                     </template>
@@ -228,7 +228,7 @@
 
                 <!-- Workout progress: tots els exercicis -->
                 <div class="workout-progress" v-if="exercises.length && state !== 'done'">
-                    <div class="progress-section-title">Progrés</div>
+                    <div class="progress-section-title">{{ $t('workout.progress.title') }}</div>
 
                     <div
                         v-for="(ex, exIdx) in exercises"
@@ -243,16 +243,16 @@
                         <div class="progress-ex-header">
                             <span class="progress-ex-name">{{ ex.exercise?.name }}</span>
                             <span class="progress-ex-badge done" v-if="exIdx < currentExerciseIdx">✓</span>
-                            <span class="progress-ex-badge current" v-else-if="exIdx === currentExerciseIdx">En curs</span>
+                            <span class="progress-ex-badge current" v-else-if="exIdx === currentExerciseIdx">{{ $t('workout.progress.current') }}</span>
                         </div>
 
                         <table>
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Reps</th>
-                                    <th>Pes</th>
-                                    <th>Notes</th>
+                                    <th>{{ $t('workout.progress.reps') }}</th>
+                                    <th>{{ $t('workout.progress.weight') }}</th>
+                                    <th>{{ $t('workout.progress.notes') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -263,12 +263,12 @@
                                         <tr v-for="(s, i) in completedExercises[exIdx].sets" :key="i" class="set-row-done">
                                             <td>{{ s.set_number ?? i + 1 }}</td>
                                             <td>{{ s.reps }}</td>
-                                            <td>{{ s.weight > 0 ? s.weight + ' kg' : 'PC' }}</td>
+                                            <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</td>
                                             <td>{{ s.notes || '—' }}</td>
                                         </tr>
                                     </template>
                                     <tr v-else class="set-row-empty">
-                                        <td colspan="4">Cap sèrie registrada</td>
+                                        <td colspan="4">{{ $t('workout.progress.noSetsLogged') }}</td>
                                     </tr>
                                 </template>
 
@@ -278,7 +278,7 @@
                                     <tr v-for="(s, i) in loggedSets" :key="'done-' + i" class="set-row-done">
                                         <td>{{ s.set_number }}</td>
                                         <td>{{ s.reps }}</td>
-                                        <td>{{ s.weight > 0 ? s.weight + ' kg' : 'PC' }}</td>
+                                        <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</td>
                                         <td>{{ s.notes || '—' }}</td>
                                     </tr>
 
@@ -286,7 +286,7 @@
                                     <tr v-if="state === 'logging'" class="set-row-live">
                                         <td>{{ doneCount + 1 }}</td>
                                         <td>{{ logReps }}</td>
-                                        <td>{{ isBodyweight ? 'PC' : (logWeight + ' kg') }}</td>
+                                        <td>{{ isBodyweight ? $t('workout.log.bodyweightShort') : (logWeight + ' kg') }}</td>
                                         <td>{{ logNotes || '—' }}</td>
                                     </tr>
 
@@ -299,14 +299,14 @@
                                         >
                                             <td>{{ doneCount + (state === 'logging' ? 1 : 0) + i + 1 }}</td>
                                             <td><span class="plan-val">{{ s.reps }}</span></td>
-                                            <td><span class="plan-val">{{ s.weight > 0 ? s.weight + ' kg' : 'PC' }}</span></td>
+                                            <td><span class="plan-val">{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</span></td>
                                             <td><span class="plan-val">—</span></td>
                                         </tr>
                                     </template>
 
                                     <!-- Buit (entrenament lliure, cap sèrie) -->
                                     <tr v-if="loggedSets.length === 0 && state !== 'logging' && totalSets <= 0" class="set-row-empty">
-                                        <td colspan="4">Cap sèrie feta encara</td>
+                                        <td colspan="4">{{ $t('workout.progress.noSetsYet') }}</td>
                                     </tr>
                                 </template>
 
@@ -316,12 +316,12 @@
                                         <tr v-for="(s, i) in ex.sets" :key="s.id ?? i" class="set-row-future">
                                             <td>{{ i + 1 }}</td>
                                             <td><span class="plan-val">{{ s.reps }}</span></td>
-                                            <td><span class="plan-val">{{ s.weight > 0 ? s.weight + ' kg' : 'PC' }}</span></td>
+                                            <td><span class="plan-val">{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</span></td>
                                             <td><span class="plan-val">—</span></td>
                                         </tr>
                                     </template>
                                     <tr v-else class="set-row-empty">
-                                        <td colspan="4">Pendent</td>
+                                        <td colspan="4">{{ $t('workout.progress.pending') }}</td>
                                     </tr>
                                 </template>
 

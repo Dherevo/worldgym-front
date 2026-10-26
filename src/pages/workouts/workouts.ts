@@ -1,5 +1,5 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
-import { http, App } from "lib";
+import { http, App, translate } from "lib";
 
 @Component({})
 class WorkoutsPage extends Vue {
@@ -53,7 +53,7 @@ class WorkoutsPage extends Vue {
             this.showModal = false;
             this.fetchWorkouts();
         })
-        .catch(() => App.notification('Error al crear').setType('error').show())
+        .catch(() => App.notification(translate.get('workouts.errors.create')).setType('error').show())
         .finally(() => { this.saving = false; });
     }
 
@@ -66,22 +66,26 @@ class WorkoutsPage extends Vue {
             this.editingWorkout = null;
             this.fetchWorkouts();
         })
-        .catch(() => App.notification('Error al desar').setType('error').show())
+        .catch(() => App.notification(translate.get('workouts.errors.save')).setType('error').show())
         .finally(() => { this.saving = false; });
     }
 
     deleteWorkout(w: any) {
-        App.confirm(`Eliminar l'entrenament del ${this.formatDate(w.date)}?`)
+        App.confirm(translate.get('workouts.confirmDelete', { date: this.formatDate(w.date) }))
         .then((ok: boolean) => {
             if (!ok) return;
             http.delete(`/workouts/${w.id}`)
             .then(() => this.fetchWorkouts())
-            .catch(() => App.notification('Error al eliminar').setType('error').show());
+            .catch(() => App.notification(translate.get('workouts.errors.delete')).setType('error').show());
         });
     }
 
+    get dateLocale(): string {
+        return ({ ca: 'ca-ES', es: 'es-ES', en: 'en-GB' } as any)[translate.currentLanguage] ?? 'ca-ES';
+    }
+
     formatDate(date: string) {
-        return new Date(date).toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        return new Date(date).toLocaleDateString(this.dateLocale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     }
 
     formatDuration(w: any): string | null {

@@ -1,5 +1,5 @@
 import { Component, Vue, toNative, Watch } from "vue-facing-decorator";
-import { http } from "lib";
+import { http, translate } from "lib";
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -33,6 +33,11 @@ class StatsPage extends Vue {
     volumeChart: Chart | null = null;
     repsChart: Chart | null = null;
     mgVolumeChart: Chart | null = null;
+
+    get dateLocale() {
+        const l = translate.currentLanguage;
+        return l === 'es' ? 'es-ES' : l === 'en' ? 'en-GB' : 'ca-ES';
+    }
 
     get filteredExercises() {
         if (!this.searchQuery) return this.exercises.slice(0, 8);
@@ -127,7 +132,7 @@ class StatsPage extends Vue {
         if (!sessions.length) return;
 
         const labels = sessions.map((h: any) =>
-            new Date(h.date).toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' })
+            new Date(h.date).toLocaleDateString(this.dateLocale, { day: 'numeric', month: 'short' })
         );
 
         const weightCanvas = document.getElementById('weightCanvas') as HTMLCanvasElement;
@@ -137,7 +142,7 @@ class StatsPage extends Vue {
                 data: {
                     labels,
                     datasets: [{
-                        label: 'Pes màxim (kg)',
+                        label: translate.get('stats.charts.maxWeightLabel'),
                         data: sessions.map((h: any) => parseFloat(h.max_weight)),
                         borderColor: 'rgb(237, 115, 52)',
                         backgroundColor: 'rgba(237, 115, 52, 0.1)',
@@ -167,7 +172,7 @@ class StatsPage extends Vue {
                 data: {
                     labels,
                     datasets: [{
-                        label: 'Volum total (kg)',
+                        label: translate.get('stats.charts.volumeLabel'),
                         data: sessions.map((h: any) => parseFloat(h.total_volume)),
                         backgroundColor: 'rgba(237, 115, 52, 0.6)',
                         borderColor: 'rgb(237, 115, 52)',
@@ -194,7 +199,7 @@ class StatsPage extends Vue {
                 data: {
                     labels,
                     datasets: [{
-                        label: 'Reps mitjanes',
+                        label: translate.get('stats.charts.avgRepsLabel'),
                         data: sessions.map((h: any) => parseFloat(h.avg_reps)),
                         borderColor: 'rgb(59, 130, 246)',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -239,7 +244,7 @@ class StatsPage extends Vue {
         if (!sessions.length) return;
 
         const labels = sessions.map((s: any) =>
-            new Date(s.date).toLocaleDateString('ca-ES', { day: 'numeric', month: 'short' })
+            new Date(s.date).toLocaleDateString(this.dateLocale, { day: 'numeric', month: 'short' })
         );
 
         const mgCanvas = document.getElementById('mgVolumeCanvas') as HTMLCanvasElement;
@@ -249,7 +254,7 @@ class StatsPage extends Vue {
                 data: {
                     labels,
                     datasets: [{
-                        label: 'Volum total (kg)',
+                        label: translate.get('stats.charts.volumeLabel'),
                         data: sessions.map((s: any) => parseFloat(s.total_volume)),
                         backgroundColor: 'rgba(237, 115, 52, 0.6)',
                         borderColor: 'rgb(237, 115, 52)',
@@ -275,7 +280,7 @@ class StatsPage extends Vue {
     }
 
     formatHistoryDate(date: string) {
-        return new Date(date).toLocaleDateString('ca-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+        return new Date(date).toLocaleDateString(this.dateLocale, { day: 'numeric', month: 'short', year: 'numeric' });
     }
 }
 export default toNative(StatsPage);

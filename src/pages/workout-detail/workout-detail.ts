@@ -1,5 +1,5 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
-import { http, App } from "lib";
+import { http, App, translate } from "lib";
 
 @Component({})
 class WorkoutDetailPage extends Vue {
@@ -72,16 +72,16 @@ class WorkoutDetailPage extends Vue {
             this.filteredExercises = [];
             this.fetchWorkout();
         })
-        .catch(() => App.notification('Error al afegir exercici').setType('error').show());
+        .catch(() => App.notification(translate.get('workoutDetail.errors.addExercise')).setType('error').show());
     }
 
     deleteExercise(we: any) {
-        App.confirm(`Eliminar "${we.exercise?.name}" d'aquest entrenament?`)
+        App.confirm(translate.get('workoutDetail.confirmDeleteExercise', { name: we.exercise?.name }))
         .then((ok: boolean) => {
             if (!ok) return;
             http.delete(`/workouts/${this.workoutId}/exercises/${we.id}`)
             .then(() => this.fetchWorkout())
-            .catch(() => App.notification('Error al eliminar').setType('error').show());
+            .catch(() => App.notification(translate.get('workoutDetail.errors.delete')).setType('error').show());
         });
     }
 
@@ -101,17 +101,17 @@ class WorkoutDetailPage extends Vue {
         http.put(`/workouts/${this.workoutId}/exercises/${we.id}/sets/${this.editingSet.id}`)
         .data({ reps: this.editReps, weight: this.editWeight, rest_seconds: this.editRest, notes: this.editSetNotes, is_failed: this.editFailed, is_dropset: this.editDropset })
         .then(() => { this.editingSet = null; this.fetchWorkout(); })
-        .catch(() => App.notification('Error al desar').setType('error').show())
+        .catch(() => App.notification(translate.get('workoutDetail.errors.save')).setType('error').show())
         .finally(() => { this.savingSet = false; });
     }
 
     deleteSet(we: any, s: any) {
-        App.confirm(`Eliminar la sèrie ${s.set_number}?`)
+        App.confirm(translate.get('workoutDetail.confirmDeleteSet', { n: s.set_number }))
         .then((ok: boolean) => {
             if (!ok) return;
             http.delete(`/workouts/${this.workoutId}/exercises/${we.id}/sets/${s.id}`)
             .then(() => this.fetchWorkout())
-            .catch(() => App.notification('Error al eliminar').setType('error').show());
+            .catch(() => App.notification(translate.get('workoutDetail.errors.delete')).setType('error').show());
         });
     }
 
@@ -132,7 +132,7 @@ class WorkoutDetailPage extends Vue {
         http.post(`/workouts/${this.workoutId}/exercises/${we.id}/sets`)
         .data({ set_number: (we.sets?.length ?? 0) + 1, reps: this.newReps, weight: this.newWeight, rest_seconds: this.newRest, notes: this.newSetNotes, is_failed: this.newFailed, is_dropset: this.newDropset })
         .then(() => { this.addingSetWeId = null; this.fetchWorkout(); })
-        .catch(() => App.notification('Error al desar').setType('error').show())
+        .catch(() => App.notification(translate.get('workoutDetail.errors.save')).setType('error').show())
         .finally(() => { this.savingSet = false; });
     }
 
@@ -149,15 +149,19 @@ class WorkoutDetailPage extends Vue {
         const order = exercises.map((we: any, i: number) => ({ id: we.id, order_index: i + 1 }));
         (http as any).patch(`/workouts/${this.workoutId}/exercises/reorder`)
         .data({ order })
-        .catch(() => App.notification('Error al reordenar').setType('error').show());
+        .catch(() => App.notification(translate.get('workoutDetail.errors.reorder')).setType('error').show());
     }
 
     dragEnd() {
         this.dragFromIdx = null;
     }
 
+    get dateLocale(): string {
+        return ({ ca: 'ca-ES', es: 'es-ES', en: 'en-GB' } as any)[translate.currentLanguage] ?? 'ca-ES';
+    }
+
     formatDate(date: string) {
-        return new Date(date).toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        return new Date(date).toLocaleDateString(this.dateLocale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     }
 
     formatDuration(): string | null {

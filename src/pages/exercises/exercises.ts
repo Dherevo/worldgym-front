@@ -1,5 +1,5 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
-import { http, App } from "lib";
+import { http, App, translate } from "lib";
 
 @Component({})
 class ExercisesPage extends Vue {
@@ -167,17 +167,17 @@ class ExercisesPage extends Vue {
             this.showForm = false;
             this.fetchExercises();
         })
-        .catch(() => App.notification('Error al desar l\'exercici').setType('error').show())
+        .catch(() => App.notification(translate.get('exercises.errors.save')).setType('error').show())
         .finally(() => { this.savingExercise = false; });
     }
 
     deleteExercise(ex: any) {
-        App.confirm(`Vols eliminar "${ex.name}"?`)
+        App.confirm(translate.get('exercises.confirmDelete', { name: ex.name }))
         .then((ok: boolean) => {
             if (!ok) return;
             http.delete(`/exercises/${ex.id}`)
             .then(() => this.fetchExercises())
-            .catch(() => App.notification('Error al eliminar').setType('error').show());
+            .catch(() => App.notification(translate.get('exercises.errors.delete')).setType('error').show());
         });
     }
 
