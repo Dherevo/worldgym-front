@@ -1,0 +1,139 @@
+.form-input {
+    width: 100%;
+    position: relative;
+
+    label, span.label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: .9rem;
+        color: rgb(99, 99, 99);
+
+        .required {
+            color: red;
+            padding-left: 2px;
+        }
+    }
+
+    .readonly-value {
+        white-space: pre-wrap;
+    }
+
+    &.p-float-label label 
+    {
+        position: absolute;
+        z-index: 2;
+        transition: all .2s;
+        top: 30%;
+        top: calc(50% - .6rem);
+        left: 15px;
+    }
+
+    &.p-float-label input:focus ~ label,
+    &.p-float-label input.p-filled ~ label,
+    &.p-float-label .p-inputwrapper-focus ~ label,
+    &.p-float-label .p-inputwrapper-filled ~ label {
+        top: -1.3rem;
+        left: 0;
+        transform: scale(.8);
+    }
+
+    input, textarea, .p-password, .p-inputnumber, .p-dropdown, .p-multiselect, .p-chips, .p-chips .p-inputtext {
+        width: 100%;
+        resize: none;
+    }
+
+    .p-autocomplete {
+        flex: 1;
+        display: flex;
+    }
+
+    .form-input-help {
+
+        &.floating {
+            position: absolute;
+            left: 0;
+            top: 110%;
+            top: calc(100% + 5px);
+        }
+    }
+
+    &.invalid {
+        .form-input-help {
+            color: var(--error-color);
+        }
+    }
+
+    .readonly-value {
+        .file-view {
+            display: flex;
+            align-items: center;
+            background-color: rgb(246, 246, 246);
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            .flex-grow {
+                text-align: left;
+            }
+            .p-image {
+                border-radius: 3px;
+                overflow: hidden;
+                img {
+                    height: 40px;
+                    width: auto;
+                }
+            }
+            svg.download-file {
+                &:hover {
+                    color: var(--primary-color);
+                }
+            }
+        }
+    }
+
+    &.error {
+        input {
+            border-color: red;
+        }
+    }
+
+}
+
+.form-input-select {
+
+    &.p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+        padding: 0;
+
+        .dropdown-option {
+            padding: 15px;
+            cursor: pointer;
+        }
+    
+    }
+
+    &.p-multiselect-panel {
+        .p-checkbox {
+            transform: scale(.8);
+        }
+        .dropdown-option {
+            font-size: .9rem;
+        }
+    }
+}
+
+.form-input-calendar {
+
+    &.p-datepicker table td {
+        user-select: none;
+
+        >span.p-highlight {
+            color: white;
+            background: var(--primary-color);
+        }
+    
+    }
+
+}
+
+form .form-input {
+    margin-bottom: 15px;
+}

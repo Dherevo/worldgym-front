@@ -1,0 +1,15 @@
+.form-input.type-toggle {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+
+    label {
+        margin-bottom: 0;
+    }
+
+    .p-inputswitch {
+        transform: scale(.7);
+    }
+}

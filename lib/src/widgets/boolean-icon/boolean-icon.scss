@@ -1,0 +1,11 @@
+.boolean-icon {
+
+    &.true {
+        color: var(--success-color);
+    }
+
+    &.false {
+        color: var(--error-color);
+    }
+
+}

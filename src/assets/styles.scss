@@ -1,0 +1,9 @@
+@import url('./styles/global.scss');
+@import url('./styles/table.scss');
+@import url('../variables.scss');
+// Prime override styles
+@import url('lib/css/prime.css');
+// CSS Grid system
+@import url('lib/css/grid.css');
+// CSS library
+@import url('lib/css/styles.css');

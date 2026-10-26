@@ -1,0 +1,278 @@
+.exercises-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        h1 { margin: 0; }
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        &:hover { background: var(--primary-dark-color); }
+        &:disabled { opacity: 0.6; cursor: not-allowed; }
+    }
+
+    .tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        button {
+            border: 1px solid var(--border-color);
+            background: var(--surface-2);
+            color: var(--text-secondary);
+            border-radius: 20px;
+            padding: 0.4rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            &.active {
+                background: var(--primary-color);
+                color: white;
+                border-color: var(--primary-color);
+            }
+        }
+    }
+
+    .filters {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+
+        input[type="text"], select {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+            background: var(--surface-2);
+            color: var(--text-color);
+            flex: 1;
+            min-width: 150px;
+            outline: none;
+            &:focus { border-color: var(--primary-color); }
+        }
+
+        .toggle-secondary {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            white-space: nowrap;
+            cursor: pointer;
+            input[type="checkbox"] { cursor: pointer; }
+        }
+    }
+
+    .exercise-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .exercise-card {
+            background: var(--surface-color);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--border-color);
+
+            .exercise-name { font-weight: 600; }
+            .exercise-meta { font-size: 0.85rem; color: var(--text-secondary); margin-top: 3px; }
+            .badge.global {
+                display: inline-block;
+                background: var(--tint-blue-bg);
+                color: var(--tint-blue-text);
+                border-radius: 10px;
+                padding: 1px 8px;
+                font-size: 0.75rem;
+                margin-left: 6px;
+            }
+            .badge.bw {
+                display: inline-block;
+                background: var(--tint-green-bg);
+                color: var(--tint-green-text);
+                border-radius: 10px;
+                padding: 1px 8px;
+                font-size: 0.75rem;
+                margin-left: 6px;
+            }
+
+            .exercise-actions {
+                display: flex;
+                gap: 0.5rem;
+                button {
+                    border: 1px solid var(--border-color);
+                    background: var(--surface-2);
+                    color: var(--text-color);
+                    border-radius: 5px;
+                    padding: 0.3rem 0.75rem;
+                    cursor: pointer;
+                    font-size: 0.85rem;
+                    &:hover { background: var(--surface-3); }
+                    &.danger { color: var(--tint-red-text); border-color: var(--tint-red-text); }
+                }
+            }
+        }
+    }
+
+    .loading-text, .empty-text { color: var(--text-secondary); padding: 1rem 0; }
+
+    @media (max-width: 768px) {
+        padding: 1rem;
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+            .btn-primary { width: 100%; }
+        }
+
+        .tabs {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            -webkit-overflow-scrolling: touch;
+            button { flex-shrink: 0; }
+        }
+
+        .filters {
+            flex-direction: column;
+            input[type="text"], select { width: 100%; }
+        }
+
+        .exercise-card {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+
+            .exercise-actions { width: 100%; justify-content: flex-end; }
+        }
+    }
+
+    .paginator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+
+        button {
+            background: var(--surface-2);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 6px;
+            padding: 0.4rem 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+            &:hover:not(:disabled) { background: var(--highlight); border-color: var(--primary-color); }
+            &:disabled { opacity: 0.4; cursor: not-allowed; }
+        }
+
+        .page-info {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            small { color: var(--text-muted); }
+        }
+    }
+
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+
+        .modal {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 500px;
+            max-width: 95vw;
+            max-height: 85vh;
+            overflow-y: auto;
+            h2 { margin: 0 0 1.5rem; }
+
+            .form-group {
+                margin-bottom: 1rem;
+                label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.35rem; }
+                input, textarea, select {
+                    width: 100%;
+                    border: 1px solid var(--border-color);
+                    border-radius: 6px;
+                    padding: 0.5rem 0.75rem;
+                    font-size: 0.95rem;
+                    box-sizing: border-box;
+                    background: var(--surface-2);
+                    color: var(--text-color);
+                    outline: none;
+                    &:focus { border-color: var(--primary-color); }
+                }
+                textarea { resize: vertical; }
+            }
+
+            .muscles-grid {
+                max-height: 200px;
+                overflow-y: auto;
+                border: 1px solid var(--border-color);
+                border-radius: 6px;
+                padding: 0.5rem;
+                background: var(--surface-2);
+
+                .muscle-item {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 0.25rem 0;
+                    .muscle-check {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        cursor: pointer;
+                        font-size: 0.9rem;
+                        input[type="checkbox"] { cursor: pointer; }
+                        .muscle-group-tag {
+                            font-size: 0.75rem;
+                            color: var(--text-muted);
+                        }
+                    }
+                    select {
+                        border: 1px solid var(--border-color);
+                        border-radius: 4px;
+                        padding: 0.2rem 0.4rem;
+                        font-size: 0.8rem;
+                    }
+                }
+            }
+
+            .form-actions {
+                display: flex;
+                gap: 0.75rem;
+                justify-content: flex-end;
+                margin-top: 1.5rem;
+                .btn-cancel {
+                    background: transparent;
+                    border: 1px solid var(--border-color);
+                    border-radius: 6px;
+                    padding: 0.6rem 1.2rem;
+                    cursor: pointer;
+                    color: var(--text-secondary);
+                    &:hover { background: var(--surface-2); }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,288 @@
+.game-detail-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: overlay-in 0.15s ease;
+
+    @keyframes overlay-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+}
+
+.game-detail-popup {
+    background: #252523;
+    border: 1px solid #3a3a38;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 580px;
+    max-height: 82vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+    animation: popup-in 0.18s ease;
+    position: relative;
+
+    @keyframes popup-in {
+        from { opacity: 0; transform: translateY(12px) scale(0.98); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+}
+
+.popup-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.4rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    z-index: 1;
+    &:hover { color: #f0f0ee; }
+}
+
+.popup-header {
+    display: flex;
+    gap: 16px;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid #3a3a38;
+    flex-shrink: 0;
+
+    .popup-game-icon {
+        width: 140px;
+        aspect-ratio: 460/215;
+        object-fit: cover;
+        border-radius: 6px;
+        flex-shrink: 0;
+    }
+
+    .popup-game-meta {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding-right: 24px;
+    }
+
+    .popup-game-name {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #f0f0ee;
+        line-height: 1.3;
+    }
+
+    .popup-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .popup-platform {
+        font-size: 0.78rem;
+        color: #888;
+    }
+
+    .popup-status-badge {
+        font-size: 0.68rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+
+        &.status-completed   { background: rgba(34,197,94,0.15);  color: #22c55e; }
+        &.status-playing     { background: rgba(59,130,246,0.15); color: #3b82f6; }
+        &.status-never       { background: rgba(249,115,22,0.15); color: #f97316; }
+        &.status-platined    { background: rgba(234,179,8,0.15);  color: #eab308; }
+        &.status-blacklisted { background: rgba(239,68,68,0.15);  color: #ef4444; }
+    }
+
+    .popup-playtime {
+        font-size: 0.78rem;
+        color: #888;
+    }
+
+    .popup-ach-progress {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .popup-ach-bar {
+        height: 5px;
+        background: #3a3a38;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .popup-ach-fill {
+        height: 100%;
+        background: #eab308;
+        border-radius: 3px;
+        transition: width 0.4s ease;
+    }
+
+    .popup-ach-count {
+        font-size: 0.75rem;
+        color: #aaa;
+    }
+}
+
+.popup-body {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb { background: #3a3a38; border-radius: 3px; }
+}
+
+.popup-loading {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.popup-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 50px 0;
+    color: #555;
+    font-size: 0.9rem;
+
+    svg { width: 32px; height: 32px; opacity: 0.4; }
+}
+
+.popup-ach-list {
+    padding: 8px 0;
+}
+
+.ach-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    transition: background 0.12s;
+    opacity: 0.45;
+
+    &.unlocked { opacity: 1; }
+    &:hover { background: rgba(255,255,255,0.04); }
+
+    .ach-icon-wrap {
+        position: relative;
+        flex-shrink: 0;
+        width: 44px;
+        height: 44px;
+    }
+
+    .ach-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 6px;
+        object-fit: cover;
+    }
+
+    .ach-icon-placeholder {
+        width: 44px;
+        height: 44px;
+        border-radius: 6px;
+        background: #3a3a38;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+    }
+
+    .ach-lock-overlay {
+        position: absolute;
+        inset: 0;
+        border-radius: 6px;
+        background: rgba(0,0,0,0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        svg { width: 16px; height: 16px; }
+    }
+
+    .ach-info {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .ach-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #f0f0ee;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .ach-desc {
+        font-size: 0.75rem;
+        color: #888;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .ach-date {
+        font-size: 0.7rem;
+        color: #eab308;
+        margin-top: 2px;
+    }
+
+    .ach-check {
+        color: #22c55e;
+        flex-shrink: 0;
+        svg { width: 18px; height: 18px; }
+    }
+}
+
+.popup-footer {
+    padding: 14px 20px;
+    border-top: 1px solid #3a3a38;
+    display: flex;
+    justify-content: flex-end;
+    flex-shrink: 0;
+
+    .popup-detail-btn {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        background: #3b82f6;
+        border: none;
+        border-radius: 6px;
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 8px 16px;
+        cursor: pointer;
+        transition: background 0.15s;
+
+        svg { width: 14px; height: 14px; }
+
+        &:hover { background: #2563eb; }
+    }
+}

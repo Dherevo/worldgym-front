@@ -1,0 +1,20 @@
+.infinite-scroll {
+    overflow-y: hidden;
+    overflow-y: auto;
+    height: 100%;
+
+    .empty-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 0;
+        font-size: 15px;
+    }
+
+    .loader-container {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

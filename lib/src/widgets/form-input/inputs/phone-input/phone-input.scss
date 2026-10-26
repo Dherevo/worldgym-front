@@ -1,0 +1,33 @@
+.form-input.type-phone {
+
+    .iti {
+        width: 100%;
+    }
+
+    input.phone-input {
+        width: 100%;
+        font-size: 1rem;
+        padding: 0.5rem;
+        padding-left: 50px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        outline-color: transparent;
+    }
+
+    .phone-input-container {
+        &.readonly {
+            pointer-events: none;
+            user-select: text;
+
+            .iti__arrow {
+                display: none;
+            }
+
+            input.phone-input {
+                border: none;
+                background-color: transparent;
+                padding-left: 40px;
+            }
+        }
+    }
+}

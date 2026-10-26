@@ -1,0 +1,48 @@
+.form-input.type-select {
+
+    .p-select {
+        width: 100%;
+
+        .p-select-label {
+            min-height: 30px;
+        }  
+    }
+
+    .p-dropdown {
+        display: flex;
+        min-height: 30px;
+    }
+
+    .p-dropdown-label {
+        padding: 0px 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    label {
+        font-size: .9rem;
+    }
+
+    .p-autocomplete-dd {
+        > input {
+            padding: 0.5rem 0.75rem;
+        }
+        > button {
+            width: max-content;
+            padding: 0.5rem;
+
+            svg {
+                width: 0.6rem;
+                height: 0.6rem;
+            }
+        }
+    }
+
+    .p-multiselect-label {
+        padding: .35rem .75rem;
+        font-size: .9rem;
+        display: flex;
+        gap: 5px;
+        min-height: 30px;
+    }
+}

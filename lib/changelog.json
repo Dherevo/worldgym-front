@@ -1,0 +1,268 @@
+{
+    "2.4.5": {
+        "published": "2025-09-03",
+        "changes": [
+            "Cambiada la fuente por defecto del proyecto base de Inter a Raleway",
+            "Base component, nueva función param(name) para obtener un parámetro de la URL actual.",
+            "Todos los v-html del proyecto cambiados por v-safe-html",
+            "App.alert() ahora devuelve una promesa que se resuelve cuando se cierra el modal.",
+            "App.alert() ahora puede recibir opcionalmente un segundo parámetro array de IButton para mostrar botones.",
+            "Agregadas traducciones por defecto en Alemán y Italiano.",
+            "Btn: parámetro target para cuando es un link poder abrir en nueva pestaña.",
+            "FormInput type phone: v-model:prefix y v-model:country.",
+            "FormInput text autocomplete off."
+        ],
+        "migration": [
+            "Si quieres la fuente Raleway, cámbiala en el archivo index.html"
+        ]
+    },
+    "2.4.4": {
+        "published": "2025-07-29",
+        "changes": [
+            "Creada carpeta .context que sirve para trabajar con modelos de IA.",
+            "Model.isEqualTo(other) ahora puede llevar un segundo parámetro 'true' para pintar en la consola mensajes de debug.",
+            "Store.getSync(key, defaultValue) ahora puede recibir un segundo parámetro para indicar el valor por defecto.",
+            "Utils: nueva función getImageSize(src) que dado un src te devuelve el ancho y alto de la imagen.",
+            "Utils: nueva función capImageSize(file, maxWidth, maxHeight) que te permite reescalar una imagen limitando su tamaño.",
+            "Validator: nueva función onValidated() que permite agregar callbacks al validar un valor.",
+            "FormInput nuevo type radio",
+            "Agregada la directiva v-safe-html que nos protoge contra ataques XSS."
+        ],
+        "migration": [
+            "Si quieres trabajar con una IA como Cursor, copiate la carpeta .context."
+        ]
+    },
+    "2.4.3": {
+        "published": "2025-07-05",
+        "changes": [
+            "Eliminado el componente DotLottieVue, ya que no se usaba.",
+            "Config, nueva propiedad disableSvgIconsCache para desactivar el cache de los iconos SVG para cuando agregas iconos nuevos.",
+            "Utils: nueva función onStop() que puede usarse con cualquier input para ejecutar algo cuando se deja de escribir.",
+            "Utils: la función queryParams() ahora puede recibir un false para indicar que no queremos los parámetros vacíos de la URL.",
+            "Loader: nueva propiedad 'label' para mostrar un texto junto al loader.",
+            "Popup: nueva propiedad 'dropdownStyle' para que el dropdown se abra como un select/dropdown.",
+            "Popup: nueva propiedad 'startOpen' para que salga abierto de primeras.",
+            "Popup: nueva propiedad 'automatic' para que se cierre automáticamente.",
+            "HTTP: nueva método sobre la llamada .setTokenOverride() para usar un token diferente solo para esta llamada.",
+            "HTTP: se ha deprecado el registrar endpoints por nombre.",
+            "HTTP: se ha cambiado la forma de usar Fake API. Ahora sobre la llamada se usa .useFake(callback) y se devuelve ahí mismo la llamada.",
+            "Ahora el FormInput de tipo Dropdown puede llevar un prop 'footer', contenido que aparecerá debajo del dropdown.",
+            "AppTable: se ha hecho que si las filas son clicables, automáticamente se añaden estilos en hover para resaltar la fila.",
+            "Traducciones: se ha cambiado el formato .json por .ts para poder usar código en las traducciones.",
+            "Validator: mejorado para que pueda tener sub-validadores",
+            "FormInput: ahora puede usarse con Validator para automatizar la validación y mostrar mensajes de error.",
+            "Nuevo componente Tooltip",
+            "Se ha eliminado el componente AppForm, ya que muchas de sus funcionalidades ya están el propio FormInput."
+        ],
+        "migration": [
+            "Librería renombrada a lib. Todas las referencias a lib/vue se deben cambiar a lib.",
+            "HTTP: donde antes se usaba directamente http.getToken() ahora se usa http.token.get(). También en httpConfig el refresh token se tiene que cambiar.",
+            "Si tienes formularios con AppForm, tienes que maquetarlos directamente en la vista."
+        ]
+    },
+    "2.4.2": {
+        "published": "2025-03-17",
+        "changes": [
+            "Implementado ESLint en el proyecto.",
+            "Utils, nueva función onStop() para ejecutar algo cuando paras de escribir en un input."
+        ],
+        "migration": [
+            "Nada, no se recomienda poner eslint en un proyecto ya existente."
+        ]
+    },
+    "2.4.1": {
+        "published": "2025-01-05",
+        "changes": [
+            "Solo fixes de errores de la versión anterior."
+        ],
+        "migration": []
+    },
+    "2.4.0": {
+        "published": "2025-01-03",
+        "changes": [
+            "El componente loader ahora puede tener un label de texto.",
+            "Nuevo componente mirror scroll",
+            "Componente popup, nuevas props como dropdownStyle, automatic, startOpen.",
+            "SvgIcon por defecto ya tendrá un tamaño de 20px.",
+            "Variables css, agregada --primary-dark-color.",
+            "Componente Btn, ahora puede llevar un link.",
+            "Ahora en el modal de confirm se pueden personalizar mejor los botones.",
+            "Ahora en las llamadas http el segundo parámetro es la data, y no los parámetros de la URL.",
+            "Clase Time, ahora puedes hacer una copia con .makeCopy().",
+            "Utils, nueva functión getTypeFromMIME() para obtener el tipo de un archivo a partir de su MIME.",
+            "Ahora los FormInput tienen modo readonly, que podemos activar pasando el parámetro readonly.",
+            "El AppForm también puede ponerse en modo readonly con la propiedad readonly a true."
+        ],
+        "migration": [
+            "Copiar el package.json del repositorio principal, ya que se han actualizado librerías.",
+            "En el archivo tsconfig, poner importHelpers a false.",
+            "En todas las llamadas http donde usabas el segundo parámetro para especificar los parámetros en la URL, ahora hay que cambiarlo y usar .setURLParams()"
+        ]
+    },
+    "2.2.0": {
+        "published": "2024-10-21",
+        "changes": [
+            "Ahora se incluye el número de versión de la web en el login y en el menú del backoffice.",
+            "Ahora al compilar tanto con build:dev como con build:prod, se incrementa la versión automáticamente.",
+            "El BaseComponent incluye una función appVersion() para obtener la versión de la web.",
+            "Se fuerza que la web use Light mode para no provocar problemas con el dark mode.",
+            "Model: nueva función isEqualTo() para comparar dos modelos y ver si son iguales.",
+            "Agregada la variable placeholder-color en variables.scss."
+        ],
+        "migration": [
+            "Modifica los scripts build:dev y build:prod en el archivo package.json conforme a la última versión del proyecto base.",
+            "Agrega la variable --placeholder-color en variables.scss."
+        ]
+    },
+    "2.1.0": {
+        "published": "2024-08-22",
+        "changes": [
+            "Actualizadas todas las dependencias a la última versión",
+            "Instalado Quill (el editor) en el proyecto base para usarlo con el FormInput.",
+            "AppNotifications: ahora puede llevar un botón, con notification.setButtons(...)",
+            "AppNotifications: ahora puedes esperar a que la notificación se cierre con notification.onComplete(listener)",
+            "AppNotifications: ahora, guardándote el objeto de la notificación, puedes cerrarla con notification.close()",
+            "Traducciones de Prime incluidas",
+            "HTTP: ahora en el body de las llamadas se borra automáticamente cualquier undefined",
+            "Time: nueva función .getWeekday(dayOfWeek) para obtener el día de la semana de una fecha",
+            "Time: ahora se puede usar la clase TimeInterval",
+            "TimeInterval: ahora se puede usar la función .fromSeconds(seconds) para crear un intervalo de tiempo a partir de segundos.",
+            "Utils: la función stripTags se ha renombrado a html2Text(html)",
+            "Utils: nueva función readFileContents(file) para leer el contenido de un archivo local.",
+            "Utils: nueva función removeUndefined(obj) para eliminar los valores undefined de un objeto.",
+            "FormInput: agregado eventos blur y focus a varios tipos de input que les faltaba."
+        ],
+        "migration": [
+            "Ahora la inicialización de las traducciones se hace internamente en el método App.init(), así que hay que quitar translate.initialize() y pasarle locales a App.init()",
+            "Utils.stripTags() se ha renombrado a html2Text()",
+            "Haz npm install ./lib para actualizar las dependencias."
+        ]
+    },
+    "2.0.0": {
+        "published": "2024-08-01",
+        "changes": [
+            "PrimeVue actualizado a 4.0.0",
+            "Se ha cambiado la fuente por defecto del proyecto de Nunito a Inter",
+            "Actualizadas todas las dependencias a la última versión (de ese momento)",
+            "Nueva pantalla de login",
+            "Se ha hecho un diseño responsive de la web",
+            "El layout de backoffice se ha movido en gran parte a dentro de /lib para simplificar el código en /src",
+            "Ahora los items del menú principal permiten abrir en una nueva pestaña.",
+            "Nuevo componente Avatar, que permite mostrar foto de usuario en círculo, pero si no hay imagen usa la letra inicial del usuario.",
+            "Nuevo componente Link para crear enlaces a páginas internas con el Router de Vue, pero que también se pueden abrir en una nueva pestaña.",
+            "Nuevo componente AnimatedNumber, que anima un texto de un número incrementándose desde 0 hasta el valor.",
+            "El comando 'npm run make:page' ahora puede llevar parámetro @template=table para crear una página ya con una tabla.",
+            "Nueva clase CSS 'whitebox' para crear una caja blanca con bordes redondeados.",
+            "HTTP, la FakeApi ya no se define en cada llamada, se define en el archivo de configuración de http.",
+            "HTTP, ahora el método DELETE puede llevar Body como los POST y PUT.",
+            "HTTP, ahora puedes pasar un string plano como data",
+            "Model, se ha eliminado todo el tema del CRUD, no era intuitivo para el desarrollador.",
+            "Translations, ahora puedes agregar traducciones en tiempo de ejecución con el método merge(translations).",
+            "Utils: nuevo método 'normalize' para normalizar un texto (eliminar carácteres especiales y espacios).",
+            "Utils: nuevo método 'loadFromQuery' para cargar valores de la query ?a=x de la URL actual.",
+            "Utils: nuevo método 'consecutivePromise' para ejecutar una serie de promesas consecutivas.",
+            "Actualizadas traducciones que faltaban.",
+            "AppTable: ahora incluye dentro del componente la cabecera con el título (.setTitle) y el número de resultados encontrados.",
+            "AppTable: ahora muestra un paginador tanto en la parte superior a la derecha del título, como debajo de la tabla.",
+            "AppTable: ahora debajo del nombre de la columna se puede poner un filtro (input, select, etc).",
+            "AppTable: ahora se pueden asignar bulkActions para las filas seleccionadas (.setBulkActions) y aparecen encima de la tabla como botones.",
+            "AppTable: ahora se puede decidir si los itemActions salen como botones, iconos o icono de tres puntos con popup.",
+            "AppTable: ahora se puede hacer un campo editable inline, es decir, que pulsas en la celda y pasa a modo edición.",
+            "AppTable: ahora la tabla automáticamente modifica los query params de la URL cuando paginas o aplicas filtros.",
+            "Eliminado el componente code-block del proyecto, ya que ocupaba espacio y casi nunca lo usábamos. Si lo necesitamos está de referencia en el proyecto de la documentación.",
+            "FormInput: el prop 'suggestions' ya no es una lista sino una función que devuelve una lista.",
+            "FormInput: eliminado el tipo 'tags' porque PrimeVue ha eliminado el componente Chip.",
+            "FormInput: arreglados varios bugs que habían con algunos tipos que usamos menos.",
+            "Agregadas algunas variables CSS al archivo variables.scss",
+            "Ahora se pueden agregar también traducciones de Prime en /src/assets/translations/locales.ts",
+            "Los items del menú (en menuItems.ts) ahora pueden llevar 'to' o 'onClick', en lugar de 'command'."
+        ],
+        "migration": [
+            "Vuelve a ejecutar npm install ./lib para actualizar versiones de dependencias.",
+            "Hay varios cambios en la estructura del proyecto. Recomandable descargar otra vez el repositorio y mover el código a la nueva ubicación."
+        ]
+    },
+    "1.0.6": {
+        "published": "2024-06-27",
+        "changes": [
+            "Actualizada versión de PrimeVue de 3.31 a 3.52",
+            "Sobre una petición http, nuevo método .transform(converter) que sirve para transformar la respuesta de la API en otra cosa (ej. .map(...))",
+            "Sobre una petición http, nuevo método .run() que lo ejecuta directamente. (Hace lo mismo que .promise())",
+            "FormInput tipo image, nuevo evento @remove cuando el usuario pulsa en la X para eliminar el archivo seleccionado.",
+            "Eliminadas varias variables del archivo variables.scss para simplificar el código."
+        ],
+        "migration": [
+            "Vuelve a ejecutar npm install ./lib para actualizar versiones de dependencias."
+        ]
+    },
+    "1.0.5": {
+        "published": "2024-05-08",
+        "changes": [
+            "Agregadas las traducciones de moment js a varios idiomas para poder usarlos.",
+            "FormInput agregado evento @tabPressed para detectar que pulsamos tabulación estando en un input.",
+            "Burger, agregado v-model para que pueda funcionar con un booleano externo.",
+            "Ahora el comando 'npm run build' es 'npm run build:prod' para evitar sin querer compilar apuntando a producción."
+        ],
+        "migration": [
+            "Vuelve a ejecutar npm install ./lib para actualizar versiones de dependencias."
+        ]
+    },
+    "1.0.4": {
+        "published": "2024-04-22",
+        "changes": [
+            "Ahora al cerrar el drawer con .close(param) puedes pasar un parámetro.",
+            "Ahora puedes agregar valores de configuración en runtime con Config.merge(data)",
+            "Ahora a una request http le puedes agregar parámetros de url posteriormente con req.setUrlParams()",
+            "Model, renombrado el método API a import",
+            "Model, import, export y makeCopy ya no necesitan pasar this como parámetro",
+            "Model CRUD",
+            "Utils fileExists, funcion para comprobar si un archivo en una determinada URL existe o no.",
+            "baseComponent agregado a /src para que podamos personalizar todos los componentes a la vez.",
+            "Interface Paginated ahora puede recibir <T> el tipo."
+        ],
+        "migration": [
+            "Vuelve a ejecutar npm install ./lib para actualizar versiones de dependencias."
+        ]
+    },
+    "1.0.3": {
+        "published": "2024-02-12",
+        "changes": [
+            "Nuevo componente Popup",
+            "Nueva clase css row-stretch para que los elementos de una fila ocupen el mismo alto.",
+            "Store nuevo método .has(key) para comprobar si existe un valor en el store.",
+            "Translate.currentLanguage te da el idioma actual.",
+            "Utils.base64ToBlob()",
+            "Utils.replaceVariables()",
+            "Traduccions al català de la llibreria.",
+            "AppForm, field condition",
+            "FormInput tipo phone"
+        ],
+        "migration": []
+    },
+    "1.0.2": {
+        "published": "2023-10-19",
+        "changes": [
+            "Ahora en los AppTable podemos usar .onRowClick() para detectar el click en una fila.",
+            "Ahora en http, en una llamada POST o PUT podemos poner query params con .setQueryParams()",
+            "Nueva utility: utils.isFunction() para detectar si una variable es una función.",
+            "AppTable -> PaginatorStructure, nuevo método .has(x) para comprobar si ya tiene un determinado módulo.",
+            "Ahora en App.modal, App.notification y App.drawer se puede pasar props como una función o como un objeto, función es más reactivo."
+        ],
+        "migration": []
+    },
+    "1.0.1": {
+        "published": "2023-10-11",
+        "changes": [
+            "Agregada página 404 Not Found, y agregada en el routes cuando accedemos a una ruta no definida.",
+            "Algunos fixes"
+        ],
+        "migration": [
+            "Copiate la carpeta /src/pages/404, y luego en el src/config/routes.ts, agrega el bloque de abajo del 404."
+        ]
+    },
+    "1.0.0": {
+        "published": "2023-09-20",
+        "changes": [],
+        "migration": []
+    }
+}

@@ -1,0 +1,131 @@
+.form-input.type-file,
+.form-input.type-media,
+.form-input.type-image,
+.form-input.type-video {
+    .file-picker-box {
+        width: 100%;
+        .file-picker.dropzone {
+            border: dashed 1px var(--primary-color);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            > div {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                * {
+                    text-align: center;
+                }
+                img {
+                    height: 40px;
+                    width: auto;
+                    margin: 0 auto;
+                    display: block;
+                    margin-bottom: 10px;
+                }
+                .separator {
+                    margin: 10px 0;
+                    > div {
+                        margin: 0 10px;
+                    }
+                    hr {
+                        margin: 0;
+                        height: 1px;
+                        flex: 1;
+                        border: none;
+                        background-color: rgb(232, 232, 232);
+                    }
+                }
+                .select-btn {
+                    padding: 5px 20px;
+                    border-radius: 5px;
+                    border: solid 1px var(--primary-color);
+                    color: var(--primary-color);
+                }
+            }
+        }
+        .accepted-formats {
+            color: gray;
+            font-size: .9rem;
+            margin-top: 10px;
+        }
+        .selected-files {
+            .selected-file {
+                border: solid 1px var(--primary-color);
+                border-radius: 5px;
+                padding: 5px 10px;
+                margin-top: 5px;
+                .p-image {
+                    border-radius: 3px;
+                    overflow: hidden;
+                    
+                    img {
+                        width: 40px;
+                        height: auto;
+                    }
+                }
+                svg {
+                    width: 12px;
+                    height: 12px;
+                }
+            }
+        }
+    }
+
+    .file-picker {
+
+        .image-box-picker {
+            height: 150px;
+            width: 100%;
+            border-radius: 5px;
+            border: dashed 1px gray;
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &.filled {
+                border: none;
+            }
+
+            &-label {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                svg {
+                    width: 40px;
+                    height: 40px;
+                }
+            }
+
+            .video-player {
+                width: 100%;
+                height: 100%;
+            }
+
+            .delete-btn {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background-color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 25px;
+                height: 25px;
+                cursor: pointer;
+
+                svg {
+                    color: red;
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+        }
+
+    }
+}

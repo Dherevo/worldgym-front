@@ -1,0 +1,452 @@
+.app-table {
+
+    .scroll-mirror {
+        overflow: auto;
+
+        .scroll-mirror-inner {
+            height: 15px;
+        }
+    }
+
+    .app-table-header {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        margin-bottom: 15px;
+
+        h1 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 2rem;
+            line-height: normal;
+        }
+
+        .p-paginator {
+            transform: translateY(5px);
+        }
+    }
+
+    .bulk-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+
+        .count {
+            font-size: .9rem;
+        }
+
+        .btn {
+            color: var(--text-color);
+            font-weight: normal;
+
+            .btn-content {
+                gap: 5px;
+                color: white;
+                
+                svg {
+                    color: white;
+                }
+            }
+        }
+    }
+
+    .p-checkbox, .p-radiobutton {
+        transform: scale(.9);
+    }
+
+    .p-datatable {
+        border-radius: 10px;
+
+        &:not(.loading) {
+            .p-datatable-mask {
+                display: none;
+            }
+        }
+
+        .p-datatable-wrapper {
+            height: 100%;
+            min-width: fit-content;
+
+            > table {
+                height: 100%;
+            }
+        }
+
+        .form-input.type-search {
+            width: 140px;
+            max-width: 140px;
+            margin-top: 3px;
+
+            input {
+                padding: 5px;
+                padding-right: calc(0.75rem + 20px);
+            }
+
+            svg {
+                width: 15px;
+                height: 15px;
+                margin-right: 5px;
+            }
+        }
+
+        table.p-datatable-table thead.p-datatable-thead {
+
+            > tr > th {
+                overflow: visible;
+
+                .p-datatable-column-header-content {
+                    align-items: flex-start;
+                    text-transform: none;
+
+                    .visibility-button {
+
+                        .popup-trigger {
+                            display: block;
+                            margin-left: auto;
+                            transition: all .2s;
+    
+                            svg {
+                                width: 30px !important;
+                                height: 30px !important;
+                            }
+    
+                            &:hover {
+                                background-color: rgba(0,0,0,.1);
+                                border-radius: 3px;
+                            }
+                        }
+    
+                        .popup-content {
+                            padding: 15px;
+                            min-width: 200px;
+                            max-height: 300px;
+                            overflow: auto;
+    
+                            .visibility-popup {
+    
+                                .form-input {
+                                    margin-bottom: 10px;
+                                    width: 100%;
+                                    max-width: 100%;
+        
+                                    label {
+                                        font-weight: lighter;
+                                    }
+        
+                                    .checkbox {
+                                        border-radius: 4px;
+                                        width: 16px;
+                                        height: 16px;
+                                        min-width: 16px;
+    
+                                        svg {
+                                            color: white;
+                                        }
+                                    }
+    
+                                    &.type-search {
+                                        margin-bottom: 15px;
+                                        
+                                        input {
+                                            font-size: .8rem;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .p-datatable-tbody>tr {
+
+            &.p-datatable-empty-message>td {
+                text-align: center;
+                padding: 50px 0;
+            }
+
+            > td {
+                overflow: visible;
+
+                &.dragIconColumn {
+                    width: 35px;
+                    padding: 0;
+
+                    > svg {
+                        display: block;
+                        margin: 0 auto;
+                    }
+            
+                    .p-datatable-reorderablerow-handle {
+                        padding: 1rem;
+                        box-sizing: content-box;
+                    }
+                }
+        
+                &.text-ellipsis {
+                    > div {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                }
+        
+            }
+
+            & {
+                position: relative;
+
+                &:after {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: transparent;
+                    pointer-events: none;
+                }
+            }
+
+            &[draggable="true"] {
+
+                &:after {
+                    transition: background .1s ease-in .3s;
+                    background: gray;
+                    pointer-events: all;
+                }
+            }
+
+        }
+
+        .p-datatable-loading-overlay {
+            background: transparent;
+        }
+        
+        .p-menuitem-content {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .table-inline-edit {
+            
+            input:not([type=checkbox]):not([type=radio]), textarea, select {
+                border: solid 1px lightgray;
+                border-radius: 3px;
+                padding: 5px;
+            }
+
+            svg {
+                width: 25px;
+                height: 25px;
+            }
+
+            &.no-editable {
+                cursor: pointer;
+
+                svg.edit-icon {
+                    opacity: 0;
+                    width: 12px;
+                    height: 12px;
+                }
+
+                &:hover {
+                    svg {
+                        opacity: 1;
+                    }
+                }
+            }
+        }
+
+        .header-search {
+
+            input:not([type=checkbox]):not([type=radio]), textarea, select {
+                border: solid 1px lightgray;
+                border-radius: 3px;
+                padding: 5px;
+                margin-top: 5px;
+                font-size: .9rem;
+            }
+
+            .searchbar {
+                margin-top: 5px;
+
+                input:not([type=checkbox]):not([type=radio]) {
+                    margin-top: 0;
+                    border: none;
+                }
+            }
+
+            .header-search-placeholder {
+                height: 35px;
+            }
+        }
+
+        .p-datatable-itemoptions-popup {
+
+            .popup-content {
+                padding: 0;
+            }
+
+            .p-datatable-itemoptions-menu {
+                background: white;
+                border: none;
+                padding: 0;
+                margin: 0;
+                min-width: 150px;
+
+                .p-datatable-itemoptions-menu-item {
+                    cursor: pointer;
+                    transition: background-color .2s;
+                    width: 100%;
+
+                    > * {
+                        padding: 10px;
+                    }
+
+                    .react-link {
+                        text-decoration: none;
+                        color: inherit;
+                        width: 100%;
+                    }
+
+                    svg {
+                        width: 15px;
+                        height: 15px;
+                        color: gray;
+                        margin-right: 5px;
+                    }
+
+                    &:hover {
+                        background-color: rgba(0, 0, 0, .05);
+                    }
+                }
+
+            }
+
+        }
+
+        .p-datatable-itemoptions-buttons {
+
+            button.btn {
+                background-color: white;
+                color: var(--text-color);
+                border: solid 1px lightgray;
+                font-weight: normal;
+
+                svg {
+                    margin-right: 5px;
+                }
+            }
+
+        }
+
+        .p-datatable-itemoptions-icons {
+            svg {
+                width: 18px;
+                height: 18px;
+                color: var(--text-color);
+            }
+        }
+
+    }
+
+    .p-paginator {
+        background-color: transparent;
+
+        .p-dropdown {
+            height: 2.4rem;
+
+            .p-dropdown-label {
+                padding: 6px 0 6px 8px;
+            }
+        }
+
+        .p-paginator-current {
+            flex: 1;
+            justify-content: flex-start;
+            cursor: default;
+            user-select: text;
+        }
+
+    }
+
+    .export-popup {
+
+        .popup-content {
+            right: 0 !important;
+            width: 100%;
+            transform-origin: center bottom !important;
+        }
+
+        .export-btn {
+            background-color: transparent;
+            border: solid 1px gray;
+            border-radius: 5px;
+            color: gray;
+            padding: 0px 10px;
+            padding-right: 3px;
+    
+            .flex-row {
+                gap: 0;
+            }
+    
+            &:hover {
+                background-color: whitesmoke;
+                outline: none;
+                border-color: gray;
+            }
+        }
+
+        .export-options {
+            
+            ul {
+                padding: 5px 0;
+                margin: 0;
+                list-style: none;
+
+                li {
+                    padding: 8px 15px;
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: whitesmoke;
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    &.clickable {
+        table {
+            tbody {
+                tr:hover {
+                    background-color: var(--highlight);
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+
+}
+
+@media screen and (max-width: 768px) {
+
+    .app-table {
+
+        .app-table-header {
+            flex-wrap: wrap;
+            
+            nav {
+                flex: 0 0 100%;
+            }
+
+        }
+    }
+
+}

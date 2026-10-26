@@ -1,0 +1,50 @@
+#app .p-progress-spinner-circle {
+    stroke: var(--primary-color);
+}
+#app .p-checkbox .p-checkbox-box.p-highlight {
+    border-color: var(--primary-color);
+    background: var(--primary-color);
+}
+#app .p-colorpicker-panel {
+    z-index: 100 !important;
+}
+#app .p-dialog-header {
+    width: 100%;
+}
+#app .p-dialog.p-component {
+    box-shadow: none;
+}
+#app .p-tag {
+    padding: 5px 12px;
+    border-radius: 3px;
+    font-weight: normal;
+    min-width: 100px;
+    text-align: center;
+}
+#app .p-tag.fill {
+    width: 100%;
+}
+#app .p-select {
+    min-height: 30px;
+    min-width: 80px;
+}
+
+#app .p-speeddial {
+    position: relative;
+}
+#app .p-speeddial .p-speeddial-list {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    padding-top: 5px;
+}
+#app .p-speeddial .p-speeddial-list > li {
+    background-color: white;
+    width: 100%;
+}
+input::placeholder, textarea::placeholder, select::placeholder {
+    color: var(--placeholder-color) !important;
+}
+.p-dialog-header-actions {
+    margin-left: auto;
+}

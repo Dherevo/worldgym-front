@@ -1,0 +1,71 @@
+import { IRoutes } from 'lib';
+
+import NotFoundPage from '../pages/404/404.vue';
+import HomePage from '../pages/home/home.vue';
+import DefaultLayout from '../layouts/default/default.vue';
+import LoginPage from '../pages/login/login.vue';
+import BackofficeLayout from '../layouts/backoffice/backoffice.vue';
+import ExercisesPage from '../pages/exercises/exercises.vue';
+import RoutinesPage from '../pages/routines/routines.vue';
+import RoutineDetailPage from '../pages/routine-detail/routine-detail.vue';
+import WorkoutsPage from '../pages/workouts/workouts.vue';
+import WorkoutDetailPage from '../pages/workout-detail/workout-detail.vue';
+import WorkoutPage from '../pages/workout/workout.vue';
+import StatsPage from '../pages/stats/stats.vue';
+
+const routes : IRoutes = {
+    layouts: {
+        default: DefaultLayout,
+        backoffice: BackofficeLayout
+    },
+
+    routes: [
+        {
+            path: '/',
+            component: HomePage
+        },
+        {
+            path: '/login',
+            component: LoginPage
+        },
+        {
+            path: '/exercises',
+            component: ExercisesPage
+        },
+        {
+            path: '/routines',
+            component: RoutinesPage
+        },
+        {
+            path: '/routines/:id',
+            component: RoutineDetailPage
+        },
+        {
+            path: '/workouts',
+            component: WorkoutsPage
+        },
+        {
+            path: '/workouts/:id',
+            component: WorkoutDetailPage
+        },
+        {
+            path: '/workout/:id',
+            component: WorkoutPage
+        },
+        {
+            path: '/stats',
+            component: StatsPage
+        },
+
+        // Leave always 404 Page always at the end
+        {
+            path: '/404',
+            component: NotFoundPage
+        },
+        {
+            path: "/:catchAll(.*)",
+            redirect: '/404',
+        },
+    ]
+}
+export default routes;

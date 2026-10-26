@@ -1,0 +1,31 @@
+.burger {
+    cursor: pointer;
+
+    > div {
+        width: 23px;
+        height: 2px;
+        border-radius: 3px;
+        transition: all .2s;
+
+        &:not(:last-child) {
+            margin-bottom: 5px;
+        }
+    }
+
+    &.open {
+
+        .burger2 {
+            opacity: 0;
+        }
+
+        .burger1 {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .burger3 {
+            transform: translateY(-6px) rotate(-45deg);
+        }
+
+    }
+
+}

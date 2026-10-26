@@ -1,0 +1,112 @@
+.event-calendar {
+
+    .header {
+        background-color: white;
+        padding: 15px;
+        padding-top: 5px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+
+        .controls {
+            button.btn {
+                padding: 5px;
+                svg {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+        }
+    }
+
+    .cell {
+        background-color: white;
+        border: solid 1px rgb(242, 241, 241);
+        padding: 8px 10px;
+        min-width: 60px;
+
+        &:not(.col-auto):not(.month-day) {
+            flex: 1;
+        }
+
+        &.today {
+            background-color: rgb(254, 246, 235);
+
+            &.month-day {
+                border: solid 3px rgb(200, 171, 133);
+            }
+        }
+
+        .day-name {
+            font-size: 12px;
+        }
+
+        .day-number {
+            font-size: 20px;
+        }
+
+        &.hour-cell {
+            min-height: 100px;
+            padding: 0;
+
+            > span {
+                font-size: 13px;
+                display: block;
+                transform: translate(5px, -10px);
+            }
+        }
+    }
+
+    &.mode-day {
+
+        .cell {
+            border-left: none;
+            border-right: none;
+        }
+    }
+
+    &.mode-month {
+
+        .cell {
+            min-height: 100px;
+
+            &.outer {
+                opacity: .3;
+            }
+
+            &.day-name {
+                height: auto;
+                min-height: 0;
+                border: none;
+                text-align: center;
+                position: relative;
+                padding-bottom: 8px !important;
+                font-size: 13px;
+            }
+
+            &.month-day {
+                padding: 0;
+
+                &.day-name {
+                    padding: 5px 0 5px 0 !important;
+                    background-color: #F9FAFB;
+                    border-top: solid 1px #E5E7EB;
+                    border-bottom: solid 1px #E5E7EB;
+                }
+            }
+
+            .day-tag {
+                position: absolute;
+                top: 0;
+                right: 0;
+                background-color: white;
+                padding: 3px 5px;
+                border-bottom-left-radius: 5px;
+                font-size: 12px;
+            }
+        }
+
+    }
+
+}

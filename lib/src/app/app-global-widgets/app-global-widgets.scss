@@ -1,0 +1,24 @@
+.confirm-modal {
+    min-width: 400px;
+    max-width: 80vw;
+
+    button.cancel-btn, 
+    button.confirm-btn {
+        min-width: 120px;
+        padding: 0.6rem 16px;
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
+    button.cancel-btn {
+        background-color: transparent;
+        border: solid 1px var(--primary-color);
+        color: var(--primary-color);
+    }
+    button.confirm-btn {
+        &.delete-btn {
+            background-color: var(--error-color);
+        }
+    }
+}

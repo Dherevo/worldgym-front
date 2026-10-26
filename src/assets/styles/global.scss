@@ -1,0 +1,14 @@
+
+#app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-color);
+
+    main {
+        flex: 1;
+    }
+}
+p, h1, h2, h3, h4, h5, h6, b, strong, i, em, span, ul, li, ol, label, input, textarea, select, option, text {
+    color: var(--text-color);
+}

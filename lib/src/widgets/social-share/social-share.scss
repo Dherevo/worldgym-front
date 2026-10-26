@@ -1,0 +1,33 @@
+.social-share {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    > a {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all .2s;
+        gap: 5px;
+
+        &:hover {
+            filter: opacity(.8)
+        }
+
+        .icon {
+            width: 25px;
+            height: 25px;
+
+            &.social-box {
+                border-radius: 5px;
+                padding: 3px;
+            }
+            
+            svg {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+    }
+}

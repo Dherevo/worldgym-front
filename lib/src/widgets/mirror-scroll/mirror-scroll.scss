@@ -1,0 +1,8 @@
+.mirror-scroll {
+    height: 15px;
+    overflow: auto;
+
+    > * {
+        height: 1px;
+    }
+}

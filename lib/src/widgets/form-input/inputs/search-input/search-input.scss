@@ -1,0 +1,41 @@
+.form-input.type-search {
+    .searchbar {
+        display: flex;
+        align-items: center;
+        background: white;
+        border: solid 1px lightgray;
+        border-radius: 5px;
+        position: relative;
+        width: 100%;
+    
+        svg.search-icon {
+            color: var(--gray);
+            width: 20px;
+            height: 20px;
+            flex: 0 0 20px;
+            margin-right: 10px;
+            cursor: pointer;
+            margin-left: -30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .p-autocomplete {
+            border: none;
+            flex: none;
+            width: 100%;
+            max-width: 100%;
+
+            input {
+                border: none;
+                padding-right: calc(.75rem + 30px);
+            }
+
+            .p-autocomplete-loader {
+                right: 40px;
+                display: none;
+            }
+        }
+    
+    }
+}

@@ -1,0 +1,28 @@
+#cookie-consent-dialog {
+
+    h2 {
+        margin: 0;
+    }
+
+    .cookie-type {
+        display: flex;
+        align-items: center;
+        flex: 10px;
+        margin-bottom: 15px;
+    }
+
+    .buttons {
+        margin-top: 30px;
+
+        .btn {
+            margin-left: 15px;
+            background-color: transparent;
+            padding: 0;
+            color: var(--primary-color);
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}

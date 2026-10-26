@@ -1,0 +1,40 @@
+{
+    "compilerOptions": {
+      "experimentalDecorators": true,
+      "target": "ES2018",
+      "module": "ESNext",
+      "moduleResolution": "Node",
+      "lib": [
+        "ESNext",
+        "ESNext.AsyncIterable",
+        "DOM"
+      ],
+      "esModuleInterop": true,
+      "allowJs": true,
+      "sourceMap": true,
+      "strict": true,
+      "noEmit": true,
+      "baseUrl": "src",
+      "paths": {
+        "~/*": [
+          "./*"
+        ],
+        "@/*": [
+          "./*"
+        ]
+      },
+      "types": [
+        "@types/node",
+        "vite/client"
+      ],
+      "typeRoots": [
+        "./types"
+      ]
+    },
+    "include": [
+      "./types.d.ts"
+    ],
+    "exclude": [
+      "node_modules"
+    ]
+}

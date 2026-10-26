@@ -1,0 +1,103 @@
+.event-calendar {
+
+    .cell {
+
+        &.event-cell {
+            padding: 0;
+            display: flex;
+            position: relative;
+
+            .day-number {
+                background-color: white;
+                padding: 2px 5px;
+                border-bottom-left-radius: 5px;
+                position: absolute;
+                top: 0;
+                right: 0;
+                z-index: 5;
+                font-size: 12px;
+
+                svg {
+                    display: none;
+                }
+            }
+
+            .below-button {
+                display: none;
+            }
+
+            .empty-cell {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+
+                .add-icon {
+                    display: none;
+                }
+
+                &:hover {
+                    .add-icon {
+                        display: block;
+                        width: 25px;
+                        height: 25px;
+                        opacity: .7;
+                    }
+                }
+
+            }
+
+        }
+
+        &.occupied-cell {
+
+            &:hover {
+
+                .day-number {
+
+                    span { display: none }
+                    svg { 
+                        display: block; 
+                        width: 15px;
+                        height: 15px;
+                        cursor: pointer;
+                    }
+
+                }
+
+                .below-button {
+                    display: block;
+                    position: absolute;
+                    z-index: 5;
+                    left: 0;
+                    bottom: 0;
+                    width: 100%;
+                    display: flex;
+                    justify-content: flex-end;
+                    cursor: pointer;
+                    pointer-events: none;
+
+                    > div {
+                        background-color: white;
+                        padding: 2px;
+                        width: 20px;
+                        height: 20px;
+                        border-top-left-radius: 4px;
+                        pointer-events: all;
+
+                        svg {
+                            width: 100%;
+                            height: 100%;
+                        }
+                    }
+                }
+
+            }
+
+        } 
+
+    }
+
+}

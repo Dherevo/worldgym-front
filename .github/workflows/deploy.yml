@@ -1,0 +1,44 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_DIR: htdocs/gym.mateuarbo.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build:prod
+
+      - name: Desplega dist/ per rsync
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          for v in SSH_HOST SSH_USER SSH_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::El secret $v està buit o no existeix"; missing=1; fi
+          done
+          [ -z "$missing" ] || exit 1
+          SSH_USER="$(printf '%s' "$SSH_USER" | tr -d '[:space:]')"
+          SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '[:space:]')"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+          rsync -az --delete --exclude='.well-known'             -e "ssh -i ~/.ssh/id_deploy -o BatchMode=yes"             dist/ "$SSH_USER@$SSH_HOST:$DEPLOY_DIR/"

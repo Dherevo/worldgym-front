@@ -1,0 +1,87 @@
+:root {
+    --base-size: 1rem;
+    --border-radius: 3px;
+
+    // Accents (fixes en ambdós modes)
+    --primary-color: #02158B;
+    --primary-dark-color: #010f6b;
+    --accent-red: #E71633;
+    --error-color: #E71633;
+
+    // Header (sempre negre)
+    --header-bg: #000000;
+    --header-text: #ffffff;
+}
+
+// MODE FOSC (per defecte)
+:root,
+:root[data-theme="dark"] {
+    --background-color: #0a0a0a;
+    --surface-color: #141414;
+    --surface-2: #1c1c1c;
+    --surface-3: #242424;
+
+    --border-color: #2e2e2e;
+    --border-subtle: #1e1e1e;
+
+    --menu-background-color: #000000;
+    --placeholder-color: #555555;
+
+    --highlight: rgba(2, 21, 139, 0.2);
+    --highlight-text: #4d6aff;
+
+    --text-color: #f0f0f0;
+    --text-secondary: #a8a8a8;
+    --text-muted: #666666;
+
+    --tint-green-bg: #0a1f14;
+    --tint-green-text: #4ade80;
+    --tint-red-bg: #1f060a;
+    --tint-red-text: #ff6680;
+    --tint-blue-bg: #04092a;
+    --tint-blue-text: #6680ff;
+    --tint-yellow-bg: #1f1400;
+    --tint-yellow-text: #fbbf24;
+
+    --login-gradient-1: #000000;
+    --login-gradient-2: #04072a;
+    --login-gradient-3: #02158B;
+
+    color-scheme: dark;
+}
+
+// MODE CLAR
+:root[data-theme="light"] {
+    --background-color: #f2f2f2;
+    --surface-color: #ffffff;
+    --surface-2: #ebebeb;
+    --surface-3: #e0e0e0;
+
+    --border-color: #cccccc;
+    --border-subtle: #e0e0e0;
+
+    --menu-background-color: #000000;
+    --placeholder-color: #aaaaaa;
+
+    --highlight: rgba(2, 21, 139, 0.08);
+    --highlight-text: #02158B;
+
+    --text-color: #0d0d0d;
+    --text-secondary: #444444;
+    --text-muted: #888888;
+
+    --tint-green-bg: #e6f4ea;
+    --tint-green-text: #1a5c30;
+    --tint-red-bg: #fde8ec;
+    --tint-red-text: #9c0e20;
+    --tint-blue-bg: #e0e5ff;
+    --tint-blue-text: #02158B;
+    --tint-yellow-bg: #fff8e1;
+    --tint-yellow-text: #a05c00;
+
+    --login-gradient-1: #e8ecff;
+    --login-gradient-2: #b8c4f8;
+    --login-gradient-3: #02158B;
+
+    color-scheme: light;
+}

@@ -1,0 +1,31 @@
+.checkbox {
+    border-radius: 50%;
+    border: solid 1px lightgray;
+    width: 20px;
+    min-width: 20px;
+    height: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+        opacity: 0;
+        color: white;
+        fill: white;
+        transform: scale(0.01);
+        transition: all .2s;
+        height: 100%;
+        width: 100%;
+    }
+
+    &.active {
+        background-color: var(--primary-color);
+        border: solid 1px var(--primary-color);
+        
+        svg {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+    }
+}
