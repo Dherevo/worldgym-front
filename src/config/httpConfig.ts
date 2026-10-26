@@ -1,8 +1,12 @@
-import { http, Config, HttpError } from "lib";
+import { http, Config, HttpError, translate } from "lib";
 
 export default () => {
 
     http.baseURL = Config.get('api.url');
+
+    http.setGlobalHeaders(() => Promise.resolve({
+        'Accept-Language': translate.currentLanguage
+    }));
 
     http.token.CheckIfExpired = (err: HttpError) => new Promise(resolve => {
         const token = http.token.get();

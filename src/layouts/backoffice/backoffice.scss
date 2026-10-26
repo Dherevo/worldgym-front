@@ -117,4 +117,139 @@
 
     }
 
+    // Selector d'idioma (el header és sempre negre)
+    #backoffice-top-menu .language-switcher {
+        margin-right: 12px;
+
+        .language-option {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+
+            &:hover { color: #ffffff; }
+            &.active {
+                background: rgba(231, 22, 51, 0.15);
+                color: #E71633;
+            }
+        }
+    }
+
+    // El layout de lib afegeix padding al contingut en pantalles petites
+    @media (max-width: 768px) {
+        #backoffice-content #backoffice-page-content { padding: 0 !important; }
+    }
+
+    .mobile-menu-btn,
+    .mobile-menu,
+    .mobile-menu-backdrop { display: none; }
+
+    @media (max-width: 900px) {
+        #backoffice-top-menu {
+            .top-nav,
+            .language-switcher,
+            .user-menu,
+            .user-identity { display: none; }
+
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                margin-left: 4px;
+                background: none;
+                border: none;
+                border-radius: 8px;
+                color: rgba(255, 255, 255, 0.85);
+                cursor: pointer;
+
+                svg { width: 22px; height: 22px; }
+                &:hover, &[aria-expanded="true"] { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+            }
+        }
+
+        .mobile-menu-backdrop {
+            display: block;
+            position: fixed;
+            inset: 60px 0 0 0;
+            z-index: 998;
+            background: rgba(0, 0, 0, 0.55);
+        }
+
+        .mobile-menu {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            padding: 8px 12px calc(12px + env(safe-area-inset-bottom));
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+
+            .mm-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                min-height: 48px;
+                padding: 0 12px;
+                background: none;
+                border: none;
+                border-radius: 8px;
+                color: var(--text-color);
+                font-size: 1rem;
+                text-align: left;
+                text-decoration: none;
+                cursor: pointer;
+
+                svg { width: 18px; height: 18px; }
+                &:hover { background: var(--surface-2); }
+                &.active { background: rgba(231, 22, 51, 0.15); color: #E71633; font-weight: 600; }
+            }
+
+            .mm-user {
+                margin-top: 8px;
+                padding: 10px 12px 0;
+                border-top: 1px solid var(--border-color);
+                color: var(--text-color);
+
+                .mm-user-email { font-size: 0.8rem; color: var(--text-secondary); }
+            }
+
+            .mm-langs {
+                display: flex;
+                gap: 8px;
+                margin: 8px 0;
+                padding: 10px 12px;
+            }
+
+            .mm-lang {
+                flex: 1;
+                height: 44px;
+                background: var(--surface-2);
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                color: var(--text-secondary);
+                font-weight: 600;
+                cursor: pointer;
+
+                &.active { background: rgba(231, 22, 51, 0.15); border-color: #E71633; color: #E71633; }
+            }
+
+            .mm-logout { color: #E71633; }
+        }
+    }
+
+    @media (max-width: 520px) {
+        .app-logo { font-size: 1rem; margin-right: 0; }
+    }
+
 }
