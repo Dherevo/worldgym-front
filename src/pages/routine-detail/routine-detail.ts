@@ -32,6 +32,8 @@ class RoutineDetailPage extends Vue {
         rest_seconds: 90
     };
     allExercises: any[] = [];
+    muscleGroups: any[] = [];
+    exerciseQuery = '';
     savingExercise = false;
 
     get routineId() {
@@ -51,7 +53,14 @@ class RoutineDetailPage extends Vue {
         .finally(() => { this.loading = false; });
     }
 
+    fetchMuscleGroups() {
+        http.get('/muscle-groups?pageSize=500')
+        .then((res: any) => { this.muscleGroups = res.items ?? []; })
+        .catch(() => {});
+    }
+
     fetchExercises() {
+        this.fetchMuscleGroups();
         http.get('/exercises?pageSize=2000')
         .then((res: any) => { this.allExercises = res.items ?? []; })
         .catch(() => {});
@@ -107,8 +116,47 @@ class RoutineDetailPage extends Vue {
         });
     }
 
+    // Group of an exercise = group of its first primary muscle (any muscle as a fallback)
+    groupNameOf(ex: any): string {
+        const muscles = ex.muscles ?? [];
+        const m = muscles.find((x: any) => x.pivot?.is_primary) ?? muscles[0];
+        const groupId = m?.muscle_group_id ?? m?.muscle_group?.id;
+        return this.muscleGroups.find((g: any) => g.id === groupId)?.name
+            ?? m?.muscle_group?.name
+            ?? translate.get('routineDetail.exerciseForm.noGroup');
+    }
+
+    // Search results as "optgroups": [{ name, items }], groups sorted by name, "no group" last
+    get groupedExercises() {
+        const q = this.exerciseQuery.trim().toLowerCase();
+        const list = (q ? this.allExercises.filter((e: any) => e.name.toLowerCase().includes(q)) : this.allExercises)
+            .slice(0, 60);
+        const noGroup = translate.get('routineDetail.exerciseForm.noGroup');
+        const groups: Record<string, any[]> = {};
+        for (const ex of list) (groups[this.groupNameOf(ex)] ??= []).push(ex);
+        return Object.keys(groups)
+            .sort((a, b) => (a === noGroup ? 1 : b === noGroup ? -1 : a.localeCompare(b)))
+            .map(name => ({ name, items: groups[name] }));
+    }
+
+    get selectedExerciseName(): string {
+        const id = this.exerciseForm.exercise_id;
+        return this.allExercises.find((e: any) => e.id === id)?.name ?? this.editingExercise?.exercise?.name ?? '';
+    }
+
+    selectExercise(ex: any) {
+        this.exerciseForm.exercise_id = ex.id;
+        this.exerciseQuery = '';
+    }
+
+    clearSelectedExercise() {
+        this.exerciseForm.exercise_id = null;
+        this.exerciseQuery = '';
+    }
+
     openAddExercise(day: any) {
         this.activeDay = day;
+        this.exerciseQuery = '';
         this.editingExercise = null;
         const nextOrder = (day.exercises?.length || 0) + 1;
         this.exerciseForm = { exercise_id: null, order_index: nextOrder, sets_target: 3, reps_target: 10, weight_target: 0, rest_seconds: 90 };
@@ -117,6 +165,7 @@ class RoutineDetailPage extends Vue {
 
     openEditExercise(day: any, ex: any) {
         this.activeDay = day;
+        this.exerciseQuery = '';
         this.editingExercise = ex;
         this.exerciseForm = {
             exercise_id: ex.exercise?.id,
