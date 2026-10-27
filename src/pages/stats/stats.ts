@@ -76,7 +76,7 @@ class StatsPage extends Vue {
     }
 
     fetchMuscleGroups() {
-        http.get('/muscle-groups')
+        http.get('/muscle-groups?pageSize=500')
         .then((res: any) => { this.muscleGroups = res.items ?? []; })
         .catch(() => {});
     }
