@@ -5,7 +5,7 @@
             <div class="page-header">
                 <button class="btn-back" @click="to('/routines')">{{ $t('routineDetail.back') }}</button>
                 <h1 v-if="routine">{{ routine.name }}</h1>
-                <div class="header-actions" v-if="routine">
+                <div class="header-actions" v-if="routine && canEdit">
                     <button class="btn-secondary" @click="openAddDay()">{{ $t('routineDetail.addDay') }}</button>
                 </div>
             </div>
@@ -26,8 +26,8 @@
                             <button class="btn-train" @click="startDay(day)" :disabled="starting">
                                 {{ starting ? '...' : $t('routineDetail.train') }}
                             </button>
-                            <button @click="openEditDay(day)">{{ $t('routineDetail.edit') }}</button>
-                            <button class="danger" @click="deleteDay(day)">{{ $t('routineDetail.delete') }}</button>
+                            <button v-if="canEdit" @click="openEditDay(day)">{{ $t('routineDetail.edit') }}</button>
+                            <button v-if="canEdit" class="danger" @click="deleteDay(day)">{{ $t('routineDetail.delete') }}</button>
                         </div>
                     </div>
 
@@ -51,15 +51,15 @@
                                     <td>{{ ex.weight_target }}</td>
                                     <td>{{ ex.rest_seconds }}s</td>
                                     <td>
-                                        <button @click="openEditExercise(day, ex)">{{ $t('routineDetail.table.editShort') }}</button>
-                                        <button class="danger" @click="deleteExercise(day, ex)">{{ $t('routineDetail.table.deleteShort') }}</button>
+                                        <button v-if="canEdit" @click="openEditExercise(day, ex)">{{ $t('routineDetail.table.editShort') }}</button>
+                                        <button v-if="canEdit" class="danger" @click="deleteExercise(day, ex)">{{ $t('routineDetail.table.deleteShort') }}</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div v-else class="empty-exercises">{{ $t('routineDetail.noExercises') }} <span class="link" @click="openAddExercise(day)">{{ $t('routineDetail.addOne') }}</span></div>
-                    <button class="btn-add-exercise" @click="openAddExercise(day)">{{ $t('routineDetail.addExercise') }}</button>
+                    <div v-else class="empty-exercises">{{ $t('routineDetail.noExercises') }} <span class="link" v-if="canEdit" @click="openAddExercise(day)">{{ $t('routineDetail.addOne') }}</span></div>
+                    <button class="btn-add-exercise" v-if="canEdit" @click="openAddExercise(day)">{{ $t('routineDetail.addExercise') }}</button>
                 </div>
             </div>
 

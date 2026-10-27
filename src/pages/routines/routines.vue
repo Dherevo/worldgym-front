@@ -4,11 +4,20 @@
 
             <div class="page-header">
                 <h1>{{ $t('routines.title') }}</h1>
-                <button class="btn-primary" @click="openCreate()">{{ $t('routines.newRoutine') }}</button>
+                <button class="btn-primary" @click="openCreate()" v-if="activeTab === 'mine' || isAdmin">
+                    {{ activeTab === 'templates' ? $t('routines.newTemplate') : $t('routines.newRoutine') }}
+                </button>
+            </div>
+
+            <div class="tabs">
+                <button :class="{ active: activeTab === 'mine' }" @click="setTab('mine')">{{ $t('routines.tabs.mine') }}</button>
+                <button :class="{ active: activeTab === 'templates' }" @click="setTab('templates')">{{ $t('routines.tabs.templates') }}</button>
             </div>
 
             <div v-if="loading" class="loading-text">{{ $t('routines.loading') }}</div>
-            <div v-else-if="routines.length === 0" class="empty-text">{{ $t('routines.empty') }}</div>
+            <div v-else-if="routines.length === 0" class="empty-text">
+                {{ activeTab === 'templates' ? $t('routines.emptyTemplates') : $t('routines.empty') }}
+            </div>
             <div v-else class="routine-list">
                 <div v-for="r in routines" :key="r.id" class="routine-card" :class="{ 'is-default': r.is_default }">
                     <div class="routine-info" @click="to('/routines/' + r.id)">
@@ -21,9 +30,12 @@
                     </div>
                     <div class="routine-actions">
                         <button @click="to('/routines/' + r.id)">{{ $t('routines.view') }}</button>
-                        <button @click="openEdit(r)">{{ $t('routines.edit') }}</button>
-                        <button v-if="!r.is_default" @click="setDefault(r)">{{ $t('routines.makeDefault') }}</button>
-                        <button class="danger" @click="deleteRoutine(r)">{{ $t('routines.delete') }}</button>
+                        <button class="use-template" v-if="r.is_global" @click="cloneRoutine(r)" :disabled="cloningId === r.id">
+                            {{ cloningId === r.id ? $t('routines.cloning') : $t('routines.useTemplate') }}
+                        </button>
+                        <button v-if="canEdit(r)" @click="openEdit(r)">{{ $t('routines.edit') }}</button>
+                        <button v-if="!r.is_global && !r.is_default" @click="setDefault(r)">{{ $t('routines.makeDefault') }}</button>
+                        <button v-if="canEdit(r)" class="danger" @click="deleteRoutine(r)">{{ $t('routines.delete') }}</button>
                     </div>
                 </div>
             </div>

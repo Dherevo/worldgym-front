@@ -1,5 +1,12 @@
 export default {
     ca: {
+        newTemplate: '+ Nova plantilla',
+        emptyTemplates: 'Encara no hi ha cap plantilla.',
+        tabs: { mine: 'Les meves', templates: 'Plantilles' },
+        useTemplate: 'Usar aquesta plantilla',
+        cloning: 'Copiant...',
+        cloned: 'Plantilla "{{name}}" copiada a les teves rutines',
+        askDefault: 'Vols marcar "{{name}}" com a rutina per defecte?',
         title: 'Rutines',
         newRoutine: '+ Nova rutina',
         loading: 'Carregant...',
@@ -22,6 +29,7 @@ export default {
             saving: 'Desant...',
         },
         errors: {
+            clone: 'Error al copiar la plantilla',
             save: 'Error al desar la rutina',
             setDefault: 'Error al assignar rutina per defecte',
             delete: 'Error al eliminar',
@@ -29,6 +37,13 @@ export default {
         confirmDelete: 'Vols eliminar "{{name}}"?',
     },
     es: {
+        newTemplate: '+ Nueva plantilla',
+        emptyTemplates: 'Todavía no hay ninguna plantilla.',
+        tabs: { mine: 'Mis rutinas', templates: 'Plantillas' },
+        useTemplate: 'Usar esta plantilla',
+        cloning: 'Copiando...',
+        cloned: 'Plantilla "{{name}}" copiada a tus rutinas',
+        askDefault: '¿Quieres marcar "{{name}}" como rutina por defecto?',
         title: 'Rutinas',
         newRoutine: '+ Nueva rutina',
         loading: 'Cargando...',
@@ -51,6 +66,7 @@ export default {
             saving: 'Guardando...',
         },
         errors: {
+            clone: 'Error al copiar la plantilla',
             save: 'Error al guardar la rutina',
             setDefault: 'Error al asignar la rutina por defecto',
             delete: 'Error al eliminar',
@@ -58,6 +74,13 @@ export default {
         confirmDelete: '¿Quieres eliminar "{{name}}"?',
     },
     en: {
+        newTemplate: '+ New template',
+        emptyTemplates: 'There are no templates yet.',
+        tabs: { mine: 'Mine', templates: 'Templates' },
+        useTemplate: 'Use this template',
+        cloning: 'Copying...',
+        cloned: 'Template "{{name}}" copied to your routines',
+        askDefault: 'Set "{{name}}" as your default routine?',
         title: 'Routines',
         newRoutine: '+ New routine',
         loading: 'Loading...',
@@ -80,6 +103,7 @@ export default {
             saving: 'Saving...',
         },
         errors: {
+            clone: 'Error copying the template',
             save: 'Error saving the routine',
             setDefault: 'Error setting the default routine',
             delete: 'Error deleting',
