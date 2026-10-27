@@ -1,11 +1,6 @@
 export default {
     ca: {
         invalidCredentials: 'Credencials incorrectes',
-        heroTitle: 'Entrena amb cap. Progressa de veritat.',
-        heroSub: 'Rutines, entrenaments guiats i estadístiques en un sol lloc.',
-        point1: 'Entrenaments guiats pas a pas',
-        point2: 'Rutines pròpies i globals',
-        point3: 'Records i progressió per exercici',
         welcome: 'Hola de nou',
         welcomeSub: 'Inicia sessió per continuar entrenant.',
         username: 'Usuari o correu',
@@ -17,11 +12,6 @@ export default {
     },
     es: {
         invalidCredentials: 'Credenciales incorrectas',
-        heroTitle: 'Entrena con cabeza. Progresa de verdad.',
-        heroSub: 'Rutinas, entrenamientos guiados y estadísticas en un solo lugar.',
-        point1: 'Entrenamientos guiados paso a paso',
-        point2: 'Rutinas propias y globales',
-        point3: 'Récords y progresión por ejercicio',
         welcome: 'Hola de nuevo',
         welcomeSub: 'Inicia sesión para seguir entrenando.',
         username: 'Usuario o correo',
@@ -33,11 +23,6 @@ export default {
     },
     en: {
         invalidCredentials: 'Invalid credentials',
-        heroTitle: 'Train smart. Actually progress.',
-        heroSub: 'Routines, guided workouts and stats, all in one place.',
-        point1: 'Step-by-step guided workouts',
-        point2: 'Your own and global routines',
-        point3: 'Records and progress per exercise',
         welcome: 'Welcome back',
         welcomeSub: 'Sign in to keep training.',
         username: 'Username or email',
