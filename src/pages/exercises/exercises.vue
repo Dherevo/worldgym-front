@@ -119,7 +119,7 @@
                     </div>
                     <div class="form-hint">{{ $t('exercises.form.langHint') }}</div>
 
-                    <div class="form-group" v-if="isAdmin && !editingExercise">
+                    <div class="form-group" v-if="isAdmin && !editingExercise?.is_global">
                         <label class="check-row">
                             <input type="checkbox" v-model="form.is_global" />
                             {{ $t('exercises.form.isGlobal') }}

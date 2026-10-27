@@ -236,6 +236,9 @@ class ExercisesPage extends Vue {
             body.name = first('name');
             body.description = first('description');
             body.is_global = this.isAdmin && this.form.is_global;
+        } else if (this.isAdmin && this.form.is_global && !this.editingExercise.is_global) {
+            // Promote an own exercise to global (one-way)
+            body.is_global = true;
         }
 
         const save = this.editingExercise
