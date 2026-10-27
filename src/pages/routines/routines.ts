@@ -8,6 +8,7 @@ class RoutinesPage extends Vue {
     routines: any[] = [];
     activeTab: 'mine' | 'templates' = 'mine';
     cloningId: number | null = null;
+    savingTemplateId: number | null = null;
     loading = false;
     showForm = false;
     editingRoutine: any = null;
@@ -84,6 +85,35 @@ class RoutinesPage extends Vue {
         })
         .catch(() => App.notification(translate.get('routines.errors.clone')).setType('error').show())
         .finally(() => { this.cloningId = null; });
+    }
+
+    // Admin: publishes a copy of one of their own routines as a global template (the original is kept)
+    async saveAsTemplate(r: any) {
+        const ok = await App.confirm(translate.get('routines.confirmSaveAsTemplate', { name: r.name }));
+        if (!ok) return;
+        this.savingTemplateId = r.id;
+        try {
+            const src: any = await http.get(`/routines/${r.id}`);
+            const tpl: any = await http.post('/routines').data({ name: src.name, description: src.description || '', is_global: true });
+            for (const day of src.days ?? []) {
+                const newDay: any = await http.post(`/routines/${tpl.id}/days`).data({ day_number: day.day_number, name: day.name });
+                for (const ex of day.exercises ?? []) {
+                    await http.post(`/routines/${tpl.id}/days/${newDay.id}/exercises`).data({
+                        exercise_id: ex.exercise?.id,
+                        order_index: ex.order_index,
+                        sets_target: ex.sets_target,
+                        reps_target: ex.reps_target,
+                        weight_target: ex.weight_target,
+                        rest_seconds: ex.rest_seconds
+                    });
+                }
+            }
+            App.notification(translate.get('routines.savedAsTemplate', { name: src.name })).setType('success').show();
+        } catch {
+            App.notification(translate.get('routines.errors.saveAsTemplate')).setType('error').show();
+        } finally {
+            this.savingTemplateId = null;
+        }
     }
 
     setDefault(r: any) {
