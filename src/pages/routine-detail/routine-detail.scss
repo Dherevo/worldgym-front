@@ -197,6 +197,55 @@
             overflow-y: auto;
             h2 { margin: 0 0 1.5rem; }
 
+            .selected-exercise {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.75rem;
+                padding: 0.6rem 0.85rem;
+                border: 1px solid var(--primary-color);
+                background: var(--highlight);
+                border-radius: 8px;
+                font-weight: 600;
+                button {
+                    background: transparent;
+                    border: none;
+                    color: var(--highlight-text);
+                    cursor: pointer;
+                    font-size: 0.85rem;
+                    &:hover { text-decoration: underline; }
+                }
+            }
+
+            .exercise-results {
+                margin-top: 0.4rem;
+                max-height: 220px;
+                overflow-y: auto;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+
+                .result-group {
+                    position: sticky;
+                    top: 0;
+                    padding: 0.35rem 0.85rem;
+                    background: var(--surface-3);
+                    color: var(--text-secondary);
+                    font-size: 0.72rem;
+                    font-weight: 800;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                }
+
+                .exercise-result-item {
+                    padding: 0.6rem 0.85rem;
+                    cursor: pointer;
+                    border-bottom: 1px solid var(--border-subtle);
+                    &:last-child { border-bottom: none; }
+                    &:hover { background: var(--surface-2); }
+                }
+                .no-results { color: var(--text-muted); text-align: center; padding: 0.9rem; font-size: 0.9rem; }
+            }
+
             .form-group {
                 margin-bottom: 1rem;
                 label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.35rem; }

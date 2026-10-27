@@ -90,10 +90,22 @@
                     <h2>{{ editingExercise ? $t('routineDetail.exerciseForm.titleEdit') : $t('routineDetail.exerciseForm.titleNew') }}</h2>
                     <div class="form-group">
                         <label>{{ $t('routineDetail.exerciseForm.exercise') }}</label>
-                        <select v-model.number="exerciseForm.exercise_id">
-                            <option :value="null">{{ $t('routineDetail.exerciseForm.selectExercise') }}</option>
-                            <option v-for="ex in allExercises" :key="ex.id" :value="ex.id">{{ ex.name }}</option>
-                        </select>
+                        <div v-if="exerciseForm.exercise_id" class="selected-exercise">
+                            <span>{{ selectedExerciseName }}</span>
+                            <button type="button" @click="clearSelectedExercise()">{{ $t('routineDetail.exerciseForm.change') }}</button>
+                        </div>
+                        <div v-else class="exercise-search">
+                            <input type="text" v-model="exerciseQuery" autofocus
+                                   :placeholder="$t('routineDetail.exerciseForm.searchPlaceholder')" />
+                            <div class="exercise-results">
+                                <template v-for="g in groupedExercises" :key="g.name">
+                                    <div class="result-group">{{ g.name }}</div>
+                                    <div v-for="ex in g.items" :key="ex.id" class="exercise-result-item"
+                                         @click="selectExercise(ex)">{{ ex.name }}</div>
+                                </template>
+                                <div v-if="groupedExercises.length === 0" class="no-results">{{ $t('routineDetail.exerciseForm.noResults') }}</div>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
