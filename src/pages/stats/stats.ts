@@ -70,7 +70,7 @@ class StatsPage extends Vue {
     }
 
     fetchExercises() {
-        http.get('/exercises').data({ offset: 0 })
+        http.get('/exercises?pageSize=2000')
         .then((res: any) => { this.exercises = res.items ?? []; })
         .catch(() => {});
     }

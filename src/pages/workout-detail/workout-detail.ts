@@ -51,7 +51,7 @@ class WorkoutDetailPage extends Vue {
     }
 
     fetchExercises() {
-        http.get('/exercises').data({ offset: 0 })
+        http.get('/exercises?pageSize=2000')
         .then((res: any) => { this.allExercises = res.items ?? []; })
         .catch(() => {});
     }
