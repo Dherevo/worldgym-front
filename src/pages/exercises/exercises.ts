@@ -73,9 +73,9 @@ class ExercisesPage extends Vue {
     }
 
     fetchFilters() {
-        http.get('/muscle-groups').then((res: any) => { this.muscleGroups = res.items ?? []; }).catch(() => {});
-        http.get('/equipment').then((res: any) => { this.equipments = res.items ?? []; }).catch(() => {});
-        http.get('/muscles').then((res: any) => { this.muscles = res.items ?? []; }).catch(() => {});
+        http.get('/muscle-groups?pageSize=500').then((res: any) => { this.muscleGroups = res.items ?? []; }).catch(() => {});
+        http.get('/equipment?pageSize=500').then((res: any) => { this.equipments = res.items ?? []; }).catch(() => {});
+        http.get('/muscles?pageSize=500').then((res: any) => { this.muscles = res.items ?? []; }).catch(() => {});
     }
 
     onMuscleGroupChange() {

@@ -47,8 +47,8 @@ class MuscleManager extends Vue {
     fetchAll() {
         this.loading = true;
         Promise.all([
-            http.get('/muscle-groups').promise(),
-            http.get('/muscles').promise(),
+            http.get('/muscle-groups?pageSize=500').promise(),
+            http.get('/muscles?pageSize=500').promise(),
         ])
         .then(([groups, muscles]: any[]) => {
             this.groups = groups.items ?? [];
