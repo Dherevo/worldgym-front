@@ -1,27 +1,29 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
-import { LoginPageV2 as Login, translate } from "lib";
+import { translate } from "lib";
 import auth from "@/modules/auth";
 
-@Component({
-    components: {Login}
-})
+@Component({})
 class LoginPage extends Vue {
 
-    doLogin($e: {
-        username: string,
-        password: string,
-        success: () => void,
-        error: (error: string) => void
-    }) {
-        auth.login($e.username, $e.password)
+    username = '';
+    password = '';
+    showPassword = false;
+    loading = false;
+    error = '';
+
+    submit() {
+        if (this.loading) return;
+        this.loading = true;
+        this.error = '';
+        auth.login(this.username, this.password)
         .then(() => auth.fetchUserData())
         .then(() => {
             this.to('/');
-            $e.success();
         })
         .catch(() => {
-            $e.error(translate.get('login.invalidCredentials'))
+            this.error = translate.get('login.invalidCredentials');
         })
+        .finally(() => { this.loading = false; });
     }
 }
 export default toNative(LoginPage);
