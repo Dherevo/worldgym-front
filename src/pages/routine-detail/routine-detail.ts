@@ -133,7 +133,11 @@ class RoutineDetailPage extends Vue {
             .slice(0, 60);
         const noGroup = translate.get('routineDetail.exerciseForm.noGroup');
         const groups: Record<string, any[]> = {};
-        for (const ex of list) (groups[this.groupNameOf(ex)] ??= []).push(ex);
+        for (const ex of list) {
+            const name = this.groupNameOf(ex);
+            groups[name] ??= [];
+            groups[name].push(ex);
+        }
         return Object.keys(groups)
             .sort((a, b) => (a === noGroup ? 1 : b === noGroup ? -1 : a.localeCompare(b)))
             .map(name => ({ name, items: groups[name] }));
