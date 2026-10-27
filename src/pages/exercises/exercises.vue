@@ -4,8 +4,13 @@
 
             <div class="page-header">
                 <h1>{{ $t('exercises.title') }}</h1>
-                <button class="btn-primary" @click="openCreate()">{{ $t('exercises.newExercise') }}</button>
+                <div class="header-buttons">
+                    <button class="btn-secondary" v-if="isAdmin" @click="showMuscleManager = true">{{ $t('exercises.manage.open') }}</button>
+                    <button class="btn-primary" @click="openCreate()">{{ $t('exercises.newExercise') }}</button>
+                </div>
             </div>
+
+            <MuscleManager v-if="showMuscleManager" @close="showMuscleManager = false" @changed="fetchFilters()" />
 
             <!-- Tabs -->
             <div class="tabs">

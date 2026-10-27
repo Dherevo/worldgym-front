@@ -1,9 +1,12 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import userStore from "@/modules/userStore";
+import MuscleManager from "@/components/muscle-manager/muscle-manager.vue";
 
-@Component({})
+@Component({ components: { MuscleManager } })
 class ExercisesPage extends Vue {
+
+    showMuscleManager = false;
 
     exercises: any[] = [];
     loading = false;
