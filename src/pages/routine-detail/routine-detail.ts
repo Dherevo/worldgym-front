@@ -1,10 +1,17 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
+import userStore from "@/modules/userStore";
 
 @Component({})
 class RoutineDetailPage extends Vue {
 
     routine: any = null;
+
+    // Global routines are read-only for regular users
+    get canEdit(): boolean {
+        return !!this.routine && (!this.routine.is_global || !!userStore.data?.isAdmin);
+    }
+
     loading = false;
     starting = false;
 

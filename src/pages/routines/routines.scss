@@ -23,6 +23,26 @@
         &:disabled { opacity: 0.6; cursor: not-allowed; }
     }
 
+    .tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+        button {
+            border: 1px solid var(--border-color);
+            background: var(--surface-2);
+            color: var(--text-secondary);
+            border-radius: 20px;
+            padding: 0.4rem 1.1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            &.active {
+                background: var(--primary-color);
+                color: white;
+                border-color: var(--primary-color);
+            }
+        }
+    }
+
     .loading-text, .empty-text { color: var(--text-secondary); padding: 1rem 0; }
 
     .routine-list {
