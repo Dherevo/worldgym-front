@@ -35,6 +35,11 @@ class CyclePage extends Vue {
     periods: any[] = [];
     cycles: any[] = [];
     cycleLength = 28;
+    phase: any = null;
+    // Typical lengths the user sets by hand (empty = default); the average of the logged cycles wins once there is history
+    cycleInput = '';
+    periodInput = '';
+    savingSettings = false;
     periodLength = 5;
     loading = false;
 
@@ -55,7 +60,7 @@ class CyclePage extends Vue {
 
     fetchCycle() {
         this.loading = true;
-        http.get('/cycle')
+        http.get('/cycle').data({ date: this.todayStr })
         .then((res: any) => this.apply(res))
         .catch(() => App.notification(translate.get('cycle.errors.load')).setType('error').show())
         .finally(() => { this.loading = false; });
@@ -66,6 +71,30 @@ class CyclePage extends Vue {
         this.cycles = res.cycles ?? [];
         this.cycleLength = res.cycle_length;
         this.periodLength = res.period_length;
+        this.phase = res.phase ?? null;
+        this.cycleInput = res.settings?.cycle_length != null ? String(res.settings.cycle_length) : '';
+        this.periodInput = res.settings?.period_length != null ? String(res.settings.period_length) : '';
+    }
+
+    get phaseKey(): string {
+        if (!this.phase) return '';
+        return this.phase.key === 'luteal' && this.phase.late ? 'lutealLate' : this.phase.key;
+    }
+
+    saveSettings() {
+        if (this.savingSettings) return;
+        this.savingSettings = true;
+        http.put('/cycle/settings').data({
+            cycle_length: this.cycleInput === '' ? null : Number(this.cycleInput),
+            period_length: this.periodInput === '' ? null : Number(this.periodInput),
+            date: this.todayStr,
+        })
+        .then((res: any) => {
+            this.apply(res);
+            App.notification(translate.get('cycle.settings.saved')).setType('success').show();
+        })
+        .catch(() => App.notification(translate.get('cycle.settings.error')).setType('error').show())
+        .finally(() => { this.savingSettings = false; });
     }
 
     get dateLocale(): string {

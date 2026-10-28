@@ -18,6 +18,12 @@
             </div>
 
             <div v-else class="summary">
+                <div class="stat-card phase-card" v-if="phase">
+                    <div class="stat-label">{{ $t('cycle.phase.label') }}</div>
+                    <div class="stat-value">{{ $t('cycle.phase.' + phase.key) }}</div>
+                    <div class="stat-hint">{{ $t('cycle.phase.day', { n: phase.day }) }}</div>
+                    <div class="phase-text">{{ $t('cycle.phase.text.' + phaseKey) }}</div>
+                </div>
                 <div class="stat-card highlight">
                     <div class="stat-label">{{ $t('cycle.cards.today') }}</div>
                     <div class="stat-value">{{ todayStatus }}</div>
@@ -74,6 +80,24 @@
                     <span class="history-dates">{{ periodRange(p) }}</span>
                     <button class="btn-edit" @click="openEdit(p)" :title="$t('cycle.edit')">✎</button>
                     <button class="btn-delete" @click="remove(p)" :title="$t('cycle.delete')">✕</button>
+                </div>
+            </div>
+
+            <div class="settings">
+                <h3>{{ $t('cycle.settings.title') }}</h3>
+                <p class="settings-sub">{{ $t('cycle.settings.sub') }}</p>
+                <div class="settings-fields">
+                    <label class="field">
+                        <span>{{ $t('cycle.settings.cycleLength') }}</span>
+                        <input type="number" inputmode="numeric" min="21" max="45" v-model="cycleInput" :placeholder="String(cycleLength)" />
+                    </label>
+                    <label class="field">
+                        <span>{{ $t('cycle.settings.periodLength') }}</span>
+                        <input type="number" inputmode="numeric" min="2" max="10" v-model="periodInput" :placeholder="String(periodLength)" />
+                    </label>
+                    <button class="btn-save-settings" :disabled="savingSettings" @click="saveSettings()">
+                        {{ savingSettings ? $t('cycle.modal.saving') : $t('cycle.modal.save') }}
+                    </button>
                 </div>
             </div>
 
