@@ -8,6 +8,8 @@ import workouts from './pages/workouts';
 import workoutDetail from './pages/workoutDetail';
 import workout from './pages/workout';
 import stats from './pages/stats';
+import onboarding from './pages/onboarding';
+import cycle from './pages/cycle';
 import notFound from './pages/notFound';
 
 const ca = {
@@ -21,6 +23,8 @@ const ca = {
     workoutDetail: workoutDetail.ca,
     workout: workout.ca,
     stats: stats.ca,
+    onboarding: onboarding.ca,
+    cycle: cycle.ca,
     notFound: notFound.ca,
 };
 

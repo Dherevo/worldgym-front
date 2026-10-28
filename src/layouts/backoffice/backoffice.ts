@@ -15,13 +15,20 @@ class Backoffice extends Vue {
     isDark = true;
     menuOpen = false;
 
-    readonly menuItems = [
+    readonly baseMenuItems = [
         { path: '/',          icon: 'prime/home',      label: 'layout.menu.dashboard' },
         { path: '/exercises', icon: 'prime/bolt',      label: 'layout.menu.exercises' },
         { path: '/routines',  icon: 'prime/calendar',  label: 'layout.menu.routines' },
         { path: '/workouts',  icon: 'prime/history',   label: 'layout.menu.history' },
         { path: '/stats',     icon: 'prime/chart-bar', label: 'layout.menu.stats' },
     ];
+
+    get menuItems() {
+        // The period tracker is only offered to users who set their gender to female
+        return this.user?.gender === 'female'
+            ? [...this.baseMenuItems, { path: '/cycle', icon: 'prime/heart', label: 'layout.menu.cycle' }]
+            : this.baseMenuItems;
+    }
 
     readonly languages = [
         { code: 'ca', label: 'CA' },
@@ -76,13 +83,19 @@ class Backoffice extends Vue {
             this.page!().loading = false;
             if (userStore.data) {
                 this.user = userStore.data;
+                this.requireProfile();
             } else {
                 auth.fetchUserData().then(() => {
                     this.user = userStore.data;
+                    this.requireProfile();
                 });
             }
         })
         .catch(() => this.to('/login'))
+    }
+
+    requireProfile() {
+        if (auth.needsProfile(this.user)) this.to('/onboarding');
     }
 
     toggleTheme() {

@@ -6,6 +6,9 @@ interface UserData {
     email: string;
     nickname: string;
     isAdmin: boolean;
+    height_cm: number | null;
+    weight_kg: number | null;
+    gender: 'female' | 'male' | 'other' | null;
     platforms: { id: number; name: string; key: string }[];
 }
 
