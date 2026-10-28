@@ -12,6 +12,7 @@ import onboarding from './pages/onboarding';
 import cycle from './pages/cycle';
 import measurements from './pages/measurements';
 import habits from './pages/habits';
+import profile from './pages/profile';
 import notFound from './pages/notFound';
 
 const en = {
@@ -29,6 +30,7 @@ const en = {
     cycle: cycle.en,
     measurements: measurements.en,
     habits: habits.en,
+    profile: profile.en,
     notFound: notFound.en,
 };
 
