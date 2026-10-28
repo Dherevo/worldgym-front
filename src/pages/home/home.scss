@@ -234,7 +234,7 @@
                 transition: transform 0.25s;
             }
             &::after {
-                content: '92';
+                content: '\2192';
                 position: absolute;
                 right: 1rem; bottom: 0.9rem;
                 color: var(--text-muted);
