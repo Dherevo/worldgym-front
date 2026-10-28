@@ -13,10 +13,19 @@ class ProfilePage extends Vue {
     gender = '';
     saving = false;
 
+    // Equipment at home, for the home sessions the recommender proposes
+    equipments: any[] = [];
+    homeIds: number[] = [];
+    savingEquipment = false;
+
     created() {
         // The layout may still be fetching the user on a fresh load
         (userStore.data ? Promise.resolve() : auth.fetchUserData())
         .then(() => this.fill())
+        .catch(() => {});
+
+        http.get('/equipment').data({ pageSize: 100 })
+        .then((res: any) => { this.equipments = res.items ?? []; })
         .catch(() => {});
     }
 
@@ -25,6 +34,23 @@ class ProfilePage extends Vue {
         this.height = user?.height_cm ? String(user.height_cm) : '';
         this.weight = user?.weight_kg ? String(user.weight_kg) : '';
         this.gender = user?.gender ?? '';
+        this.homeIds = [...(user?.home_equipment ?? [])];
+    }
+
+    toggleHome(id: number) {
+        this.homeIds = this.homeIds.includes(id) ? this.homeIds.filter(i => i !== id) : [...this.homeIds, id];
+    }
+
+    saveEquipment() {
+        if (this.savingEquipment) return;
+        this.savingEquipment = true;
+        http.put('/account/home-equipment').data({ equipment_ids: this.homeIds })
+        .then((user: any) => {
+            if (userStore.data) Object.assign(userStore.data, user);
+            App.notification(translate.get('recommendation.homeEquipment.saved')).setType('success').show();
+        })
+        .catch(() => App.notification(translate.get('recommendation.homeEquipment.error')).setType('error').show())
+        .finally(() => { this.savingEquipment = false; });
     }
 
     get valid(): boolean {

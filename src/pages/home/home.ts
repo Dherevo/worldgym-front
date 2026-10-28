@@ -1,9 +1,10 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import DailyHabits from "@/components/daily-habits/daily-habits.vue";
+import CheckIn from "@/components/check-in/check-in.vue";
 import localDate from "@/modules/localDate";
 
-@Component({ components: { DailyHabits } })
+@Component({ components: { DailyHabits, CheckIn } })
 class HomePage extends Vue {
 
     activeWorkout: any = null;

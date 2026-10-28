@@ -9,6 +9,7 @@ interface UserData {
     height_cm: number | null;
     weight_kg: number | null;
     gender: 'female' | 'male' | 'other' | null;
+    home_equipment: number[] | null;
     platforms: { id: number; name: string; key: string }[];
 }
 

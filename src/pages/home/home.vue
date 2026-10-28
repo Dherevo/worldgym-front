@@ -70,6 +70,17 @@
             </template>
 
             <!-- Daily must-dos (steps, abs...) -->
+            <!-- How the user feels today: feeds the recommended session -->
+            <CheckIn />
+
+            <div class="rec-card">
+                <div>
+                    <div class="rec-title">{{ $t('recommendation.homeCard.title') }}</div>
+                    <div class="rec-text">{{ $t('recommendation.homeCard.text') }}</div>
+                </div>
+                <button class="btn-rec" @click="to('/recommendation')">{{ $t('recommendation.homeCard.button') }}</button>
+            </div>
+
             <DailyHabits :restDay="restMode" />
 
             <!-- Quick access -->

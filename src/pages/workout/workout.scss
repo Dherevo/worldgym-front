@@ -748,3 +748,27 @@
         }
     }
 }
+
+// Warm-up, stretching and feedback blocks of the workout screen
+.wk-extra {
+    background: var(--surface-2);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    margin: 0.75rem 0;
+    text-align: left;
+    .wk-extra-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
+    .wk-extra-text { margin: 0.3rem 0 0.5rem; font-size: 0.9rem; color: var(--text-color); }
+    .wk-warmup-sets, .wk-feedback { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .wk-pill { display: inline-block; padding: 0.25rem 0.7rem; border-radius: 999px; background: var(--tint-blue-bg); color: var(--tint-blue-text); font-weight: 600; font-size: 0.85rem; }
+    .wk-extra-btn {
+        background: var(--primary-color);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        &:hover { background: var(--primary-dark-color); }
+    }
+}

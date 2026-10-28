@@ -1,6 +1,6 @@
 export default {
     ca: {
-        names: { steps: 'Passos', abs: 'Abdominals' },
+        names: { steps: 'Passos', abs: 'Abdominals', warmup: 'Escalfament', stretch: 'Estiraments' },
         card: {
             title: 'Obligats d\'avui',
             configure: 'Configurar',
@@ -51,7 +51,7 @@ export default {
         },
     },
     es: {
-        names: { steps: 'Pasos', abs: 'Abdominales' },
+        names: { steps: 'Pasos', abs: 'Abdominales', warmup: 'Calentamiento', stretch: 'Estiramientos' },
         card: {
             title: 'Obligatorios de hoy',
             configure: 'Configurar',
@@ -102,7 +102,7 @@ export default {
         },
     },
     en: {
-        names: { steps: 'Steps', abs: 'Abs' },
+        names: { steps: 'Steps', abs: 'Abs', warmup: 'Warm-up', stretch: 'Stretching' },
         card: {
             title: 'Today\'s must-dos',
             configure: 'Configure',

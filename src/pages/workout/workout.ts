@@ -1,5 +1,6 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
+import localDate from "@/modules/localDate";
 
 type State = 'loading' | 'pick-exercise' | 'idle' | 'active' | 'logging' | 'resting' | 'choose' | 'done';
 
@@ -47,6 +48,10 @@ class WorkoutPage extends Vue {
 
     // Resum final de l'entrenament
     completedExercises: any[] = [];
+
+    // Daily must-dos done around the workout (warm-up, stretching) and the rating of the session
+    habitsByKey: Record<string, any> = {};
+    feedbackGiven: string | null = null;
     workoutStartedAt: string | null = null;
 
     get workoutId() { return this.param('id'); }
@@ -102,6 +107,7 @@ class WorkoutPage extends Vue {
     created() {
         this.fetchWorkout();
         this.fetchExerciseList();
+        this.fetchHabits();
     }
 
     unmounted() {
@@ -129,7 +135,8 @@ class WorkoutPage extends Vue {
             }
 
             // Entrenament lliure si no té routine_day_id
-            this.isFreeWorkout = !res.routine_day_id;
+            // A recommended session comes with its exercises planned, so it follows the guided flow too
+            this.isFreeWorkout = !res.routine_day_id && !res.recommended;
 
             if (this.exercises.length === 0) {
                 this.state = 'pick-exercise';
@@ -225,6 +232,65 @@ class WorkoutPage extends Vue {
         .finally(() => { this.addingExercise = false; });
     }
 
+    // --- ESCALFAMENT, ESTIRAMENTS I FEEDBACK ---
+
+    fetchHabits() {
+        http.get('/habits').data({ date: localDate() })
+        .then((res: any) => {
+            const map: Record<string, any> = {};
+            for (const h of res.habits ?? []) if (h.key) map[h.key] = h;
+            this.habitsByKey = map;
+        })
+        .catch(() => {});
+    }
+
+    markHabit(key: string) {
+        const h = this.habitsByKey[key];
+        if (!h) return;
+        http.put(`/habits/${h.id}/log`).data({ date: localDate(), completed: true })
+        .then(() => this.fetchHabits())
+        .catch(() => {});
+    }
+
+    get showGeneralWarmup(): boolean {
+        const h = this.habitsByKey.warmup;
+        return this.state === 'idle' && this.currentExerciseIdx === 0 && this.doneCount === 0 && !!h?.is_active && !h.log?.completed;
+    }
+
+    get stretchHabit(): any | null {
+        const h = this.habitsByKey.stretch;
+        return h?.is_active ? h : null;
+    }
+
+    muscleGroupOf(we: any): number | null {
+        const muscles = we?.exercise?.muscles ?? [];
+        const primary = muscles.find((m: any) => m.pivot?.is_primary) ?? muscles[0];
+        return primary?.muscle_group_id ?? null;
+    }
+
+    // Ramp-up sets (40/60/80% of the working weight) before the first exercise of each muscle group
+    get warmupSets(): { weight: number; reps: number }[] {
+        const we = this.currentExercise;
+        if (!we || this.isBodyweight || this.doneCount !== 0 || this.state !== 'idle') return [];
+
+        const group = this.muscleGroupOf(we);
+        if (group === null) return [];
+        if (this.exercises.slice(0, this.currentExerciseIdx).some((e: any) => this.muscleGroupOf(e) === group)) return [];
+
+        const work = Number(this.targetSet?.weight) || Number(this.exerciseHistory[0]?.max_weight) || 0;
+        if (work <= 0) return [];
+
+        return ([[40, 10], [60, 6], [80, 3]] as number[][])
+            .map(([pct, reps]) => ({ weight: Math.round(work * pct / 100 / 2.5) * 2.5, reps }))
+            .filter(s => s.weight > 0);
+    }
+
+    sendFeedback(value: string) {
+        http.put(`/workouts/${this.workoutId}/feedback`).data({ feedback: value })
+        .then(() => { this.feedbackGiven = value; })
+        .catch(() => {});
+    }
+
     // --- FLUX ---
 
     startSet() {
@@ -241,7 +307,7 @@ class WorkoutPage extends Vue {
         const lastLogged = this.loggedSets.length > 0 ? this.loggedSets[this.loggedSets.length - 1] : null;
         const lastSessionWeight = this.exerciseHistory.length > 0 ? (parseFloat(this.exerciseHistory[0]?.max_weight) || 0) : 0;
 
-        this.logReps = this.targetSet?.reps ?? lastLogged?.reps ?? 12;
+        this.logReps = this.targetSet?.reps_target ?? this.targetSet?.reps ?? lastLogged?.reps ?? 12;
         this.logWeight = this.isBodyweight ? 0 : (this.targetSet?.weight ?? lastLogged?.weight ?? lastSessionWeight);
         this.logNotes = '';
         this.logFailed = false;
