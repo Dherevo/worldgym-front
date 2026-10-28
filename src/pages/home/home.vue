@@ -11,7 +11,28 @@
                 <button @click="to('/workout/' + activeWorkout.id)">{{ $t('home.activeWorkout.resume') }}</button>
             </div>
 
+            <!-- Week progress -->
+            <div class="week-strip" v-if="week && week.routine_days_total">
+                <div class="week-dots">
+                    <span v-for="n in week.routine_days_total" :key="n" class="dot" :class="{ filled: n <= week.days_done }"></span>
+                </div>
+                <div class="week-text">
+                    {{ $t('home.week.label', { done: week.days_done, total: week.routine_days_total }) }}
+                    <span v-if="weekBehind" class="week-hint">· {{ $t('home.week.behind', { total: week.routine_days_total }) }}</span>
+                </div>
+            </div>
+
+            <!-- Rest day -->
+            <div class="rest-card" v-if="restMode">
+                <div>
+                    <div class="rest-title">{{ week.week_complete ? $t('home.week.complete') : $t('home.week.trained') }}</div>
+                    <div class="rest-sub">{{ week.week_complete ? $t('home.week.restSub') : $t('home.week.restSubTrained') }}</div>
+                </div>
+                <button class="btn-train-anyway" @click="forceTrain = true">{{ $t('home.week.trainAnyway') }}</button>
+            </div>
+
             <!-- Routine card -->
+            <template v-if="!restMode">
             <div class="today-card" v-if="loadingRoutine">
                 <div class="loading-text">{{ $t('home.routine.loading') }}</div>
             </div>
@@ -45,6 +66,11 @@
                     <button class="btn-start" @click="startEmptyWorkout()">{{ $t('home.routine.freeWorkout') }}</button>
                 </div>
             </div>
+
+            </template>
+
+            <!-- Daily must-dos (steps, abs...) -->
+            <DailyHabits :restDay="restMode" />
 
             <!-- Quick access -->
             <div class="quick-access">

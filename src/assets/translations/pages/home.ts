@@ -11,6 +11,15 @@ export default {
             noDefault: 'No tens cap rutina per defecte configurada.',
             manage: 'Gestionar rutines',
         },
+        week: {
+            label: 'Setmana: {{done}}/{{total}} dies',
+            behind: 'No arribaràs als {{total}} dies aquesta setmana, no passa res: la rotació continua.',
+            trained: 'Avui ja has entrenat',
+            complete: 'Setmana completada!',
+            restSub: 'Dia de descans: només els obligats d\'avui (passos i abdominals). Fins la setmana que ve.',
+            restSubTrained: 'Descansa i fes només els obligats d\'avui (passos i abdominals).',
+            trainAnyway: 'Entrenar igualment',
+        },
         quickAccess: {
             routines: 'Rutines',
             exercises: 'Exercicis',
@@ -48,6 +57,15 @@ export default {
             noDefault: 'No tienes ninguna rutina por defecto configurada.',
             manage: 'Gestionar rutinas',
         },
+        week: {
+            label: 'Semana: {{done}}/{{total}} días',
+            behind: 'No llegarás a los {{total}} días esta semana, no pasa nada: la rotación continúa.',
+            trained: 'Hoy ya has entrenado',
+            complete: '¡Semana completada!',
+            restSub: 'Día de descanso: solo los obligatorios de hoy (pasos y abdominales). Hasta la semana que viene.',
+            restSubTrained: 'Descansa y haz solo los obligatorios de hoy (pasos y abdominales).',
+            trainAnyway: 'Entrenar igualmente',
+        },
         quickAccess: {
             routines: 'Rutinas',
             exercises: 'Ejercicios',
@@ -84,6 +102,15 @@ export default {
             freeWorkout: 'Free workout',
             noDefault: "You don't have a default routine set up.",
             manage: 'Manage routines',
+        },
+        week: {
+            label: 'Week: {{done}}/{{total}} days',
+            behind: 'You will not reach {{total}} days this week, no worries: the rotation carries on.',
+            trained: 'You already trained today',
+            complete: 'Week completed!',
+            restSub: 'Rest day: only today\'s must-dos (steps and abs). See you next week.',
+            restSubTrained: 'Rest and do only today\'s must-dos (steps and abs).',
+            trainAnyway: 'Train anyway',
         },
         quickAccess: {
             routines: 'Routines',

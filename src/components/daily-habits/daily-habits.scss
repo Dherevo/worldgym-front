@@ -1,0 +1,97 @@
+.daily-habits {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+
+    .dh-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        h2 { margin: 0; font-size: 1.1rem; }
+        .dh-link { font-size: 0.85rem; color: var(--highlight-text); cursor: pointer; text-decoration: none; }
+    }
+
+    .dh-tip {
+        background: var(--tint-blue-bg);
+        color: var(--tint-blue-text);
+        border-radius: 10px;
+        padding: 0.65rem 0.9rem;
+        font-size: 0.9rem;
+    }
+
+    .dh-loading { color: var(--text-secondary); }
+
+    .habit {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.9rem;
+        padding: 0.75rem 0.9rem;
+        border-radius: 12px;
+        background: var(--surface-2);
+        border: 1px solid transparent;
+
+        &.done { border-color: var(--tint-green-text); .habit-name { text-decoration: line-through; opacity: 0.8; } }
+
+        .check {
+            flex: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            color: transparent;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            &:hover:not(:disabled) { border-color: var(--tint-green-text); }
+            &:disabled { opacity: 0.5; cursor: wait; }
+        }
+        &.done .check { background: var(--tint-green-text); border-color: var(--tint-green-text); color: #04210f; }
+
+        .habit-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .habit-title {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0.25rem 0.75rem;
+            .habit-name { font-weight: 700; }
+            .habit-goal { font-size: 0.8rem; color: var(--text-secondary); }
+        }
+
+        .habit-inputs {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            input {
+                width: 90px;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                padding: 0.4rem 0.6rem;
+                font-size: 0.95rem;
+                background: var(--surface-color);
+                color: var(--text-color);
+                outline: none;
+                &:focus { border-color: var(--primary-color); }
+            }
+            input + span + input { width: 70px; }
+        }
+
+        .bar {
+            height: 6px;
+            border-radius: 999px;
+            background: var(--surface-3);
+            overflow: hidden;
+            .fill { height: 100%; background: var(--primary-color); transition: width 0.25s; }
+        }
+        &.done .bar .fill { background: var(--tint-green-text); }
+    }
+
+    @media (max-width: 768px) { padding: 1rem; }
+}

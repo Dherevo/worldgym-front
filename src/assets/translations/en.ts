@@ -11,6 +11,7 @@ import stats from './pages/stats';
 import onboarding from './pages/onboarding';
 import cycle from './pages/cycle';
 import measurements from './pages/measurements';
+import habits from './pages/habits';
 import notFound from './pages/notFound';
 
 const en = {
@@ -27,6 +28,7 @@ const en = {
     onboarding: onboarding.en,
     cycle: cycle.en,
     measurements: measurements.en,
+    habits: habits.en,
     notFound: notFound.en,
 };
 
