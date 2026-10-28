@@ -14,6 +14,7 @@ import WorkoutPage from '../pages/workout/workout.vue';
 import StatsPage from '../pages/stats/stats.vue';
 import OnboardingPage from '../pages/onboarding/onboarding.vue';
 import CyclePage from '../pages/cycle/cycle.vue';
+import MeasurementsPage from '../pages/measurements/measurements.vue';
 
 const routes : IRoutes = {
     layouts: {
@@ -61,6 +62,10 @@ const routes : IRoutes = {
         {
             path: '/onboarding',
             component: OnboardingPage
+        },
+        {
+            path: '/measurements',
+            component: MeasurementsPage
         },
         {
             path: '/cycle',

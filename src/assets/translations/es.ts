@@ -10,6 +10,7 @@ import workout from './pages/workout';
 import stats from './pages/stats';
 import onboarding from './pages/onboarding';
 import cycle from './pages/cycle';
+import measurements from './pages/measurements';
 import notFound from './pages/notFound';
 
 const es = {
@@ -25,6 +26,7 @@ const es = {
     stats: stats.es,
     onboarding: onboarding.es,
     cycle: cycle.es,
+    measurements: measurements.es,
     notFound: notFound.es,
 };
 

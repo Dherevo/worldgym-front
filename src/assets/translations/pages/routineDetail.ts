@@ -5,7 +5,6 @@ export default {
         loading: 'Carregant...',
         noDays: 'No hi ha dies configurats. Afegeix-ne un!',
         dayNumber: 'Dia {{n}}',
-        defaultDayName: 'Dia {{n}}',
         train: 'Entrenar',
         edit: 'Editar',
         delete: 'Eliminar',
@@ -24,9 +23,9 @@ export default {
         dayForm: {
             titleEdit: 'Editar dia',
             titleNew: 'Nou dia',
-            dayNumber: 'Número de dia',
+            dayNumber: 'Ordre dins la rutina',
             name: 'Nom',
-            namePlaceholder: 'Ex: Dia 1 - Pit i Tríceps',
+            namePlaceholder: 'Ex: Pit i Tríceps',
         },
         exerciseForm: {
             titleEdit: 'Editar exercici',
@@ -60,7 +59,6 @@ export default {
         loading: 'Cargando...',
         noDays: 'No hay días configurados. ¡Añade uno!',
         dayNumber: 'Día {{n}}',
-        defaultDayName: 'Día {{n}}',
         train: 'Entrenar',
         edit: 'Editar',
         delete: 'Eliminar',
@@ -79,9 +77,9 @@ export default {
         dayForm: {
             titleEdit: 'Editar día',
             titleNew: 'Nuevo día',
-            dayNumber: 'Número de día',
+            dayNumber: 'Orden dentro de la rutina',
             name: 'Nombre',
-            namePlaceholder: 'Ej: Día 1 - Pecho y Tríceps',
+            namePlaceholder: 'Ej: Pecho y Tríceps',
         },
         exerciseForm: {
             titleEdit: 'Editar ejercicio',
@@ -115,7 +113,6 @@ export default {
         loading: 'Loading...',
         noDays: 'No days set up yet. Add one!',
         dayNumber: 'Day {{n}}',
-        defaultDayName: 'Day {{n}}',
         train: 'Train',
         edit: 'Edit',
         delete: 'Delete',
@@ -134,9 +131,9 @@ export default {
         dayForm: {
             titleEdit: 'Edit day',
             titleNew: 'New day',
-            dayNumber: 'Day number',
+            dayNumber: 'Order in the routine',
             name: 'Name',
-            namePlaceholder: 'E.g. Day 1 - Chest and Triceps',
+            namePlaceholder: 'E.g. Chest and Triceps',
         },
         exerciseForm: {
             titleEdit: 'Edit exercise',
