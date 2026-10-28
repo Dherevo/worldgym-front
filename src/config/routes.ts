@@ -5,6 +5,8 @@ import HomePage from '../pages/home/home.vue';
 import DefaultLayout from '../layouts/default/default.vue';
 import LoginPage from '../pages/login/login.vue';
 import BackofficeLayout from '../layouts/backoffice/backoffice.vue';
+// Like default, but without redirecting logged users to '/': for screens only they can see (onboarding)
+import PlainLayout from '../layouts/plain/plain.vue';
 import ExercisesPage from '../pages/exercises/exercises.vue';
 import RoutinesPage from '../pages/routines/routines.vue';
 import RoutineDetailPage from '../pages/routine-detail/routine-detail.vue';
@@ -20,7 +22,8 @@ import HabitsPage from '../pages/habits/habits.vue';
 const routes : IRoutes = {
     layouts: {
         default: DefaultLayout,
-        backoffice: BackofficeLayout
+        backoffice: BackofficeLayout,
+        plain: PlainLayout
     },
 
     routes: [
