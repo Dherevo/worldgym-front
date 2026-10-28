@@ -1,0 +1,89 @@
+.profile-page {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+
+    .card {
+        width: 100%;
+        max-width: 480px;
+        padding: 2rem;
+        border-radius: 16px;
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+
+        h1 { margin: 0; font-size: 1.6rem; }
+        .sub { margin: -0.5rem 0 0; color: var(--text-secondary); }
+        .note { margin: -0.75rem 0 0; font-size: 0.8rem; color: var(--text-muted); }
+
+        .row { display: flex; gap: 1rem; }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            flex: 1;
+
+            > span {
+                font-size: 0.78rem;
+                font-weight: 700;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--text-secondary);
+            }
+
+            input {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 0.8rem 1rem;
+                border-radius: 10px;
+                border: 1.5px solid var(--border-color);
+                background: var(--surface-2);
+                color: var(--text-color);
+                font-size: 1rem;
+                outline: none;
+                &:focus { border-color: var(--primary-color); }
+            }
+        }
+
+        .options {
+            display: flex;
+            gap: 0.5rem;
+
+            .option {
+                flex: 1;
+                padding: 0.75rem 0.5rem;
+                border-radius: 10px;
+                border: 1.5px solid var(--border-color);
+                background: var(--surface-2);
+                color: var(--text-color);
+                font-size: 0.95rem;
+                font-weight: 600;
+                cursor: pointer;
+                &:hover { border-color: var(--primary-color); }
+                &.selected { border-color: var(--primary-color); background: var(--primary-color); color: #fff; }
+            }
+        }
+
+        .submit {
+            padding: 0.9rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            background: var(--primary-color);
+            cursor: pointer;
+            &:hover:not(:disabled) { background: var(--primary-dark-color); }
+            &:disabled { opacity: 0.45; cursor: not-allowed; }
+        }
+    }
+
+    @media (max-width: 450px) {
+        padding: 1rem;
+        .card { padding: 1.5rem 1.25rem; }
+        .row { flex-direction: column; }
+    }
+}

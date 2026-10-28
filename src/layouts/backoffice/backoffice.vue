@@ -22,7 +22,7 @@
                     @click="setLanguage(lang.code)">{{ lang.label }}</span>
             </div>
             <div class="user flex-row gap10">
-                <div class="user-identity">
+                <div class="user-identity" style="cursor:pointer" @click="to('/profile')" :title="$t('layout.profile')">
                     <div>{{ user?.name }}</div>
                     <div style="font-size:.8rem">{{ user?.email }}</div>
                 </div>
@@ -48,7 +48,7 @@
                         :href="item.path" :class="{ active: isActive(item.path) }" @click.prevent="to(item.path)">
                         <svg-icon :name="item.icon"/> {{ $t(item.label) }}
                     </a>
-                    <div class="mm-user" v-if="user">
+                    <div class="mm-user" v-if="user" @click="to('/profile')">
                         <div>{{ user.name }}</div>
                         <div class="mm-user-email">{{ user.email }}</div>
                     </div>

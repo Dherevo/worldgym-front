@@ -12,6 +12,7 @@ import onboarding from './pages/onboarding';
 import cycle from './pages/cycle';
 import measurements from './pages/measurements';
 import habits from './pages/habits';
+import profile from './pages/profile';
 import notFound from './pages/notFound';
 
 const ca = {
@@ -29,6 +30,7 @@ const ca = {
     cycle: cycle.ca,
     measurements: measurements.ca,
     habits: habits.ca,
+    profile: profile.ca,
     notFound: notFound.ca,
 };
 
