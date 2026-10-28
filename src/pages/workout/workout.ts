@@ -308,9 +308,11 @@ class WorkoutPage extends Vue {
     }
 
     afterRest() {
-        if (this.totalSets === -1 && this.isFreeWorkout) {
+        // Without planned sets (free workout, or a routine exercise with no sets target) there is
+        // no count to finish at, so ask instead of offering another set forever
+        if (this.totalSets === -1) {
             this.state = 'choose';
-        } else if (this.doneCount < this.totalSets || this.totalSets === -1) {
+        } else if (this.doneCount < this.totalSets) {
             this.state = 'idle';
         } else {
             this.nextExercise();

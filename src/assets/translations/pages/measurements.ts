@@ -34,7 +34,7 @@ export default {
         },
         edit: 'Editar',
         delete: 'Eliminar',
-        confirmDelete: 'Vols eliminar la mesura del {date}?',
+        confirmDelete: 'Vols eliminar la mesura del {{date}}?',
         note: 'L\'IMC no distingeix múscul de greix; la cintura és un bon complement.',
         modal: {
             newTitle: 'Nova mesura',
@@ -91,7 +91,7 @@ export default {
         },
         edit: 'Editar',
         delete: 'Eliminar',
-        confirmDelete: '¿Quieres eliminar la medida del {date}?',
+        confirmDelete: '¿Quieres eliminar la medida del {{date}}?',
         note: 'El IMC no distingue músculo de grasa; la cintura es un buen complemento.',
         modal: {
             newTitle: 'Nueva medida',
@@ -148,7 +148,7 @@ export default {
         },
         edit: 'Edit',
         delete: 'Delete',
-        confirmDelete: 'Delete the measurement from {date}?',
+        confirmDelete: 'Delete the measurement from {{date}}?',
         note: 'BMI cannot tell muscle from fat; waist is a good complement.',
         modal: {
             newTitle: 'New measurement',

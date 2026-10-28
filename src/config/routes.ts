@@ -15,6 +15,7 @@ import StatsPage from '../pages/stats/stats.vue';
 import OnboardingPage from '../pages/onboarding/onboarding.vue';
 import CyclePage from '../pages/cycle/cycle.vue';
 import MeasurementsPage from '../pages/measurements/measurements.vue';
+import HabitsPage from '../pages/habits/habits.vue';
 
 const routes : IRoutes = {
     layouts: {
@@ -66,6 +67,10 @@ const routes : IRoutes = {
         {
             path: '/measurements',
             component: MeasurementsPage
+        },
+        {
+            path: '/habits',
+            component: HabitsPage
         },
         {
             path: '/cycle',

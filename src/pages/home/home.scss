@@ -53,6 +53,47 @@
         50% { opacity: 0.6; transform: scale(0.85); }
     }
 
+    .week-strip {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+        .week-dots { display: flex; gap: 0.4rem; }
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            &.filled { background: var(--tint-green-text); border-color: var(--tint-green-text); }
+        }
+        .week-text { font-weight: 600; font-size: 0.95rem; }
+        .week-hint { font-weight: 400; color: var(--text-secondary); }
+    }
+
+    .rest-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        background: var(--tint-green-bg);
+        border: 1px solid var(--tint-green-text);
+        border-radius: 16px;
+        padding: 1.5rem 1.75rem;
+        .rest-title { font-size: 1.5rem; font-weight: 800; color: var(--tint-green-text); }
+        .rest-sub { margin-top: 0.25rem; color: var(--text-secondary); }
+        .btn-train-anyway {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 10px;
+            padding: 0.6rem 1.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            &:hover { background: var(--surface-2); }
+        }
+    }
+
     .today-card {
         position: relative;
         overflow: hidden;

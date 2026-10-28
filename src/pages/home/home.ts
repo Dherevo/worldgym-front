@@ -1,7 +1,9 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
+import DailyHabits from "@/components/daily-habits/daily-habits.vue";
+import localDate from "@/modules/localDate";
 
-@Component({})
+@Component({ components: { DailyHabits } })
 class HomePage extends Vue {
 
     activeWorkout: any = null;
@@ -19,13 +21,36 @@ class HomePage extends Vue {
     loadingPickerDay = false;
     startingPicker = false;
 
+    // Training days done this week and whether today is a rest day
+    week: any = null;
+    forceTrain = false;
+
     recentWorkouts: any[] = [];
     loadingWorkouts = false;
 
     created() {
         this.fetchActiveWorkout();
+        this.fetchWeek();
         this.fetchDefaultRoutine();
         this.fetchRecentWorkouts();
+    }
+
+    fetchWeek() {
+        http.get('/week-status').data({ date: localDate() })
+        .then((res: any) => { this.week = res; })
+        .catch(() => { this.week = null; });
+    }
+
+    get restMode(): boolean {
+        return !!this.week?.rest_day && !this.forceTrain && !this.activeWorkout;
+    }
+
+    // Fewer days left in the week than workouts missing: it cannot be completed
+    get weekBehind(): boolean {
+        const w = this.week;
+        if (!w || !w.routine_days_total || w.week_complete) return false;
+        const missing = w.routine_days_total - w.days_done;
+        return missing > w.days_left + (w.trained_today ? 0 : 1);
     }
 
     fetchActiveWorkout() {
