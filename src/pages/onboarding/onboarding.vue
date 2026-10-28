@@ -1,5 +1,5 @@
 <template>
-    <AppPage name="onboarding-page" layout="default">
+    <AppPage name="onboarding-page" layout="plain">
         <div class="onboarding-page">
             <form v-if="ready" class="card" @submit.prevent="submit()">
                 <h1>{{ $t('onboarding.title') }}</h1>
