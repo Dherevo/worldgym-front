@@ -21,6 +21,7 @@ class Backoffice extends Vue {
         { path: '/routines',  icon: 'prime/calendar',  label: 'layout.menu.routines' },
         { path: '/workouts',  icon: 'prime/history',   label: 'layout.menu.history' },
         { path: '/stats',     icon: 'prime/chart-bar', label: 'layout.menu.stats' },
+        { path: '/measurements', icon: 'prime/chart-line', label: 'layout.menu.measurements' },
     ];
 
     get menuItems() {

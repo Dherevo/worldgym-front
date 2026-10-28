@@ -10,6 +10,7 @@ import workout from './pages/workout';
 import stats from './pages/stats';
 import onboarding from './pages/onboarding';
 import cycle from './pages/cycle';
+import measurements from './pages/measurements';
 import notFound from './pages/notFound';
 
 const ca = {
@@ -25,6 +26,7 @@ const ca = {
     stats: stats.ca,
     onboarding: onboarding.ca,
     cycle: cycle.ca,
+    measurements: measurements.ca,
     notFound: notFound.ca,
 };
 

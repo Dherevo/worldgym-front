@@ -81,7 +81,7 @@ class RoutineDetailPage extends Vue {
     openAddDay() {
         this.editingDay = null;
         const nextNum = (this.routine?.days?.length || 0) + 1;
-        this.dayForm = { day_number: nextNum, name: translate.get('routineDetail.defaultDayName', { n: nextNum }) };
+        this.dayForm = { day_number: nextNum, name: '' };
         this.showDayForm = true;
     }
 

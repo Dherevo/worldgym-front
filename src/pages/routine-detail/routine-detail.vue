@@ -19,8 +19,7 @@
                 <div v-for="day in routine.days" :key="day.id" class="day-card">
                     <div class="day-header">
                         <div>
-                            <span class="day-number">{{ $t('routineDetail.dayNumber', { n: day.day_number }) }}</span>
-                            <span class="day-name">{{ day.name }}</span>
+                            <span class="day-name">{{ day.name || $t('routineDetail.dayNumber', { n: day.day_number }) }}</span>
                         </div>
                         <div class="day-actions">
                             <button class="btn-train" @click="startDay(day)" :disabled="starting">

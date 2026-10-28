@@ -1,0 +1,198 @@
+.measurements-page {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        h1 { margin: 0; }
+        .sub { margin: 0.25rem 0 0; color: var(--text-secondary); }
+        .btn-new {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.55rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            &:hover { background: var(--primary-dark-color); }
+        }
+    }
+
+    .loading-text { color: var(--text-secondary); padding: 1rem 0; }
+
+    .empty-card {
+        background: var(--surface-color);
+        border: 1px dashed var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        h3 { margin: 0 0 0.4rem; }
+        p { margin: 0; color: var(--text-secondary); }
+    }
+
+    .summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+
+        .stat-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem 1.1rem;
+            .stat-label {
+                font-size: 0.75rem;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                color: var(--text-secondary);
+            }
+            .stat-value { font-size: 1.4rem; font-weight: 700; margin-top: 0.35rem; }
+            .stat-hint { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.15rem; }
+            .badge {
+                display: inline-block;
+                margin-top: 0.35rem;
+                padding: 0.15rem 0.6rem;
+                border-radius: 999px;
+                font-size: 0.78rem;
+                font-weight: 700;
+                &.normal { background: var(--tint-green-bg); color: var(--tint-green-text); }
+                &.underweight { background: var(--tint-blue-bg); color: var(--tint-blue-text); }
+                &.overweight { background: var(--tint-yellow-bg); color: var(--tint-yellow-text); }
+                &.obese { background: var(--tint-red-bg); color: var(--tint-red-text); }
+            }
+        }
+    }
+
+    .chart-block {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+        .chart-title {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.5rem;
+        }
+        canvas { display: block; width: 100% !important; height: 280px !important; }
+    }
+
+    .table-wrap {
+        overflow-x: auto;
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+
+        .measurements-table {
+            width: 100%;
+            border-collapse: collapse;
+            th, td { padding: 0.7rem 1rem; text-align: left; white-space: nowrap; }
+            th {
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--text-secondary);
+                border-bottom: 1px solid var(--border-color);
+            }
+            tbody tr + tr td { border-top: 1px solid var(--border-subtle); }
+            .actions { text-align: right; }
+            button {
+                background: transparent;
+                border: none;
+                color: var(--text-muted);
+                font-size: 1rem;
+                cursor: pointer;
+                padding: 0.25rem 0.5rem;
+                border-radius: 6px;
+            }
+            .btn-edit:hover { background: var(--surface-2); color: var(--text-color); }
+            .btn-delete:hover { background: var(--tint-red-bg); color: var(--tint-red-text); }
+        }
+    }
+
+    .note { margin-top: 1.25rem; font-size: 0.8rem; color: var(--text-muted); }
+
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 1rem;
+    }
+
+    .modal {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 2rem;
+        width: 100%;
+        max-width: 380px;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        h3 { margin: 0; }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
+            input {
+                border: 1px solid var(--border-color);
+                border-radius: 6px;
+                padding: 0.55rem 0.75rem;
+                font-size: 0.95rem;
+                background: var(--surface-2);
+                color: var(--text-color);
+                outline: none;
+                &:focus { border-color: var(--primary-color); }
+            }
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            button {
+                border-radius: 8px;
+                padding: 0.55rem 1.25rem;
+                font-size: 0.9rem;
+                font-weight: 600;
+                cursor: pointer;
+            }
+            .btn-cancel {
+                background: transparent;
+                border: 1px solid var(--border-color);
+                color: var(--text-secondary);
+                &:hover { background: var(--surface-2); }
+            }
+            .btn-save {
+                background: var(--primary-color);
+                color: #fff;
+                border: none;
+                &:hover:not(:disabled) { background: var(--primary-dark-color); }
+                &:disabled { opacity: 0.5; cursor: not-allowed; }
+            }
+        }
+    }
+
+    @media (max-width: 768px) {
+        padding: 1rem;
+        .page-header { flex-direction: column; .btn-new { width: 100%; } }
+        .chart-block { padding: 0.75rem; canvas { height: 220px !important; } }
+    }
+}
