@@ -12,6 +12,8 @@ import WorkoutsPage from '../pages/workouts/workouts.vue';
 import WorkoutDetailPage from '../pages/workout-detail/workout-detail.vue';
 import WorkoutPage from '../pages/workout/workout.vue';
 import StatsPage from '../pages/stats/stats.vue';
+import OnboardingPage from '../pages/onboarding/onboarding.vue';
+import CyclePage from '../pages/cycle/cycle.vue';
 
 const routes : IRoutes = {
     layouts: {
@@ -55,6 +57,14 @@ const routes : IRoutes = {
         {
             path: '/stats',
             component: StatsPage
+        },
+        {
+            path: '/onboarding',
+            component: OnboardingPage
+        },
+        {
+            path: '/cycle',
+            component: CyclePage
         },
 
         // Leave always 404 Page always at the end

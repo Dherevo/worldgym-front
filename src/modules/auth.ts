@@ -20,6 +20,9 @@ export default {
         .catch(reject)
     }),
 
+    // Height, weight and gender are asked once on an intermediate screen
+    needsProfile: (user: any): boolean => !user?.height_cm || !user?.weight_kg || !user?.gender,
+
     login: (username: string, password: string) => new Promise((resolve, reject) => {
         http.post('/auth/login')
         .data({ username, password })

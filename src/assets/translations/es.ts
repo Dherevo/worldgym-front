@@ -8,6 +8,8 @@ import workouts from './pages/workouts';
 import workoutDetail from './pages/workoutDetail';
 import workout from './pages/workout';
 import stats from './pages/stats';
+import onboarding from './pages/onboarding';
+import cycle from './pages/cycle';
 import notFound from './pages/notFound';
 
 const es = {
@@ -21,6 +23,8 @@ const es = {
     workoutDetail: workoutDetail.es,
     workout: workout.es,
     stats: stats.es,
+    onboarding: onboarding.es,
+    cycle: cycle.es,
     notFound: notFound.es,
 };
 

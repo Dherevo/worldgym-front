@@ -1,6 +1,7 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { translate } from "lib";
 import auth from "@/modules/auth";
+import userStore from "@/modules/userStore";
 
 @Component({})
 class LoginPage extends Vue {
@@ -18,7 +19,7 @@ class LoginPage extends Vue {
         auth.login(this.username, this.password)
         .then(() => auth.fetchUserData())
         .then(() => {
-            this.to('/');
+            this.to(auth.needsProfile(userStore.data) ? '/onboarding' : '/');
         })
         .catch(() => {
             this.error = translate.get('login.invalidCredentials');
