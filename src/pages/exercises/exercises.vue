@@ -147,6 +147,31 @@
                         </label>
                     </div>
 
+                    <div class="form-group">
+                        <label>{{ $t('recommendation.tags.intensity') }}</label>
+                        <select v-model.number="form.intensity">
+                            <option :value="1">{{ $t('recommendation.tags.low') }}</option>
+                            <option :value="2">{{ $t('recommendation.tags.medium') }}</option>
+                            <option :value="3">{{ $t('recommendation.tags.high') }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ $t('recommendation.tags.type') }}</label>
+                        <select v-model="form.type">
+                            <option value="strength">{{ $t('recommendation.tags.strength') }}</option>
+                            <option value="cardio">{{ $t('recommendation.tags.cardio') }}</option>
+                            <option value="mobility">{{ $t('recommendation.tags.mobility') }}</option>
+                            <option value="stretch">{{ $t('recommendation.tags.stretch') }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ $t('recommendation.tags.impact') }}</label>
+                        <select v-model="form.impact">
+                            <option value="low">{{ $t('recommendation.tags.impactLow') }}</option>
+                            <option value="high">{{ $t('recommendation.tags.impactHigh') }}</option>
+                        </select>
+                    </div>
+
                     <div class="form-group" v-if="!form.is_bodyweight">
                         <label>{{ $t('exercises.form.equipment') }}</label>
                         <select v-model="form.equipment_id">

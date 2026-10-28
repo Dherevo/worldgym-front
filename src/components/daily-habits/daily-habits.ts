@@ -29,7 +29,9 @@ class DailyHabits extends Vue {
     }
 
     apply(res: any) {
-        this.habits = (res.habits ?? []).filter((h: any) => h.is_active);
+        const order = ['warmup', 'steps', 'abs', 'stretch'];
+        const rank = (h: any) => (h.key ? order.indexOf(h.key) : order.length);
+        this.habits = (res.habits ?? []).filter((h: any) => h.is_active).sort((a: any, b: any) => rank(a) - rank(b));
 
         const drafts: Record<number, any> = {};
         for (const h of this.habits) {

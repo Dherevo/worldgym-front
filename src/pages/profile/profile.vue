@@ -31,6 +31,20 @@
                     {{ saving ? $t('profile.saving') : $t('profile.save') }}
                 </button>
             </form>
+
+            <div class="card equipment-card">
+                <h2>{{ $t('recommendation.homeEquipment.title') }}</h2>
+                <p class="sub">{{ $t('recommendation.homeEquipment.text') }}</p>
+                <div class="equipment-list">
+                    <label v-for="eq in equipments" :key="eq.id" class="equipment-item">
+                        <input type="checkbox" :checked="homeIds.includes(eq.id)" @change="toggleHome(eq.id)" />
+                        {{ eq.name }}
+                    </label>
+                </div>
+                <button type="button" class="submit" :disabled="savingEquipment" @click="saveEquipment()">
+                    {{ $t('recommendation.homeEquipment.save') }}
+                </button>
+            </div>
         </div>
     </AppPage>
 </template>

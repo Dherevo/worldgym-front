@@ -28,6 +28,23 @@
                     </div>
                 </div>
 
+                <div class="wk-extra" v-if="stretchHabit">
+                    <div class="wk-extra-title">{{ $t('recommendation.workout.stretchTitle') }}</div>
+                    <div class="wk-extra-text">{{ $t('recommendation.workout.stretchText') }}</div>
+                    <span v-if="stretchHabit.log?.completed" class="wk-pill">✓ {{ $t('recommendation.workout.warmupDone') }}</span>
+                    <button v-else class="wk-extra-btn" @click="markHabit('stretch')">{{ $t('recommendation.workout.warmupMark') }}</button>
+                </div>
+
+                <div class="wk-extra" v-if="!workout?.feedback">
+                    <div class="wk-extra-title">{{ $t('recommendation.workout.feedbackTitle') }}</div>
+                    <p class="wk-extra-text" v-if="feedbackGiven">{{ $t('recommendation.workout.feedbackThanks') }}</p>
+                    <div class="wk-feedback" v-else>
+                        <button class="wk-extra-btn" @click="sendFeedback('hard')">{{ $t('recommendation.workout.hard') }}</button>
+                        <button class="wk-extra-btn" @click="sendFeedback('ok')">{{ $t('recommendation.workout.ok') }}</button>
+                        <button class="wk-extra-btn" @click="sendFeedback('easy')">{{ $t('recommendation.workout.easy') }}</button>
+                    </div>
+                </div>
+
                 <button class="btn-primary" @click="to('/')">{{ $t('workout.done.backToDashboard') }}</button>
             </div>
 
@@ -134,7 +151,21 @@
                         {{ $t('workout.card.set', { current: doneCount + 1 }) }}
                     </div>
                     <div class="target-hint" v-if="targetSet">
-                        {{ $t('workout.card.target') }}: {{ targetSet.reps }} {{ $t('workout.history.reps') }}<template v-if="targetSet.weight > 0"> · {{ targetSet.weight }} kg</template><template v-if="targetRestLabel"> · {{ targetRestLabel }}</template>
+                        {{ $t('workout.card.target') }}: {{ targetSet.reps_target ?? targetSet.reps }} {{ $t('workout.history.reps') }}<template v-if="targetSet.weight > 0"> · {{ targetSet.weight }} kg</template><template v-if="targetRestLabel"> · {{ targetRestLabel }}</template>
+                    </div>
+
+                    <div class="wk-extra" v-if="showGeneralWarmup">
+                        <div class="wk-extra-title">{{ $t('recommendation.workout.warmupTitle') }}</div>
+                        <div class="wk-extra-text">{{ $t('recommendation.workout.warmupText') }}</div>
+                        <button class="wk-extra-btn" @click="markHabit('warmup')">{{ $t('recommendation.workout.warmupMark') }}</button>
+                    </div>
+
+                    <div class="wk-extra" v-if="warmupSets.length">
+                        <div class="wk-extra-title">{{ $t('recommendation.workout.warmupSets') }}</div>
+                        <div class="wk-extra-text">{{ $t('recommendation.workout.warmupSetsText') }}</div>
+                        <div class="wk-warmup-sets">
+                            <span v-for="(w, i) in warmupSets" :key="i" class="wk-pill">{{ w.reps }} × {{ w.weight }} kg</span>
+                        </div>
                     </div>
 
                     <div class="card-divider"></div>

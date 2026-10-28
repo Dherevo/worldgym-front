@@ -149,7 +149,7 @@ class ExercisesPage extends Vue {
 
     openCreate() {
         this.editingExercise = null;
-        this.form = { name: '', description: '', equipment_id: null, is_global: false, is_bodyweight: false, muscles: [] };
+        this.form = { name: '', description: '', equipment_id: null, is_global: false, is_bodyweight: false, intensity: 2, type: 'strength', impact: 'low', muscles: [] };
         this.texts = this.emptyTexts();
         this.resetMedia(null);
         this.showForm = true;
@@ -163,6 +163,9 @@ class ExercisesPage extends Vue {
             equipment_id: ex.equipment?.id || null,
             is_global: ex.is_global,
             is_bodyweight: ex.is_bodyweight ?? false,
+            intensity: ex.intensity ?? 2,
+            type: ex.type ?? 'strength',
+            impact: ex.impact ?? 'low',
             muscles: ex.muscles?.map((m: any) => ({ muscle_id: m.id, is_primary: !!m.pivot?.is_primary })) || []
         };
         this.texts = this.emptyTexts();
@@ -231,6 +234,9 @@ class ExercisesPage extends Vue {
         const body: any = {
             equipment_id: this.form.is_bodyweight ? null : this.form.equipment_id,
             muscles: this.form.muscles,
+            intensity: this.form.intensity,
+            type: this.form.type,
+            impact: this.form.impact,
         };
         if (!this.editingExercise) {
             body.name = first('name');
