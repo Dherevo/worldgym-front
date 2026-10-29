@@ -103,6 +103,7 @@
 
             .exercises-table {
                 overflow-x: auto;
+                overflow-y: hidden;
                 margin-bottom: 0.75rem;
                 table {
                     width: 100%;
@@ -233,7 +234,7 @@
                     padding: 0.35rem 0.85rem;
                     background: var(--surface-3);
                     color: var(--text-secondary);
-                    font-size: 0.72rem;
+                    font-size: 0.8rem;
                     font-weight: 800;
                     letter-spacing: 0.08em;
                     text-transform: uppercase;

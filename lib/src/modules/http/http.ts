@@ -385,6 +385,14 @@ export default class http {
         return req;
     }
 
+    public static patch(url: string = '', data?: any) {
+        const req = this.generateRequest('PATCH', url);
+        if (data) {
+            req.data(data);
+        }
+        return req;
+    }
+
     public static delete(url: string = '', data?: any) {
         const req = this.generateRequest('DELETE', url);
         if (data) {

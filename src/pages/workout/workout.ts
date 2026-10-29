@@ -190,7 +190,7 @@ class WorkoutPage extends Vue {
 
     persistOrder() {
         const order = this.exercises.map((we: any, i: number) => ({ id: we.id, order_index: i + 1 }));
-        (http as any).patch(`/workouts/${this.workoutId}/exercises/reorder`).data({ order })
+        http.patch(`/workouts/${this.workoutId}/exercises/reorder`).data({ order })
         .catch(() => App.notification(translate.get('workout.errors.reorder')).setType('error').show());
     }
 

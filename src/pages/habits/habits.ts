@@ -113,7 +113,7 @@ class HabitsPage extends Vue {
         this.dragFromIdx = null;
 
         const order = this.habits.map((h: any, i: number) => ({ id: h.id, order_index: i + 1 }));
-        (http as any).patch('/habits/reorder').data({ order })
+        http.patch('/habits/reorder').data({ order })
         .catch(() => {
             App.notification(translate.get('habits.page.errors.reorder')).setType('error').show();
             this.fetchHabits();

@@ -12,3 +12,36 @@
 p, h1, h2, h3, h4, h5, h6, b, strong, i, em, span, ul, li, ol, label, input, textarea, select, option, text {
     color: var(--text-color);
 }
+
+// Touch screens: comfortable tap targets, no zoom when focusing a field, readable base text
+@media (max-width: 768px) {
+    html { -webkit-text-size-adjust: 100%; }
+    body { line-height: 1.5; }
+
+    button,
+    [role="button"],
+    select,
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]) {
+        min-height: 44px;
+    }
+
+    // iOS zooms the page when a field below 16px is focused
+    input, select, textarea { font-size: 16px; }
+
+    button, a, select { touch-action: manipulation; }
+
+    input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; }
+}
+
+// Modals (every page uses .modal-overlay > .modal): never taller than the visible screen, scroll inside
+.modal-overlay > .modal {
+    max-height: calc(100vh - 2rem) !important;
+    max-height: calc(100dvh - 2rem) !important;
+    overflow-y: auto !important;
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .modal-overlay { padding: 1rem; box-sizing: border-box; }
+    .modal-overlay > .modal { width: 100% !important; max-width: 520px !important; padding: 1.25rem !important; }
+}
