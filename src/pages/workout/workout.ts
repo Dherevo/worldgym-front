@@ -57,6 +57,7 @@ class WorkoutPage extends Vue {
     habitsByKey: Record<string, any> = {};
     feedbackGiven: string | null = null;
     workoutStartedAt: string | null = null;
+    activeSeconds: number | null = null;
 
     get workoutId() { return this.param('id'); }
 
@@ -89,7 +90,7 @@ class WorkoutPage extends Vue {
 
     get workoutDuration(): string {
         if (!this.workoutStartedAt) return '';
-        const secs = Math.round((Date.now() - new Date(this.workoutStartedAt).getTime()) / 1000);
+        const secs = this.activeSeconds ?? Math.round((Date.now() - new Date(this.workoutStartedAt).getTime()) / 1000);
         const h = Math.floor(secs / 3600);
         const m = Math.floor((secs % 3600) / 60);
         if (h > 0) return translate.get('workout.duration.hoursMinutes', { h, m });
@@ -251,6 +252,7 @@ class WorkoutPage extends Vue {
     finishRoutine() {
         http.put(`/workouts/${this.workoutId}`)
         .data({ status: 'finished', finished_at: new Date().toISOString() })
+        .then((res: any) => { this.activeSeconds = res?.active_seconds ?? null; })
         .catch(() => {});
         this.clearProgress();
         this.state = 'done';
