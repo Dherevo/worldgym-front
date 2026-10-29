@@ -17,10 +17,6 @@
                 <div class="stat-value">{{ overview.total_workouts ?? '—' }}</div>
                 <div class="stat-label">{{ $t('stats.overview.totalWorkouts') }}</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-value">{{ overview.total_volume_kg ? formatVolume(overview.total_volume_kg) : '—' }}</div>
-                <div class="stat-label">{{ $t('stats.overview.totalVolume') }}</div>
-            </div>
             <div class="stat-card highlight">
                 <div class="stat-value">🔥 {{ overview.week_streak ?? 0 }}</div>
                 <div class="stat-label">{{ $t('stats.dash2.weeksStreak') }} · {{ overview.streak ?? 0 }} {{ $t('stats.dash2.daysShort') }}</div>
@@ -54,9 +50,7 @@
             </div>
 
             <p class="lw-compare" v-if="overview.last_workout.compared_with">
-                {{ overview.last_workout.compared_with === 'day'
-                    ? $t('stats.dash2.vsDay', { day: overview.last_workout.day_name, date: formatShortDate(overview.last_workout.prev_date) })
-                    : $t('stats.dash.last.vsExercises') }}
+                {{ comparedText(overview.last_workout) }}
             </p>
 
             <div class="lw-list">
@@ -85,7 +79,7 @@
             <div class="cal-grid">
                 <div v-for="w in weekdayLabels" :key="w" class="cal-dow">{{ w }}</div>
                 <template v-for="(c, i) in calendarMonth.cells" :key="i">
-                    <div v-if="c" class="cal-day" :class="{ trained: c.count > 0, multi: c.count > 1, today: c.today, future: c.future }"
+                    <div v-if="c" class="cal-day" :class="['l' + c.level, { today: c.today, future: c.future }]"
                         :title="$t('stats.dash.heatmap.tooltip', { date: formatHistoryDate(c.date), n: c.count })">{{ c.day }}</div>
                     <div v-else class="cal-day empty"></div>
                 </template>
@@ -110,11 +104,14 @@
             </SectionTile>
         </div>
 
-        <!-- Monthly trend (collapsed) -->
-        <details class="section-card collapsible" v-if="overview?.monthly?.length" @toggle="onMonthlyToggle($event)">
-            <summary><h2>{{ $t('stats.dash.monthly.title') }}</h2></summary>
-            <div class="chart-wrap"><canvas id="monthlyCanvas"></canvas></div>
-        </details>
+        <!-- Monthly trend (collapsed until opened) -->
+        <div class="section-card collapsible" v-if="overview?.monthly?.length">
+            <button type="button" class="collapse-head" :aria-expanded="monthlyOpen" @click="toggleMonthly()">
+                <h2>{{ $t('stats.dash.monthly.title') }}</h2>
+                <span class="collapse-arrow" :class="{ open: monthlyOpen }">&rsaquo;</span>
+            </button>
+            <div v-if="monthlyOpen" class="chart-wrap"><canvas id="monthlyCanvas"></canvas></div>
+        </div>
 
         <!-- Progression: muscle group -> exercise -> last time, current and record -->
         <div class="section-card progress-card">
@@ -128,6 +125,11 @@
             </label>
 
             <div v-if="loadingGroup" class="loading-text">{{ $t('stats.muscleGroup.loading') }}</div>
+
+            <div v-if="groupStats?.sessions?.length" class="group-chart">
+                <div class="chart-title">{{ $t('stats.dash2.progress.groupEvolution', { group: selectedGroupName }) }}</div>
+                <div class="chart-wrap"><canvas id="groupVolumeCanvas"></canvas></div>
+            </div>
 
             <div v-else-if="groupStats" class="ex-list">
                 <div v-if="!(groupStats.bests ?? []).length" class="empty-text">{{ $t('stats.dash2.progress.empty') }}</div>
@@ -161,8 +163,9 @@
                                     <div class="cmp-value">{{ exerciseView(ex.id).current.max_weight }} kg</div>
                                     <div class="cmp-sub">{{ formatShortDate(exerciseView(ex.id).current.date) }} · {{ exerciseView(ex.id).current.total_sets }} {{ $t('stats.dash.last.setsShort') }}</div>
                                     <div class="cmp-sub">{{ formatVolume(exerciseView(ex.id).current.total_volume) }}</div>
-                                    <div class="cmp-delta" :class="deltaClass(exerciseView(ex.id).volumeDelta)" v-if="exerciseView(ex.id).volumeDelta !== null">
-                                        {{ deltaText(exerciseView(ex.id).volumeDelta) }} {{ $t('stats.dash.last.volume').toLowerCase() }}
+                                    <div class="cmp-changes" v-if="exerciseView(ex.id).previous">
+                                        <span v-for="c in exerciseView(ex.id).changes" :key="c.text" class="cmp-delta" :class="c.cls">{{ c.text }}</span>
+                                        <span v-if="!exerciseView(ex.id).changes.length" class="cmp-delta flat">{{ $t('stats.dash2.progress.same') }}</span>
                                     </div>
                                 </div>
 
@@ -171,6 +174,21 @@
                                     <div class="cmp-value">{{ exerciseView(ex.id).pr.best_weight.weight }} kg</div>
                                     <div class="cmp-sub">{{ exerciseView(ex.id).pr.best_weight.reps }} {{ $t('stats.dash2.progress.reps') }} · {{ formatShortDate(exerciseView(ex.id).pr.best_weight.date) }}</div>
                                     <div class="cmp-sub" v-if="exerciseView(ex.id).pr.best_volume">{{ $t('stats.pr.bestVolume') }}: {{ formatVolume(exerciseView(ex.id).pr.best_volume.volume) }}</div>
+                                </div>
+                            </div>
+
+                            <div v-if="exerciseView(ex.id).current && exerciseView(ex.id).sessionCount > 1" class="ex-charts">
+                                <div class="chart-block">
+                                    <div class="chart-title">{{ $t('stats.charts.maxWeightTitle') }}</div>
+                                    <div class="chart-wrap small"><canvas id="weightCanvas"></canvas></div>
+                                </div>
+                                <div class="chart-block">
+                                    <div class="chart-title">{{ $t('stats.charts.volumeTitle') }}</div>
+                                    <div class="chart-wrap small"><canvas id="volumeCanvas"></canvas></div>
+                                </div>
+                                <div class="chart-block">
+                                    <div class="chart-title">{{ $t('stats.charts.avgRepsTitle') }}</div>
+                                    <div class="chart-wrap small"><canvas id="repsCanvas"></canvas></div>
                                 </div>
                             </div>
                         </template>

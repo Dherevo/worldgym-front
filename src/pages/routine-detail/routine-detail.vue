@@ -24,6 +24,7 @@
                             <span v-if="canEdit" class="drag-handle" draggable="true" :title="$t('routineDetail.dragToReorder')"
                                 @dragstart="dragStart('day', di)" @dragend="dragEnd()">⠿</span>
                             <span class="day-name">{{ day.name || $t('routineDetail.dayNumber', { n: day.day_number }) }}</span>
+                            <span v-for="g in dayGroups(day)" :key="g.id" class="group-chip">{{ g.name }}</span>
                         </div>
                         <div class="day-actions">
                             <button class="btn-train" @click="startDay(day)" :disabled="starting">

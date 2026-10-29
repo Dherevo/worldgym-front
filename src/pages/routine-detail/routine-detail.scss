@@ -73,6 +73,16 @@
                 justify-content: space-between;
                 margin-bottom: 1rem;
                 .day-name { font-weight: 600; font-size: 1.05rem; }
+                .day-title { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
+                .group-chip {
+                    padding: 0.15rem 0.65rem;
+                    border-radius: 999px;
+                    background: var(--surface-2);
+                    border: 1px solid var(--border-color);
+                    color: var(--text-secondary);
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                }
                 .day-actions {
                     display: flex;
                     gap: 0.5rem;
