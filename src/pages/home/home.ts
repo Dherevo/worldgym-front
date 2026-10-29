@@ -34,6 +34,21 @@ class HomePage extends Vue {
         this.fetchWeek();
         this.fetchDefaultRoutine();
         this.fetchRecentWorkouts();
+        this.fetchPending();
+    }
+
+    pending: any[] = [];
+
+    fetchPending() {
+        http.get('/pending-exercises').data({ date: localDate() })
+        .then((res: any) => { this.pending = res.items ?? []; })
+        .catch(() => { this.pending = []; });
+    }
+
+    pendingWhen(date: string): string {
+        const [y, m, d] = date.split('-').map(Number);
+        const locale = ({ ca: 'ca-ES', es: 'es-ES', en: 'en-GB' } as any)[translate.currentLanguage] ?? 'ca-ES';
+        return new Date(y, m - 1, d).toLocaleDateString(locale, { weekday: 'long' });
     }
 
     fetchWeek() {

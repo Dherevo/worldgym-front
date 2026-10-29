@@ -39,6 +39,10 @@ class WorkoutPage extends Vue {
     exerciseResults: any[] = [];
     addingExercise: boolean = false;
 
+    // Routine workouts: extra exercise panel and exercises skipped in earlier sessions
+    showAdd = false;
+    pendingItems: any[] = [];
+
     // Historial últimes sessions de l'exercici actual
     exerciseHistory: any[] = [];
     exerciseRecord: { weight: number; reps: number } | null = null;
@@ -108,6 +112,7 @@ class WorkoutPage extends Vue {
         this.fetchWorkout();
         this.fetchExerciseList();
         this.fetchHabits();
+        this.fetchPending();
     }
 
     unmounted() {
@@ -150,6 +155,105 @@ class WorkoutPage extends Vue {
             this.loadExerciseHistory();
         })
         .catch(() => {});
+    }
+
+    fetchPending() {
+        http.get('/pending-exercises').data({ date: localDate() })
+        .then((res: any) => { this.pendingItems = res.items ?? []; })
+        .catch(() => { this.pendingItems = []; });
+    }
+
+    // Skipped exercises of earlier days that are not already in this workout
+    get addSuggestions(): any[] {
+        const inWorkout = new Set(this.exercises.map((e: any) => e.exercise?.id));
+        return this.pendingItems.filter((p: any) => !inWorkout.has(p.exercise_id));
+    }
+
+    // Extra exercises can be added at any moment between sets of a routine workout
+    get canAdd(): boolean {
+        return !this.isFreeWorkout && this.state === 'idle';
+    }
+
+    // Skipping or starting with another exercise only makes sense before the current one has sets logged
+    get canReshuffle(): boolean {
+        return this.canAdd && this.doneCount === 0;
+    }
+
+    persistOrder() {
+        const order = this.exercises.map((we: any, i: number) => ({ id: we.id, order_index: i + 1 }));
+        (http as any).patch(`/workouts/${this.workoutId}/exercises/reorder`).data({ order })
+        .catch(() => App.notification(translate.get('workout.errors.reorder')).setType('error').show());
+    }
+
+    // The planned order is the ideal one, but a machine can be busy: do this exercise now
+    startWith(idx: number) {
+        if (!this.canReshuffle || idx <= this.currentExerciseIdx || idx >= this.exercises.length) return;
+
+        this.exercises.splice(this.currentExerciseIdx, 0, this.exercises.splice(idx, 1)[0]);
+        this.persistOrder();
+        this.exerciseHistory = [];
+        this.exerciseRecord = null;
+        this.loadExerciseHistory();
+        this.saveProgress();
+    }
+
+    skipExercise() {
+        if (!this.canReshuffle || !this.currentExercise) return;
+
+        App.confirm(translate.get('workout.skip.confirm', { name: this.currentExercise.exercise?.name }))
+        .then((ok: boolean) => {
+            if (!ok) return;
+            const we = this.currentExercise;
+            http.delete(`/workouts/${this.workoutId}/exercises/${we.id}`)
+            .then(() => {
+                this.exercises.splice(this.currentExerciseIdx, 1);
+                this.exerciseHistory = [];
+                this.exerciseRecord = null;
+                if (this.currentExerciseIdx >= this.exercises.length) {
+                    this.finishRoutine();
+                } else {
+                    this.loadExerciseHistory();
+                    this.saveProgress();
+                }
+            })
+            .catch(() => App.notification(translate.get('workout.errors.skip')).setType('error').show());
+        });
+    }
+
+    openAdd() {
+        this.exerciseQuery = '';
+        this.exerciseResults = [];
+        this.showAdd = true;
+    }
+
+    closeAdd() {
+        this.showAdd = false;
+    }
+
+    // Added right after the current exercise (use the plan list to do it first)
+    addExercise(ex: any) {
+        if (this.addingExercise) return;
+        this.addingExercise = true;
+        http.post(`/workouts/${this.workoutId}/exercises`)
+        .data({ exercise_id: ex.id })
+        .then((res: any) => {
+            this.exercises.splice(this.currentExerciseIdx + 1, 0, { ...res, sets: res.sets ?? [] });
+            this.persistOrder();
+            this.exerciseQuery = '';
+            this.exerciseResults = [];
+            this.showAdd = false;
+            this.saveProgress();
+        })
+        .catch(() => App.notification(translate.get('workout.errors.addExercise')).setType('error').show())
+        .finally(() => { this.addingExercise = false; });
+    }
+
+    finishRoutine() {
+        http.put(`/workouts/${this.workoutId}`)
+        .data({ status: 'finished', finished_at: new Date().toISOString() })
+        .catch(() => {});
+        this.clearProgress();
+        this.state = 'done';
     }
 
     reconstructProgress() {
@@ -410,11 +514,7 @@ class WorkoutPage extends Vue {
         } else {
             this.currentExerciseIdx++;
             if (this.currentExerciseIdx >= this.exercises.length) {
-                http.put(`/workouts/${this.workoutId}`)
-                .data({ status: 'finished', finished_at: new Date().toISOString() })
-                .catch(() => {});
-                this.clearProgress();
-                this.state = 'done';
+                this.finishRoutine();
             } else {
                 this.loadExerciseHistory();
                 this.state = 'idle';

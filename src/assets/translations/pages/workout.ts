@@ -12,6 +12,9 @@ export default {
             finish: 'Finalitzar',
         },
         exerciseProgress: 'Exercici {{current}} de {{total}}',
+        plan: { startWith: 'Fer-lo ara' },
+        skip: { button: 'Saltar exercici', confirm: 'Vols saltar "{{name}}" d\'avui? El veuràs com a pendent els propers dies.' },
+        add: { button: '+ Afegir exercici', title: 'Afegir un exercici', pending: 'Pendents d\'altres dies', cancel: 'Cancel·lar' },
         pick: {
             question: 'Quin exercici fas?',
             searchPlaceholder: 'Cerca un exercici...',
@@ -79,6 +82,8 @@ export default {
         },
         errors: {
             addExercise: 'Error al afegir exercici',
+            reorder: 'Error en reordenar',
+            skip: 'Error en saltar l\'exercici',
             saveSet: 'Error al desar la sèrie',
         },
         finishConfirm: 'Finalitzar l\'entrenament?',
@@ -96,6 +101,9 @@ export default {
             finish: 'Finalizar',
         },
         exerciseProgress: 'Ejercicio {{current}} de {{total}}',
+        plan: { startWith: 'Hacerlo ahora' },
+        skip: { button: 'Saltar ejercicio', confirm: '¿Quieres saltar "{{name}}" hoy? Lo verás como pendiente los próximos días.' },
+        add: { button: '+ Añadir ejercicio', title: 'Añadir un ejercicio', pending: 'Pendientes de otros días', cancel: 'Cancelar' },
         pick: {
             question: '¿Qué ejercicio haces?',
             searchPlaceholder: 'Busca un ejercicio...',
@@ -163,6 +171,8 @@ export default {
         },
         errors: {
             addExercise: 'Error al añadir el ejercicio',
+            reorder: 'Error al reordenar',
+            skip: 'Error al saltar el ejercicio',
             saveSet: 'Error al guardar la serie',
         },
         finishConfirm: '¿Finalizar el entrenamiento?',
@@ -180,6 +190,9 @@ export default {
             finish: 'Finish',
         },
         exerciseProgress: 'Exercise {{current}} of {{total}}',
+        plan: { startWith: 'Do it now' },
+        skip: { button: 'Skip exercise', confirm: 'Skip "{{name}}" today? It will show as pending in the next days.' },
+        add: { button: '+ Add exercise', title: 'Add an exercise', pending: 'Pending from other days', cancel: 'Cancel' },
         pick: {
             question: 'Which exercise are you doing?',
             searchPlaceholder: 'Search for an exercise...',
@@ -247,6 +260,8 @@ export default {
         },
         errors: {
             addExercise: 'Error adding exercise',
+            reorder: 'Error reordering',
+            skip: 'Error skipping the exercise',
             saveSet: 'Error saving set',
         },
         finishConfirm: 'Finish the workout?',
