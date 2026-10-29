@@ -1,5 +1,4 @@
 <template>
-    <AppPage name="routines-page" layout="backoffice">
         <div class="routines-page">
 
             <div class="page-header">
@@ -67,7 +66,6 @@
             </div>
 
         </div>
-    </AppPage>
 </template>
 
 <script lang="ts" src="./routines.ts"></script>

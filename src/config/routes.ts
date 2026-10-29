@@ -7,16 +7,14 @@ import LoginPage from '../pages/login/login.vue';
 import BackofficeLayout from '../layouts/backoffice/backoffice.vue';
 // Like default, but without redirecting logged users to '/': for screens only they can see (onboarding)
 import PlainLayout from '../layouts/plain/plain.vue';
-import ExercisesPage from '../pages/exercises/exercises.vue';
-import RoutinesPage from '../pages/routines/routines.vue';
+// Grouped pages: each one renders several tabs, one route per tab
+import TrainPage from '../pages/train/train.vue';
+import ProgressPage from '../pages/progress/progress.vue';
 import RoutineDetailPage from '../pages/routine-detail/routine-detail.vue';
-import WorkoutsPage from '../pages/workouts/workouts.vue';
 import WorkoutDetailPage from '../pages/workout-detail/workout-detail.vue';
 import WorkoutPage from '../pages/workout/workout.vue';
-import StatsPage from '../pages/stats/stats.vue';
 import OnboardingPage from '../pages/onboarding/onboarding.vue';
 import CyclePage from '../pages/cycle/cycle.vue';
-import MeasurementsPage from '../pages/measurements/measurements.vue';
 import HabitsPage from '../pages/habits/habits.vue';
 import ProfilePage from '../pages/profile/profile.vue';
 import RecommendationPage from '../pages/recommendation/recommendation.vue';
@@ -39,11 +37,11 @@ const routes : IRoutes = {
         },
         {
             path: '/exercises',
-            component: ExercisesPage
+            component: TrainPage
         },
         {
             path: '/routines',
-            component: RoutinesPage
+            component: TrainPage
         },
         {
             path: '/routines/:id',
@@ -51,7 +49,7 @@ const routes : IRoutes = {
         },
         {
             path: '/workouts',
-            component: WorkoutsPage
+            component: ProgressPage
         },
         {
             path: '/workouts/:id',
@@ -63,7 +61,7 @@ const routes : IRoutes = {
         },
         {
             path: '/stats',
-            component: StatsPage
+            component: ProgressPage
         },
         {
             path: '/onboarding',
@@ -71,7 +69,7 @@ const routes : IRoutes = {
         },
         {
             path: '/measurements',
-            component: MeasurementsPage
+            component: ProgressPage
         },
         {
             path: '/recommendation',

@@ -177,14 +177,6 @@
                         <div v-if="showAdd" class="add-panel">
                             <p class="action-label">{{ $t('workout.add.title') }}</p>
 
-                            <div v-if="addSuggestions.length" class="add-pending">
-                                <div class="add-pending-title">{{ $t('workout.add.pending') }}</div>
-                                <button v-for="p in addSuggestions" :key="p.exercise_id" class="pending-chip"
-                                    :disabled="addingExercise" @click="addExercise(p.exercise)">
-                                    {{ p.exercise.name }}<small v-if="p.day_name"> · {{ p.day_name }}</small>
-                                </button>
-                            </div>
-
                             <div class="exercise-search-wrap">
                                 <input type="text" v-model="exerciseQuery"
                                     :placeholder="$t('workout.pick.searchPlaceholder')" @input="filterExercises()" />
@@ -201,6 +193,17 @@
                         </div>
                         <template v-else>
                             <button class="btn-action start" @click="startSet()">{{ $t('workout.card.start') }}</button>
+                            <SectionTile v-if="canAdd && addSuggestions.length" v-model:open="showPending"
+                                :title="$t('workout.pending.title')" :status="String(addSuggestions.length)" tone="pending">
+                                <p class="pending-sub">{{ $t('workout.pending.sub') }}</p>
+                                <div class="pending-modal-list">
+                                    <button v-for="p in addSuggestions" :key="p.exercise_id" class="pending-row"
+                                        :disabled="addingExercise" @click="addExercise(p.exercise)">
+                                        <span>{{ p.exercise.name }}</span>
+                                        <small v-if="p.day_name">{{ p.day_name }} · {{ pendingWhen(p.date) }}</small>
+                                    </button>
+                                </div>
+                            </SectionTile>
                             <div class="idle-links" v-if="canAdd">
                                 <button class="link-btn" @click="openAdd()">{{ $t('workout.add.button') }}</button>
                                 <button v-if="canReshuffle" class="link-btn danger" @click="skipExercise()">{{ $t('workout.skip.button') }}</button>

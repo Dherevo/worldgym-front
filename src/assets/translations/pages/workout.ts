@@ -14,7 +14,8 @@ export default {
         exerciseProgress: 'Exercici {{current}} de {{total}}',
         plan: { startWith: 'Fer-lo ara' },
         skip: { button: 'Saltar exercici', confirm: 'Vols saltar "{{name}}" d\'avui? El veuràs com a pendent els propers dies.' },
-        add: { button: '+ Afegir exercici', title: 'Afegir un exercici', pending: 'Pendents d\'altres dies', cancel: 'Cancel·lar' },
+        add: { button: '+ Afegir exercici', title: 'Afegir un exercici', cancel: 'Cancel·lar' },
+        pending: { title: 'Exercicis pendents', sub: "Toca un exercici per afegir-lo a l'entrenament d'avui, just després de l'actual." },
         pick: {
             question: 'Quin exercici fas?',
             searchPlaceholder: 'Cerca un exercici...',
@@ -103,7 +104,8 @@ export default {
         exerciseProgress: 'Ejercicio {{current}} de {{total}}',
         plan: { startWith: 'Hacerlo ahora' },
         skip: { button: 'Saltar ejercicio', confirm: '¿Quieres saltar "{{name}}" hoy? Lo verás como pendiente los próximos días.' },
-        add: { button: '+ Añadir ejercicio', title: 'Añadir un ejercicio', pending: 'Pendientes de otros días', cancel: 'Cancelar' },
+        add: { button: '+ Añadir ejercicio', title: 'Añadir un ejercicio', cancel: 'Cancelar' },
+        pending: { title: 'Ejercicios pendientes', sub: 'Toca un ejercicio para añadirlo al entrenamiento de hoy, justo después del actual.' },
         pick: {
             question: '¿Qué ejercicio haces?',
             searchPlaceholder: 'Busca un ejercicio...',
@@ -192,7 +194,8 @@ export default {
         exerciseProgress: 'Exercise {{current}} of {{total}}',
         plan: { startWith: 'Do it now' },
         skip: { button: 'Skip exercise', confirm: 'Skip "{{name}}" today? It will show as pending in the next days.' },
-        add: { button: '+ Add exercise', title: 'Add an exercise', pending: 'Pending from other days', cancel: 'Cancel' },
+        add: { button: '+ Add exercise', title: 'Add an exercise', cancel: 'Cancel' },
+        pending: { title: 'Pending exercises', sub: "Tap an exercise to add it to today's workout, right after the current one." },
         pick: {
             question: 'Which exercise are you doing?',
             searchPlaceholder: 'Search for an exercise...',

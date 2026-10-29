@@ -1,10 +1,11 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
+import SectionTile from "@/components/section-tile/section-tile.vue";
 
 type State = 'loading' | 'pick-exercise' | 'idle' | 'active' | 'logging' | 'resting' | 'choose' | 'done';
 
-@Component({})
+@Component({ components: { SectionTile } })
 class WorkoutPage extends Vue {
 
     workout: any = null;
@@ -41,6 +42,7 @@ class WorkoutPage extends Vue {
 
     // Routine workouts: extra exercise panel and exercises skipped in earlier sessions
     showAdd = false;
+    showPending = false;
     pendingItems: any[] = [];
 
     // Historial últimes sessions de l'exercici actual
@@ -170,6 +172,12 @@ class WorkoutPage extends Vue {
         return this.pendingItems.filter((p: any) => !inWorkout.has(p.exercise_id));
     }
 
+    pendingWhen(date: string): string {
+        const [y, m, d] = date.split('-').map(Number);
+        const locale = ({ ca: 'ca-ES', es: 'es-ES', en: 'en-GB' } as any)[translate.currentLanguage] ?? 'ca-ES';
+        return new Date(y, m - 1, d).toLocaleDateString(locale, { weekday: 'long' });
+    }
+
     // Extra exercises can be added at any moment between sets of a routine workout
     get canAdd(): boolean {
         return !this.isFreeWorkout && this.state === 'idle';
@@ -243,6 +251,7 @@ class WorkoutPage extends Vue {
             this.exerciseQuery = '';
             this.exerciseResults = [];
             this.showAdd = false;
+            this.showPending = false;
             this.saveProgress();
         })
         .catch(() => App.notification(translate.get('workout.errors.addExercise')).setType('error').show())

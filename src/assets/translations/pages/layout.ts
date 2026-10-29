@@ -3,6 +3,8 @@ export default {
         menu: {
             menu: 'Menú',
             dashboard: 'Dashboard',
+            train: 'Entrenar',
+            progress: 'Progrés',
             exercises: 'Exercicis',
             routines: 'Rutines',
             history: 'Historial',
@@ -20,6 +22,8 @@ export default {
         menu: {
             menu: 'Menú',
             dashboard: 'Dashboard',
+            train: 'Entrenar',
+            progress: 'Progreso',
             exercises: 'Ejercicios',
             routines: 'Rutinas',
             history: 'Historial',
@@ -37,6 +41,8 @@ export default {
         menu: {
             menu: 'Menu',
             dashboard: 'Dashboard',
+            train: 'Train',
+            progress: 'Progress',
             exercises: 'Exercises',
             routines: 'Routines',
             history: 'History',

@@ -17,11 +17,9 @@ class Backoffice extends Vue {
 
     readonly baseMenuItems = [
         { path: '/',          icon: 'prime/home',      label: 'layout.menu.dashboard' },
-        { path: '/exercises', icon: 'prime/bolt',      label: 'layout.menu.exercises' },
-        { path: '/routines',  icon: 'prime/calendar',  label: 'layout.menu.routines' },
-        { path: '/workouts',  icon: 'prime/history',   label: 'layout.menu.history' },
-        { path: '/stats',     icon: 'prime/chart-bar', label: 'layout.menu.stats' },
-        { path: '/measurements', icon: 'prime/chart-line', label: 'layout.menu.measurements' },
+        // Grouped entries: `match` lists every route of the group so the entry stays active on all its tabs
+        { path: '/routines',  icon: 'prime/bolt',      label: 'layout.menu.train',    match: ['/routines', '/exercises'] },
+        { path: '/workouts',  icon: 'prime/chart-bar', label: 'layout.menu.progress', match: ['/workouts', '/stats', '/measurements'] },
     ];
 
     get menuItems() {
@@ -106,8 +104,8 @@ class Backoffice extends Vue {
         localStorage.setItem('wg_theme', theme);
     }
 
-    isActive(path: string): boolean {
-        return location.pathname === path;
+    isActive(item: { path: string; match?: string[] }): boolean {
+        return (item.match ?? [item.path]).some(p => location.pathname === p || (p !== '/' && location.pathname.startsWith(p + '/')));
     }
 
     logout() {

@@ -81,16 +81,6 @@
                 <button class="btn-rec" @click="to('/recommendation')">{{ $t('recommendation.homeCard.button') }}</button>
             </div>
 
-            <div class="pending-card" v-if="pending.length">
-                <div class="pending-title">{{ $t('home.pending.title') }}</div>
-                <div class="pending-list">
-                    <span v-for="p in pending" :key="p.exercise_id + '-' + p.workout_id" class="pending-item">
-                        {{ p.exercise.name }}<small> · {{ p.day_name }} ({{ pendingWhen(p.date) }})</small>
-                    </span>
-                </div>
-                <div class="pending-sub">{{ $t('home.pending.sub') }}</div>
-            </div>
-
             <DailyHabits :restDay="restMode" />
 
             <!-- Recent workouts -->

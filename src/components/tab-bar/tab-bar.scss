@@ -1,0 +1,44 @@
+.tab-bar {
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border-color);
+
+    .tab-bar-item {
+        flex: none;
+        padding: 0.75rem 1.25rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+        text-decoration: none;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -1px;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s;
+
+        &:hover { color: var(--text-color); }
+        &.active { color: var(--text-color); border-bottom-color: var(--primary-color); }
+    }
+}
+
+// Page that groups several former pages as tabs; the content keeps its own container
+.tabbed-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 1rem;
+
+    .tab-bar { margin: 0 2rem; }
+
+    // One width and side padding for every tab, whatever the page used before
+    .tab-content > div { max-width: none; padding: 1rem 2rem 2rem; }
+
+    // The tab already names the section
+    .tab-content .page-header h1 { display: none; }
+    .tab-content .page-header > button,
+    .tab-content .page-header > .header-buttons { margin-left: auto; }
+
+    @media (max-width: 768px) {
+        padding-top: 0.5rem;
+        .tab-bar { margin: 0 1rem; .tab-bar-item { padding: 0.7rem 1rem; } }
+        .tab-content > div { padding: 1rem 1rem 1.5rem; }
+    }
+}
