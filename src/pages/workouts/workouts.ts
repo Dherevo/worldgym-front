@@ -90,7 +90,7 @@ class WorkoutsPage extends Vue {
 
     formatDuration(w: any): string | null {
         if (!w.started_at || !w.finished_at) return null;
-        const secs = Math.round((new Date(w.finished_at).getTime() - new Date(w.started_at).getTime()) / 1000);
+        const secs = w.active_seconds ?? Math.round((new Date(w.finished_at).getTime() - new Date(w.started_at).getTime()) / 1000);
         if (secs < 60) return null;
         const h = Math.floor(secs / 3600);
         const m = Math.floor((secs % 3600) / 60);
