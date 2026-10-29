@@ -24,7 +24,7 @@
 
     .overview-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 1rem;
     }
 
@@ -172,8 +172,9 @@
 
                 &.empty { background: transparent; }
                 &.future { opacity: 0.4; }
-                &.trained { background: var(--primary-color); color: #fff; font-weight: 700; }
-                &.multi { background: #c2410c; }
+                &.l1 { background: rgba(237, 115, 52, 0.4); color: var(--text-color); }
+                &.l2 { background: rgba(237, 115, 52, 0.7); color: #fff; font-weight: 600; }
+                &.l3 { background: rgb(237, 115, 52); color: #fff; font-weight: 700; }
                 &.today { outline: 2px solid var(--text-color); outline-offset: 1px; }
             }
         }
@@ -217,20 +218,27 @@
     .collapsible {
         padding: 0;
 
-        summary {
-            list-style: none;
-            cursor: pointer;
-            padding: 1.1rem 1.5rem;
+        .collapse-head {
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            &::-webkit-details-marker { display: none; }
-            &::after { content: '\203A'; font-size: 1.4rem; color: var(--text-secondary); transition: transform 0.15s; }
+            gap: 1rem;
+            padding: 1.1rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            .collapse-arrow { font-size: 1.4rem; color: var(--text-secondary); transition: transform 0.15s; &.open { transform: rotate(90deg); } }
         }
-        &[open] summary::after { transform: rotate(90deg); }
 
-        .chart-wrap { position: relative; height: 280px; padding: 0 1.5rem 1.5rem; }
+        .chart-wrap { padding: 0 1.5rem 1.5rem; }
     }
+
+    .chart-wrap { position: relative; height: 280px; &.small { height: 200px; } }
+    .chart-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 0.5rem; }
 
     // ---- Progression ----
     .progress-card {
@@ -254,6 +262,8 @@
                 &:focus { border-color: var(--primary-color); }
             }
         }
+
+        .group-chart { .chart-wrap { height: 240px; } }
 
         .ex-list { display: flex; flex-direction: column; gap: 0.5rem; }
 
@@ -306,18 +316,21 @@
             .cmp-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
             .cmp-value { font-size: 1.4rem; font-weight: 700; }
             .cmp-sub { font-size: 0.82rem; color: var(--text-secondary); }
-            .cmp-delta { font-size: 0.85rem; font-weight: 700; margin-top: 0.15rem; }
+            .cmp-changes { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; margin-top: 0.15rem; }
+            .cmp-delta { font-size: 0.85rem; font-weight: 700; }
         }
+
+        .ex-charts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 1rem; }
     }
 
     @media (max-width: 768px) {
         padding: 1rem;
         gap: 1rem;
 
-        .overview-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+        .overview-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; .stat-card { padding: 0.8rem; } .stat-value { font-size: 1.4rem; } }
         .section-card { padding: 1.1rem; }
-        .collapsible { padding: 0; summary { padding: 1rem 1.1rem; } .chart-wrap { padding: 0 1rem 1rem; height: 240px; } }
-        .progress-card .cmp-grid { grid-template-columns: 1fr; }
+        .collapsible { padding: 0; .collapse-head { padding: 1rem 1.1rem; } .chart-wrap { padding: 0 1rem 1rem; height: 240px; } }
+        .progress-card .cmp-grid, .progress-card .ex-charts { grid-template-columns: 1fr; }
         .lw-head { flex-direction: column; gap: 0.25rem; }
     }
 }

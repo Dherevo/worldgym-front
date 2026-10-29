@@ -58,6 +58,20 @@ class RoutineDetailPage extends Vue {
         .finally(() => { this.loading = false; });
     }
 
+    // Muscle groups worked on a day, from the primary muscle of each of its exercises (most exercises first)
+    dayGroups(day: any): any[] {
+        const counts: Record<number, number> = {};
+        for (const ex of day.exercises ?? []) {
+            for (const m of ex.exercise?.muscles ?? []) {
+                if (m.pivot?.is_primary) counts[m.muscle_group_id] = (counts[m.muscle_group_id] ?? 0) + 1;
+            }
+        }
+        return Object.keys(counts)
+            .map(id => ({ id: Number(id), n: counts[Number(id)], name: this.muscleGroups.find((g: any) => g.id === Number(id))?.name }))
+            .filter(g => g.name)
+            .sort((a, b) => b.n - a.n);
+    }
+
     fetchMuscleGroups() {
         http.get('/muscle-groups?pageSize=500')
         .then((res: any) => { this.muscleGroups = res.items ?? []; })
