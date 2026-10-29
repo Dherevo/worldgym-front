@@ -2,6 +2,24 @@ export default {
     ca: {
         title: 'Progressió i estadístiques',
         filters: { from: 'Des de', to: 'Fins a', clear: 'Netejar filtre' },
+        dash2: {
+            weeksStreak: 'setmanes seguides',
+            daysShort: 'dies',
+            vsDay: "Comparat amb l'últim «{{day}}» ({{date}})",
+            prevMonth: 'Mes anterior',
+            nextMonth: 'Mes següent',
+            monthCount: '{{n}} dies entrenats',
+            viewYear: "Veure tot l'any",
+            progress: {
+                title: 'Progressió',
+                group: 'Grup muscular',
+                empty: 'Encara no has entrenat aquest grup.',
+                previous: 'Anterior',
+                current: 'Actual',
+                record: 'Rècord',
+                reps: 'reps',
+            },
+        },
         dash: {
             presets: { month: 'Aquest mes', threeMonths: '3 mesos', year: 'Aquest any', all: 'Tot' },
             thisWeek: 'Aquesta setmana',
@@ -65,6 +83,24 @@ export default {
     es: {
         title: 'Progresión y estadísticas',
         filters: { from: 'Desde', to: 'Hasta', clear: 'Limpiar filtro' },
+        dash2: {
+            weeksStreak: 'semanas seguidas',
+            daysShort: 'días',
+            vsDay: 'Comparado con el último «{{day}}» ({{date}})',
+            prevMonth: 'Mes anterior',
+            nextMonth: 'Mes siguiente',
+            monthCount: '{{n}} días entrenados',
+            viewYear: 'Ver todo el año',
+            progress: {
+                title: 'Progresión',
+                group: 'Grupo muscular',
+                empty: 'Todavía no has entrenado este grupo.',
+                previous: 'Anterior',
+                current: 'Actual',
+                record: 'Récord',
+                reps: 'reps',
+            },
+        },
         dash: {
             presets: { month: 'Este mes', threeMonths: '3 meses', year: 'Este año', all: 'Todo' },
             thisWeek: 'Esta semana',
@@ -128,6 +164,24 @@ export default {
     en: {
         title: 'Progress & statistics',
         filters: { from: 'From', to: 'To', clear: 'Clear filter' },
+        dash2: {
+            weeksStreak: 'week streak',
+            daysShort: 'days',
+            vsDay: 'Compared with the last «{{day}}» ({{date}})',
+            prevMonth: 'Previous month',
+            nextMonth: 'Next month',
+            monthCount: '{{n}} days trained',
+            viewYear: 'See the whole year',
+            progress: {
+                title: 'Progress',
+                group: 'Muscle group',
+                empty: "You haven't trained this group yet.",
+                previous: 'Previous',
+                current: 'Current',
+                record: 'Record',
+                reps: 'reps',
+            },
+        },
         dash: {
             presets: { month: 'This month', threeMonths: '3 months', year: 'This year', all: 'All' },
             thisWeek: 'This week',
