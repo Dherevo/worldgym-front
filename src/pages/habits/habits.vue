@@ -48,6 +48,26 @@
                 <button v-if="h.key === null" class="btn-delete" @click="remove(h)" :title="$t('habits.page.delete')">✕</button>
             </div>
 
+            <div v-if="h.key === null" class="schedule-line">
+                <label class="field">
+                    <span>{{ $t('habits.page.schedule.label') }}</span>
+                    <select :value="h.schedule_type" @change="onScheduleType(h, $event)">
+                        <option value="daily">{{ $t('habits.page.schedule.daily') }}</option>
+                        <option value="weekdays">{{ $t('habits.page.schedule.weekdays') }}</option>
+                        <option value="interval">{{ $t('habits.page.schedule.interval') }}</option>
+                    </select>
+                </label>
+                <div v-if="h.schedule_type === 'weekdays'" class="day-chips">
+                    <button v-for="d in 7" :key="d" type="button" class="chip" :class="{ on: h.schedule_days.includes(d) }"
+                        @click="toggleDay(h, d)">{{ $t('habits.page.days.' + d) }}</button>
+                </div>
+                <label v-else-if="h.schedule_type === 'interval'" class="field every">
+                    <span>{{ $t('habits.page.schedule.every') }}</span>
+                    <input type="number" min="2" max="30" :value="h.schedule_every" @change="onEvery(h, $event)" />
+                    <span>{{ $t('habits.page.schedule.days') }}</span>
+                </label>
+            </div>
+
             <div v-if="historyId === h.id" class="history-panel">
                 <div v-if="historyLoading" class="loading-text">{{ $t('habits.page.history.loading') }}</div>
                 <template v-else-if="history">
@@ -63,6 +83,7 @@
                     <div class="history-legend">
                         <span><i class="cell done"></i>{{ $t('habits.page.history.done') }}</span>
                         <span><i class="cell missed"></i>{{ $t('habits.page.history.missed') }}</span>
+                        <span><i class="cell off"></i>{{ $t('habits.page.history.off') }}</span>
                     </div>
                 </template>
             </div>
@@ -92,6 +113,25 @@
                             <input type="number" min="1" max="500" v-model="newReps" />
                         </label>
                     </template>
+                </div>
+                <div class="add-fields schedule-line">
+                    <label class="field">
+                        <span>{{ $t('habits.page.schedule.label') }}</span>
+                        <select v-model="newSchedule">
+                            <option value="daily">{{ $t('habits.page.schedule.daily') }}</option>
+                            <option value="weekdays">{{ $t('habits.page.schedule.weekdays') }}</option>
+                            <option value="interval">{{ $t('habits.page.schedule.interval') }}</option>
+                        </select>
+                    </label>
+                    <div v-if="newSchedule === 'weekdays'" class="day-chips">
+                        <button v-for="d in 7" :key="d" type="button" class="chip" :class="{ on: newDays.includes(d) }"
+                            @click="toggleNewDay(d)">{{ $t('habits.page.days.' + d) }}</button>
+                    </div>
+                    <label v-else-if="newSchedule === 'interval'" class="field every">
+                        <span>{{ $t('habits.page.schedule.every') }}</span>
+                        <input type="number" min="2" max="30" v-model="newEvery" />
+                        <span>{{ $t('habits.page.schedule.days') }}</span>
+                    </label>
                 </div>
                 <button class="btn-add" :disabled="!canAdd || adding" @click="add()">
                     {{ adding ? $t('habits.page.adding') : $t('habits.page.add') }}

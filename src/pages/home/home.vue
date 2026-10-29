@@ -71,7 +71,7 @@
 
             <!-- Daily must-dos (steps, abs...) -->
             <!-- How the user feels today: feeds the recommended session -->
-            <CheckIn />
+            <CheckIn compact />
 
             <div class="rec-card">
                 <div>
@@ -93,14 +93,6 @@
 
             <DailyHabits :restDay="restMode" />
 
-            <!-- Quick access -->
-            <div class="quick-access">
-                <div class="quick-card" @click="to('/routines')">{{ $t('home.quickAccess.routines') }}</div>
-                <div class="quick-card" @click="to('/exercises')">{{ $t('home.quickAccess.exercises') }}</div>
-                <div class="quick-card" @click="to('/workouts')">{{ $t('home.quickAccess.history') }}</div>
-                <div class="quick-card" @click="startEmptyWorkout()">{{ $t('home.quickAccess.freeWorkout') }}</div>
-            </div>
-
             <!-- Recent workouts -->
             <div class="section">
                 <h2>{{ $t('home.recent.title') }}</h2>
@@ -114,6 +106,7 @@
                         </div>
                         <span>&rsaquo;</span>
                     </div>
+                    <button class="btn-more" @click="to('/workouts')">{{ $t('home.recent.more') }}</button>
                 </div>
             </div>
 

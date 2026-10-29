@@ -1,10 +1,17 @@
-import { Component, Vue, toNative } from "vue-facing-decorator";
+import { Component, Vue, Prop, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
+import SectionTile from "@/components/section-tile/section-tile.vue";
 
 // 10-second daily check-in (energy, sleep, pain). It feeds the recommended session.
-@Component({ emits: ['saved'] })
+// `compact` shows just a title row that opens the form in a modal.
+@Component({ emits: ['saved'], components: { SectionTile } })
 class CheckIn extends Vue {
+
+    @Prop({ type: Boolean, default: false })
+    compact!: boolean;
+
+    open = false;
 
     readonly fields = ['energy', 'sleep', 'pain'];
     readonly scale = [1, 2, 3, 4, 5];
@@ -32,6 +39,10 @@ class CheckIn extends Vue {
         this.editing = false;
     }
 
+    get statusLabel(): string {
+        return this.answered ? `✓ ${translate.get('checkin.statusDone')}` : translate.get('checkin.statusPending');
+    }
+
     get complete(): boolean {
         return this.fields.every(f => this.values[f] !== null);
     }
@@ -42,6 +53,7 @@ class CheckIn extends Vue {
         http.put('/checkin').data({ ...this.values, date: this.today })
         .then((res: any) => {
             this.apply(res.checkin);
+            this.open = false;
             this.$emit('saved', res.checkin);
         })
         .catch(() => App.notification(translate.get('checkin.error')).setType('error').show())

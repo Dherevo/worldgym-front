@@ -136,6 +136,7 @@
             color: var(--text-muted);
             &.done { background: var(--success-color); color: #fff; }
             &.missed { background: var(--tint-red-bg); color: var(--tint-red-text); }
+            &.off { background: transparent; border: 1px dashed var(--border-color); }
         }
         .history-legend {
             display: flex;
@@ -146,6 +147,32 @@
             i.cell { display: inline-block; width: 14px; height: 14px; padding: 0; }
         }
     }
+
+    .schedule-line {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 0.75rem;
+        padding: 0 1rem 0.75rem;
+
+        .every { flex-direction: row; align-items: center; gap: 0.5rem; input { width: 4.5rem; } }
+
+        .day-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .chip {
+            min-width: 2.4rem;
+            padding: 0.45rem 0.5rem;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            background: var(--surface-2);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            &.on { background: var(--primary-color); border-color: var(--primary-color); color: #fff; }
+        }
+    }
+
+    .add-card .schedule-line { padding: 0; }
 
     .add-card {
         margin-top: 0.75rem;

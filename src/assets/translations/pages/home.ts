@@ -32,6 +32,7 @@ export default {
             loading: 'Carregant...',
             empty: 'Encara no has fet cap entrenament.',
             noNotes: 'Sense notes',
+            more: "Veure'n més →",
         },
         picker: {
             title: 'Tria una rutina',
@@ -79,6 +80,7 @@ export default {
             loading: 'Cargando...',
             empty: 'Todavía no has hecho ningún entrenamiento.',
             noNotes: 'Sin notas',
+            more: 'Ver más →',
         },
         picker: {
             title: 'Elige una rutina',
@@ -126,6 +128,7 @@ export default {
             loading: 'Loading...',
             empty: "You haven't done any workouts yet.",
             noNotes: 'No notes',
+            more: 'See more →',
         },
         picker: {
             title: 'Choose a routine',

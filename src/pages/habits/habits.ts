@@ -21,6 +21,9 @@ class HabitsPage extends Vue {
     newKind: 'sets' | 'check' = 'sets';
     newSets = '3';
     newReps = '15';
+    newSchedule: 'daily' | 'weekdays' | 'interval' = 'daily';
+    newDays: number[] = [1, 2, 3, 4, 5];
+    newEvery = '2';
 
     created() {
         this.fetchHabits();
@@ -36,6 +39,36 @@ class HabitsPage extends Vue {
 
     habitName(h: any): string {
         return h.name ?? translate.get(`habits.names.${h.key}`);
+    }
+
+    // Weekdays are ISO numbers: 1 = Monday ... 7 = Sunday
+    onScheduleType(h: any, event: Event) {
+        const type = (event.target as HTMLSelectElement).value;
+        if (type === 'weekdays') {
+            this.update(h, { schedule_type: 'weekdays', schedule_days: h.schedule_days?.length ? h.schedule_days : [1, 2, 3, 4, 5] });
+        } else if (type === 'interval') {
+            this.update(h, { schedule_type: 'interval', schedule_every: h.schedule_every ?? 2, schedule_start: localDate() });
+        } else {
+            this.update(h, { schedule_type: 'daily' });
+        }
+    }
+
+    toggleDay(h: any, day: number) {
+        const days: number[] = h.schedule_days ?? [];
+        const next = days.includes(day) ? days.filter(d => d !== day) : [...days, day].sort();
+        if (!next.length) return;
+        this.update(h, { schedule_type: 'weekdays', schedule_days: next });
+    }
+
+    onEvery(h: any, event: Event) {
+        const value = Number((event.target as HTMLInputElement).value);
+        if (!value) return;
+        // Keeps the anchor day, so changing N does not shift the cycle
+        this.update(h, { schedule_type: 'interval', schedule_every: value, schedule_start: h.schedule_start ?? localDate() });
+    }
+
+    toggleNewDay(day: number) {
+        this.newDays = this.newDays.includes(day) ? this.newDays.filter(d => d !== day) : [...this.newDays, day].sort();
     }
 
     // Saves one field of a habit; the response carries the refreshed list
@@ -115,6 +148,7 @@ class HabitsPage extends Vue {
         if (!this.history) return [];
         const byDate: Record<string, any> = {};
         for (const d of this.history.days ?? []) byDate[d.date] = d;
+        const due = new Set<string>(this.history.due_dates ?? []);
 
         const [y, m, d] = (this.history.to as string).split('-').map(Number);
         const cells = [];
@@ -122,13 +156,15 @@ class HabitsPage extends Vue {
             const day = new Date(y, m - 1, d - i);
             const key = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
             const log = byDate[key];
-            cells.push({ date: key, day: day.getDate(), state: log ? (log.completed ? 'done' : 'missed') : 'empty' });
+            cells.push({ date: key, day: day.getDate(), state: log ? (log.completed ? 'done' : 'missed') : (due.has(key) ? 'empty' : 'off') });
         }
         return cells;
     }
 
     get canAdd(): boolean {
         if (!this.newName.trim()) return false;
+        if (this.newSchedule === 'weekdays' && !this.newDays.length) return false;
+        if (this.newSchedule === 'interval' && !(Number(this.newEvery) >= 2 && Number(this.newEvery) <= 30)) return false;
         return this.newKind === 'check' || (Number(this.newSets) >= 1 && Number(this.newReps) >= 1);
     }
 
@@ -142,10 +178,18 @@ class HabitsPage extends Vue {
             body.target_reps = Number(this.newReps);
         }
 
+        body.schedule_type = this.newSchedule;
+        if (this.newSchedule === 'weekdays') body.schedule_days = this.newDays;
+        if (this.newSchedule === 'interval') {
+            body.schedule_every = Number(this.newEvery);
+            body.schedule_start = localDate();
+        }
+
         http.post('/habits').data(body)
         .then((res: any) => {
             this.habits = res.habits ?? [];
             this.newName = '';
+            this.newSchedule = 'daily';
         })
         .catch(() => App.notification(translate.get('habits.page.errors.add')).setType('error').show())
         .finally(() => { this.adding = false; });

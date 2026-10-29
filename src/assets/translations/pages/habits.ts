@@ -42,6 +42,8 @@ export default {
             adding: 'Afegint...',
             note: 'Més endavant podràs connectar una polsera o rellotge per llegir els passos automàticament.',
             dragToReorder: 'Arrossega per reordenar',
+            days: { 1: 'Dl', 2: 'Dt', 3: 'Dc', 4: 'Dj', 5: 'Dv', 6: 'Ds', 7: 'Dg' },
+            schedule: { label: 'Repetició', daily: 'Cada dia', weekdays: 'Dies de la setmana', interval: 'Cada uns dies', every: 'Cada', days: 'dies' },
             history: {
                 show: 'Historial',
                 hide: 'Amagar historial',
@@ -52,6 +54,7 @@ export default {
                 last30: 'Últims 30 dies',
                 done: 'Fet',
                 missed: 'No fet',
+                off: 'No toca',
             },
             errors: {
                 reorder: 'Error en reordenar',
@@ -107,6 +110,8 @@ export default {
             adding: 'Añadiendo...',
             note: 'Más adelante podrás conectar una pulsera o reloj para leer los pasos automáticamente.',
             dragToReorder: 'Arrastra para reordenar',
+            days: { 1: 'L', 2: 'M', 3: 'X', 4: 'J', 5: 'V', 6: 'S', 7: 'D' },
+            schedule: { label: 'Repetición', daily: 'Cada día', weekdays: 'Días de la semana', interval: 'Cada varios días', every: 'Cada', days: 'días' },
             history: {
                 show: 'Historial',
                 hide: 'Ocultar historial',
@@ -117,6 +122,7 @@ export default {
                 last30: 'Últimos 30 días',
                 done: 'Hecho',
                 missed: 'No hecho',
+                off: 'No toca',
             },
             errors: {
                 reorder: 'Error al reordenar',
@@ -172,6 +178,8 @@ export default {
             adding: 'Adding...',
             note: 'Later you will be able to connect a band or watch to read your steps automatically.',
             dragToReorder: 'Drag to reorder',
+            days: { 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat', 7: 'Sun' },
+            schedule: { label: 'Repeat', daily: 'Every day', weekdays: 'Days of the week', interval: 'Every few days', every: 'Every', days: 'days' },
             history: {
                 show: 'History',
                 hide: 'Hide history',
@@ -182,6 +190,7 @@ export default {
                 last30: 'Last 30 days',
                 done: 'Done',
                 missed: 'Missed',
+                off: 'Not due',
             },
             errors: {
                 reorder: 'Error reordering',
