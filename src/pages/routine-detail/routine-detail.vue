@@ -16,9 +16,13 @@
                 <div v-if="routine.days?.length === 0" class="empty-text">
                     {{ $t('routineDetail.noDays') }}
                 </div>
-                <div v-for="day in routine.days" :key="day.id" class="day-card">
+                <div v-for="(day, di) in routine.days" :key="day.id" class="day-card"
+                    :class="{ dragging: dragKind === 'day' && dragFromIdx === di }"
+                    @dragover.prevent @drop="dropDay(di)">
                     <div class="day-header">
-                        <div>
+                        <div class="day-title">
+                            <span v-if="canEdit" class="drag-handle" draggable="true" :title="$t('routineDetail.dragToReorder')"
+                                @dragstart="dragStart('day', di)" @dragend="dragEnd()">⠿</span>
                             <span class="day-name">{{ day.name || $t('routineDetail.dayNumber', { n: day.day_number }) }}</span>
                         </div>
                         <div class="day-actions">
@@ -43,8 +47,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="ex in day.exercises" :key="ex.id">
-                                    <td>{{ ex.exercise?.name }}</td>
+                                <tr v-for="(ex, ei) in day.exercises" :key="ex.id"
+                                    :class="{ dragging: dragKind === 'exercise' && dragDayId === day.id && dragFromIdx === ei }"
+                                    @dragover.prevent @drop.stop="dropExercise(day, ei)">
+                                    <td>
+                                        <span v-if="canEdit" class="drag-handle" draggable="true" :title="$t('routineDetail.dragToReorder')"
+                                            @dragstart.stop="dragStart('exercise', ei, day.id)" @dragend="dragEnd()">⠿</span>
+                                        {{ ex.exercise?.name }}
+                                    </td>
                                     <td>{{ ex.sets_target }}</td>
                                     <td>{{ ex.reps_target }}</td>
                                     <td>{{ ex.weight_target }}</td>

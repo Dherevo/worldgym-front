@@ -1,5 +1,6 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
+import localDate from "@/modules/localDate";
 
 @Component({})
 class HabitsPage extends Vue {
@@ -7,6 +8,14 @@ class HabitsPage extends Vue {
     habits: any[] = [];
     loading = false;
     adding = false;
+
+    // Drag & drop reorder
+    dragFromIdx: number | null = null;
+
+    // History panel: one habit open at a time
+    historyId: number | null = null;
+    historyLoading = false;
+    history: any = null;
 
     newName = '';
     newKind: 'sets' | 'check' = 'sets';
@@ -58,6 +67,64 @@ class HabitsPage extends Vue {
             .then((res: any) => { this.habits = res.habits ?? []; })
             .catch(() => App.notification(translate.get('habits.page.errors.delete')).setType('error').show());
         });
+    }
+
+    dragStart(idx: number) {
+        this.dragFromIdx = idx;
+    }
+
+    dropOn(idx: number) {
+        if (this.dragFromIdx === null || this.dragFromIdx === idx) return;
+        const moved = this.habits.splice(this.dragFromIdx, 1)[0];
+        this.habits.splice(idx, 0, moved);
+        this.dragFromIdx = null;
+
+        const order = this.habits.map((h: any, i: number) => ({ id: h.id, order_index: i + 1 }));
+        (http as any).patch('/habits/reorder').data({ order })
+        .catch(() => {
+            App.notification(translate.get('habits.page.errors.reorder')).setType('error').show();
+            this.fetchHabits();
+        });
+    }
+
+    dragEnd() {
+        this.dragFromIdx = null;
+    }
+
+    toggleHistory(h: any) {
+        if (this.historyId === h.id) {
+            this.historyId = null;
+            this.history = null;
+            return;
+        }
+
+        this.historyId = h.id;
+        this.history = null;
+        this.historyLoading = true;
+        http.get(`/habits/${h.id}/history`).data({ to: localDate() })
+        .then((res: any) => { if (this.historyId === h.id) this.history = res; })
+        .catch(() => {
+            this.historyId = null;
+            App.notification(translate.get('habits.page.errors.history')).setType('error').show();
+        })
+        .finally(() => { this.historyLoading = false; });
+    }
+
+    // Last 30 days oldest first: done / missed (logged but not completed) / empty
+    get historyCells(): any[] {
+        if (!this.history) return [];
+        const byDate: Record<string, any> = {};
+        for (const d of this.history.days ?? []) byDate[d.date] = d;
+
+        const [y, m, d] = (this.history.to as string).split('-').map(Number);
+        const cells = [];
+        for (let i = 29; i >= 0; i--) {
+            const day = new Date(y, m - 1, d - i);
+            const key = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
+            const log = byDate[key];
+            cells.push({ date: key, day: day.getDate(), state: log ? (log.completed ? 'done' : 'missed') : 'empty' });
+        }
+        return cells;
     }
 
     get canAdd(): boolean {
