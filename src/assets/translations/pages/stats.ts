@@ -2,6 +2,17 @@ export default {
     ca: {
         title: 'Progressió i estadístiques',
         filters: { from: 'Des de', to: 'Fins a', clear: 'Netejar filtre' },
+        dash: {
+            presets: { month: 'Aquest mes', threeMonths: '3 mesos', year: 'Aquest any', all: 'Tot' },
+            thisWeek: 'Aquesta setmana',
+            weekStreak: 'Setmanes seguides',
+            totalSets: 'Sèries totals',
+            topGroup: 'Grup més treballat',
+            last: { title: 'Últim entrenament', open: 'Veure', volume: 'Volum', sets: 'Sèries', setsShort: 'sèries', exercises: 'Exercicis', records: 'Rècords', first: 'Primera vegada', vsDay: "Comparat amb l'últim «{{day}}»", vsExercises: "Comparat amb l'última vegada de cada exercici" },
+            heatmap: { title: 'Els teus entrenaments', less: 'Menys', more: 'Més', tooltip: '{{date}}: {{n}} entrenament(s)' },
+            monthly: { title: 'Evolució mensual', volume: 'Volum (kg)', workouts: 'Entrenaments' },
+            groups: { title: 'Repartiment per grup muscular' },
+        },
         overview: {
             totalWorkouts: 'Entrenaments totals',
             thisMonth: 'Aquest mes',
@@ -54,6 +65,17 @@ export default {
     es: {
         title: 'Progresión y estadísticas',
         filters: { from: 'Desde', to: 'Hasta', clear: 'Limpiar filtro' },
+        dash: {
+            presets: { month: 'Este mes', threeMonths: '3 meses', year: 'Este año', all: 'Todo' },
+            thisWeek: 'Esta semana',
+            weekStreak: 'Semanas seguidas',
+            totalSets: 'Series totales',
+            topGroup: 'Grupo más trabajado',
+            last: { title: 'Último entrenamiento', open: 'Ver', volume: 'Volumen', sets: 'Series', setsShort: 'series', exercises: 'Ejercicios', records: 'Récords', first: 'Primera vez', vsDay: 'Comparado con el último «{{day}}»', vsExercises: 'Comparado con la última vez de cada ejercicio' },
+            heatmap: { title: 'Tus entrenamientos', less: 'Menos', more: 'Más', tooltip: '{{date}}: {{n}} entrenamiento(s)' },
+            monthly: { title: 'Evolución mensual', volume: 'Volumen (kg)', workouts: 'Entrenamientos' },
+            groups: { title: 'Reparto por grupo muscular' },
+        },
         overview: {
             totalWorkouts: 'Entrenamientos totales',
             thisMonth: 'Este mes',
@@ -106,6 +128,17 @@ export default {
     en: {
         title: 'Progress & statistics',
         filters: { from: 'From', to: 'To', clear: 'Clear filter' },
+        dash: {
+            presets: { month: 'This month', threeMonths: '3 months', year: 'This year', all: 'All' },
+            thisWeek: 'This week',
+            weekStreak: 'Week streak',
+            totalSets: 'Total sets',
+            topGroup: 'Most trained group',
+            last: { title: 'Last workout', open: 'View', volume: 'Volume', sets: 'Sets', setsShort: 'sets', exercises: 'Exercises', records: 'Records', first: 'First time', vsDay: 'Compared with the last «{{day}}»', vsExercises: 'Compared with the last time of each exercise' },
+            heatmap: { title: 'Your workouts', less: 'Less', more: 'More', tooltip: '{{date}}: {{n}} workout(s)' },
+            monthly: { title: 'Monthly trend', volume: 'Volume (kg)', workouts: 'Workouts' },
+            groups: { title: 'Share by muscle group' },
+        },
         overview: {
             totalWorkouts: 'Total workouts',
             thisMonth: 'This month',

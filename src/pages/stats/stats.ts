@@ -12,6 +12,16 @@ class StatsPage extends Vue {
     loadingOverview = false;
     overviewFrom = '';
     overviewTo = '';
+    readonly ranges = [
+        { key: 'month', label: 'month' },
+        { key: '3m', label: 'threeMonths' },
+        { key: 'year', label: 'year' },
+        { key: 'all', label: 'all' },
+    ];
+    heatmapWeeks: any[] = [];
+    monthlyChart: Chart | null = null;
+    groupChart: Chart | null = null;
+    firstLoad = true;
 
     // Exercise progression
     exercises: any[] = [];
@@ -56,6 +66,8 @@ class StatsPage extends Vue {
         this.volumeChart?.destroy();
         this.repsChart?.destroy();
         this.mgVolumeChart?.destroy();
+        this.monthlyChart?.destroy();
+        this.groupChart?.destroy();
     }
 
     fetchOverview() {
@@ -64,7 +76,12 @@ class StatsPage extends Vue {
         if (this.overviewFrom) params.from = this.overviewFrom;
         if (this.overviewTo) params.to = this.overviewTo;
         http.get('/stats/overview').data(params)
-        .then((res: any) => { this.overview = res; })
+        .then((res: any) => {
+            this.overview = res;
+            this.buildHeatmap();
+            setTimeout(() => { this.renderOverviewCharts(); }, 0);
+            this.preselectLastExercise();
+        })
         .catch(() => {})
         .finally(() => { this.loadingOverview = false; });
     }
@@ -158,7 +175,7 @@ class StatsPage extends Vue {
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: false, grid: { color: '#f0f0f0' } },
+                        y: { beginAtZero: false, grid: { color: this.gridColor } },
                         x: { grid: { display: false } }
                     }
                 }
@@ -185,7 +202,7 @@ class StatsPage extends Vue {
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+                        y: { beginAtZero: true, grid: { color: this.gridColor } },
                         x: { grid: { display: false } }
                     }
                 }
@@ -215,7 +232,7 @@ class StatsPage extends Vue {
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: false, grid: { color: '#f0f0f0' } },
+                        y: { beginAtZero: false, grid: { color: this.gridColor } },
                         x: { grid: { display: false } }
                     }
                 }
@@ -267,8 +284,193 @@ class StatsPage extends Vue {
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+                        y: { beginAtZero: true, grid: { color: this.gridColor } },
                         x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    }
+
+    // ---- Dashboard helpers ----
+
+    cssVar(name: string, fallback: string): string {
+        return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+    }
+
+    get gridColor(): string {
+        return this.cssVar('--border-color', 'rgba(128, 128, 128, 0.25)');
+    }
+
+    isoDate(d: Date): string {
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    // First day of each quick range ('' = everything)
+    rangeFrom(key: string): string {
+        const now = new Date();
+        if (key === 'month') return this.isoDate(new Date(now.getFullYear(), now.getMonth(), 1));
+        if (key === '3m') return this.isoDate(new Date(now.getFullYear(), now.getMonth() - 2, 1));
+        if (key === 'year') return this.isoDate(new Date(now.getFullYear(), 0, 1));
+        return '';
+    }
+
+    isRange(key: string): boolean {
+        return !this.overviewTo && this.overviewFrom === this.rangeFrom(key);
+    }
+
+    setRange(key: string) {
+        this.overviewTo = '';
+        this.overviewFrom = this.rangeFrom(key);
+        this.fetchOverview();
+    }
+
+    // The exercises section opens already loaded with an exercise of the last workout
+    preselectLastExercise() {
+        if (!this.firstLoad) return;
+        this.firstLoad = false;
+        const e = this.overview?.last_workout?.exercises?.[0];
+        if (e && !this.selectedExercise) this.selectExercise({ id: e.id, name: e.name });
+    }
+
+    openExercise(e: any) {
+        this.selectExercise({ id: e.id, name: e.name });
+        setTimeout(() => { document.getElementById('progress-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+    }
+
+    deltaText(n: number): string {
+        return `${n > 0 ? '+' : n < 0 ? '−' : ''}${Math.abs(Math.round(n))}%`;
+    }
+
+    deltaClass(n: number | null): string {
+        if (n === null || n === undefined) return 'flat';
+        return n > 0 ? 'up' : n < 0 ? 'down' : 'flat';
+    }
+
+    // Volume of an exercise relative to the heaviest one of the workout
+    barWidth(e: any): number {
+        const max = Math.max(...(this.overview?.last_workout?.exercises ?? []).map((x: any) => x.volume_kg), 1);
+        return Math.max(4, Math.round((e.volume_kg / max) * 100));
+    }
+
+    monthLabel(ym: string): string {
+        const [y, m] = ym.split('-').map(Number);
+        return new Date(y, m - 1, 1).toLocaleDateString(this.dateLocale, { month: 'short', year: '2-digit' });
+    }
+
+    // 53 week columns (Monday first) with the number of workouts of each day
+    buildHeatmap() {
+        const o = this.overview;
+        if (!o?.calendar_from) { this.heatmapWeeks = []; return; }
+
+        const counts: Record<string, number> = {};
+        for (const c of o.calendar ?? []) counts[c.date] = c.count;
+
+        const [y, m, d] = (o.calendar_from as string).split('-').map(Number);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const weeks: any[] = [];
+        let lastMonth = -1;
+        for (let w = 0; w < 53; w++) {
+            const first = new Date(y, m - 1, d + w * 7);
+            const days: any[] = [];
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(y, m - 1, d + w * 7 + i);
+                if (day > today) { days.push(null); continue; }
+                const key = this.isoDate(day);
+                const n = counts[key] ?? 0;
+                days.push({ date: key, count: n, level: n === 0 ? 0 : Math.min(3, n + 1) });
+            }
+            const label = first.getMonth() !== lastMonth
+                ? first.toLocaleDateString(this.dateLocale, { month: 'short' })
+                : '';
+            lastMonth = first.getMonth();
+            weeks.push({ label, days });
+        }
+        this.heatmapWeeks = weeks;
+    }
+
+    renderOverviewCharts() {
+        this.monthlyChart?.destroy();
+        this.groupChart?.destroy();
+        this.monthlyChart = null;
+        this.groupChart = null;
+
+        const o = this.overview;
+        if (!o) return;
+
+        Chart.defaults.color = this.cssVar('--text-secondary', '#888');
+        const grid = this.gridColor;
+
+        const monthly = o.monthly ?? [];
+        const monthlyCanvas = document.getElementById('monthlyCanvas') as HTMLCanvasElement | null;
+        if (monthlyCanvas && monthly.length) {
+            this.monthlyChart = new Chart(monthlyCanvas, {
+                type: 'bar',
+                data: {
+                    labels: monthly.map((m: any) => this.monthLabel(m.month)),
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: translate.get('stats.dash.monthly.volume'),
+                            data: monthly.map((m: any) => m.volume_kg),
+                            backgroundColor: 'rgba(237, 115, 52, 0.65)',
+                            borderRadius: 4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            type: 'line',
+                            label: translate.get('stats.dash.monthly.workouts'),
+                            data: monthly.map((m: any) => m.workouts),
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgb(59, 130, 246)',
+                            borderWidth: 2,
+                            pointRadius: 3,
+                            tension: 0.3,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                } as any,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: grid } },
+                        y1: { beginAtZero: true, position: 'right', grid: { display: false }, ticks: { precision: 0 } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        const groups = o.by_muscle_group ?? [];
+        const groupCanvas = document.getElementById('groupCanvas') as HTMLCanvasElement | null;
+        if (groupCanvas && groups.length) {
+            const total = groups.reduce((a: number, g: any) => a + g.volume_kg, 0) || 1;
+            this.groupChart = new Chart(groupCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: groups.map((g: any) => g.name),
+                    datasets: [{
+                        data: groups.map((g: any) => g.volume_kg),
+                        backgroundColor: ['#ed7334', '#3b82f6', '#22c55e', '#a855f7', '#eab308', '#06b6d4', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '62%',
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx: any) => ` ${ctx.label}: ${this.formatVolume(ctx.parsed)} (${Math.round((ctx.parsed / total) * 100)}%)`
+                            }
+                        }
                     }
                 }
             });
