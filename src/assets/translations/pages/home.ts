@@ -11,6 +11,7 @@ export default {
             noDefault: 'No tens cap rutina per defecte configurada.',
             manage: 'Gestionar rutines',
         },
+        pending: { title: 'Exercicis que et van quedar pendents', sub: 'Els pots afegir a l\'entrenament d\'avui amb "+ Afegir exercici".' },
         week: {
             label: 'Setmana: {{done}}/{{total}} dies',
             behind: 'No arribaràs als {{total}} dies aquesta setmana, no passa res: la rotació continua.',
@@ -57,6 +58,7 @@ export default {
             noDefault: 'No tienes ninguna rutina por defecto configurada.',
             manage: 'Gestionar rutinas',
         },
+        pending: { title: 'Ejercicios que te quedaron pendientes', sub: 'Puedes añadirlos al entrenamiento de hoy con "+ Añadir ejercicio".' },
         week: {
             label: 'Semana: {{done}}/{{total}} días',
             behind: 'No llegarás a los {{total}} días esta semana, no pasa nada: la rotación continúa.',
@@ -103,6 +105,7 @@ export default {
             noDefault: "You don't have a default routine set up.",
             manage: 'Manage routines',
         },
+        pending: { title: 'Exercises you left pending', sub: 'You can add them to today\'s workout with "+ Add exercise".' },
         week: {
             label: 'Week: {{done}}/{{total}} days',
             behind: 'You will not reach {{total}} days this week, no worries: the rotation carries on.',
