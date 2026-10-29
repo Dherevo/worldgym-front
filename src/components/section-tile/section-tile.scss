@@ -1,0 +1,84 @@
+.section-tile {
+    .st-head {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 0.9rem 1.25rem;
+        color: var(--text-color);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        transition: border-color 0.15s;
+
+        &:hover { border-color: var(--highlight-text); }
+
+        .st-title { flex: 1; font-weight: 700; font-size: 1rem; }
+        .st-arrow { color: var(--text-secondary); font-size: 1.3rem; line-height: 1; }
+
+        .st-status {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.2rem 0.65rem;
+            border-radius: 999px;
+            background: var(--surface-2);
+            color: var(--text-secondary);
+
+            &.done { background: var(--tint-green-bg); color: var(--tint-green-text); }
+            &.pending { background: var(--tint-blue-bg); color: var(--tint-blue-text); }
+        }
+    }
+
+    .st-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        z-index: 1000;
+    }
+
+    .st-modal {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        width: 100%;
+        max-width: 560px;
+        max-height: 88vh;
+        display: flex;
+        flex-direction: column;
+
+        .st-modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem 0.5rem;
+            h2 { margin: 0; font-size: 1.1rem; }
+        }
+
+        .st-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .st-body {
+            overflow-y: auto;
+            padding: 0.5rem 1.25rem 1.25rem;
+
+            // The content components are cards on their own; inside the modal they should not look like one
+            .check-in, .daily-habits {
+                background: none;
+                border: none;
+                padding: 0;
+            }
+        }
+    }
+}

@@ -153,7 +153,14 @@ class HomePage extends Vue {
     fetchRecentWorkouts() {
         this.loadingWorkouts = true;
         http.get('/workouts')
-        .then((res: any) => { this.recentWorkouts = (res.items ?? []).slice(0, 5); })
+        .then((res: any) => { 
+            // Only the last two days with workouts; the rest is in the history page
+            const days = new Set<string>();
+            this.recentWorkouts = (res.items ?? []).filter((w: any) => {
+                days.add(String(w.date).slice(0, 10));
+                return days.size <= 2;
+            });
+        })
         .catch(() => {})
         .finally(() => { this.loadingWorkouts = false; });
     }
