@@ -12,7 +12,12 @@
 
             <div v-if="loading && !habits.length" class="loading-text">{{ $t('habits.card.loading') }}</div>
 
-            <div v-for="h in habits" :key="h.id" class="habit-row" :class="{ inactive: !h.is_active }">
+            <div v-for="(h, i) in habits" :key="h.id" class="habit-block"
+                :class="{ dragging: dragFromIdx === i }"
+                @dragover.prevent @drop="dropOn(i)">
+            <div class="habit-row" :class="{ inactive: !h.is_active }">
+                <div class="drag-handle" draggable="true" :title="$t('habits.page.dragToReorder')"
+                    @dragstart="dragStart(i)" @dragend="dragEnd()">⠿</div>
                 <div class="habit-name">{{ habitName(h) }}</div>
 
                 <div class="habit-fields">
@@ -37,7 +42,30 @@
                     <input type="checkbox" :checked="h.is_active" @change="onActive(h, $event)" />
                     {{ $t('habits.page.active') }}
                 </label>
+                <button class="btn-history" :class="{ open: historyId === h.id }" @click="toggleHistory(h)">
+                    {{ historyId === h.id ? $t('habits.page.history.hide') : $t('habits.page.history.show') }}
+                </button>
                 <button v-if="h.key === null" class="btn-delete" @click="remove(h)" :title="$t('habits.page.delete')">✕</button>
+            </div>
+
+            <div v-if="historyId === h.id" class="history-panel">
+                <div v-if="historyLoading" class="loading-text">{{ $t('habits.page.history.loading') }}</div>
+                <template v-else-if="history">
+                    <div class="history-stats">
+                        <div class="stat"><strong>{{ history.current_streak }}</strong><span>{{ $t('habits.page.history.currentStreak') }}</span></div>
+                        <div class="stat"><strong>{{ history.best_streak }}</strong><span>{{ $t('habits.page.history.bestStreak') }}</span></div>
+                        <div class="stat"><strong>{{ history.completed_days }}</strong><span>{{ $t('habits.page.history.completedDays') }}</span></div>
+                    </div>
+                    <div class="history-title">{{ $t('habits.page.history.last30') }}</div>
+                    <div class="history-grid">
+                        <div v-for="c in historyCells" :key="c.date" class="cell" :class="c.state" :title="c.date">{{ c.day }}</div>
+                    </div>
+                    <div class="history-legend">
+                        <span><i class="cell done"></i>{{ $t('habits.page.history.done') }}</span>
+                        <span><i class="cell missed"></i>{{ $t('habits.page.history.missed') }}</span>
+                    </div>
+                </template>
+            </div>
             </div>
 
             <div class="add-card">

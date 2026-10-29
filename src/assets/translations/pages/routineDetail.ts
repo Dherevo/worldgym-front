@@ -44,7 +44,9 @@ export default {
         cancel: 'Cancel·lar',
         save: 'Desar',
         saving: 'Desant...',
+        dragToReorder: 'Arrossega per reordenar',
         errors: {
+            reorder: 'Error en reordenar',
             start: 'Error al iniciar l\'entrenament',
             saveDay: 'Error al desar el dia',
             deleteDay: 'Error al eliminar el dia',
@@ -98,7 +100,9 @@ export default {
         cancel: 'Cancelar',
         save: 'Guardar',
         saving: 'Guardando...',
+        dragToReorder: 'Arrastra para reordenar',
         errors: {
+            reorder: 'Error al reordenar',
             start: 'Error al iniciar el entrenamiento',
             saveDay: 'Error al guardar el día',
             deleteDay: 'Error al eliminar el día',
@@ -152,7 +156,9 @@ export default {
         cancel: 'Cancel',
         save: 'Save',
         saving: 'Saving...',
+        dragToReorder: 'Drag to reorder',
         errors: {
+            reorder: 'Error reordering',
             start: 'Error starting the workout',
             saveDay: 'Error saving the day',
             deleteDay: 'Error deleting the day',

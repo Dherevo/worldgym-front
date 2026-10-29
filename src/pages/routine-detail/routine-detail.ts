@@ -36,6 +36,11 @@ class RoutineDetailPage extends Vue {
     exerciseQuery = '';
     savingExercise = false;
 
+    // Drag & drop reorder: days or the exercises of one day
+    dragKind: 'day' | 'exercise' | null = null;
+    dragFromIdx: number | null = null;
+    dragDayId: number | null = null;
+
     get routineId() {
         return this.param('id');
     }
@@ -76,6 +81,51 @@ class RoutineDetailPage extends Vue {
         })
         .catch(() => App.notification(translate.get('routineDetail.errors.start')).setType('error').show())
         .finally(() => { this.starting = false; });
+    }
+
+    dragStart(kind: 'day' | 'exercise', idx: number, dayId: number | null = null) {
+        this.dragKind = kind;
+        this.dragFromIdx = idx;
+        this.dragDayId = dayId;
+    }
+
+    dragEnd() {
+        this.dragKind = null;
+        this.dragFromIdx = null;
+        this.dragDayId = null;
+    }
+
+    dropDay(idx: number) {
+        if (this.dragKind !== 'day' || this.dragFromIdx === null || this.dragFromIdx === idx) return this.dragEnd();
+
+        const days = this.routine.days;
+        days.splice(idx, 0, days.splice(this.dragFromIdx, 1)[0]);
+        days.forEach((d: any, i: number) => { d.day_number = i + 1; });
+        this.dragEnd();
+
+        (http as any).patch(`/routines/${this.routineId}/days/reorder`)
+        .data({ order: days.map((d: any) => d.id) })
+        .catch(() => {
+            App.notification(translate.get('routineDetail.errors.reorder')).setType('error').show();
+            this.fetchRoutine();
+        });
+    }
+
+    dropExercise(day: any, idx: number) {
+        // Exercises only move inside their own day
+        if (this.dragKind !== 'exercise' || this.dragDayId !== day.id || this.dragFromIdx === null || this.dragFromIdx === idx) return this.dragEnd();
+
+        const exercises = day.exercises;
+        exercises.splice(idx, 0, exercises.splice(this.dragFromIdx, 1)[0]);
+        exercises.forEach((e: any, i: number) => { e.order_index = i + 1; });
+        this.dragEnd();
+
+        (http as any).patch(`/routines/${this.routineId}/days/${day.id}/exercises/reorder`)
+        .data({ order: exercises.map((e: any) => e.id) })
+        .catch(() => {
+            App.notification(translate.get('routineDetail.errors.reorder')).setType('error').show();
+            this.fetchRoutine();
+        });
     }
 
     openAddDay() {

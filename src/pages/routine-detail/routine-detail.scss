@@ -55,6 +55,18 @@
             padding: 1.5rem;
             border: 1px solid var(--border-color);
 
+            &.dragging { opacity: 0.5; }
+
+            .drag-handle {
+                color: var(--text-muted);
+                cursor: grab;
+                user-select: none;
+                margin-right: 0.5rem;
+                &:hover { color: var(--text-secondary); }
+            }
+
+            tr.dragging { opacity: 0.5; }
+
             .day-header {
                 display: flex;
                 align-items: center;
