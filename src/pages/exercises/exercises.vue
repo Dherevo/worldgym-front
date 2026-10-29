@@ -1,5 +1,4 @@
 <template>
-    <AppPage name="exercises-page" layout="backoffice">
         <div class="exercises-page">
 
             <div class="page-header">
@@ -215,7 +214,6 @@
             </div>
 
         </div>
-    </AppPage>
 </template>
 
 <script lang="ts" src="./exercises.ts"></script>

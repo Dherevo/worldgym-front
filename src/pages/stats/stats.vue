@@ -1,5 +1,4 @@
 <template>
-    <AppPage name="stats-page" layout="backoffice">
         <div class="stats-page">
 
             <div class="page-header">
@@ -197,7 +196,6 @@
             </div>
 
         </div>
-    </AppPage>
 </template>
 
 <script lang="ts" src="./stats.ts"></script>

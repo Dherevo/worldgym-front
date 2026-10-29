@@ -1,5 +1,4 @@
 <template>
-    <AppPage name="measurements-page" layout="backoffice">
         <div class="measurements-page">
 
             <div class="page-header">
@@ -103,7 +102,6 @@
             </div>
 
         </div>
-    </AppPage>
 </template>
 
 <script lang="ts" src="./measurements.ts"></script>

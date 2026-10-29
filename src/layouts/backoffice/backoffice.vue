@@ -8,7 +8,7 @@
             <span class="app-logo">WORLD<span class="logo-accent">GYM</span></span>
             <nav class="top-nav" :aria-label="$t('layout.menu.menu')">
                 <a v-for="item in menuItems" :key="item.path" class="top-nav-item"
-                    :href="item.path" :class="{ active: isActive(item.path) }" @click.prevent="to(item.path)">
+                    :href="item.path" :class="{ active: isActive(item) }" @click.prevent="to(item.path)">
                     <svg-icon :name="item.icon"/> {{ $t(item.label) }}
                 </a>
             </nav>
@@ -45,7 +45,7 @@
                 <div class="mobile-menu-backdrop" @click="menuOpen = false"></div>
                 <nav id="mobile-menu" class="mobile-menu" :aria-label="$t('layout.menu.menu')">
                     <a v-for="item in menuItems" :key="item.path" class="mm-item"
-                        :href="item.path" :class="{ active: isActive(item.path) }" @click.prevent="to(item.path)">
+                        :href="item.path" :class="{ active: isActive(item) }" @click.prevent="to(item.path)">
                         <svg-icon :name="item.icon"/> {{ $t(item.label) }}
                     </a>
                     <div class="mm-user" v-if="user" @click="to('/profile')">
