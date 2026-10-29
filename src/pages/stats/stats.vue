@@ -29,31 +29,42 @@
         <div v-else-if="loadingOverview" class="loading-text">{{ $t('stats.overview.loading') }}</div>
 
         <!-- Last workout -->
-        <div class="section-card last-workout" v-if="overview?.last_workout">
+        <div class="section-card last-workout" v-if="overview?.last_workouts?.length">
             <div class="lw-head">
-                <div>
-                    <h2>{{ $t('stats.dash.last.title') }}</h2>
-                    <div class="lw-sub">{{ formatHistoryDate(overview.last_workout.date) }}<template v-if="overview.last_workout.day_name"> · {{ overview.last_workout.day_name }}</template></div>
+                <button type="button" class="lw-nav" :disabled="lastIndex >= overview.last_workouts.length - 1"
+                    :aria-label="$t('stats.dash2.olderWorkout')" @click="selectLast(lastIndex + 1)">&lsaquo;</button>
+
+                <div class="lw-title">
+                    <h2>{{ lastIndex === 0 ? $t('stats.dash.last.title') : $t('stats.dash2.previousWorkout') }}</h2>
+                    <div class="lw-sub">{{ formatHistoryDate(lastMeta.date) }}<template v-if="lastMeta.day_name"> · {{ lastMeta.day_name }}</template></div>
+                    <div class="lw-dots">
+                        <button v-for="(w, i) in overview.last_workouts" :key="w.id" type="button" class="lw-dot" :class="{ on: i === lastIndex }"
+                            :aria-label="formatHistoryDate(w.date)" @click="selectLast(i)"></button>
+                    </div>
                 </div>
-                <button type="button" class="lw-open" @click="to('/workouts/' + overview.last_workout.id)">{{ $t('stats.dash.last.open') }} &rsaquo;</button>
+
+                <button type="button" class="lw-nav" :disabled="lastIndex <= 0"
+                    :aria-label="$t('stats.dash2.newerWorkout')" @click="selectLast(lastIndex - 1)">&rsaquo;</button>
             </div>
 
+            <div v-if="!lw" class="loading-text">{{ $t('stats.overview.loading') }}</div>
+            <template v-else>
             <div class="lw-totals">
                 <div class="lw-total" v-if="improvement.comparable">
                     <b>{{ improvement.up }}/{{ improvement.comparable }}</b>
                     <span>{{ $t('stats.dash2.improved') }}</span>
                 </div>
-                <div class="lw-total"><b>{{ overview.last_workout.sets }}</b><span>{{ $t('stats.dash.last.sets') }}</span></div>
-                <div class="lw-total"><b>{{ overview.last_workout.exercises_count }}</b><span>{{ $t('stats.dash.last.exercises') }}</span></div>
-                <div class="lw-total" v-if="overview.last_workout.prs"><b>🏆 {{ overview.last_workout.prs }}</b><span>{{ $t('stats.dash.last.records') }}</span></div>
+                <div class="lw-total"><b>{{ lw.sets }}</b><span>{{ $t('stats.dash.last.sets') }}</span></div>
+                <div class="lw-total"><b>{{ lw.exercises_count }}</b><span>{{ $t('stats.dash.last.exercises') }}</span></div>
+                <div class="lw-total" v-if="lw.prs"><b>🏆 {{ lw.prs }}</b><span>{{ $t('stats.dash.last.records') }}</span></div>
             </div>
 
-            <p class="lw-compare" v-if="overview.last_workout.compared_with">
-                {{ comparedText(overview.last_workout) }}
+            <p class="lw-compare" v-if="lw.compared_with">
+                {{ comparedText(lw) }}
             </p>
 
             <div class="lw-list">
-                <div v-for="e in overview.last_workout.exercises" :key="e.id" class="lw-row">
+                <div v-for="e in lw.exercises" :key="e.id" class="lw-row">
                     <div class="lw-line">
                         <span class="lw-name">{{ e.name }}<span v-if="e.is_pr" class="pr-badge">PR</span></span>
                         <span class="lw-changes">
@@ -67,6 +78,8 @@
                     <div class="lw-meta">{{ e.sets }} {{ $t('stats.dash.last.setsShort') }} · {{ e.max_weight }} kg × {{ e.top_reps }}</div>
                 </div>
             </div>
+            <button type="button" class="lw-open" @click="to('/workouts/' + lw.id)">{{ $t('stats.dash.last.open') }} &rsaquo;</button>
+            </template>
         </div>
 
         <!-- Calendar: the current month, the whole year in a modal -->
@@ -188,14 +201,17 @@
                             <div v-if="exerciseView(ex.id).current && exerciseView(ex.id).sessionCount > 1" class="ex-charts">
                                 <div class="chart-block">
                                     <div class="chart-title">{{ $t('stats.charts.maxWeightTitle') }}</div>
+                                    <div class="chart-values">{{ chartValues(ex.id, 'weight') }}</div>
                                     <div class="chart-wrap small"><canvas id="weightCanvas"></canvas></div>
                                 </div>
                                 <div class="chart-block">
                                     <div class="chart-title">{{ $t('stats.charts.volumeTitle') }}</div>
+                                    <div class="chart-values">{{ chartValues(ex.id, 'volume') }}</div>
                                     <div class="chart-wrap small"><canvas id="volumeCanvas"></canvas></div>
                                 </div>
                                 <div class="chart-block">
                                     <div class="chart-title">{{ $t('stats.charts.avgRepsTitle') }}</div>
+                                    <div class="chart-values">{{ chartValues(ex.id, 'reps') }}</div>
                                     <div class="chart-wrap small"><canvas id="repsCanvas"></canvas></div>
                                 </div>
                             </div>
