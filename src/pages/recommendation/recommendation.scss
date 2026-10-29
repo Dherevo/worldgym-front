@@ -16,7 +16,7 @@
         flex-wrap: wrap;
         gap: 1rem 2rem;
         .control { display: flex; flex-direction: column; gap: 0.35rem; }
-        .control-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
+        .control-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
         .toggle {
             display: flex;
             button {
@@ -75,7 +75,7 @@
             background: var(--surface-2);
             border-radius: 10px;
             padding: 0.7rem 1rem;
-            .why-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
+            .why-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
             ul { margin: 0.4rem 0 0; padding-left: 1.1rem; font-size: 0.9rem; }
         }
 

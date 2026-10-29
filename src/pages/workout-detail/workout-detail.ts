@@ -147,7 +147,7 @@ class WorkoutDetailPage extends Vue {
         exercises.splice(idx, 0, moved);
         this.dragFromIdx = null;
         const order = exercises.map((we: any, i: number) => ({ id: we.id, order_index: i + 1 }));
-        (http as any).patch(`/workouts/${this.workoutId}/exercises/reorder`)
+        http.patch(`/workouts/${this.workoutId}/exercises/reorder`)
         .data({ order })
         .catch(() => App.notification(translate.get('workoutDetail.errors.reorder')).setType('error').show());
     }

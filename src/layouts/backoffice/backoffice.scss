@@ -40,6 +40,7 @@
             gap: 4px;
             margin-left: 20px;
             overflow-x: auto;
+            overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             &::-webkit-scrollbar { display: none; }
@@ -253,4 +254,39 @@
         .app-logo { font-size: 1rem; margin-right: 0; }
     }
 
+}
+
+// One scroll container (the page content) instead of two nested ones, and a height that follows the
+// mobile browser bars (100vh is taller than the visible area there and cuts the end of the page)
+#backoffice-layout {
+    height: 100vh;
+    height: 100dvh;
+
+    .backoffice-flex {
+        height: auto !important;
+        flex: 1 1 0 !important;
+        min-height: 0;
+    }
+
+    #backoffice-content {
+        overflow: hidden;
+        min-height: 0;
+    }
+
+    #backoffice-page-content {
+        overflow-x: hidden;
+        overflow-y: auto;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+    }
+
+    .mobile-menu { max-height: calc(100vh - 60px); max-height: calc(100dvh - 60px); }
+}
+
+// The library adds 30px 15px of padding on mobile on top of the padding every page already has
+@media screen and (max-width: 768px) {
+    #backoffice-layout .backoffice-flex #backoffice-content #backoffice-page-content {
+        padding: 0 0 env(safe-area-inset-bottom);
+    }
 }

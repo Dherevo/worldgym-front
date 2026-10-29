@@ -33,7 +33,7 @@
             display: flex;
             align-items: center;
             gap: 0.4rem;
-            .ci-end { font-size: 0.75rem; color: var(--text-muted); min-width: 52px; &:last-child { text-align: right; } }
+            .ci-end { font-size: 0.8rem; color: var(--text-muted); min-width: 52px; &:last-child { text-align: right; } }
             .ci-btn {
                 flex: 1;
                 max-width: 52px;

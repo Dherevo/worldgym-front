@@ -33,7 +33,7 @@
         flex-direction: column;
         gap: 0.3rem;
         &.grow { flex: 1; min-width: 160px; }
-        span { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
+        span { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
         input, select {
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -122,15 +122,15 @@
                 padding: 0.5rem 0.9rem;
                 min-width: 110px;
                 strong { font-size: 1.4rem; }
-                span { font-size: 0.75rem; color: var(--text-secondary); }
+                span { font-size: 0.8rem; color: var(--text-secondary); }
             }
         }
-        .history-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
+        .history-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
         .history-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
         .cell {
             border-radius: 6px;
             text-align: center;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             padding: 0.35rem 0;
             background: var(--surface-2);
             color: var(--text-muted);

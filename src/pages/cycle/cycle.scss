@@ -54,7 +54,7 @@
             padding: 1rem 1.1rem;
             &.highlight { border-color: var(--primary-color); }
             .stat-label {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
                 font-weight: 700;
                 letter-spacing: 0.05em;
                 text-transform: uppercase;
@@ -81,8 +81,8 @@
                 background: var(--surface-2);
                 border: 1px solid var(--border-color);
                 color: var(--text-color);
-                width: 36px;
-                height: 36px;
+                width: 44px;
+                height: 44px;
                 border-radius: 8px;
                 font-size: 1.3rem;
                 line-height: 1;
@@ -101,7 +101,7 @@
             margin-bottom: 4px;
             div {
                 text-align: center;
-                font-size: 0.75rem;
+                font-size: 0.8rem;
                 font-weight: 700;
                 text-transform: uppercase;
                 color: var(--text-secondary);
@@ -196,7 +196,7 @@
             display: flex;
             flex-direction: column;
             gap: 0.3rem;
-            span { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
+            span { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
             input {
                 width: 130px;
                 border: 1px solid var(--border-color);
@@ -293,6 +293,15 @@
 
     @media (max-width: 768px) {
         padding: 1rem;
+
+        // Calendar first on a phone; the summary, history and settings come after it
+        display: flex;
+        flex-direction: column;
+        .page-header { order: 0; }
+        .calendar { order: 1; }
+        .summary { order: 2; }
+        .history { order: 3; }
+        .settings { order: 4; }
         .page-header { flex-direction: column; .btn-new { width: 100%; } }
         .calendar { padding: 0.75rem; .day { font-size: 0.85rem; border-radius: 8px; } }
     }

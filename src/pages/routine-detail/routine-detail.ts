@@ -103,7 +103,7 @@ class RoutineDetailPage extends Vue {
         days.forEach((d: any, i: number) => { d.day_number = i + 1; });
         this.dragEnd();
 
-        (http as any).patch(`/routines/${this.routineId}/days/reorder`)
+        http.patch(`/routines/${this.routineId}/days/reorder`)
         .data({ order: days.map((d: any) => d.id) })
         .catch(() => {
             App.notification(translate.get('routineDetail.errors.reorder')).setType('error').show();
@@ -120,7 +120,7 @@ class RoutineDetailPage extends Vue {
         exercises.forEach((e: any, i: number) => { e.order_index = i + 1; });
         this.dragEnd();
 
-        (http as any).patch(`/routines/${this.routineId}/days/${day.id}/exercises/reorder`)
+        http.patch(`/routines/${this.routineId}/days/${day.id}/exercises/reorder`)
         .data({ order: exercises.map((e: any) => e.id) })
         .catch(() => {
             App.notification(translate.get('routineDetail.errors.reorder')).setType('error').show();

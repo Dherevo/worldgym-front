@@ -2,6 +2,7 @@
     display: flex;
     gap: 0.25rem;
     overflow-x: auto;
+    overflow-y: hidden;
     border-bottom: 1px solid var(--border-color);
 
     .tab-bar-item {
@@ -11,7 +12,6 @@
         font-weight: 600;
         text-decoration: none;
         border-bottom: 3px solid transparent;
-        margin-bottom: -1px;
         cursor: pointer;
         transition: color 0.15s, border-color 0.15s;
 
