@@ -39,10 +39,9 @@
             </div>
 
             <div class="lw-totals">
-                <div class="lw-total">
-                    <b>{{ formatVolume(overview.last_workout.volume_kg) }}</b>
-                    <span>{{ $t('stats.dash.last.volume') }}</span>
-                    <em v-if="overview.last_workout.volume_delta_pct !== null" :class="deltaClass(overview.last_workout.volume_delta_pct)">{{ deltaText(overview.last_workout.volume_delta_pct) }}</em>
+                <div class="lw-total" v-if="improvement.comparable">
+                    <b>{{ improvement.up }}/{{ improvement.comparable }}</b>
+                    <span>{{ $t('stats.dash2.improved') }}</span>
                 </div>
                 <div class="lw-total"><b>{{ overview.last_workout.sets }}</b><span>{{ $t('stats.dash.last.sets') }}</span></div>
                 <div class="lw-total"><b>{{ overview.last_workout.exercises_count }}</b><span>{{ $t('stats.dash.last.exercises') }}</span></div>
@@ -57,10 +56,15 @@
                 <div v-for="e in overview.last_workout.exercises" :key="e.id" class="lw-row">
                     <div class="lw-line">
                         <span class="lw-name">{{ e.name }}<span v-if="e.is_pr" class="pr-badge">PR</span></span>
-                        <span class="lw-delta" :class="deltaClass(e.volume_delta_pct)">{{ e.volume_delta_pct !== null ? deltaText(e.volume_delta_pct) : $t('stats.dash.last.first') }}</span>
+                        <span class="lw-changes">
+                            <span v-if="e.prev_max_weight === null" class="lw-delta flat">{{ $t('stats.dash.last.first') }}</span>
+                            <template v-else>
+                                <span v-for="c in lastChanges(e)" :key="c.text" class="lw-delta" :class="c.cls">{{ c.text }}</span>
+                                <span v-if="!lastChanges(e).length" class="lw-delta flat">{{ $t('stats.dash2.progress.same') }}</span>
+                            </template>
+                        </span>
                     </div>
-                    <div class="lw-meta">{{ e.sets }} {{ $t('stats.dash.last.setsShort') }} · {{ e.max_weight }} kg × {{ e.top_reps }} · {{ formatVolume(e.volume_kg) }}</div>
-                    <div class="lw-bar"><div class="fill" :style="{ width: barWidth(e) + '%' }"></div></div>
+                    <div class="lw-meta">{{ e.sets }} {{ $t('stats.dash.last.setsShort') }} · {{ e.max_weight }} kg × {{ e.top_reps }}</div>
                 </div>
             </div>
         </div>
@@ -83,6 +87,11 @@
                         :title="$t('stats.dash.heatmap.tooltip', { date: formatHistoryDate(c.date), n: c.count })">{{ c.day }}</div>
                     <div v-else class="cal-day empty"></div>
                 </template>
+            </div>
+
+            <div class="cal-legend">
+                <span><i class="cal-key l2"></i>{{ $t('stats.dash2.legendOne') }}</span>
+                <span><i class="cal-key l3"></i>{{ $t('stats.dash2.legendMany') }}</span>
             </div>
 
             <SectionTile v-model:open="showYear" :title="$t('stats.dash2.viewYear')">
@@ -124,12 +133,12 @@
                 </select>
             </label>
 
-            <div v-if="loadingGroup" class="loading-text">{{ $t('stats.muscleGroup.loading') }}</div>
-
             <div v-if="groupStats?.sessions?.length" class="group-chart">
                 <div class="chart-title">{{ $t('stats.dash2.progress.groupEvolution', { group: selectedGroupName }) }}</div>
                 <div class="chart-wrap"><canvas id="groupVolumeCanvas"></canvas></div>
             </div>
+
+            <div v-if="loadingGroup" class="loading-text">{{ $t('stats.muscleGroup.loading') }}</div>
 
             <div v-else-if="groupStats" class="ex-list">
                 <div v-if="!(groupStats.bests ?? []).length" class="empty-text">{{ $t('stats.dash2.progress.empty') }}</div>
@@ -153,7 +162,7 @@
                                     <template v-if="exerciseView(ex.id).previous">
                                         <div class="cmp-value">{{ exerciseView(ex.id).previous.max_weight }} kg</div>
                                         <div class="cmp-sub">{{ formatShortDate(exerciseView(ex.id).previous.date) }} · {{ exerciseView(ex.id).previous.total_sets }} {{ $t('stats.dash.last.setsShort') }}</div>
-                                        <div class="cmp-sub">{{ formatVolume(exerciseView(ex.id).previous.total_volume) }}</div>
+                                        <div class="cmp-sub">{{ $t('stats.dash2.progress.avgReps', { n: parseFloat(exerciseView(ex.id).previous.avg_reps).toFixed(1) }) }}</div>
                                     </template>
                                     <div v-else class="cmp-sub">—</div>
                                 </div>
@@ -162,7 +171,7 @@
                                     <div class="cmp-label">{{ $t('stats.dash2.progress.current') }}</div>
                                     <div class="cmp-value">{{ exerciseView(ex.id).current.max_weight }} kg</div>
                                     <div class="cmp-sub">{{ formatShortDate(exerciseView(ex.id).current.date) }} · {{ exerciseView(ex.id).current.total_sets }} {{ $t('stats.dash.last.setsShort') }}</div>
-                                    <div class="cmp-sub">{{ formatVolume(exerciseView(ex.id).current.total_volume) }}</div>
+                                    <div class="cmp-sub">{{ $t('stats.dash2.progress.avgReps', { n: parseFloat(exerciseView(ex.id).current.avg_reps).toFixed(1) }) }}</div>
                                     <div class="cmp-changes" v-if="exerciseView(ex.id).previous">
                                         <span v-for="c in exerciseView(ex.id).changes" :key="c.text" class="cmp-delta" :class="c.cls">{{ c.text }}</span>
                                         <span v-if="!exerciseView(ex.id).changes.length" class="cmp-delta flat">{{ $t('stats.dash2.progress.same') }}</span>
@@ -173,7 +182,6 @@
                                     <div class="cmp-label">🏆 {{ $t('stats.dash2.progress.record') }}</div>
                                     <div class="cmp-value">{{ exerciseView(ex.id).pr.best_weight.weight }} kg</div>
                                     <div class="cmp-sub">{{ exerciseView(ex.id).pr.best_weight.reps }} {{ $t('stats.dash2.progress.reps') }} · {{ formatShortDate(exerciseView(ex.id).pr.best_weight.date) }}</div>
-                                    <div class="cmp-sub" v-if="exerciseView(ex.id).pr.best_volume">{{ $t('stats.pr.bestVolume') }}: {{ formatVolume(exerciseView(ex.id).pr.best_volume.volume) }}</div>
                                 </div>
                             </div>
 

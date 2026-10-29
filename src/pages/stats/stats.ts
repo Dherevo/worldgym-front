@@ -96,13 +96,16 @@ class StatsPage extends Vue {
 
     // ---- Last workout ----
 
-    deltaText(n: number): string {
-        return `${n > 0 ? '+' : n < 0 ? '−' : ''}${Math.abs(Math.round(n))}%`;
+    // "+5 kg" / "+1 sèrie" of an exercise of the last workout against the last time it was done
+    lastChanges(e: any): { text: string; cls: string }[] {
+        return this.sessionChanges({ max_weight: e.max_weight, total_sets: e.sets }, { max_weight: e.prev_max_weight, total_sets: e.prev_sets });
     }
 
-    deltaClass(n: number | null): string {
-        if (n === null || n === undefined) return 'flat';
-        return n > 0 ? 'up' : n < 0 ? 'down' : 'flat';
+    // How many of the exercises that had a previous time got better (heavier, or the same weight with more sets)
+    get improvement(): { up: number; comparable: number } {
+        const exercises = (this.overview?.last_workout?.exercises ?? []).filter((e: any) => e.prev_max_weight !== null);
+        const up = exercises.filter((e: any) => this.lastChanges(e)[0]?.cls === 'up').length;
+        return { up, comparable: exercises.length };
     }
 
     // What the last workout was compared with: the same routine day, the same muscle groups, or each exercise on its own
@@ -114,12 +117,6 @@ class StatsPage extends Vue {
             return translate.get('stats.dash2.vsGroups', { groups: (lw.compared_groups ?? []).join(' + '), date: this.formatShortDate(lw.prev_date) });
         }
         return translate.get('stats.dash.last.vsExercises');
-    }
-
-    // Volume of an exercise relative to the heaviest one of the workout
-    barWidth(e: any): number {
-        const max = Math.max(...(this.overview?.last_workout?.exercises ?? []).map((x: any) => x.volume_kg), 1);
-        return Math.max(4, Math.round((e.volume_kg / max) * 100));
     }
 
     // ---- Calendar ----
@@ -236,16 +233,16 @@ class StatsPage extends Vue {
                 datasets: [
                     {
                         type: 'bar',
-                        label: translate.get('stats.dash.monthly.volume'),
-                        data: monthly.map((m: any) => m.volume_kg),
+                        label: translate.get('stats.dash.monthly.workouts'),
+                        data: monthly.map((m: any) => m.workouts),
                         backgroundColor: 'rgba(237, 115, 52, 0.65)',
                         borderRadius: 4,
                         yAxisID: 'y'
                     },
                     {
                         type: 'line',
-                        label: translate.get('stats.dash.monthly.workouts'),
-                        data: monthly.map((m: any) => m.workouts),
+                        label: translate.get('stats.dash2.monthlySets'),
+                        data: monthly.map((m: any) => m.sets),
                         borderColor: 'rgb(59, 130, 246)',
                         backgroundColor: 'rgb(59, 130, 246)',
                         borderWidth: 2,
@@ -261,7 +258,7 @@ class StatsPage extends Vue {
                 interaction: { mode: 'index', intersect: false },
                 plugins: { legend: { position: 'bottom' } },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: grid } },
+                    y: { beginAtZero: true, grid: { color: grid }, ticks: { precision: 0 } },
                     y1: { beginAtZero: true, position: 'right', grid: { display: false }, ticks: { precision: 0 } },
                     x: { grid: { display: false } }
                 }
