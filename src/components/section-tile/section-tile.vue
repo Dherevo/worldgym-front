@@ -7,6 +7,7 @@
             <span class="st-arrow">&rsaquo;</span>
         </button>
 
+        <Teleport to="body">
         <div v-if="open" class="st-overlay" @click.self="$emit('update:open', false)">
             <div class="st-modal">
                 <div class="st-modal-head">
@@ -16,6 +17,7 @@
                 <div class="st-body"><slot /></div>
             </div>
         </div>
+        </Teleport>
     </div>
 </template>
 
