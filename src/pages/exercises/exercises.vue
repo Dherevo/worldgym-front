@@ -4,12 +4,9 @@
             <div class="page-header">
                 <h1>{{ $t('exercises.title') }}</h1>
                 <div class="header-buttons">
-                    <button class="btn-secondary" v-if="isAdmin" @click="showMuscleManager = true">{{ $t('exercises.manage.open') }}</button>
                     <button class="btn-primary" @click="openCreate()">{{ $t('exercises.newExercise') }}</button>
                 </div>
             </div>
-
-            <MuscleManager v-if="showMuscleManager" @close="showMuscleManager = false" @changed="fetchFilters()" />
 
             <!-- Tabs -->
             <div class="tabs">
@@ -117,13 +114,6 @@
                         <textarea v-model="texts[l].description" :placeholder="$t('exercises.form.descriptionPlaceholder')" rows="3"></textarea>
                     </div>
                     <div class="form-hint">{{ $t('exercises.form.langHint') }}</div>
-
-                    <div class="form-group" v-if="isAdmin && !editingExercise?.is_global">
-                        <label class="check-row">
-                            <input type="checkbox" v-model="form.is_global" />
-                            {{ $t('exercises.form.isGlobal') }}
-                        </label>
-                    </div>
 
                     <div class="form-group">
                         <label>{{ $t('exercises.form.image') }}</label>

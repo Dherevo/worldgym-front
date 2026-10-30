@@ -18,22 +18,22 @@
             <div class="habit-row" :class="{ inactive: !h.is_active }">
                 <div class="drag-handle" draggable="true" :title="$t('habits.page.dragToReorder')"
                     @dragstart="dragStart(i)" @dragend="dragEnd()">⠿</div>
-                <div class="habit-name">{{ habitName(h) }}</div>
+                <div class="habit-name">{{ habitName(h) }}<span v-if="h.template_id" class="from-admin">{{ $t('habits.page.fromAdmin') }}</span></div>
 
                 <div class="habit-fields">
                     <label v-if="h.kind === 'steps'" class="field">
                         <span>{{ $t('habits.page.stepsGoal') }}</span>
-                        <input type="number" min="1000" max="100000" step="500" :value="h.target_value"
+                        <input type="number" min="1000" max="100000" step="500" :disabled="!!h.template_id" :value="h.target_value"
                             @change="onNumber(h, 'target_value', $event)" />
                     </label>
                     <template v-else-if="h.kind === 'sets'">
                         <label class="field">
                             <span>{{ $t('habits.page.sets') }}</span>
-                            <input type="number" min="1" max="20" :value="h.target_sets" @change="onNumber(h, 'target_sets', $event)" />
+                            <input type="number" min="1" max="20" :disabled="!!h.template_id" :value="h.target_sets" @change="onNumber(h, 'target_sets', $event)" />
                         </label>
                         <label class="field">
                             <span>{{ $t('habits.page.reps') }}</span>
-                            <input type="number" min="1" max="500" :value="h.target_reps" @change="onNumber(h, 'target_reps', $event)" />
+                            <input type="number" min="1" max="500" :disabled="!!h.template_id" :value="h.target_reps" @change="onNumber(h, 'target_reps', $event)" />
                         </label>
                     </template>
                 </div>
@@ -45,10 +45,10 @@
                 <button class="btn-history" :class="{ open: historyId === h.id }" @click="toggleHistory(h)">
                     {{ historyId === h.id ? $t('habits.page.history.hide') : $t('habits.page.history.show') }}
                 </button>
-                <button v-if="h.key === null" class="btn-delete" @click="remove(h)" :title="$t('habits.page.delete')">✕</button>
+                <button v-if="h.key === null && !h.template_id" class="btn-delete" @click="remove(h)" :title="$t('habits.page.delete')">✕</button>
             </div>
 
-            <div v-if="h.key === null" class="schedule-line">
+            <div v-if="h.key === null && !h.template_id" class="schedule-line">
                 <label class="field">
                     <span>{{ $t('habits.page.schedule.label') }}</span>
                     <select :value="h.schedule_type" @change="onScheduleType(h, $event)">

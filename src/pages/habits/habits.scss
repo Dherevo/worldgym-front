@@ -77,6 +77,16 @@
             &:hover { color: var(--text-secondary); }
         }
         .habit-name { font-weight: 700; flex: 1; min-width: 120px; }
+        .from-admin {
+            margin-left: 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 1px 8px;
+            border-radius: 10px;
+            background: var(--tint-blue-bg);
+            color: var(--tint-blue-text);
+            vertical-align: middle;
+        }
         .btn-history {
             background: transparent;
             border: 1px solid var(--border-color);

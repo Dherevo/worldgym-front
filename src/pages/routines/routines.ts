@@ -1,6 +1,5 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
-import userStore from "@/modules/userStore";
 
 @Component({})
 class RoutinesPage extends Vue {
@@ -8,24 +7,19 @@ class RoutinesPage extends Vue {
     routines: any[] = [];
     activeTab: 'mine' | 'templates' = 'mine';
     cloningId: number | null = null;
-    savingTemplateId: number | null = null;
     loading = false;
     showForm = false;
     editingRoutine: any = null;
-    form = { name: '', description: '', is_global: false };
+    form = { name: '', description: '' };
     saving = false;
 
     created() {
         this.fetchRoutines();
     }
 
-    get isAdmin(): boolean {
-        return !!userStore.data?.isAdmin;
-    }
-
-    // Global routines are read-only for regular users
+    // Global routines (templates) are managed from the backoffice
     canEdit(r: any): boolean {
-        return !r.is_global || this.isAdmin;
+        return !r.is_global;
     }
 
     setTab(tab: 'mine' | 'templates') {
@@ -45,13 +39,13 @@ class RoutinesPage extends Vue {
 
     openCreate() {
         this.editingRoutine = null;
-        this.form = { name: '', description: '', is_global: this.activeTab === 'templates' };
+        this.form = { name: '', description: '' };
         this.showForm = true;
     }
 
     openEdit(r: any) {
         this.editingRoutine = r;
-        this.form = { name: r.name, description: r.description || '', is_global: r.is_global };
+        this.form = { name: r.name, description: r.description || '' };
         this.showForm = true;
     }
 
@@ -85,35 +79,6 @@ class RoutinesPage extends Vue {
         })
         .catch(() => App.notification(translate.get('routines.errors.clone')).setType('error').show())
         .finally(() => { this.cloningId = null; });
-    }
-
-    // Admin: publishes a copy of one of their own routines as a global template (the original is kept)
-    async saveAsTemplate(r: any) {
-        const ok = await App.confirm(translate.get('routines.confirmSaveAsTemplate', { name: r.name }));
-        if (!ok) return;
-        this.savingTemplateId = r.id;
-        try {
-            const src: any = await http.get(`/routines/${r.id}`);
-            const tpl: any = await http.post('/routines').data({ name: src.name, description: src.description || '', is_global: true });
-            for (const day of src.days ?? []) {
-                const newDay: any = await http.post(`/routines/${tpl.id}/days`).data({ day_number: day.day_number, name: day.name });
-                for (const ex of day.exercises ?? []) {
-                    await http.post(`/routines/${tpl.id}/days/${newDay.id}/exercises`).data({
-                        exercise_id: ex.exercise?.id,
-                        order_index: ex.order_index,
-                        sets_target: ex.sets_target,
-                        reps_target: ex.reps_target,
-                        weight_target: ex.weight_target,
-                        rest_seconds: ex.rest_seconds
-                    });
-                }
-            }
-            App.notification(translate.get('routines.savedAsTemplate', { name: src.name })).setType('success').show();
-        } catch {
-            App.notification(translate.get('routines.errors.saveAsTemplate')).setType('error').show();
-        } finally {
-            this.savingTemplateId = null;
-        }
     }
 
     setDefault(r: any) {
