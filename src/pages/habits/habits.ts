@@ -9,6 +9,10 @@ class HabitsPage extends Vue {
     loading = false;
     adding = false;
 
+    // Habits created by the admin that the user can add to their list
+    catalog: any[] = [];
+    addingCatalogId: number | null = null;
+
     // Drag & drop reorder
     dragFromIdx: number | null = null;
 
@@ -27,6 +31,7 @@ class HabitsPage extends Vue {
 
     created() {
         this.fetchHabits();
+        this.fetchCatalog();
     }
 
     fetchHabits() {
@@ -35,6 +40,41 @@ class HabitsPage extends Vue {
         .then((res: any) => { this.habits = res.habits ?? []; })
         .catch(() => App.notification(translate.get('habits.page.errors.load')).setType('error').show())
         .finally(() => { this.loading = false; });
+    }
+
+    fetchCatalog() {
+        http.get('/habit-catalog')
+        .then((res: any) => { this.catalog = res.templates ?? []; })
+        .catch(() => {});
+    }
+
+    // The copy is the user's own from then on: they can adjust or delete it like any custom habit
+    addFromCatalog(t: any) {
+        if (this.addingCatalogId !== null) return;
+        this.addingCatalogId = t.id;
+
+        http.post(`/habit-catalog/${t.id}/add`).data({})
+        .then((res: any) => {
+            this.habits = res.habits ?? [];
+            this.catalog = res.catalog ?? [];
+        })
+        .catch(() => {
+            App.notification(translate.get('habits.page.errors.add')).setType('error').show();
+            this.fetchCatalog();
+        })
+        .finally(() => { this.addingCatalogId = null; });
+    }
+
+    catalogGoal(t: any): string {
+        if (t.kind === 'steps') return translate.get('habits.page.catalog.goalSteps', { n: t.target_value });
+        if (t.kind === 'sets') return translate.get('habits.page.catalog.goalSets', { sets: t.target_sets, reps: t.target_reps });
+        return translate.get('habits.page.catalog.goalCheck');
+    }
+
+    catalogSchedule(t: any): string {
+        if (t.schedule_type === 'weekdays') return (t.schedule_days ?? []).map((d: number) => translate.get('habits.page.days.' + d)).join(' ');
+        if (t.schedule_type === 'interval') return `${translate.get('habits.page.schedule.every')} ${t.schedule_every} ${translate.get('habits.page.schedule.days')}`;
+        return translate.get('habits.page.schedule.daily');
     }
 
     habitName(h: any): string {
@@ -97,7 +137,10 @@ class HabitsPage extends Vue {
         .then((ok: boolean) => {
             if (!ok) return;
             http.delete(`/habits/${h.id}`)
-            .then((res: any) => { this.habits = res.habits ?? []; })
+            .then((res: any) => {
+                this.habits = res.habits ?? [];
+                this.fetchCatalog();
+            })
             .catch(() => App.notification(translate.get('habits.page.errors.delete')).setType('error').show());
         });
     }

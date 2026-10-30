@@ -77,16 +77,6 @@
             &:hover { color: var(--text-secondary); }
         }
         .habit-name { font-weight: 700; flex: 1; min-width: 120px; }
-        .from-admin {
-            margin-left: 0.5rem;
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 1px 8px;
-            border-radius: 10px;
-            background: var(--tint-blue-bg);
-            color: var(--tint-blue-text);
-            vertical-align: middle;
-        }
         .btn-history {
             background: transparent;
             border: 1px solid var(--border-color);
@@ -183,6 +173,31 @@
     }
 
     .add-card .schedule-line { padding: 0; }
+
+    .catalog-card {
+        margin-top: 0.75rem;
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem 1.1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        h3 { margin: 0; font-size: 1rem; }
+        .catalog-sub { margin: 0; font-size: 0.85rem; color: var(--text-secondary); }
+        .catalog-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.6rem 0;
+            border-top: 1px solid var(--border-color);
+        }
+        .catalog-info { min-width: 0; }
+        .catalog-name { font-weight: 700; }
+        .catalog-meta { font-size: 0.8rem; color: var(--text-secondary); }
+        .btn-add { align-self: auto; flex-shrink: 0; }
+    }
 
     .add-card {
         margin-top: 0.75rem;
