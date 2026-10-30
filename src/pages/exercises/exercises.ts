@@ -1,12 +1,8 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
-import userStore from "@/modules/userStore";
-import MuscleManager from "@/components/muscle-manager/muscle-manager.vue";
 
-@Component({ components: { MuscleManager } })
+@Component({})
 class ExercisesPage extends Vue {
-
-    showMuscleManager = false;
 
     exercises: any[] = [];
     loading = false;
@@ -38,7 +34,6 @@ class ExercisesPage extends Vue {
         name: '',
         description: '',
         equipment_id: null,
-        is_global: false,
         is_bodyweight: false,
         muscles: []
     };
@@ -50,12 +45,9 @@ class ExercisesPage extends Vue {
     gifPreview = '';
     removeGif = false;
 
-    get isAdmin(): boolean {
-        return !!userStore.data?.isAdmin;
-    }
-
+    // Global exercises are managed from the backoffice
     canEdit(ex: any): boolean {
-        return !ex.is_global || this.isAdmin;
+        return !ex.is_global;
     }
 
     emptyTexts() {
@@ -149,7 +141,7 @@ class ExercisesPage extends Vue {
 
     openCreate() {
         this.editingExercise = null;
-        this.form = { name: '', description: '', equipment_id: null, is_global: false, is_bodyweight: false, intensity: 2, type: 'strength', impact: 'low', muscles: [] };
+        this.form = { name: '', description: '', equipment_id: null, is_bodyweight: false, intensity: 2, type: 'strength', impact: 'low', muscles: [] };
         this.texts = this.emptyTexts();
         this.resetMedia(null);
         this.showForm = true;
@@ -161,7 +153,6 @@ class ExercisesPage extends Vue {
             name: ex.name,
             description: ex.description || '',
             equipment_id: ex.equipment?.id || null,
-            is_global: ex.is_global,
             is_bodyweight: ex.is_bodyweight ?? false,
             intensity: ex.intensity ?? 2,
             type: ex.type ?? 'strength',
@@ -241,10 +232,6 @@ class ExercisesPage extends Vue {
         if (!this.editingExercise) {
             body.name = first('name');
             body.description = first('description');
-            body.is_global = this.isAdmin && this.form.is_global;
-        } else if (this.isAdmin && this.form.is_global && !this.editingExercise.is_global) {
-            // Promote an own exercise to global (one-way)
-            body.is_global = true;
         }
 
         const save = this.editingExercise
