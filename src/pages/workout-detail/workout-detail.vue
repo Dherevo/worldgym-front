@@ -23,21 +23,14 @@
                     v-for="(we, i) in workout.workout_exercises"
                     :key="we.id"
                     class="exercise-block"
-                    :class="{ dragging: dragFromIdx === i }"
-                    draggable="true"
-                    @dragstart="dragStart(i)"
-                    @dragover.prevent
-                    @drop="dropOn(i)"
-                    @dragend="dragEnd()"
+                    :style="{ animationDelay: (i * 60) + 'ms' }"
                 >
                     <div class="exercise-header">
-                        <div class="drag-handle" :title="$t('workoutDetail.dragToReorder')">⠿</div>
                         <div>
                             <span class="exercise-name">{{ we.exercise?.name }}</span>
                             <span class="exercise-eq" v-if="we.exercise?.equipment"> · {{ we.exercise.equipment.name }}</span>
                         </div>
                         <div class="exercise-header-right">
-                            <span class="volume-tag">{{ $t('workoutDetail.volumeShort', { v: totalVolume(we.sets) }) }}</span>
                             <button class="btn-delete-exercise" @click="deleteExercise(we)" :title="$t('workoutDetail.deleteExercise')">✕</button>
                         </div>
                     </div>
@@ -57,12 +50,12 @@
                         <tbody>
                             <template v-for="s in we.sets" :key="s.id">
                                 <tr v-if="editingSet?.id !== s.id" :class="{ 'failed-row': s.is_failed }">
-                                    <td>{{ s.set_number }}</td>
-                                    <td>{{ s.reps }}</td>
-                                    <td>{{ s.weight }}</td>
-                                    <td>{{ s.rest_seconds ?? '—' }}</td>
-                                    <td>{{ s.notes || '—' }}</td>
-                                    <td>
+                                    <td class="c-set">{{ s.set_number }}</td>
+                                    <td class="c-reps" :data-label="$t('workoutDetail.table.reps')">{{ s.reps }}</td>
+                                    <td class="c-weight" :data-label="$t('workoutDetail.table.weight')">{{ s.weight }}</td>
+                                    <td class="c-rest" :class="{ empty: s.rest_seconds == null }" :data-label="$t('workoutDetail.table.rest')">{{ s.rest_seconds ?? '—' }}</td>
+                                    <td class="c-notes" :class="{ empty: !s.notes }" :data-label="$t('workoutDetail.table.notes')">{{ s.notes || '—' }}</td>
+                                    <td class="c-flags" :class="{ empty: !s.is_failed && !s.is_dropset }">
                                         <span class="set-badge failed" v-if="s.is_failed">{{ $t('workoutDetail.badges.failed') }}</span>
                                         <span class="set-badge dropset" v-if="s.is_dropset">{{ $t('workoutDetail.badges.dropset') }}</span>
                                     </td>
@@ -72,12 +65,12 @@
                                     </td>
                                 </tr>
                                 <tr v-else class="editing-row">
-                                    <td>{{ s.set_number }}</td>
-                                    <td><input type="number" v-model.number="editReps" min="1" class="cell-input" /></td>
-                                    <td><input type="number" v-model.number="editWeight" min="0" step="0.5" class="cell-input" /></td>
-                                    <td><input type="number" v-model.number="editRest" min="0" class="cell-input" /></td>
-                                    <td><input type="text" v-model="editSetNotes" class="cell-input wide" /></td>
-                                    <td>
+                                    <td class="c-set">{{ s.set_number }}</td>
+                                    <td class="c-reps" :data-label="$t('workoutDetail.table.reps')"><input type="number" v-model.number="editReps" min="1" class="cell-input" /></td>
+                                    <td class="c-weight" :data-label="$t('workoutDetail.table.weight')"><input type="number" v-model.number="editWeight" min="0" step="0.5" class="cell-input" /></td>
+                                    <td class="c-rest" :data-label="$t('workoutDetail.table.rest')"><input type="number" v-model.number="editRest" min="0" class="cell-input" /></td>
+                                    <td class="c-notes" :data-label="$t('workoutDetail.table.notes')"><input type="text" v-model="editSetNotes" class="cell-input wide" /></td>
+                                    <td class="c-flags">
                                         <label class="flag-check"><input type="checkbox" v-model="editFailed" /> {{ $t('workoutDetail.flagFailedShort') }}</label>
                                         <label class="flag-check"><input type="checkbox" v-model="editDropset" /> {{ $t('workoutDetail.flagDropsetShort') }}</label>
                                     </td>
@@ -89,12 +82,12 @@
                             </template>
                             <!-- Add set row -->
                             <tr v-if="addingSetWeId == we.id" class="editing-row">
-                                <td>{{ (we.sets?.length ?? 0) + 1 }}</td>
-                                <td><input type="number" v-model.number="newReps" min="1" class="cell-input" /></td>
-                                <td><input type="number" v-model.number="newWeight" min="0" step="0.5" class="cell-input" /></td>
-                                <td><input type="number" v-model.number="newRest" min="0" class="cell-input" /></td>
-                                <td><input type="text" v-model="newSetNotes" class="cell-input wide" :placeholder="$t('workoutDetail.table.notes')" /></td>
-                                <td>
+                                <td class="c-set">{{ (we.sets?.length ?? 0) + 1 }}</td>
+                                <td class="c-reps" :data-label="$t('workoutDetail.table.reps')"><input type="number" v-model.number="newReps" min="1" class="cell-input" /></td>
+                                <td class="c-weight" :data-label="$t('workoutDetail.table.weight')"><input type="number" v-model.number="newWeight" min="0" step="0.5" class="cell-input" /></td>
+                                <td class="c-rest" :data-label="$t('workoutDetail.table.rest')"><input type="number" v-model.number="newRest" min="0" class="cell-input" /></td>
+                                <td class="c-notes" :data-label="$t('workoutDetail.table.notes')"><input type="text" v-model="newSetNotes" class="cell-input wide" :placeholder="$t('workoutDetail.table.notes')" /></td>
+                                <td class="c-flags">
                                     <label class="flag-check"><input type="checkbox" v-model="newFailed" /> {{ $t('workoutDetail.flagFailedShort') }}</label>
                                     <label class="flag-check"><input type="checkbox" v-model="newDropset" /> {{ $t('workoutDetail.flagDropsetShort') }}</label>
                                 </td>
