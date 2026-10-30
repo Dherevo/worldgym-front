@@ -1,10 +1,5 @@
 export default {
     ca: {
-        saveAsTemplate: 'Guardar com a plantilla',
-        savingTemplate: 'Guardant...',
-        confirmSaveAsTemplate: 'Vols publicar "{{name}}" com a plantilla global? Tots els usuaris la veuran.',
-        savedAsTemplate: 'Plantilla "{{name}}" creada',
-        newTemplate: '+ Nova plantilla',
         emptyTemplates: 'Encara no hi ha cap plantilla.',
         tabs: { mine: 'Les meves', templates: 'Plantilles' },
         useTemplate: 'Usar aquesta plantilla',
@@ -33,7 +28,6 @@ export default {
             saving: 'Desant...',
         },
         errors: {
-            saveAsTemplate: 'Error al crear la plantilla',
             clone: 'Error al copiar la plantilla',
             save: 'Error al desar la rutina',
             setDefault: 'Error al assignar rutina per defecte',
@@ -42,11 +36,6 @@ export default {
         confirmDelete: 'Vols eliminar "{{name}}"?',
     },
     es: {
-        saveAsTemplate: 'Guardar como plantilla',
-        savingTemplate: 'Guardando...',
-        confirmSaveAsTemplate: '¿Quieres publicar "{{name}}" como plantilla global? Todos los usuarios la verán.',
-        savedAsTemplate: 'Plantilla "{{name}}" creada',
-        newTemplate: '+ Nueva plantilla',
         emptyTemplates: 'Todavía no hay ninguna plantilla.',
         tabs: { mine: 'Mis rutinas', templates: 'Plantillas' },
         useTemplate: 'Usar esta plantilla',
@@ -75,7 +64,6 @@ export default {
             saving: 'Guardando...',
         },
         errors: {
-            saveAsTemplate: 'Error al crear la plantilla',
             clone: 'Error al copiar la plantilla',
             save: 'Error al guardar la rutina',
             setDefault: 'Error al asignar la rutina por defecto',
@@ -84,11 +72,6 @@ export default {
         confirmDelete: '¿Quieres eliminar "{{name}}"?',
     },
     en: {
-        saveAsTemplate: 'Save as template',
-        savingTemplate: 'Saving...',
-        confirmSaveAsTemplate: 'Publish "{{name}}" as a global template? All users will see it.',
-        savedAsTemplate: 'Template "{{name}}" created',
-        newTemplate: '+ New template',
         emptyTemplates: 'There are no templates yet.',
         tabs: { mine: 'Mine', templates: 'Templates' },
         useTemplate: 'Use this template',
@@ -117,7 +100,6 @@ export default {
             saving: 'Saving...',
         },
         errors: {
-            saveAsTemplate: 'Error creating the template',
             clone: 'Error copying the template',
             save: 'Error saving the routine',
             setDefault: 'Error setting the default routine',

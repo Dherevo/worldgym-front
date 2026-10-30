@@ -3,8 +3,8 @@
 
             <div class="page-header">
                 <h1>{{ $t('routines.title') }}</h1>
-                <button class="btn-primary" @click="openCreate()" v-if="activeTab === 'mine' || isAdmin">
-                    {{ activeTab === 'templates' ? $t('routines.newTemplate') : $t('routines.newRoutine') }}
+                <button class="btn-primary" @click="openCreate()" v-if="activeTab === 'mine'">
+                    {{ $t('routines.newRoutine') }}
                 </button>
             </div>
 
@@ -31,9 +31,6 @@
                         <button @click="to('/routines/' + r.id)">{{ $t('routines.view') }}</button>
                         <button class="use-template" v-if="r.is_global" @click="cloneRoutine(r)" :disabled="cloningId === r.id">
                             {{ cloningId === r.id ? $t('routines.cloning') : $t('routines.useTemplate') }}
-                        </button>
-                        <button v-if="isAdmin && !r.is_global" @click="saveAsTemplate(r)" :disabled="savingTemplateId === r.id">
-                            {{ savingTemplateId === r.id ? $t('routines.savingTemplate') : $t('routines.saveAsTemplate') }}
                         </button>
                         <button v-if="canEdit(r)" @click="openEdit(r)">{{ $t('routines.edit') }}</button>
                         <button v-if="!r.is_global && !r.is_default" @click="setDefault(r)">{{ $t('routines.makeDefault') }}</button>
