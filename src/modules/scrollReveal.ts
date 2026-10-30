@@ -16,8 +16,8 @@ export default function initScrollReveal() {
         el.style.transitionDelay = '';
     };
 
-    const io = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
             if (!entry.isIntersecting) return;
             const el = entry.target as HTMLElement;
             io.unobserve(el);
@@ -39,8 +39,8 @@ export default function initScrollReveal() {
         root.querySelectorAll(OVERLAY).forEach(settleAround);
         const found: Element[] = [];
         if (root instanceof Element && root.matches(SELECTOR)) found.push(root);
-        root.querySelectorAll(SELECTOR).forEach((el) => found.push(el));
-        found.forEach((el) => {
+        root.querySelectorAll(SELECTOR).forEach(el => found.push(el));
+        found.forEach(el => {
             if (seen.has(el)) return;
             seen.add(el);
             const slot = el.matches('.st-head') ? el.parentElement! : el;
@@ -51,8 +51,8 @@ export default function initScrollReveal() {
         });
     };
 
-    new MutationObserver((mutations) => {
-        mutations.forEach((m) => m.addedNodes.forEach((n) => { if (n instanceof Element) tag(n); }));
+    new MutationObserver(mutations => {
+        mutations.forEach(m => m.addedNodes.forEach(n => { if (n instanceof Element) tag(n); }));
     }).observe(document.body, { childList: true, subtree: true });
 
     tag(document.body);
