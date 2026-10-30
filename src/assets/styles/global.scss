@@ -60,15 +60,18 @@ p, h1, h2, h3, h4, h5, h6, b, strong, i, em, span, ul, li, ol, label, input, tex
     to { opacity: 1; }
 }
 
-[class$="-page"] { animation: page-in 0.35s ease-out both; }
-[class$="-page"] > * { animation: page-in 0.4s ease-out both; }
-[class$="-page"] > *:nth-child(2) { animation-delay: 0.04s; }
-[class$="-page"] > *:nth-child(3) { animation-delay: 0.08s; }
-[class$="-page"] > *:nth-child(4) { animation-delay: 0.12s; }
-[class$="-page"] > *:nth-child(n+5) { animation-delay: 0.16s; }
+// "backwards" (not "both"): a filling animation keeps a stacking context alive and would trap position:fixed modals
+[class$="-page"] { animation: page-in 0.35s ease-out backwards; }
+// Scroll reveal (see modules/scrollReveal.ts)
+.reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    &.is-visible { opacity: 1; transform: none; }
+}
 
-.modal-overlay { animation: fade-in 0.2s ease-out both; }
-.modal-overlay > .modal { animation: modal-in 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.1) both; }
+.modal-overlay { animation: fade-in 0.2s ease-out backwards; }
+.modal-overlay > .modal { animation: modal-in 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.1) backwards; }
 
 // Buttons: smooth hover, press feedback
 button,

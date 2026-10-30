@@ -11,6 +11,7 @@ import routes from './config/routes';
 import http from './config/httpConfig';
 import locales from './assets/translations/locales';
 import packageJSON from '../package.json';
+import initScrollReveal from './modules/scrollReveal';
 //import baseComponent from './modules/baseComponent';
 
 const savedLanguage = Storage.get('language');
@@ -40,3 +41,4 @@ http();                         // HTTP Client configuration
 
 // Mount app
 app.mount('#app');
+initScrollReveal();

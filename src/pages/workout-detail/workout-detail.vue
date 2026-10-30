@@ -23,7 +23,6 @@
                     v-for="(we, i) in workout.workout_exercises"
                     :key="we.id"
                     class="exercise-block"
-                    :style="{ animationDelay: (i * 60) + 'ms' }"
                 >
                     <div class="exercise-header">
                         <div>
