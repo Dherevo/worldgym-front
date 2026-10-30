@@ -13,12 +13,12 @@
 
             <!-- Week progress -->
             <div class="week-strip" v-if="week && week.routine_days_total">
-                <div class="week-dots">
-                    <span v-for="n in week.routine_days_total" :key="n" class="dot" :class="{ filled: n <= week.days_done }"></span>
-                </div>
                 <div class="week-text">
                     {{ $t('home.week.label', { done: week.days_done, total: week.routine_days_total }) }}
                     <span v-if="weekBehind" class="week-hint">· {{ $t('home.week.behind', { total: week.routine_days_total }) }}</span>
+                </div>
+                <div class="week-bar">
+                    <span v-for="n in week.routine_days_total" :key="n" class="seg" :class="{ filled: n <= week.days_done }" :style="{ transitionDelay: (n * 90) + 'ms' }"></span>
                 </div>
             </div>
 

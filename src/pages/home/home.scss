@@ -79,16 +79,19 @@
 
     .week-strip {
         display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 0.5rem 1rem;
-        .week-dots { display: flex; gap: 0.4rem; }
-        .dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            border: 2px solid var(--border-color);
-            &.filled { background: var(--tint-green-text); border-color: var(--tint-green-text); }
+        flex-direction: column;
+        gap: 0.5rem;
+        .week-bar { display: flex; gap: 6px; width: 100%; }
+        .seg {
+            flex: 1;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--surface-3);
+            transition: background 0.4s ease, box-shadow 0.4s ease;
+            &.filled {
+                background: linear-gradient(90deg, var(--tint-green-text), #86efac);
+                box-shadow: 0 0 10px rgba(74, 222, 128, 0.35);
+            }
         }
         .week-text { font-weight: 600; font-size: 0.95rem; }
         .week-hint { font-weight: 400; color: var(--text-secondary); }

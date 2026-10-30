@@ -45,3 +45,84 @@ p, h1, h2, h3, h4, h5, h6, b, strong, i, em, span, ul, li, ol, label, input, tex
     .modal-overlay { padding: 1rem; box-sizing: border-box; }
     .modal-overlay > .modal { width: 100% !important; max-width: 520px !important; padding: 1.25rem !important; }
 }
+
+// ---- Polish: shadows + micro-animations (global, low specificity so pages can still override) ----
+@keyframes page-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes modal-in {
+    from { opacity: 0; transform: translateY(14px) scale(0.97); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+[class$="-page"] { animation: page-in 0.35s ease-out both; }
+[class$="-page"] > * { animation: page-in 0.4s ease-out both; }
+[class$="-page"] > *:nth-child(2) { animation-delay: 0.04s; }
+[class$="-page"] > *:nth-child(3) { animation-delay: 0.08s; }
+[class$="-page"] > *:nth-child(4) { animation-delay: 0.12s; }
+[class$="-page"] > *:nth-child(n+5) { animation-delay: 0.16s; }
+
+.modal-overlay { animation: fade-in 0.2s ease-out both; }
+.modal-overlay > .modal { animation: modal-in 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.1) both; }
+
+// Buttons: smooth hover, press feedback
+button,
+[class*="btn-"],
+.tab-bar-item {
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+@media (hover: hover) {
+    button:not(:disabled):hover,
+    [class*="btn-"]:not(:disabled):hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
+    }
+}
+
+button:not(:disabled):active,
+[class*="btn-"]:not(:disabled):active,
+.tab-bar-item:active {
+    transform: scale(0.96);
+    box-shadow: var(--shadow-sm);
+    transition-duration: 0.07s;
+}
+
+// Primary-looking buttons get a soft glow
+.btn-primary, .btn-save, .btn-new, .btn-rec, .btn-add {
+    box-shadow: var(--shadow-glow);
+}
+
+// Cards: resting shadow; clickable ones lift on hover
+.card, [class*="-card"], .section-tile .st-head {
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.25s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+@media (hover: hover) {
+    .workout-card, .routine-card, .game-card, .day-card, .catalog-card, .equipment-card, .section-tile .st-head {
+        &:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    }
+}
+
+.workout-card:active, .routine-card:active, .game-card:active, .day-card:active,
+.catalog-card:active, .equipment-card:active, .section-tile .st-head:active {
+    transform: scale(0.985);
+}
+
+// Inputs: focus ring
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--highlight);
+    transition: box-shadow 0.2s ease;
+}
+
+// Respect reduced-motion
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; }
+}

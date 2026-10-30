@@ -27,7 +27,6 @@ class WorkoutDetailPage extends Vue {
     newDropset = false;
 
     // Drag & drop reorder
-    dragFromIdx: number | null = null;
 
     // Exercise search
     showExerciseSearch = false;
@@ -136,26 +135,6 @@ class WorkoutDetailPage extends Vue {
         .finally(() => { this.savingSet = false; });
     }
 
-    dragStart(idx: number) {
-        this.dragFromIdx = idx;
-    }
-
-    dropOn(idx: number) {
-        if (this.dragFromIdx === null || this.dragFromIdx === idx) return;
-        const exercises = this.workout.workout_exercises;
-        const moved = exercises.splice(this.dragFromIdx, 1)[0];
-        exercises.splice(idx, 0, moved);
-        this.dragFromIdx = null;
-        const order = exercises.map((we: any, i: number) => ({ id: we.id, order_index: i + 1 }));
-        http.patch(`/workouts/${this.workoutId}/exercises/reorder`)
-        .data({ order })
-        .catch(() => App.notification(translate.get('workoutDetail.errors.reorder')).setType('error').show());
-    }
-
-    dragEnd() {
-        this.dragFromIdx = null;
-    }
-
     get dateLocale(): string {
         return ({ ca: 'ca-ES', es: 'es-ES', en: 'en-GB' } as any)[translate.currentLanguage] ?? 'ca-ES';
     }
@@ -172,11 +151,6 @@ class WorkoutDetailPage extends Vue {
         const h = Math.floor(secs / 3600);
         const m = Math.floor((secs % 3600) / 60);
         return h > 0 ? `${h}h ${m}min` : `${m}min`;
-    }
-
-    totalVolume(sets: any[]) {
-        const kg = sets.reduce((acc: number, s: any) => acc + (s.reps * s.weight), 0);
-        return kg >= 1000 ? (kg / 1000).toFixed(1) + ' t' : kg + ' kg';
     }
 }
 export default toNative(WorkoutDetailPage);

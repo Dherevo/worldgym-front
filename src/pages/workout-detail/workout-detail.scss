@@ -68,18 +68,7 @@
             padding: 1.5rem;
             border: 1px solid var(--border-color);
 
-            &.dragging { opacity: 0.5; }
-            &[draggable] { cursor: grab; }
-
-            .drag-handle {
-                color: var(--text-muted);
-                font-size: 1.2rem;
-                cursor: grab;
-                margin-right: 0.5rem;
-                user-select: none;
-                flex-shrink: 0;
-                &:hover { color: var(--text-secondary); }
-            }
+            animation: page-in 0.4s ease-out both;
 
             .exercise-header {
                 display: flex;
@@ -92,14 +81,6 @@
                     display: flex;
                     align-items: center;
                     gap: 0.75rem;
-                }
-                .volume-tag {
-                    background: var(--tint-blue-bg);
-                    color: var(--tint-blue-text);
-                    border-radius: 10px;
-                    padding: 3px 10px;
-                    font-size: 0.8rem;
-                    font-weight: 600;
                 }
                 .btn-delete-exercise {
                     background: transparent;
@@ -223,14 +204,65 @@
             }
         }
 
-        .exercise-block {
+        .exercises-list .exercise-block {
             padding: 1rem;
-            overflow-x: auto;
-            overflow-y: hidden;
 
+            .exercise-header { gap: 0.5rem; .exercise-name { line-height: 1.3; } }
+
+            // Table -> one card per set
             table {
-                min-width: 400px;
-                font-size: 0.82rem;
+                display: block;
+                min-width: 0;
+                font-size: 0.9rem;
+
+                thead { display: none; }
+                tbody { display: flex; flex-direction: column; gap: 0.5rem; }
+
+                tr {
+                    display: grid;
+                    grid-template-columns: 2.2rem 1fr 1fr auto;
+                    align-items: center;
+                    gap: 0.35rem 0.75rem;
+                    background: var(--surface-2);
+                    border-radius: 10px;
+                    padding: 0.6rem 0.75rem;
+                }
+                td { display: block; padding: 0; border: none; }
+                tr:last-child td { border: none; }
+
+                td[data-label]::before {
+                    content: attr(data-label);
+                    display: block;
+                    font-size: 0.68rem;
+                    font-weight: 700;
+                    letter-spacing: 0.06em;
+                    text-transform: uppercase;
+                    color: var(--text-muted);
+                    margin-bottom: 2px;
+                }
+
+                .c-set {
+                    grid-column: 1; grid-row: 1;
+                    width: 2rem; height: 2rem;
+                    border-radius: 50%;
+                    background: var(--highlight);
+                    color: var(--highlight-text);
+                    display: flex; align-items: center; justify-content: center;
+                    font-weight: 800; font-size: 0.9rem;
+                }
+                .c-reps { grid-column: 2; grid-row: 1; font-size: 1.15rem; font-weight: 700; }
+                .c-weight { grid-column: 3; grid-row: 1; font-size: 1.15rem; font-weight: 700; }
+                .row-actions { grid-column: 4; grid-row: 1; display: flex; gap: 0.1rem; justify-content: flex-end; button { padding: 0.45rem 0.6rem; font-size: 1rem; } }
+                .c-rest { grid-column: 2; grid-row: 2; font-size: 0.9rem; }
+                .c-notes { grid-column: 3 / -1; grid-row: 2; font-size: 0.9rem; color: var(--text-secondary); overflow-wrap: anywhere; }
+                .c-flags { grid-column: 1 / -1; grid-row: 3; }
+                .empty { display: none; }
+
+                .editing-row {
+                    td { background: transparent; }
+                    .c-flags { display: flex; gap: 0.75rem; }
+                    .cell-input { width: 100%; box-sizing: border-box; font-size: 16px; padding: 0.4rem 0.5rem; &.wide { width: 100%; } }
+                }
             }
         }
     }
