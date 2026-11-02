@@ -201,10 +201,10 @@
             gap: 1.25rem;
 
             .exercise-gif {
-                width: 140px;
-                height: 140px;
+                width: 80%;
+                height: auto;
                 border-radius: 12px;
-                object-fit: cover;
+                object-fit: contain;
                 background: #ffffff;
             }
             .exercise-name { font-size: 1.6rem; font-weight: 700; color: var(--text-color); margin: 0; }
@@ -468,50 +468,6 @@
             }
         }
 
-        .exercise-plan {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem 0.75rem;
-            background: var(--surface-color);
-            border-radius: 10px;
-            padding: 0.65rem 1rem;
-            border: 1px solid var(--border-color);
-
-            .plan-item {
-                display: flex;
-                align-items: center;
-                gap: 0.35rem;
-                font-size: 0.78rem;
-                color: var(--text-muted);
-
-                .plan-dot {
-                    width: 7px;
-                    height: 7px;
-                    border-radius: 50%;
-                    background: var(--border-color);
-                    flex-shrink: 0;
-                }
-
-                &.done {
-                    color: var(--tint-green-text);
-                    .plan-dot { background: var(--tint-green-text); }
-                }
-
-                &.current {
-                    color: var(--primary-color);
-                    font-weight: 700;
-                    .plan-dot { background: var(--primary-color); }
-                }
-
-                .plan-name {
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    max-width: 120px;
-                }
-            }
-        }
-
         .rest-adjust {
             display: flex;
             gap: 0.5rem;
@@ -728,7 +684,6 @@
         &:hover { background: var(--primary-dark-color); }
     }
 
-    .exercise-plan .plan-item.clickable { cursor: pointer; &:hover { color: var(--primary-color); } }
 
     .idle-links { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
     .link-btn {
@@ -825,4 +780,16 @@
     font-size: 0.8rem;
     color: var(--text-muted);
     white-space: nowrap;
+}
+
+.workout-progress .progress-ex-go {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    cursor: pointer;
+    &:hover { background: var(--surface-2); }
 }
