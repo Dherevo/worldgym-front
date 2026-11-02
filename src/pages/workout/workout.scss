@@ -820,3 +820,9 @@
         &:hover { background: var(--primary-dark-color); }
     }
 }
+
+.workout-progress .cmp {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
