@@ -18,8 +18,7 @@ class Backoffice extends Vue {
     readonly baseMenuItems = [
         { path: '/',          icon: 'prime/home',      label: 'layout.menu.dashboard' },
         // Grouped entries: `match` lists every route of the group so the entry stays active on all its tabs
-        { path: '/routines',  icon: 'prime/bolt',      label: 'layout.menu.train',    match: ['/routines', '/exercises'] },
-        { path: '/workouts',  icon: 'prime/chart-bar', label: 'layout.menu.progress', match: ['/workouts', '/stats', '/measurements'] },
+        { path: '/workouts',  icon: 'prime/bolt',      label: 'layout.menu.progress', match: ['/workouts', '/stats', '/routines', '/exercises'] },
     ];
 
     get menuItems() {

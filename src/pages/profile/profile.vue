@@ -45,6 +45,8 @@
                     {{ $t('recommendation.homeEquipment.save') }}
                 </button>
             </div>
+
+            <MeasurementsPage />
         </div>
     </AppPage>
 </template>

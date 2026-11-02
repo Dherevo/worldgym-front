@@ -17,6 +17,7 @@ export default {
         makeDefault: 'Fer per defecte',
         delete: 'Eliminar',
         form: {
+            fromTemplate: 'O comença des d\'una plantilla',
             titleEdit: 'Editar rutina',
             titleNew: 'Nova rutina',
             name: 'Nom *',
@@ -53,6 +54,7 @@ export default {
         makeDefault: 'Poner por defecto',
         delete: 'Eliminar',
         form: {
+            fromTemplate: 'O empieza desde una plantilla',
             titleEdit: 'Editar rutina',
             titleNew: 'Nueva rutina',
             name: 'Nombre *',
@@ -89,6 +91,7 @@ export default {
         makeDefault: 'Set as default',
         delete: 'Delete',
         form: {
+            fromTemplate: 'Or start from a template',
             titleEdit: 'Edit routine',
             titleNew: 'New routine',
             name: 'Name *',

@@ -5,7 +5,7 @@ import { http, App, translate } from "lib";
 class RoutinesPage extends Vue {
 
     routines: any[] = [];
-    activeTab: 'mine' | 'templates' = 'mine';
+    templates: any[] = [];
     cloningId: number | null = null;
     loading = false;
     showForm = false;
@@ -22,16 +22,9 @@ class RoutinesPage extends Vue {
         return !r.is_global;
     }
 
-    setTab(tab: 'mine' | 'templates') {
-        if (tab === this.activeTab) return;
-        this.activeTab = tab;
-        this.fetchRoutines();
-    }
-
     fetchRoutines() {
         this.loading = true;
-        const filter = this.activeTab === 'templates' ? 'only_global=true' : 'only_mine=true';
-        http.get(`/routines?${filter}`)
+        http.get('/routines?only_mine=true')
         .then((res: any) => { this.routines = res.items ?? []; })
         .catch(() => {})
         .finally(() => { this.loading = false; });
@@ -41,6 +34,9 @@ class RoutinesPage extends Vue {
         this.editingRoutine = null;
         this.form = { name: '', description: '' };
         this.showForm = true;
+        http.get('/routines?only_global=true')
+        .then((res: any) => { this.templates = res.items ?? []; })
+        .catch(() => { this.templates = []; });
     }
 
     openEdit(r: any) {
@@ -68,6 +64,7 @@ class RoutinesPage extends Vue {
         this.cloningId = r.id;
         http.post(`/routines/${r.id}/clone`).data({})
         .then((created: any) => {
+            this.showForm = false;
             App.notification(translate.get('routines.cloned', { name: r.name })).setType('success').show();
             return App.confirm(translate.get('routines.askDefault', { name: created.name }))
             .then((ok: boolean) => ok

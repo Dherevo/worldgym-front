@@ -128,6 +128,10 @@
                         {{ $t('workout.card.target') }}: {{ targetSet.reps_target ?? targetSet.reps }} {{ $t('workout.history.reps') }}<template v-if="targetSet.weight > 0"> · {{ targetSet.weight }} kg</template><template v-if="targetRestLabel"> · {{ targetRestLabel }}</template>
                     </div>
 
+                    <div class="last-time" v-if="lastTimeLabel && (state === 'idle' || state === 'active')">
+                        {{ lastTimeLabel }}
+                    </div>
+
                     <div class="wk-extra" v-if="showGeneralWarmup">
                         <div class="wk-extra-title">{{ $t('recommendation.workout.warmupTitle') }}</div>
                         <div class="wk-extra-text">{{ $t('recommendation.workout.warmupText') }}</div>

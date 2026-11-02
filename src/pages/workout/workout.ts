@@ -329,6 +329,16 @@ class WorkoutPage extends Vue {
         return this.lastSetsFor(exerciseId ?? this.currentExercise?.exercise?.id)[idx] ?? null;
     }
 
+    // What the user did in this same set the last time, to know where to start: "12 reps × 70 kg"
+    get lastTimeLabel(): string | null {
+        const prev = this.previousSet(this.doneCount);
+        if (!prev || Number(prev.reps) <= 0) return null;
+        const weight = Number(prev.weight) || 0;
+        return weight > 0
+            ? translate.get('workout.card.lastTime', { reps: Number(prev.reps), weight })
+            : translate.get('workout.card.lastTimeBodyweight', { reps: Number(prev.reps) });
+    }
+
     // Set to compare with: the same set number of the last workout
     prevFor(i: number, _sets: any[], exerciseId?: number): any | null {
         return this.previousSet(i, exerciseId);
