@@ -10,7 +10,17 @@
                             {{ formatDate(workout.date) }}
                             <span class="duration-tag" v-if="formatDuration()">{{ formatDuration() }}</span>
                         </h1>
-                        <p class="notes" v-if="workout.notes">{{ workout.notes }}</p>
+                        <form class="title-edit" v-if="editingTitle" @submit.prevent="saveTitle()">
+                            <input type="text" v-model="titleDraft" :placeholder="$t('workoutDetail.titlePlaceholder')" maxlength="150" ref="titleInput" />
+                            <button type="submit" class="title-save" :disabled="savingTitle">{{ $t('workoutDetail.titleSave') }}</button>
+                            <button type="button" class="title-cancel" @click="editingTitle = false">{{ $t('workoutDetail.titleCancel') }}</button>
+                        </form>
+                        <p class="notes" v-else>
+                            <span v-if="workout.notes">{{ workout.notes }}</span>
+                            <button type="button" class="title-edit-btn" @click="startEditTitle()">
+                                {{ workout.notes ? '✎' : $t('workoutDetail.titleAdd') }}
+                            </button>
+                        </p>
                     </div>
                     <button class="btn-add-exercise" @click="showExerciseSearch = true">{{ $t('workoutDetail.addExercise') }}</button>
                 </div>

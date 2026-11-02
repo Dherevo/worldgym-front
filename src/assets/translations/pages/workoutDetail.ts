@@ -1,5 +1,9 @@
 export default {
     ca: {
+        titlePlaceholder: "Títol o nota de l\'entreno",
+        titleSave: "Desar",
+        titleCancel: "Cancel·lar",
+        titleAdd: "+ Afegir títol",
         back: "← Historial",
         addExercise: "+ Afegir exercici",
         loading: "Carregant...",
@@ -30,6 +34,7 @@ export default {
             close: "Tancar",
         },
         errors: {
+            saveTitle: "No s\'ha pogut desar el títol",
             addExercise: "Error al afegir exercici",
             delete: "Error al eliminar",
             save: "Error al desar",
@@ -39,6 +44,10 @@ export default {
         confirmDeleteSet: "Eliminar la sèrie {{n}}?",
     },
     es: {
+        titlePlaceholder: "Título o nota del entreno",
+        titleSave: "Guardar",
+        titleCancel: "Cancelar",
+        titleAdd: "+ Añadir título",
         back: "← Historial",
         addExercise: "+ Añadir ejercicio",
         loading: "Cargando...",
@@ -69,6 +78,7 @@ export default {
             close: "Cerrar",
         },
         errors: {
+            saveTitle: "No se ha podido guardar el título",
             addExercise: "Error al añadir ejercicio",
             delete: "Error al eliminar",
             save: "Error al guardar",
@@ -78,6 +88,10 @@ export default {
         confirmDeleteSet: "¿Eliminar la serie {{n}}?",
     },
     en: {
+        titlePlaceholder: "Workout title or note",
+        titleSave: "Save",
+        titleCancel: "Cancel",
+        titleAdd: "+ Add title",
         back: "← History",
         addExercise: "+ Add exercise",
         loading: "Loading...",
@@ -108,6 +122,7 @@ export default {
             close: "Close",
         },
         errors: {
+            saveTitle: "Could not save the title",
             addExercise: "Error adding exercise",
             delete: "Error deleting",
             save: "Error saving",

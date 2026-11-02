@@ -347,3 +347,25 @@
     color: var(--text-muted);
     white-space: nowrap;
 }
+
+.workout-detail-page {
+    .title-edit-btn {
+        background: transparent;
+        border: none;
+        color: var(--primary-color);
+        cursor: pointer;
+        padding: 0 0.4rem;
+        font-size: 0.9rem;
+        &:hover { text-decoration: underline; }
+    }
+    .title-edit {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.25rem;
+        input { flex: 1 1 14rem; min-width: 0; }
+        .title-save { background: var(--primary-color); color: white; border: none; border-radius: 8px; padding: 0.4rem 0.9rem; cursor: pointer; }
+        .title-cancel { background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.4rem 0.9rem; cursor: pointer; }
+    }
+}

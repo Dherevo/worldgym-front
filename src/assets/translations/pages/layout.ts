@@ -2,9 +2,9 @@ export default {
     ca: {
         menu: {
             menu: 'Menú',
-            dashboard: 'Dashboard',
+            dashboard: 'Entrenar',
             train: 'Entrenar',
-            progress: 'Entreno',
+            progress: 'Progrés i rutines',
             exercises: 'Exercicis',
             routines: 'Rutines',
             history: 'Historial',
@@ -21,9 +21,9 @@ export default {
     es: {
         menu: {
             menu: 'Menú',
-            dashboard: 'Dashboard',
+            dashboard: 'Entrenar',
             train: 'Entrenar',
-            progress: 'Entreno',
+            progress: 'Progreso y rutinas',
             exercises: 'Ejercicios',
             routines: 'Rutinas',
             history: 'Historial',
@@ -40,9 +40,9 @@ export default {
     en: {
         menu: {
             menu: 'Menu',
-            dashboard: 'Dashboard',
+            dashboard: 'Train',
             train: 'Train',
-            progress: 'Workout',
+            progress: 'Progress & routines',
             exercises: 'Exercises',
             routines: 'Routines',
             history: 'History',
