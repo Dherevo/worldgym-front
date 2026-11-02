@@ -55,6 +55,7 @@
                                         <span v-if="canEdit" class="drag-handle" draggable="true" :title="$t('routineDetail.dragToReorder')"
                                             @dragstart.stop="dragStart('exercise', ei, day.id)" @dragend="dragEnd()">⠿</span>
                                         {{ ex.exercise?.name }}
+                                        <span class="muscle-label" v-if="muscleLabel(ex.exercise)">({{ muscleLabel(ex.exercise) }})</span>
                                     </td>
                                     <td>{{ ex.sets_target }}</td>
                                     <td>{{ ex.reps_target }}</td>

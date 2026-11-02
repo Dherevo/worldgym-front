@@ -37,6 +37,7 @@
                     <div class="exercise-header">
                         <div>
                             <span class="exercise-name">{{ we.exercise?.name }}</span>
+                            <span class="exercise-muscle" v-if="muscleLabel(we.exercise)"> ({{ muscleLabel(we.exercise) }})</span>
                             <span class="exercise-eq" v-if="we.exercise?.equipment"> · {{ we.exercise.equipment.name }}</span>
                         </div>
                         <div class="exercise-header-right">
@@ -44,15 +45,15 @@
                         </div>
                     </div>
 
-                    <table v-if="we.sets?.length > 0 || addingSetWeId == we.id">
+                    <div class="table-scroll" v-if="we.sets?.length > 0 || addingSetWeId == we.id">
+                    <table>
                         <thead>
                             <tr>
-                                <th>{{ $t('workoutDetail.table.set') }}</th>
+                                <th>#</th>
                                 <th>{{ $t('workoutDetail.table.reps') }}</th>
                                 <th>{{ $t('workoutDetail.table.weight') }}</th>
                                 <th>{{ $t('workoutDetail.table.rest') }}</th>
                                 <th>{{ $t('workoutDetail.table.notes') }}</th>
-                                <th>{{ $t('workoutDetail.table.flags') }}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -60,13 +61,14 @@
                             <template v-for="(s, si) in we.sets" :key="s.id">
                                 <tr v-if="editingSet?.id !== s.id" :class="{ 'failed-row': s.is_failed }">
                                     <td class="c-set">{{ s.set_number }}</td>
-                                    <td class="c-reps" :data-label="$t('workoutDetail.table.reps')">{{ s.reps }} <small class="cmp">{{ diffText(s.reps, prevSet(we, si)?.reps) }}</small></td>
-                                    <td class="c-weight" :data-label="$t('workoutDetail.table.weight')">{{ s.weight }} <small class="cmp" v-if="s.weight > 0 || prevSet(we, si)?.weight > 0">{{ diffText(s.weight, prevSet(we, si)?.weight, 'kg') }}</small></td>
-                                    <td class="c-rest" :class="{ empty: s.rest_seconds == null }" :data-label="$t('workoutDetail.table.rest')">{{ s.rest_seconds ?? '—' }} <small class="cmp" v-if="s.duration_seconds">· {{ $t('workoutDetail.table.setTime') }} {{ s.duration_seconds }}s</small></td>
-                                    <td class="c-notes" :class="{ empty: !s.notes }" :data-label="$t('workoutDetail.table.notes')">{{ s.notes || '—' }}</td>
-                                    <td class="c-flags" :class="{ empty: !s.is_failed && !s.is_dropset }">
+                                    <td class="c-reps">{{ s.reps }} <small class="cmp">{{ diffText(s.reps, prevSet(we, si)?.reps) }}</small></td>
+                                    <td class="c-weight">{{ s.weight }} <small class="cmp" v-if="s.weight > 0 || prevSet(we, si)?.weight > 0">{{ diffText(s.weight, prevSet(we, si)?.weight, 'kg') }}</small></td>
+                                    <td class="c-rest" :class="{ empty: s.rest_seconds == null }">{{ s.rest_seconds ?? '—' }}<small class="cmp" v-if="s.duration_seconds"> · {{ $t('workoutDetail.table.setTime') }} {{ s.duration_seconds }}s</small></td>
+                                    <td class="c-notes note-cell" @click="openNote($event, s.notes)">
                                         <span class="set-badge failed" v-if="s.is_failed">{{ $t('workoutDetail.badges.failed') }}</span>
                                         <span class="set-badge dropset" v-if="s.is_dropset">{{ $t('workoutDetail.badges.dropset') }}</span>
+                                        <template v-if="s.notes">{{ s.notes }}</template>
+                                        <template v-else-if="!s.is_failed && !s.is_dropset">—</template>
                                     </td>
                                     <td class="row-actions">
                                         <button class="btn-row-edit" @click="openSetEdit(we, s)">✎</button>
@@ -75,13 +77,15 @@
                                 </tr>
                                 <tr v-else class="editing-row">
                                     <td class="c-set">{{ s.set_number }}</td>
-                                    <td class="c-reps" :data-label="$t('workoutDetail.table.reps')"><input type="number" v-model.number="editReps" min="1" class="cell-input" /></td>
-                                    <td class="c-weight" :data-label="$t('workoutDetail.table.weight')"><input type="number" v-model.number="editWeight" min="0" step="0.5" class="cell-input" /></td>
-                                    <td class="c-rest" :data-label="$t('workoutDetail.table.rest')"><input type="number" v-model.number="editRest" min="0" class="cell-input" /></td>
-                                    <td class="c-notes" :data-label="$t('workoutDetail.table.notes')"><input type="text" v-model="editSetNotes" class="cell-input wide" /></td>
-                                    <td class="c-flags">
-                                        <label class="flag-check"><input type="checkbox" v-model="editFailed" /> {{ $t('workoutDetail.flagFailedShort') }}</label>
-                                        <label class="flag-check"><input type="checkbox" v-model="editDropset" /> {{ $t('workoutDetail.flagDropsetShort') }}</label>
+                                    <td class="c-reps"><input type="number" v-model.number="editReps" min="1" class="cell-input" /></td>
+                                    <td class="c-weight"><input type="number" v-model.number="editWeight" min="0" step="0.5" class="cell-input" /></td>
+                                    <td class="c-rest"><input type="number" v-model.number="editRest" min="0" class="cell-input" /></td>
+                                    <td class="c-notes">
+                                        <input type="text" v-model="editSetNotes" class="cell-input wide" />
+                                        <div class="flag-row">
+                                            <label class="flag-check"><input type="checkbox" v-model="editFailed" /> {{ $t('workoutDetail.flagFailedShort') }}</label>
+                                            <label class="flag-check"><input type="checkbox" v-model="editDropset" /> {{ $t('workoutDetail.flagDropsetShort') }}</label>
+                                        </div>
                                     </td>
                                     <td class="row-actions">
                                         <button class="btn-row-save" @click="saveSetEdit(we)" :disabled="savingSet">✓</button>
@@ -92,13 +96,15 @@
                             <!-- Add set row -->
                             <tr v-if="addingSetWeId == we.id" class="editing-row">
                                 <td class="c-set">{{ (we.sets?.length ?? 0) + 1 }}</td>
-                                <td class="c-reps" :data-label="$t('workoutDetail.table.reps')"><input type="number" v-model.number="newReps" min="1" class="cell-input" /></td>
-                                <td class="c-weight" :data-label="$t('workoutDetail.table.weight')"><input type="number" v-model.number="newWeight" min="0" step="0.5" class="cell-input" /></td>
-                                <td class="c-rest" :data-label="$t('workoutDetail.table.rest')"><input type="number" v-model.number="newRest" min="0" class="cell-input" /></td>
-                                <td class="c-notes" :data-label="$t('workoutDetail.table.notes')"><input type="text" v-model="newSetNotes" class="cell-input wide" :placeholder="$t('workoutDetail.table.notes')" /></td>
-                                <td class="c-flags">
-                                    <label class="flag-check"><input type="checkbox" v-model="newFailed" /> {{ $t('workoutDetail.flagFailedShort') }}</label>
-                                    <label class="flag-check"><input type="checkbox" v-model="newDropset" /> {{ $t('workoutDetail.flagDropsetShort') }}</label>
+                                <td class="c-reps"><input type="number" v-model.number="newReps" min="1" class="cell-input" /></td>
+                                <td class="c-weight"><input type="number" v-model.number="newWeight" min="0" step="0.5" class="cell-input" /></td>
+                                <td class="c-rest"><input type="number" v-model.number="newRest" min="0" class="cell-input" /></td>
+                                <td class="c-notes">
+                                    <input type="text" v-model="newSetNotes" class="cell-input wide" :placeholder="$t('workoutDetail.table.notes')" />
+                                    <div class="flag-row">
+                                        <label class="flag-check"><input type="checkbox" v-model="newFailed" /> {{ $t('workoutDetail.flagFailedShort') }}</label>
+                                        <label class="flag-check"><input type="checkbox" v-model="newDropset" /> {{ $t('workoutDetail.flagDropsetShort') }}</label>
+                                    </div>
                                 </td>
                                 <td class="row-actions">
                                     <button class="btn-row-save" @click="saveNewSet(we)" :disabled="savingSet">✓</button>
@@ -107,9 +113,17 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                     <div v-else-if="addingSetWeId != we.id" class="empty-sets">{{ $t('workoutDetail.emptySets') }}</div>
 
                     <button class="btn-add-set" @click="openAddSet(we)">{{ $t('workoutDetail.addSet') }}</button>
+                </div>
+            </div>
+
+            <!-- Full note when it does not fit in the table cell -->
+            <div v-if="noteText" class="modal-overlay" @click="noteText = ''">
+                <div class="modal note-modal">
+                    <p>{{ noteText }}</p>
                 </div>
             </div>
 

@@ -1,5 +1,6 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
+import { primaryMuscleNames } from "@/modules/muscles";
 
 @Component({})
 class WorkoutDetailPage extends Vue {
@@ -35,6 +36,18 @@ class WorkoutDetailPage extends Vue {
     filteredExercises: any[] = [];
 
     get workoutId() { return this.param('id'); }
+
+    muscleLabel(exercise: any): string {
+        return primaryMuscleNames(exercise);
+    }
+
+    // Note too long for its table cell: show it whole in a popup
+    noteText = '';
+
+    openNote(event: Event, text: string | null) {
+        const el = event.currentTarget as HTMLElement;
+        if (text && el.scrollWidth > el.clientWidth) this.noteText = text;
+    }
 
     // Title of the workout (the notes field): by default the routine day name, editable afterwards
     editingTitle = false;

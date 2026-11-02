@@ -52,6 +52,8 @@ class WorkoutPage extends Vue {
     pendingRest: { weId: number; id: number; taken: number } | null = null;
     absOptions: any[] = [];
     absOffered = false;
+    noteText = '';
+    coreGroupId: number | null = null;
     absPromise: Promise<any[]> | null = null;
     absWeId: number | null = null;
     restStartedAt = 0;
@@ -345,6 +347,12 @@ class WorkoutPage extends Vue {
             : translate.get('workout.card.lastTimeBodyweight', { reps: Number(prev.reps) });
     }
 
+    // Note too long for its table cell: show it whole in a popup
+    openNote(event: Event, text: string | null) {
+        const el = event.currentTarget as HTMLElement;
+        if (text && el.scrollWidth > el.clientWidth) this.noteText = text;
+    }
+
     // Set to compare with: the same set number of the last workout
     prevFor(i: number, _sets: any[], exerciseId?: number): any | null {
         return this.previousSet(i, exerciseId);
@@ -460,12 +468,21 @@ class WorkoutPage extends Vue {
             this.absPromise = http.get('/muscle-groups')
             .then((res: any) => {
                 const core = (res.items ?? []).find((g: any) => String(g.name).toLowerCase() === 'core');
+                this.coreGroupId = core?.id ?? null;
                 return core ? http.get('/exercises').data({ muscle_group_id: core.id, pageSize: 60 }) : { items: [] };
             })
             .then((res: any) => { this.absOptions = res.items ?? []; return this.absOptions; })
             .catch(() => [] as any[]);
         }
         return this.absPromise as Promise<any[]>;
+    }
+
+    hasAbsExercise(): boolean {
+        return this.exercises.some((we: any) => {
+            const muscles = we.exercise?.muscles ?? [];
+            const main = muscles.find((m: any) => m.pivot?.is_primary) ?? muscles[0];
+            return !!main && ((this.coreGroupId !== null && main.muscle_group_id === this.coreGroupId) || main.name === 'Abdominals');
+        });
     }
 
     finishOrOfferAbs() {
@@ -475,7 +492,8 @@ class WorkoutPage extends Vue {
         this.absOffered = true;
         if (!this.absOptions.length) this.state = 'loading';
         this.loadAbsOptions().then((options: any[]) => {
-            if (options.length) this.state = 'abs-offer';
+            // Nothing to ask when this workout already has an abdominals exercise (planned or added)
+            if (options.length && !this.hasAbsExercise()) this.state = 'abs-offer';
             else this.finishRoutine();
         });
     }
