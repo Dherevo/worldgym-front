@@ -37,6 +37,13 @@
                     <button v-else class="wk-extra-btn" @click="markHabit('stretch')">{{ $t('recommendation.workout.warmupMark') }}</button>
                 </div>
 
+                <div class="wk-extra" v-if="absHabit">
+                    <div class="wk-extra-title">{{ $t('recommendation.workout.absTitle') }}</div>
+                    <div class="wk-extra-text">{{ $t('recommendation.workout.absText', { sets: absHabit.target_sets, reps: absHabit.target_reps }) }}</div>
+                    <span v-if="absHabit.log?.completed" class="wk-pill">✓ {{ $t('recommendation.workout.warmupDone') }}</span>
+                    <button v-else class="wk-extra-btn" @click="markAbs()">{{ $t('recommendation.workout.warmupMark') }}</button>
+                </div>
+
                 <div class="wk-extra" v-if="!workout?.feedback">
                     <div class="wk-extra-title">{{ $t('recommendation.workout.feedbackTitle') }}</div>
                     <p class="wk-extra-text" v-if="feedbackGiven">{{ $t('recommendation.workout.feedbackThanks') }}</p>

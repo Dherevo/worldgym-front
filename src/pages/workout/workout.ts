@@ -439,12 +439,25 @@ class WorkoutPage extends Vue {
 
     get showGeneralWarmup(): boolean {
         const h = this.habitsByKey.warmup;
-        return this.state === 'idle' && this.currentExerciseIdx === 0 && this.doneCount === 0 && !!h?.is_active && !h.log?.completed;
+        return this.state === 'idle' && this.currentExerciseIdx === 0 && this.doneCount === 0 && !!h && !h.log?.completed;
+    }
+
+    // Abdominals: optional extra at the end of every workout while the habit is active
+    get absHabit(): any | null {
+        const h = this.habitsByKey.abs;
+        return h?.is_active && h.due !== false ? h : null;
+    }
+
+    markAbs() {
+        const h = this.absHabit;
+        if (!h) return;
+        http.put(`/habits/${h.id}/log`).data({ date: localDate(), completed: true, sets_done: h.target_sets, reps: h.target_reps })
+        .then(() => this.fetchHabits())
+        .catch(() => {});
     }
 
     get stretchHabit(): any | null {
-        const h = this.habitsByKey.stretch;
-        return h?.is_active ? h : null;
+        return this.habitsByKey.stretch ?? null;
     }
 
     muscleGroupOf(we: any): number | null {
