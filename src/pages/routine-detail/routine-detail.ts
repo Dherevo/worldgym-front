@@ -1,5 +1,6 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
+import { primaryMuscleNames } from "@/modules/muscles";
 
 @Component({})
 class RoutineDetailPage extends Vue {
@@ -55,6 +56,10 @@ class RoutineDetailPage extends Vue {
         .then((res: any) => { this.routine = res; })
         .catch(() => {})
         .finally(() => { this.loading = false; });
+    }
+
+    muscleLabel(exercise: any): string {
+        return primaryMuscleNames(exercise);
     }
 
     // Muscle groups worked on a day, from the primary muscle of each of its exercises (most exercises first)

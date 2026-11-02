@@ -329,7 +329,7 @@
                                             <td>{{ s.set_number ?? i + 1 }}</td>
                                             <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.reps) }}</small></td>
                                             <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.weight > 0">{{ compareText(s.weight, prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.weight, ' kg') }}</small></td>
-                                            <td>{{ s.notes || '—' }}</td>
+                                            <td class="note-cell" @click="openNote($event, s.notes)">{{ s.notes || '—' }}</td>
                                         </tr>
                                     </template>
                                     <tr v-else class="set-row-empty">
@@ -344,7 +344,7 @@
                                         <td>{{ s.set_number }}</td>
                                         <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, prevFor(i, loggedSets)?.reps) }}</small></td>
                                         <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || prevFor(i, loggedSets)?.weight > 0">{{ compareText(s.weight, prevFor(i, loggedSets)?.weight, ' kg') }}</small></td>
-                                        <td>{{ s.notes || '—' }}</td>
+                                        <td class="note-cell" @click="openNote($event, s.notes)">{{ s.notes || '—' }}</td>
                                     </tr>
 
                                     <!-- Fila live: valors que s'estan introduint -->
@@ -392,6 +392,13 @@
 
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- Full note when it does not fit in the table cell -->
+                <div v-if="noteText" class="modal-overlay" @click="noteText = ''">
+                    <div class="modal note-modal">
+                        <p>{{ noteText }}</p>
                     </div>
                 </div>
 
