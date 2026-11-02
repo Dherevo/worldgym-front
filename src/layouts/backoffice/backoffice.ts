@@ -18,7 +18,7 @@ class Backoffice extends Vue {
     readonly baseMenuItems = [
         { path: '/',          icon: 'prime/home',      label: 'layout.menu.dashboard' },
         // Grouped entries: `match` lists every route of the group so the entry stays active on all its tabs
-        { path: '/workouts',  icon: 'prime/bolt',      label: 'layout.menu.progress', match: ['/workouts', '/stats', '/routines', '/exercises'] },
+        { path: '/stats',     icon: 'prime/bolt',      label: 'layout.menu.progress', match: ['/workouts', '/stats', '/routines', '/exercises'] },
     ];
 
     get menuItems() {
@@ -36,7 +36,7 @@ class Backoffice extends Vue {
 
     // First letter of the name, for the avatar circle
     get initial(): string {
-        return (this.user?.name ?? '?').trim().charAt(0).toUpperCase() || '?';
+        return (this.user?.nickname || this.user?.name || '?').trim().charAt(0).toUpperCase() || '?';
     }
 
     get currentLanguage(): string {

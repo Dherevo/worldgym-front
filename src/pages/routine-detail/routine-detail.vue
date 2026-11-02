@@ -10,6 +10,8 @@
                 </div>
             </div>
 
+            <p class="kcal-note" v-if="showKcalNote">{{ $t('energy.short') }}</p>
+
             <div v-if="loading" class="loading-text">{{ $t('routineDetail.loading') }}</div>
 
             <div v-else-if="routine" class="days-list">

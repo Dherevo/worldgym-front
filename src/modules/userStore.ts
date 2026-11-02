@@ -8,6 +8,7 @@ interface UserData {
     height_cm: number | null;
     weight_kg: number | null;
     gender: 'female' | 'male' | 'other' | null;
+    birth_date?: string | null;
     email_verified?: boolean;
     pending_email?: string | null;
     home_equipment: number[] | null;

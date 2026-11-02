@@ -11,6 +11,7 @@
                             <span class="duration-tag" v-if="formatDuration()">{{ formatDuration() }}</span>
                             <span class="duration-tag" v-if="workoutKcal()">🔥 {{ workoutKcal() }}</span>
                         </h1>
+                        <p class="kcal-note" v-if="workoutKcal()">{{ $t('energy.short') }}</p>
                         <form class="title-edit" v-if="editingTitle" @submit.prevent="saveTitle()">
                             <input type="text" v-model="titleDraft" :placeholder="$t('workoutDetail.titlePlaceholder')" maxlength="150" ref="titleInput" />
                             <button type="submit" class="title-save" :disabled="savingTitle">{{ $t('workoutDetail.titleSave') }}</button>

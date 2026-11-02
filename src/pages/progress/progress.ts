@@ -10,8 +10,8 @@ import ExercisesPage from "@/pages/exercises/exercises.vue";
 class ProgressPage extends Vue {
 
     readonly tabs = [
-        { path: '/workouts', label: 'layout.menu.history' },
         { path: '/stats', label: 'layout.menu.stats' },
+        { path: '/workouts', label: 'layout.menu.history' },
         { path: '/routines', label: 'layout.menu.routines' },
         { path: '/exercises', label: 'layout.menu.exercises' },
     ];

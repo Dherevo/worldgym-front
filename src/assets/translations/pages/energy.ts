@@ -1,0 +1,32 @@
+export default {
+    ca: {
+        title: 'Metabolisme i despesa',
+        bmr: 'Metabolisme basal (TMB)',
+        bmrHint: 'Calories que crema el cos en repòs durant un dia.',
+        tdee: 'Despesa diària estimada',
+        tdeeHint: 'Segons {{n}} entrenos per setmana (últimes 4 setmanes).',
+        needData: 'Afegeix la data de naixement al perfil (a dalt) per calcular-ho.',
+        disclaimer: 'Valors aproximats calculats amb fórmules generals (Mifflin-St Jeor). No són dades reals ni consell mèdic.',
+        short: 'Valors aproximats, no són dades reals.',
+    },
+    es: {
+        title: 'Metabolismo y gasto',
+        bmr: 'Metabolismo basal (TMB)',
+        bmrHint: 'Calorías que quema el cuerpo en reposo durante un día.',
+        tdee: 'Gasto diario estimado',
+        tdeeHint: 'Según {{n}} entrenos por semana (últimas 4 semanas).',
+        needData: 'Añade la fecha de nacimiento en el perfil (arriba) para calcularlo.',
+        disclaimer: 'Valores aproximados calculados con fórmulas generales (Mifflin-St Jeor). No son datos reales ni consejo médico.',
+        short: 'Valores aproximados, no son datos reales.',
+    },
+    en: {
+        title: 'Metabolism and energy',
+        bmr: 'Basal metabolic rate (BMR)',
+        bmrHint: 'Calories the body burns at rest in a day.',
+        tdee: 'Estimated daily expenditure',
+        tdeeHint: 'Based on {{n}} workouts per week (last 4 weeks).',
+        needData: 'Add your date of birth in the profile (above) to calculate it.',
+        disclaimer: 'Approximate values from general formulas (Mifflin-St Jeor). Not real data and not medical advice.',
+        short: 'Approximate values, not real data.',
+    },
+};
