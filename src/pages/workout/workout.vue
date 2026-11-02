@@ -60,21 +60,6 @@
                     <button class="btn-finish-small" @click="finishWorkout()">{{ $t('workout.header.finish') }}</button>
                 </div>
 
-                <!-- Mini exercise plan (només rutina) -->
-                <div class="exercise-plan" v-if="!isFreeWorkout && exercises.length > 1">
-                    <div
-                        v-for="(ex, i) in exercises"
-                        :key="ex.id"
-                        class="plan-item"
-                        :class="{ done: i < currentExerciseIdx, current: i === currentExerciseIdx, clickable: canReshuffle && i > currentExerciseIdx }"
-                        :title="canReshuffle && i > currentExerciseIdx ? $t('workout.plan.startWith') : ''"
-                        @click="startWith(i)"
-                    >
-                        <span class="plan-dot"></span>
-                        <span class="plan-name">{{ ex.exercise?.name }}</span>
-                    </div>
-                </div>
-
                 <!-- Progress bar (només rutina) -->
                 <div class="progress-bar" v-if="!isFreeWorkout && exercises.length > 0">
                     <div
@@ -116,32 +101,11 @@
                     >{{ $t('workout.pick.finishWorkout') }}</button>
                 </div>
 
-                <!-- Historial últimes sessions (exercici actual) -->
-                <div class="exercise-history" v-if="exerciseHistory.length && state !== 'pick-exercise'">
-                    <div class="history-title">
-                        {{ $t('workout.history.title') }}
-                        <span class="record-badge" v-if="exerciseRecord">
-                            🏆 {{ exerciseRecord.weight }} kg × {{ exerciseRecord.reps }} {{ $t('workout.history.reps') }}
-                        </span>
-                    </div>
-                    <div class="history-rows">
-                        <div v-for="s in exerciseHistory" :key="s.date" class="history-row">
-                            <span class="history-date">{{ formatHistoryDate(s.date) }}</span>
-                            <template v-if="parseInt(s.total_reps) > 0">
-                                <span class="history-stat"><b>{{ s.max_weight }} kg</b></span>
-                                <span class="history-stat">{{ parseFloat(s.avg_reps).toFixed(0) }} {{ $t('workout.history.reps') }}</span>
-                                <span class="history-stat muted">{{ s.total_sets }} {{ $t('workout.history.sets') }}</span>
-                            </template>
-                            <span v-else class="history-empty">{{ $t('workout.history.noData') }}</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Exercise card + acció (unificats) -->
                 <div class="exercise-card" v-if="currentExercise && state !== 'pick-exercise'">
 
                     <!-- Info exercici -->
-                    <img v-if="currentExercise.exercise?.gif_url" class="exercise-gif" :src="currentExercise.exercise.gif_url" :alt="currentExercise.exercise.name" width="140" height="140" />
+                    <img v-if="currentExercise.exercise?.gif_url" class="exercise-gif" :src="currentExercise.exercise.gif_url" :alt="currentExercise.exercise.name" />
                     <div class="exercise-name">{{ currentExercise.exercise?.name }}</div>
                     <div class="exercise-eq" v-if="currentExercise.exercise?.equipment">
                         {{ currentExercise.exercise.equipment.name }}
@@ -174,24 +138,6 @@
 
                     <!-- STATE: idle -->
                     <template v-if="state === 'idle'">
-                        <div v-if="showAdd" class="add-panel">
-                            <p class="action-label">{{ $t('workout.add.title') }}</p>
-
-                            <div class="exercise-search-wrap">
-                                <input type="text" v-model="exerciseQuery"
-                                    :placeholder="$t('workout.pick.searchPlaceholder')" @input="filterExercises()" />
-                                <div class="exercise-dropdown" v-if="exerciseResults.length">
-                                    <div v-for="ex in exerciseResults" :key="ex.id" class="exercise-dropdown-item"
-                                        @mousedown="addExercise(ex)">
-                                        <span>{{ ex.name }}</span>
-                                        <small v-if="ex.equipment">{{ ex.equipment.name }}</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div v-if="addingExercise" class="loading-text">{{ $t('workout.pick.adding') }}</div>
-                            <button class="btn-action skip" @click="closeAdd()">{{ $t('workout.add.cancel') }}</button>
-                        </div>
-                        <template v-else>
                             <button class="btn-action start" @click="startSet()">{{ $t('workout.card.start') }}</button>
                             <SectionTile v-if="canAdd && addSuggestions.length" v-model:open="showPending"
                                 :title="$t('workout.pending.title')" :status="String(addSuggestions.length)" tone="pending">
@@ -208,10 +154,8 @@
                                 <button class="link-btn" @click="finishExerciseEarly()">{{ $t('workout.finishEarly', { done: doneCount }) }}</button>
                             </div>
                             <div class="idle-links" v-if="canAdd">
-                                <button class="link-btn" @click="openAdd()">{{ $t('workout.add.button') }}</button>
                                 <button v-if="canReshuffle" class="link-btn danger" @click="skipExercise()">{{ $t('workout.skip.button') }}</button>
                             </div>
-                        </template>
                     </template>
 
                     <!-- STATE: active -->
@@ -300,6 +244,27 @@
 
                 </div>
 
+                <!-- Historial últimes sessions (exercici actual) -->
+                <div class="exercise-history" v-if="exerciseHistory.length && state !== 'pick-exercise'">
+                    <div class="history-title">
+                        {{ $t('workout.history.title') }}
+                        <span class="record-badge" v-if="exerciseRecord">
+                            🏆 {{ exerciseRecord.weight }} kg × {{ exerciseRecord.reps }} {{ $t('workout.history.reps') }}
+                        </span>
+                    </div>
+                    <div class="history-rows">
+                        <div v-for="s in exerciseHistory" :key="s.date" class="history-row">
+                            <span class="history-date">{{ formatHistoryDate(s.date) }}</span>
+                            <template v-if="parseInt(s.total_reps) > 0">
+                                <span class="history-stat"><b>{{ s.max_weight }} kg</b></span>
+                                <span class="history-stat">{{ parseFloat(s.avg_reps).toFixed(0) }} {{ $t('workout.history.reps') }}</span>
+                                <span class="history-stat muted">{{ s.total_sets }} {{ $t('workout.history.sets') }}</span>
+                            </template>
+                            <span v-else class="history-empty">{{ $t('workout.history.noData') }}</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Workout progress: tots els exercicis -->
                 <div class="workout-progress" v-if="exercises.length && state !== 'done'">
                     <div class="progress-section-title">{{ $t('workout.progress.title') }}</div>
@@ -318,6 +283,7 @@
                             <span class="progress-ex-name">{{ ex.exercise?.name }}</span>
                             <span class="progress-ex-badge done" v-if="exIdx < currentExerciseIdx">✓</span>
                             <span class="progress-ex-badge current" v-else-if="exIdx === currentExerciseIdx">{{ $t('workout.progress.current') }}</span>
+                            <button v-else-if="canReshuffle" class="progress-ex-go" @click="startWith(exIdx)">{{ $t('workout.plan.startWith') }}</button>
                         </div>
 
                         <table>
@@ -403,6 +369,30 @@
                         </table>
                     </div>
                 </div>
+
+                <!-- Afegir exercici (a sota del progrés) -->
+                <div class="idle-links" v-if="canAdd && !showAdd">
+                    <button class="link-btn" @click="openAdd()">{{ $t('workout.add.button') }}</button>
+                </div>
+                <div v-if="canAdd && showAdd" class="action-block pick-exercise-block">
+                        <p class="action-label">{{ $t('workout.add.title') }}</p>
+
+                        <div class="exercise-search-wrap">
+                            <input type="text" v-model="exerciseQuery"
+                                :placeholder="$t('workout.pick.searchPlaceholder')" @input="filterExercises()" />
+                            <div class="exercise-dropdown" v-if="exerciseResults.length">
+                                <div v-for="ex in exerciseResults" :key="ex.id" class="exercise-dropdown-item"
+                                    @mousedown="addExercise(ex)">
+                                    <span>{{ ex.name }}</span>
+                                    <small v-if="ex.equipment">{{ ex.equipment.name }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="addingExercise" class="loading-text">{{ $t('workout.pick.adding') }}</div>
+                        <button class="btn-action skip" @click="closeAdd()">{{ $t('workout.add.cancel') }}</button>
+                    </div>
+
+
 
             </div>
 
