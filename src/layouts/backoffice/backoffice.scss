@@ -28,21 +28,31 @@
         background: var(--header-bg) !important;
         border-bottom: none !important;
 
+        // The library's own burger (mobile only) is not used: the side menu has its own
+        .logo .burger { display: none !important; }
+
+        // Room for the fixed burger on the left
+        .app-logo { margin-left: 56px; }
+
         .burger-btn {
+            position: fixed;
+            top: calc(8px + env(safe-area-inset-top));
+            left: 8px;
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
             width: 44px;
             height: 44px;
-            margin-right: 4px;
-            background: none;
-            border: none;
-            border-radius: 12px !important;
-            color: rgba(255, 246, 227, 0.9);
+            background: var(--header-bg);
+            border: 1px solid rgba(255, 239, 205, 0.18);
+            border-radius: 50% !important;
+            color: rgba(255, 246, 227, 0.95);
+            box-shadow: var(--shadow-md);
             cursor: pointer;
 
             svg { width: 22px; height: 22px; }
-            &:hover, &[aria-expanded="true"] { background: rgba(255, 239, 205, 0.12); color: #FFF6E3; }
+            &:hover, &[aria-expanded="true"] { background: #5a5d40; color: #FFF6E3; }
         }
     }
 
@@ -84,7 +94,7 @@
             display: flex;
             align-items: center;
             height: 60px;
-            padding: 0 20px;
+            padding: 0 20px 0 64px;
             border-bottom: 1px solid rgba(255, 239, 205, 0.1);
         }
 
@@ -220,29 +230,29 @@
     }
 }
 
-// One scroll container (the page content) instead of two nested ones, and a height that follows the
-// mobile browser bars (100vh is taller than the visible area there and cuts the end of the page)
+// The whole page scrolls with the window (the top bar scrolls away with it); only the burger stays fixed
 #backoffice-layout {
-    height: 100vh;
-    height: 100dvh;
+    height: auto;
+    overflow: visible;
+    min-height: 100vh;
+    min-height: 100dvh;
 
     .backoffice-flex {
         height: auto !important;
-        flex: 1 1 0 !important;
+        flex: 1 1 auto !important;
         min-height: 0;
     }
 
     #backoffice-content {
-        overflow: hidden;
+        overflow: visible;
+        overflow-x: clip;
         min-height: 0;
     }
 
     #backoffice-page-content {
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow: visible;
+        overflow-x: clip;
         min-height: 0;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior-y: contain;
     }
 }
 
