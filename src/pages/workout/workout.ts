@@ -47,6 +47,7 @@ class WorkoutPage extends Vue {
 
     // Historial últimes sessions de l'exercici actual
     exerciseHistory: any[] = [];
+    lastSets: any[] = [];
     exerciseRecord: { weight: number; reps: number } | null = null;
 
     // Sèries fetes en l'exercici actual (per mostrar taula live)
@@ -294,9 +295,36 @@ class WorkoutPage extends Vue {
         }
     }
 
+    // Sèrie número `idx` (0-based) de l'últim entrenament; si n'hi havia menys, l'última
+    previousSet(idx: number): any | null {
+        const sets = this.lastSets;
+        if (!sets.length) return null;
+        return sets[Math.min(idx, sets.length - 1)];
+    }
+
+    // Text curt de comparació amb l'última vegada: "(10 · +2)", "(=)" o "" si no hi ha dades
+    compareText(cur: any, prevValue: any, unit = ''): string {
+        if (prevValue === null || prevValue === undefined) return '';
+        const c = Number(cur) || 0;
+        const p = Number(prevValue) || 0;
+        const d = Math.round((c - p) * 100) / 100;
+        if (d === 0) return '(=)';
+        return `(${p}${unit} · ${d > 0 ? '+' : ''}${d}${unit})`;
+    }
+
+    loadLastSets(exerciseId: number) {
+        http.get(`/stats/exercises/${exerciseId}/last-sets`).data({ exclude_workout_id: this.workoutId })
+        .then((res: any) => {
+            if (this.currentExercise?.exercise?.id === exerciseId) this.lastSets = res.sets ?? [];
+        })
+        .catch(() => { this.lastSets = []; });
+    }
+
     loadExerciseHistory() {
         const exerciseId = this.currentExercise?.exercise?.id;
+        this.lastSets = [];
         if (!exerciseId) { this.exerciseHistory = []; this.exerciseRecord = null; return; }
+        this.loadLastSets(exerciseId);
         http.get(`/stats/exercises/${exerciseId}`)
         .then((res: any) => {
             const sessions = res.sessions ?? [];
@@ -421,9 +449,10 @@ class WorkoutPage extends Vue {
 
         const lastLogged = this.loggedSets.length > 0 ? this.loggedSets[this.loggedSets.length - 1] : null;
         const lastSessionWeight = this.exerciseHistory.length > 0 ? (parseFloat(this.exerciseHistory[0]?.max_weight) || 0) : 0;
+        const prev = this.previousSet(this.doneCount);
 
-        this.logReps = this.targetSet?.reps_target ?? this.targetSet?.reps ?? lastLogged?.reps ?? 12;
-        this.logWeight = this.isBodyweight ? 0 : (this.targetSet?.weight ?? lastLogged?.weight ?? lastSessionWeight);
+        this.logReps = prev?.reps ?? lastLogged?.reps ?? this.targetSet?.reps_target ?? this.targetSet?.reps ?? 12;
+        this.logWeight = this.isBodyweight ? 0 : (prev?.weight ?? lastLogged?.weight ?? this.targetSet?.weight ?? lastSessionWeight);
         this.logNotes = '';
         this.logFailed = false;
         this.logDropset = false;

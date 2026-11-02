@@ -345,16 +345,16 @@
                                     <!-- Sèries ja fetes -->
                                     <tr v-for="(s, i) in loggedSets" :key="'done-' + i" class="set-row-done">
                                         <td>{{ s.set_number }}</td>
-                                        <td>{{ s.reps }}</td>
-                                        <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</td>
+                                        <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, previousSet(i)?.reps) }}</small></td>
+                                        <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || previousSet(i)?.weight > 0">{{ compareText(s.weight, previousSet(i)?.weight, ' kg') }}</small></td>
                                         <td>{{ s.notes || '—' }}</td>
                                     </tr>
 
                                     <!-- Fila live: valors que s'estan introduint -->
                                     <tr v-if="state === 'logging'" class="set-row-live">
                                         <td>{{ doneCount + 1 }}</td>
-                                        <td>{{ logReps }}</td>
-                                        <td>{{ isBodyweight ? $t('workout.log.bodyweightShort') : (logWeight + ' kg') }}</td>
+                                        <td>{{ logReps }} <small class="cmp">{{ compareText(logReps, previousSet(doneCount)?.reps) }}</small></td>
+                                        <td>{{ isBodyweight ? $t('workout.log.bodyweightShort') : (logWeight + ' kg') }} <small class="cmp" v-if="!isBodyweight">{{ compareText(logWeight, previousSet(doneCount)?.weight, ' kg') }}</small></td>
                                         <td>{{ logNotes || '—' }}</td>
                                     </tr>
 
