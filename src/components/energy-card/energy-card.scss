@@ -1,0 +1,21 @@
+.energy-card {
+    h2 { margin: 0; font-size: 1.4rem; }
+    .sub { margin: 0; color: var(--text-secondary); }
+
+    .energy-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        .label { font-weight: 600; }
+        .hint { font-size: 0.8rem; color: var(--text-muted); }
+        .value { font-size: 1.3rem; font-weight: 700; color: var(--primary-color); white-space: nowrap; }
+    }
+
+    .disclaimer {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-style: italic;
+    }
+}

@@ -26,8 +26,7 @@
                 <div class="sidebar-user" v-if="user" @click="to('/profile')" :title="$t('layout.profile')">
                     <div class="user-avatar" aria-hidden="true">{{ initial }}</div>
                     <div class="user-identity">
-                        <div class="user-name">{{ user.name }}</div>
-                        <div class="user-email">{{ user.email }}</div>
+                        <div class="user-name">{{ user.nickname || user.name }}</div>
                     </div>
                 </div>
 

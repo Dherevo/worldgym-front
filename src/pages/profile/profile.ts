@@ -4,8 +4,9 @@ import auth from "@/modules/auth";
 import userStore from "@/modules/userStore";
 import MeasurementsPage from "@/pages/measurements/measurements.vue";
 import AccountSettings from "@/components/account-settings/account-settings.vue";
+import EnergyCard from "@/components/energy-card/energy-card.vue";
 
-@Component({ components: { MeasurementsPage, AccountSettings } })
+@Component({ components: { MeasurementsPage, AccountSettings, EnergyCard } })
 class ProfilePage extends Vue {
 
     readonly genders = ['female', 'male', 'other'];
@@ -13,6 +14,8 @@ class ProfilePage extends Vue {
     height = '';
     weight = '';
     gender = '';
+    birthDate = '';
+    readonly today = new Date().toISOString().slice(0, 10);
     saving = false;
 
     // Equipment at home, for the home sessions the recommender proposes
@@ -36,6 +39,7 @@ class ProfilePage extends Vue {
         this.height = user?.height_cm ? String(user.height_cm) : '';
         this.weight = user?.weight_kg ? String(user.weight_kg) : '';
         this.gender = user?.gender ?? '';
+        this.birthDate = user?.birth_date ?? '';
         this.homeIds = [...(user?.home_equipment ?? [])];
     }
 
@@ -65,7 +69,7 @@ class ProfilePage extends Vue {
         if (this.saving || !this.valid) return;
         this.saving = true;
         http.put('/account/profile')
-        .data({ height_cm: Math.round(Number(this.height)), weight_kg: Number(this.weight), gender: this.gender })
+        .data({ height_cm: Math.round(Number(this.height)), weight_kg: Number(this.weight), gender: this.gender, birth_date: this.birthDate })
         .then((user: any) => {
             // Update in place: the layout holds a reference to this same object, and the
             // cycle menu entry depends on the gender

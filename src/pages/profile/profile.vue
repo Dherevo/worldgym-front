@@ -17,6 +17,12 @@
                 </div>
                 <p class="note">{{ $t('profile.weightNote') }}</p>
 
+                <label class="field">
+                    <span>{{ $t('profile.birthDate') }}</span>
+                    <input type="date" v-model="birthDate" :max="today" />
+                </label>
+                <p class="note">{{ $t('profile.birthDateNote') }}</p>
+
                 <div class="field">
                     <span>{{ $t('profile.gender') }}</span>
                     <div class="options">
@@ -45,6 +51,8 @@
                     {{ $t('recommendation.homeEquipment.save') }}
                 </button>
             </div>
+
+            <EnergyCard />
 
             <AccountSettings />
 

@@ -15,6 +15,7 @@ import habits from './pages/habits';
 import profile from './pages/profile';
 import access from './pages/access';
 import account from './pages/account';
+import energy from './pages/energy';
 import checkin from './pages/checkin';
 import recommendation from './pages/recommendation';
 import notFound from './pages/notFound';
@@ -37,6 +38,7 @@ const es = {
     profile: profile.es,
     access: access.es,
     account: account.es,
+    energy: energy.es,
     checkin: checkin.es,
     recommendation: recommendation.es,
     notFound: notFound.es,

@@ -15,6 +15,7 @@
                     <p class="done-subtitle">{{ $t('workout.done.subtitle') }}</p>
                     <div class="done-duration" v-if="workoutDuration">⏱ {{ workoutDuration }}</div>
                     <div class="done-duration" v-if="workoutKcal">🔥 {{ workoutKcal }}</div>
+                    <div class="kcal-note" v-if="workoutKcal">{{ $t('energy.short') }}</div>
                 </div>
 
                 <div class="done-summary" v-if="completedExercises.length">
