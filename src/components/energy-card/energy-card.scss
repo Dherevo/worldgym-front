@@ -12,6 +12,17 @@
         .value { font-size: 1.3rem; font-weight: 700; color: var(--primary-color); white-space: nowrap; }
     }
 
+    h3 { margin: 0.5rem 0 0; font-size: 1.05rem; }
+
+    .fact {
+        margin: 0;
+        padding: 0.6rem 0.9rem;
+        border-radius: 12px;
+        background: var(--surface-2);
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
     .disclaimer {
         margin: 0;
         font-size: 0.8rem;
