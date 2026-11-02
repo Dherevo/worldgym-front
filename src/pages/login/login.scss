@@ -9,47 +9,47 @@
     padding: 2rem;
     background: var(--lg-bg);
 
-    --lg-bg: #07070b;
-    --lg-text: #ffffff;
-    --lg-text-2: rgba(255,255,255,0.65);
-    --lg-text-3: rgba(255,255,255,0.55);
-    --lg-label: rgba(255,255,255,0.6);
-    --lg-grid: rgba(255,255,255,0.04);
+    --lg-bg: #14150d;
+    --lg-text: #FFF6E3;
+    --lg-text-2: rgba(255,239,205,0.7);
+    --lg-text-3: rgba(255,239,205,0.55);
+    --lg-label: rgba(255,239,205,0.65);
+    --lg-grid: rgba(255,239,205,0.04);
     --lg-glow-opacity: 0.55;
-    --lg-h1: linear-gradient(180deg, #fff 30%, #9aa6ff);
-    --lg-card-bg: rgba(20, 20, 28, 0.65);
-    --lg-card-border: rgba(255,255,255,0.1);
+    --lg-h1: linear-gradient(180deg, #FFF6E3 30%, #E09232);
+    --lg-card-bg: rgba(43, 45, 31, 0.7);
+    --lg-card-border: rgba(255,239,205,0.12);
     --lg-card-shadow: 0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
     --lg-input-bg: rgba(0,0,0,0.35);
     --lg-input-bg-focus: rgba(0,0,0,0.5);
     --lg-input-border: rgba(255,255,255,0.12);
     --lg-input-text: #fff;
-    --lg-focus: #6680ff;
-    --lg-focus-ring: rgba(102, 128, 255, 0.18);
+    --lg-focus: #E09232;
+    --lg-focus-ring: rgba(224, 146, 50, 0.22);
     --lg-toggle: rgba(255,255,255,0.6);
     --lg-toggle-hover-bg: rgba(255,255,255,0.08);
-    --lg-error-text: #ff8091;
+    --lg-error-text: #ff8a76;
 
     :root[data-theme="light"] & {
-        --lg-bg: #eef0fb;
-        --lg-text: #0d0d1a;
-        --lg-text-2: #4a4f6a;
-        --lg-text-3: #6a6f88;
-        --lg-label: #4a4f6a;
-        --lg-grid: rgba(2, 21, 139, 0.07);
+        --lg-bg: #FFEFCD;
+        --lg-text: #262626;
+        --lg-text-2: #5c5750;
+        --lg-text-3: #8a8379;
+        --lg-label: #5c5750;
+        --lg-grid: rgba(66, 69, 48, 0.07);
         --lg-glow-opacity: 0.28;
-        --lg-h1: linear-gradient(180deg, #0d0d1a 20%, #02158B);
+        --lg-h1: linear-gradient(180deg, #262626 20%, #C97D1E);
         --lg-card-bg: rgba(255,255,255,0.8);
-        --lg-card-border: rgba(2, 21, 139, 0.12);
-        --lg-card-shadow: 0 30px 70px rgba(2, 21, 139, 0.15), inset 0 1px 0 #fff;
+        --lg-card-border: rgba(66, 69, 48, 0.12);
+        --lg-card-shadow: 0 30px 70px rgba(66, 69, 48, 0.15), inset 0 1px 0 #fff;
         --lg-input-bg: #ffffff;
         --lg-input-bg-focus: #ffffff;
-        --lg-input-border: #cfd4ee;
-        --lg-input-text: #0d0d1a;
-        --lg-focus: #02158B;
-        --lg-focus-ring: rgba(2, 21, 139, 0.14);
-        --lg-toggle: #4a4f6a;
-        --lg-toggle-hover-bg: rgba(2, 21, 139, 0.08);
+        --lg-input-border: #D5CCC3;
+        --lg-input-text: #262626;
+        --lg-focus: #C97D1E;
+        --lg-focus-ring: rgba(224, 146, 50, 0.2);
+        --lg-toggle: #5c5750;
+        --lg-toggle-hover-bg: rgba(66, 69, 48, 0.08);
         --lg-error-text: #b00e24;
     }
 
@@ -64,7 +64,7 @@
 
         &.glow-red {
             width: 480px; height: 480px;
-            background: var(--accent-red);
+            background: #8a8f5c;
             top: -140px; left: -100px;
         }
         &.glow-blue {
@@ -206,13 +206,13 @@
             font-weight: 700;
             color: #fff;
             cursor: pointer;
-            background: linear-gradient(135deg, var(--accent-red), #b8102a);
-            box-shadow: 0 10px 28px rgba(231, 22, 51, 0.35);
+            background: linear-gradient(135deg, #E09232, #C97D1E);
+            box-shadow: 0 10px 28px rgba(224, 146, 50, 0.35);
             transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
 
             &:hover:not(:disabled) {
                 transform: translateY(-2px);
-                box-shadow: 0 14px 34px rgba(231, 22, 51, 0.5);
+                box-shadow: 0 14px 34px rgba(224, 146, 50, 0.5);
             }
             &:disabled { opacity: 0.45; cursor: not-allowed; }
         }
