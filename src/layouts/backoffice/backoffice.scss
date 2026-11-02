@@ -262,3 +262,35 @@
         padding: 0 0 env(safe-area-inset-bottom);
     }
 }
+
+// Wide screens: the side menu is always open and visible, with the page next to it
+@media (min-width: 1100px) {
+    #backoffice-layout {
+        padding-left: 260px;
+
+        // The top bar only held the logo and the burger: its content is not needed (the menu has the logo)
+        #backoffice-top-menu {
+            height: 0 !important;
+            flex: 0 0 0 !important;
+            min-height: 0;
+            padding: 0 !important;
+            overflow: visible;
+            border: none !important;
+
+            .logo, .flex-grow, .burger-btn { display: none !important; }
+        }
+
+        .sidebar-backdrop { display: none; }
+
+        .sidebar {
+            width: 260px;
+            transform: none;
+            visibility: visible;
+            transition: none;
+            box-shadow: none;
+            z-index: 50;
+
+            .sidebar-logo { padding-left: 20px; }
+        }
+    }
+}
