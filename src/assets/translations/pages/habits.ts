@@ -2,6 +2,8 @@ export default {
     ca: {
         names: { steps: 'Passos', abs: 'Abdominals', warmup: 'Escalfament', stretch: 'Estiraments' },
         card: {
+            inWorkoutHint: 'Opcional, al final de l\'entreno',
+            inWorkoutDone: 'Fet a l\'entreno',
             title: 'Obligats d\'avui',
             configure: 'Configurar',
             loading: 'Carregant...',
@@ -71,6 +73,8 @@ export default {
     es: {
         names: { steps: 'Pasos', abs: 'Abdominales', warmup: 'Calentamiento', stretch: 'Estiramientos' },
         card: {
+            inWorkoutHint: 'Opcional, al final del entreno',
+            inWorkoutDone: 'Hecho en el entreno',
             title: 'Obligatorios de hoy',
             configure: 'Configurar',
             loading: 'Cargando...',
@@ -140,6 +144,8 @@ export default {
     en: {
         names: { steps: 'Steps', abs: 'Abs', warmup: 'Warm-up', stretch: 'Stretching' },
         card: {
+            inWorkoutHint: 'Optional, at the end of the workout',
+            inWorkoutDone: 'Done in the workout',
             title: 'Today\'s must-dos',
             configure: 'Configure',
             loading: 'Loading...',
