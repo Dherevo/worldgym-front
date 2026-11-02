@@ -52,6 +52,9 @@
                     <button class="btn-start" @click="startNextDay()" :disabled="starting">
                         {{ starting ? $t('home.routine.starting') : $t('home.routine.start') }}
                     </button>
+                    <button class="btn-other-routine" @click="showDayPicker = true" v-if="(defaultRoutine.days?.length ?? 0) > 1">
+                        {{ $t('home.routine.chooseDay') }}
+                    </button>
                     <button class="btn-other-routine" @click="openRoutinePicker()" v-if="otherRoutines.length">
                         {{ $t('home.routine.otherRoutine') }}
                     </button>
@@ -97,6 +100,31 @@
                         <span>&rsaquo;</span>
                     </div>
                     <button class="btn-more" @click="to('/workouts')">{{ $t('home.recent.more') }}</button>
+                </div>
+            </div>
+
+            <!-- Day picker modal (days of the default routine) -->
+            <div v-if="showDayPicker" class="modal-overlay" @click.self="showDayPicker = false">
+                <div class="modal">
+                    <h3>{{ $t('home.dayPicker.title') }}</h3>
+                    <div class="picker-list">
+                        <div
+                            v-for="d in defaultRoutine.days"
+                            :key="d.id"
+                            class="picker-item"
+                            :class="{ selected: nextDay?.id === d.id }"
+                            @click="showDayPicker = false; startDay(d)"
+                        >
+                            <div class="picker-name">
+                                {{ d.name }}
+                                <span v-if="doneDayIds.includes(d.id)" class="picker-done">✓ {{ $t('home.dayPicker.done') }}</span>
+                                <span v-else-if="nextDay?.id === d.id" class="picker-done">{{ $t('home.dayPicker.suggested') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn-cancel" @click="showDayPicker = false">{{ $t('home.picker.cancel') }}</button>
+                    </div>
                 </div>
             </div>
 

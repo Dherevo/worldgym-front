@@ -330,8 +330,8 @@
                                     <template v-if="completedExercises[exIdx]?.sets?.length">
                                         <tr v-for="(s, i) in completedExercises[exIdx].sets" :key="i" class="set-row-done">
                                             <td>{{ s.set_number ?? i + 1 }}</td>
-                                            <td>{{ s.reps }}</td>
-                                            <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</td>
+                                            <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, previousSet(i, ex.exercise?.id)?.reps) }}</small></td>
+                                            <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || previousSet(i, ex.exercise?.id)?.weight > 0">{{ compareText(s.weight, previousSet(i, ex.exercise?.id)?.weight, ' kg') }}</small></td>
                                             <td>{{ s.notes || '—' }}</td>
                                         </tr>
                                     </template>
