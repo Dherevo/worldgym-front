@@ -204,6 +204,9 @@
                                     </button>
                                 </div>
                             </SectionTile>
+                            <div class="idle-links" v-if="canFinishEarly">
+                                <button class="link-btn" @click="finishExerciseEarly()">{{ $t('workout.finishEarly', { done: doneCount }) }}</button>
+                            </div>
                             <div class="idle-links" v-if="canAdd">
                                 <button class="link-btn" @click="openAdd()">{{ $t('workout.add.button') }}</button>
                                 <button v-if="canReshuffle" class="link-btn danger" @click="skipExercise()">{{ $t('workout.skip.button') }}</button>
@@ -279,6 +282,9 @@
                             <button class="btn-adjust" @click="adjustRest(30)">+30s</button>
                         </div>
                         <button class="btn-action skip" @click="skipRest()">{{ $t('workout.rest.skip') }}</button>
+                        <div class="idle-links" v-if="canFinishEarly">
+                            <button class="link-btn" @click="finishExerciseEarly()">{{ $t('workout.finishEarly', { done: doneCount }) }}</button>
+                        </div>
                     </template>
 
                     <!-- STATE: choose -->
