@@ -502,9 +502,9 @@ class WorkoutPage extends Vue {
 
         const req = target?.id
             ? http.put(`/workouts/${this.workoutId}/exercises/${we.id}/sets/${target.id}`)
-              .data({ reps: this.logReps, weight: this.logWeight, rest_seconds: restSecs, notes: this.logNotes, is_failed: this.logFailed, is_dropset: this.logDropset })
+              .data({ reps: this.logReps, weight: this.logWeight, rest_seconds: restSecs, duration_seconds: this.exerciseSeconds, notes: this.logNotes, is_failed: this.logFailed, is_dropset: this.logDropset })
             : http.post(`/workouts/${this.workoutId}/exercises/${we.id}/sets`)
-              .data({ set_number: this.doneCount + 1, reps: this.logReps, weight: this.logWeight, rest_seconds: restSecs, notes: this.logNotes, is_failed: this.logFailed, is_dropset: this.logDropset });
+              .data({ set_number: this.doneCount + 1, reps: this.logReps, weight: this.logWeight, rest_seconds: restSecs, duration_seconds: this.exerciseSeconds, notes: this.logNotes, is_failed: this.logFailed, is_dropset: this.logDropset });
 
         req.then((res: any) => {
             this.lastSetRef = { weId: we.id, id: target?.id ?? res?.id };

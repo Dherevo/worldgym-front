@@ -52,7 +52,7 @@
                                     <td class="c-set">{{ s.set_number }}</td>
                                     <td class="c-reps" :data-label="$t('workoutDetail.table.reps')">{{ s.reps }} <small class="cmp">{{ diffText(s.reps, prevSet(we, si)?.reps) }}</small></td>
                                     <td class="c-weight" :data-label="$t('workoutDetail.table.weight')">{{ s.weight }} <small class="cmp" v-if="s.weight > 0 || prevSet(we, si)?.weight > 0">{{ diffText(s.weight, prevSet(we, si)?.weight, 'kg') }}</small></td>
-                                    <td class="c-rest" :class="{ empty: s.rest_seconds == null }" :data-label="$t('workoutDetail.table.rest')">{{ s.rest_seconds ?? '—' }}</td>
+                                    <td class="c-rest" :class="{ empty: s.rest_seconds == null }" :data-label="$t('workoutDetail.table.rest')">{{ s.rest_seconds ?? '—' }} <small class="cmp" v-if="s.duration_seconds">· {{ $t('workoutDetail.table.setTime') }} {{ s.duration_seconds }}s</small></td>
                                     <td class="c-notes" :class="{ empty: !s.notes }" :data-label="$t('workoutDetail.table.notes')">{{ s.notes || '—' }}</td>
                                     <td class="c-flags" :class="{ empty: !s.is_failed && !s.is_dropset }">
                                         <span class="set-badge failed" v-if="s.is_failed">{{ $t('workoutDetail.badges.failed') }}</span>
