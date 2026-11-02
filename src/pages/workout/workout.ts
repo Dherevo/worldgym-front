@@ -49,8 +49,10 @@ class WorkoutPage extends Vue {
     exerciseHistory: any[] = [];
     lastSetsByEx: Record<number, any[]> = {};
     lastSetRef: { weId: number; id: number } | null = null;
+    pendingRest: { weId: number; id: number; taken: number } | null = null;
     absOptions: any[] = [];
     absOffered = false;
+    absPromise: Promise<any[]> | null = null;
     absWeId: number | null = null;
     restStartedAt = 0;
     exerciseRecord: { weight: number; reps: number } | null = null;
@@ -163,6 +165,7 @@ class WorkoutPage extends Vue {
             this.reconstructProgress();
             this.state = 'idle';
             this.loadExerciseHistory();
+            this.loadAbsOptions();
         })
         .catch(() => {});
     }
@@ -249,7 +252,6 @@ class WorkoutPage extends Vue {
         if (this.restInterval) clearInterval(this.restInterval);
         this.restInterval = null;
         this.releaseWakeLock();
-        this.saveActualRest();
 
         const unused = (we.sets ?? []).slice(this.doneCount).filter((s: any) => s.id && s.reps === null);
         Promise.all(unused.map((s: any) => http.delete(`/workouts/${this.workoutId}/exercises/${we.id}/sets/${s.id}`)))
@@ -290,6 +292,7 @@ class WorkoutPage extends Vue {
     }
 
     finishRoutine() {
+        this.flushRest();
         http.put(`/workouts/${this.workoutId}`)
         .data({ status: 'finished', finished_at: new Date().toISOString() })
         .then((res: any) => { this.activeSeconds = res?.active_seconds ?? null; })
@@ -451,23 +454,30 @@ class WorkoutPage extends Vue {
     }
 
     // Before closing a routine workout, offer an abdominals exercise (any exercise of the Core group) once
+    // Exercises of the Core group, loaded in the background while training so the offer appears instantly
+    loadAbsOptions(): Promise<any[]> {
+        if (!this.absPromise) {
+            this.absPromise = http.get('/muscle-groups')
+            .then((res: any) => {
+                const core = (res.items ?? []).find((g: any) => String(g.name).toLowerCase() === 'core');
+                return core ? http.get('/exercises').data({ muscle_group_id: core.id, pageSize: 60 }) : { items: [] };
+            })
+            .then((res: any) => { this.absOptions = res.items ?? []; return this.absOptions; })
+            .catch(() => [] as any[]);
+        }
+        return this.absPromise as Promise<any[]>;
+    }
+
     finishOrOfferAbs() {
         const h = this.absHabit;
         if (this.isFreeWorkout || this.absOffered || !h || h.log?.completed) { this.finishRoutine(); return; }
 
         this.absOffered = true;
-        this.state = 'loading';
-        http.get('/muscle-groups')
-        .then((res: any) => {
-            const core = (res.items ?? []).find((g: any) => String(g.name).toLowerCase() === 'core');
-            return core ? http.get('/exercises').data({ muscle_group_id: core.id, pageSize: 60 }) : { items: [] };
-        })
-        .then((res: any) => {
-            this.absOptions = res.items ?? [];
-            if (this.absOptions.length) this.state = 'abs-offer';
+        if (!this.absOptions.length) this.state = 'loading';
+        this.loadAbsOptions().then((options: any[]) => {
+            if (options.length) this.state = 'abs-offer';
             else this.finishRoutine();
-        })
-        .catch(() => this.finishRoutine());
+        });
     }
 
     chooseAbs(ex: any) {
@@ -535,6 +545,7 @@ class WorkoutPage extends Vue {
     // --- FLUX ---
 
     startSet() {
+        this.captureRest();
         this.exerciseSeconds = 0;
         this.state = 'active';
         this.exerciseInterval = setInterval(() => { this.exerciseSeconds++; }, 1000);
@@ -561,6 +572,7 @@ class WorkoutPage extends Vue {
     }
 
     submitSet() {
+        this.flushRest();
         const we = this.currentExercise;
         const target = this.targetSet;
         const restSecs = target?.rest_seconds ?? 90;
@@ -590,14 +602,21 @@ class WorkoutPage extends Vue {
         .finally(() => { this.savingSet = false; });
     }
 
-    // Saves the rest really taken after the last set (the planned one is only the starting value)
-    saveActualRest() {
+    // Real rest = time from logging a set to starting the next one. Computed locally when the next set
+    // starts and sent later with the next save, so skipping the rest never waits for the backend
+    captureRest() {
         const ref = this.lastSetRef;
         if (!ref?.id || !this.restStartedAt) return;
-        const taken = Math.max(0, Math.round((Date.now() - this.restStartedAt) / 1000));
+        this.pendingRest = { weId: ref.weId, id: ref.id, taken: Math.max(0, Math.round((Date.now() - this.restStartedAt) / 1000)) };
         this.lastSetRef = null;
         this.restStartedAt = 0;
-        http.put(`/workouts/${this.workoutId}/exercises/${ref.weId}/sets/${ref.id}`).data({ rest_seconds: taken }).catch(() => {});
+    }
+
+    flushRest() {
+        const p = this.pendingRest;
+        if (!p) return;
+        this.pendingRest = null;
+        http.put(`/workouts/${this.workoutId}/exercises/${p.weId}/sets/${p.id}`).data({ rest_seconds: p.taken }).catch(() => {});
     }
 
     startRest(seconds: number) {
@@ -630,7 +649,6 @@ class WorkoutPage extends Vue {
     }
 
     afterRest() {
-        this.saveActualRest();
         // Without planned sets (free workout, or a routine exercise with no sets target) there is
         // no count to finish at, so ask instead of offering another set forever
         // Planned sets done: let the user add an extra set or move on (never jump on its own)
@@ -684,6 +702,7 @@ class WorkoutPage extends Vue {
         App.confirm(translate.get('workout.finishConfirm'))
         .then((ok: boolean) => {
             if (ok) {
+                this.flushRest();
                 http.put(`/workouts/${this.workoutId}`)
                 .data({ status: 'finished', finished_at: new Date().toISOString() })
                 .then(() => {})
