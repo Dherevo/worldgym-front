@@ -3,7 +3,7 @@ import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
 import SectionTile from "@/components/section-tile/section-tile.vue";
 
-type State = 'loading' | 'pick-exercise' | 'idle' | 'active' | 'logging' | 'resting' | 'choose' | 'done';
+type State = 'loading' | 'pick-exercise' | 'idle' | 'active' | 'logging' | 'resting' | 'choose' | 'abs-offer' | 'done';
 
 @Component({ components: { SectionTile } })
 class WorkoutPage extends Vue {
@@ -49,6 +49,9 @@ class WorkoutPage extends Vue {
     exerciseHistory: any[] = [];
     lastSetsByEx: Record<number, any[]> = {};
     lastSetRef: { weId: number; id: number } | null = null;
+    absOptions: any[] = [];
+    absOffered = false;
+    absWeId: number | null = null;
     restStartedAt = 0;
     exerciseRecord: { weight: number; reps: number } | null = null;
 
@@ -223,7 +226,7 @@ class WorkoutPage extends Vue {
                 this.exerciseHistory = [];
                 this.exerciseRecord = null;
                 if (this.currentExerciseIdx >= this.exercises.length) {
-                    this.finishRoutine();
+                    this.finishOrOfferAbs();
                 } else {
                     this.loadExerciseHistory();
                     this.saveProgress();
@@ -442,16 +445,56 @@ class WorkoutPage extends Vue {
         return this.state === 'idle' && this.currentExerciseIdx === 0 && this.doneCount === 0 && !!h && !h.log?.completed;
     }
 
-    // Abdominals: optional extra at the end of every workout while the habit is active
+    // Abdominals: optional extra at the end of every routine workout (always on; it logs the abs habit behind the scenes)
     get absHabit(): any | null {
-        const h = this.habitsByKey.abs;
-        return h?.is_active && h.due !== false ? h : null;
+        return this.habitsByKey.abs ?? null;
     }
 
-    markAbs() {
+    // Before closing a routine workout, offer an abdominals exercise (any exercise of the Core group) once
+    finishOrOfferAbs() {
         const h = this.absHabit;
-        if (!h) return;
-        http.put(`/habits/${h.id}/log`).data({ date: localDate(), completed: true, sets_done: h.target_sets, reps: h.target_reps })
+        if (this.isFreeWorkout || this.absOffered || !h || h.log?.completed) { this.finishRoutine(); return; }
+
+        this.absOffered = true;
+        this.state = 'loading';
+        http.get('/muscle-groups')
+        .then((res: any) => {
+            const core = (res.items ?? []).find((g: any) => String(g.name).toLowerCase() === 'core');
+            return core ? http.get('/exercises').data({ muscle_group_id: core.id, pageSize: 60 }) : { items: [] };
+        })
+        .then((res: any) => {
+            this.absOptions = res.items ?? [];
+            if (this.absOptions.length) this.state = 'abs-offer';
+            else this.finishRoutine();
+        })
+        .catch(() => this.finishRoutine());
+    }
+
+    chooseAbs(ex: any) {
+        if (this.addingExercise) return;
+        this.addingExercise = true;
+        http.post(`/workouts/${this.workoutId}/exercises`).data({ exercise_id: ex.id })
+        .then((res: any) => {
+            this.exercises.push({ ...res, sets: res.sets ?? [] });
+            this.absWeId = res.id;
+            this.currentExerciseIdx = this.exercises.length - 1;
+            this.doneCount = 0;
+            this.loggedSets = [];
+            this.loadExerciseHistory();
+            this.state = 'idle';
+            this.saveProgress();
+        })
+        .catch(() => App.notification(translate.get('workout.errors.addExercise')).setType('error').show())
+        .finally(() => { this.addingExercise = false; });
+    }
+
+    // The abdominals habit counts as done once the abdominals exercise has sets logged
+    markAbsDone() {
+        const h = this.absHabit;
+        const we = this.currentExercise;
+        if (!h || !we || we.id !== this.absWeId || !this.loggedSets.length) return;
+        const last = this.loggedSets[this.loggedSets.length - 1];
+        http.put(`/habits/${h.id}/log`).data({ date: localDate(), completed: true, sets_done: this.loggedSets.length, reps: last.reps })
         .then(() => this.fetchHabits())
         .catch(() => {});
     }
@@ -604,6 +647,7 @@ class WorkoutPage extends Vue {
 
     nextExercise() {
         // Guardar l'exercici actual al resum final (sempre, per mantenir índexos alineats)
+        this.markAbsDone();
         if (this.currentExercise) {
             this.completedExercises.push({
                 name: this.currentExercise.exercise?.name,
@@ -623,7 +667,7 @@ class WorkoutPage extends Vue {
         } else {
             this.currentExerciseIdx++;
             if (this.currentExerciseIdx >= this.exercises.length) {
-                this.finishRoutine();
+                this.finishOrOfferAbs();
             } else {
                 this.loadExerciseHistory();
                 this.state = 'idle';

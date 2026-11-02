@@ -6,7 +6,7 @@ import SectionTile from "@/components/section-tile/section-tile.vue";
 // Daily must-dos (steps, abs, custom) shown on the home page, whatever the routine day is.
 // Collapsed into a title row with the day's progress; the list opens in a modal.
 // Habits done inside the workout screen (always on), so they are not listed as daily to-dos
-const IN_WORKOUT = ['warmup', 'stretch'];
+const IN_WORKOUT = ['warmup', 'stretch', 'abs'];
 
 @Component({ components: { SectionTile } })
 class DailyHabits extends Vue {

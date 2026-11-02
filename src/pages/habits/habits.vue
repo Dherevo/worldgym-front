@@ -13,7 +13,7 @@
             <div v-if="loading && !habits.length" class="loading-text">{{ $t('habits.card.loading') }}</div>
 
             <div v-for="(h, i) in habits" :key="h.id" class="habit-block"
-                :class="{ dragging: dragFromIdx === i, 'in-workout': h.key === 'warmup' || h.key === 'stretch' }"
+                :class="{ dragging: dragFromIdx === i, 'in-workout': h.key === 'warmup' || h.key === 'stretch' || h.key === 'abs' }"
                 @dragover.prevent @drop="dropOn(i)">
             <div class="habit-row" :class="{ inactive: !h.is_active }">
                 <div class="drag-handle" draggable="true" :title="$t('habits.page.dragToReorder')"
