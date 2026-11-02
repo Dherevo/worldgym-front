@@ -11,6 +11,8 @@ class HomePage extends Vue {
 
     defaultRoutine: any = null;
     nextDay: any = null;
+    doneDayIds: number[] = [];
+    showDayPicker = false;
     loadingRoutine = false;
     starting = false;
 
@@ -85,16 +87,21 @@ class HomePage extends Vue {
         if (!days.length) return;
 
         http.get(`/routines/${this.defaultRoutine.id}/next-day`)
-        .then((res: any) => { this.nextDay = res.day; })
+        .then((res: any) => { this.nextDay = res.day; this.doneDayIds = res.done_day_ids ?? []; })
         .catch(() => { this.nextDay = days[0]; });
     }
 
     startNextDay() {
-        if (!this.nextDay || this.starting) return;
+        this.startDay(this.nextDay);
+    }
+
+    // Starts any day of the default routine (the suggested one or one picked by the user)
+    startDay(day: any) {
+        if (!day || this.starting) return;
         const today = new Date().toISOString().split('T')[0];
         this.starting = true;
-        http.post(`/routines/${this.defaultRoutine.id}/days/${this.nextDay.id}/start`)
-        .data({ date: today, notes: this.nextDay.name })
+        http.post(`/routines/${this.defaultRoutine.id}/days/${day.id}/start`)
+        .data({ date: today, notes: day.name })
         .then((res: any) => { this.to(`/workout/${res.id}`); })
         .catch(() => App.notification(translate.get('home.errors.start')).setType('error').show())
         .finally(() => { this.starting = false; });

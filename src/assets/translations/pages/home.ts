@@ -7,6 +7,7 @@ export default {
             start: 'Començar',
             starting: 'Iniciant...',
             otherRoutine: 'Altra rutina',
+            chooseDay: 'Triar un altre dia',
             freeWorkout: 'Entrenament lliure',
             noDefault: 'No tens cap rutina per defecte configurada.',
             manage: 'Gestionar rutines',
@@ -34,6 +35,11 @@ export default {
             noNotes: 'Sense notes',
             more: "Veure'n més →",
         },
+        dayPicker: {
+            title: 'Tria el dia',
+            done: 'Fet',
+            suggested: 'Suggerit',
+        },
         picker: {
             title: 'Tria una rutina',
             loading: 'Carregant...',
@@ -55,6 +61,7 @@ export default {
             start: 'Empezar',
             starting: 'Iniciando...',
             otherRoutine: 'Otra rutina',
+            chooseDay: 'Elegir otro día',
             freeWorkout: 'Entrenamiento libre',
             noDefault: 'No tienes ninguna rutina por defecto configurada.',
             manage: 'Gestionar rutinas',
@@ -82,6 +89,11 @@ export default {
             noNotes: 'Sin notas',
             more: 'Ver más →',
         },
+        dayPicker: {
+            title: 'Elige el día',
+            done: 'Hecho',
+            suggested: 'Sugerido',
+        },
         picker: {
             title: 'Elige una rutina',
             loading: 'Cargando...',
@@ -103,6 +115,7 @@ export default {
             start: 'Start',
             starting: 'Starting...',
             otherRoutine: 'Other routine',
+            chooseDay: 'Choose another day',
             freeWorkout: 'Free workout',
             noDefault: "You don't have a default routine set up.",
             manage: 'Manage routines',
@@ -129,6 +142,11 @@ export default {
             empty: "You haven't done any workouts yet.",
             noNotes: 'No notes',
             more: 'See more →',
+        },
+        dayPicker: {
+            title: 'Choose the day',
+            done: 'Done',
+            suggested: 'Suggested',
         },
         picker: {
             title: 'Choose a routine',

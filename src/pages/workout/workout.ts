@@ -47,7 +47,7 @@ class WorkoutPage extends Vue {
 
     // Historial últimes sessions de l'exercici actual
     exerciseHistory: any[] = [];
-    lastSets: any[] = [];
+    lastSetsByEx: Record<number, any[]> = {};
     exerciseRecord: { weight: number; reps: number } | null = null;
 
     // Sèries fetes en l'exercici actual (per mostrar taula live)
@@ -285,6 +285,8 @@ class WorkoutPage extends Vue {
                     sets: logged,
                 });
                 this.currentExerciseIdx = i + 1;
+                const doneId = this.exercises[i].exercise?.id;
+                if (doneId) this.loadLastSets(doneId);
             } else {
                 // Exercici actual: algunes o cap sèrie feta
                 this.currentExerciseIdx = i;
@@ -296,8 +298,8 @@ class WorkoutPage extends Vue {
     }
 
     // Sèrie número `idx` (0-based) de l'últim entrenament; si n'hi havia menys, l'última
-    previousSet(idx: number): any | null {
-        const sets = this.lastSets;
+    previousSet(idx: number, exerciseId?: number): any | null {
+        const sets = this.lastSetsFor(exerciseId ?? this.currentExercise?.exercise?.id);
         if (!sets.length) return null;
         return sets[Math.min(idx, sets.length - 1)];
     }
@@ -312,17 +314,19 @@ class WorkoutPage extends Vue {
         return `(${p}${unit} · ${d > 0 ? '+' : ''}${d}${unit})`;
     }
 
+    lastSetsFor(exerciseId?: number): any[] {
+        return (exerciseId && this.lastSetsByEx[exerciseId]) || [];
+    }
+
     loadLastSets(exerciseId: number) {
+        if (this.lastSetsByEx[exerciseId]) return;
         http.get(`/stats/exercises/${exerciseId}/last-sets`).data({ exclude_workout_id: this.workoutId })
-        .then((res: any) => {
-            if (this.currentExercise?.exercise?.id === exerciseId) this.lastSets = res.sets ?? [];
-        })
-        .catch(() => { this.lastSets = []; });
+        .then((res: any) => { this.lastSetsByEx[exerciseId] = res.sets ?? []; })
+        .catch(() => {});
     }
 
     loadExerciseHistory() {
         const exerciseId = this.currentExercise?.exercise?.id;
-        this.lastSets = [];
         if (!exerciseId) { this.exerciseHistory = []; this.exerciseRecord = null; return; }
         this.loadLastSets(exerciseId);
         http.get(`/stats/exercises/${exerciseId}`)
