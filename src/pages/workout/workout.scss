@@ -808,3 +808,9 @@
     white-space: nowrap;
 }
 .workout-page .note-modal p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.workout-progress .muscle-label {
+    color: var(--text-secondary);
+    font-size: 0.85em;
+    font-weight: 400;
+}

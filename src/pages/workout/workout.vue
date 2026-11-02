@@ -305,7 +305,7 @@
                         }"
                     >
                         <div class="progress-ex-header">
-                            <span class="progress-ex-name">{{ ex.exercise?.name }}</span>
+                            <span class="progress-ex-name">{{ ex.exercise?.name }}<span class="muscle-label" v-if="muscleLabel(ex.exercise)"> ({{ muscleLabel(ex.exercise) }})</span></span>
                             <span class="progress-ex-badge done" v-if="exIdx < currentExerciseIdx">✓</span>
                             <span class="progress-ex-badge current" v-else-if="exIdx === currentExerciseIdx">{{ $t('workout.progress.current') }}</span>
                             <button v-else-if="canReshuffle" class="progress-ex-go" @click="startWith(exIdx)">{{ $t('workout.plan.startWith') }}</button>

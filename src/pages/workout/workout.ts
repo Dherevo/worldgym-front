@@ -1,5 +1,6 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
+import { primaryMuscleNames } from "@/modules/muscles";
 import localDate from "@/modules/localDate";
 import SectionTile from "@/components/section-tile/section-tile.vue";
 
@@ -345,6 +346,10 @@ class WorkoutPage extends Vue {
         return weight > 0
             ? translate.get('workout.card.lastTime', { reps: Number(prev.reps), weight })
             : translate.get('workout.card.lastTimeBodyweight', { reps: Number(prev.reps) });
+    }
+
+    muscleLabel(exercise: any): string {
+        return primaryMuscleNames(exercise);
     }
 
     // Note too long for its table cell: show it whole in a popup
