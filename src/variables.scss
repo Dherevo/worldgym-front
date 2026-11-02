@@ -1,101 +1,107 @@
+// Palette inspired by livelycycle.com: cream, taupe, olive and a warm orange.
+// Light = the original cream/orange/olive tokens; dark = the same family, deeper.
+
 :root {
     --base-size: 1rem;
-    --border-radius: 3px;
+    --border-radius: 1rem;
+    --radius-pill: 999px;
+    --font-heading: Georgia, "Times New Roman", serif;
 
     // Accents (fixes en ambdós modes)
-    --primary-color: #02158B;
-    --primary-dark-color: #010f6b;
-    --accent-red: #E71633;
-    --error-color: #E71633;
+    --primary-color: #E09232;
+    --primary-dark-color: #C97D1E;
+    --accent-red: #D9442F;
+    --error-color: #D9442F;
 
-    // Header (sempre negre)
-    --header-bg: #000000;
-    --header-text: #ffffff;
+    // Header: olive in both modes
+    --header-bg: #424530;
+    --header-text: #FFEFCD;
 }
 
 // MODE FOSC (per defecte)
 :root,
 :root[data-theme="dark"] {
-    --background-color: #0a0a0a;
-    --surface-color: #141414;
-    --surface-2: #1c1c1c;
-    --surface-3: #242424;
+    --background-color: hsl(68 18% 11%);
+    --page-gradient: linear-gradient(180deg, hsl(68 18% 11%) 0%, hsl(68 20% 9%) 100%);
+    --surface-color: hsl(68 16% 15%);
+    --surface-2: hsl(68 14% 19%);
+    --surface-3: hsl(68 13% 24%);
 
-    --border-color: #2e2e2e;
-    --border-subtle: #1e1e1e;
+    --border-color: hsl(68 12% 27%);
+    --border-subtle: hsl(68 14% 20%);
 
-    --menu-background-color: #000000;
-    --placeholder-color: #555555;
+    --menu-background-color: hsl(68 20% 8%);
+    --placeholder-color: hsl(44 12% 40%);
 
-    // Primari més viu sobre fons fosc (el #02158B quedava gairebé negre)
-    --primary-color: #2338d4;
-    --primary-dark-color: #1a2aa8;
+    --primary-color: #E09232;
+    --primary-dark-color: #C97D1E;
 
     --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
     --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
     --shadow-lg: 0 14px 34px rgba(0, 0, 0, 0.55);
-    --shadow-glow: 0 6px 20px rgba(35, 56, 212, 0.45);
+    --shadow-glow: 0 6px 20px rgba(224, 146, 50, 0.3);
 
-    --highlight: rgba(35, 56, 212, 0.22);
-    --highlight-text: #4d6aff;
+    --highlight: rgba(224, 146, 50, 0.2);
+    --highlight-text: hsl(34 80% 64%);
 
-    --text-color: #f0f0f0;
-    --text-secondary: #a8a8a8;
-    --text-muted: #666666;
+    --text-color: hsl(44 60% 91%);
+    --text-secondary: hsl(44 28% 72%);
+    --text-muted: hsl(44 14% 52%);
 
-    --tint-green-bg: #0a1f14;
-    --tint-green-text: #4ade80;
-    --tint-red-bg: #1f060a;
-    --tint-red-text: #ff6680;
-    --tint-blue-bg: #04092a;
-    --tint-blue-text: #6680ff;
-    --tint-yellow-bg: #1f1400;
-    --tint-yellow-text: #fbbf24;
+    --tint-green-bg: hsl(95 28% 15%);
+    --tint-green-text: hsl(95 45% 66%);
+    --tint-red-bg: hsl(5 38% 17%);
+    --tint-red-text: hsl(5 80% 72%);
+    --tint-blue-bg: hsl(30 18% 21%);
+    --tint-blue-text: hsl(30 38% 70%);
+    --tint-yellow-bg: hsl(40 48% 16%);
+    --tint-yellow-text: hsl(40 90% 62%);
 
-    --login-gradient-1: #000000;
-    --login-gradient-2: #04072a;
-    --login-gradient-3: #02158B;
+    --login-gradient-1: #14150d;
+    --login-gradient-2: #2b2d1f;
+    --login-gradient-3: #5a5d40;
 
     color-scheme: dark;
 }
 
 // MODE CLAR
 :root[data-theme="light"] {
-    --background-color: #f2f2f2;
+    --background-color: #FFEFCD;
+    --page-gradient: linear-gradient(180deg, #FFEFCD 0%, #FFF6E2 100%);
     --surface-color: #ffffff;
-    --surface-2: #ebebeb;
-    --surface-3: #e0e0e0;
+    --surface-2: #F9F4E7;
+    --surface-3: #EEE7D3;
 
-    --border-color: #cccccc;
-    --border-subtle: #e0e0e0;
+    --border-color: #D5CCC3;
+    --border-subtle: #E6E0DB;
 
-    --menu-background-color: #000000;
-    --placeholder-color: #aaaaaa;
+    --menu-background-color: #424530;
+    --placeholder-color: #A79E92;
 
-    --shadow-sm: 0 1px 3px rgba(15, 23, 80, 0.12);
-    --shadow-md: 0 6px 16px rgba(15, 23, 80, 0.14);
-    --shadow-lg: 0 14px 30px rgba(15, 23, 80, 0.18);
-    --shadow-glow: 0 6px 18px rgba(2, 21, 139, 0.35);
+    --shadow-sm: 0 1px 3px rgba(66, 69, 48, 0.10);
+    --shadow-md: 0 6px 16px rgba(66, 69, 48, 0.14);
+    --shadow-lg: 0 14px 30px rgba(66, 69, 48, 0.18);
+    --shadow-glow: 0 6px 18px rgba(224, 146, 50, 0.35);
 
-    --highlight: rgba(2, 21, 139, 0.08);
-    --highlight-text: #02158B;
+    --highlight: rgba(224, 146, 50, 0.14);
+    --highlight-text: #A9640F;
 
-    --text-color: #0d0d0d;
-    --text-secondary: #444444;
-    --text-muted: #888888;
+    --text-color: #262626;
+    --text-secondary: #5c5750;
+    --text-muted: #8a8379;
 
-    --tint-green-bg: #e6f4ea;
-    --tint-green-text: #1a5c30;
-    --tint-red-bg: #fde8ec;
-    --tint-red-text: #9c0e20;
-    --tint-blue-bg: #e0e5ff;
-    --tint-blue-text: #02158B;
-    --tint-yellow-bg: #fff8e1;
-    --tint-yellow-text: #a05c00;
+    --tint-green-bg: #E8EDD7;
+    --tint-green-text: #46571F;
+    --tint-red-bg: #FBE3DE;
+    --tint-red-text: #A3281C;
+    --tint-blue-bg: #EFE6DA;
+    --tint-blue-text: #6B5238;
+    --tint-yellow-bg: #FFF0C2;
+    --tint-yellow-text: #8A5A00;
 
-    --login-gradient-1: #e8ecff;
-    --login-gradient-2: #b8c4f8;
-    --login-gradient-3: #02158B;
+    --login-gradient-1: #FFEFCD;
+    --login-gradient-2: #F6D9A8;
+    --login-gradient-3: #E09232;
 
     color-scheme: light;
 }
