@@ -39,6 +39,8 @@ export default {
             button: 'Veure proposta',
         },
         workout: {
+            absTitle: 'Abdominals (opcional)',
+            absText: 'Si et veus amb forces, fes {{sets}} sèries de {{reps}} abdominals.',
             warmupTitle: 'Escalfament',
             warmupText: '5-10 min de moviment general (cardio suau i mobilitat) abans de començar.',
             warmupDone: 'Fet',
@@ -115,6 +117,8 @@ export default {
             button: 'Ver propuesta',
         },
         workout: {
+            absTitle: 'Abdominales (opcional)',
+            absText: 'Si te ves con fuerzas, haz {{sets}} series de {{reps}} abdominales.',
             warmupTitle: 'Calentamiento',
             warmupText: '5-10 min de movimiento general (cardio suave y movilidad) antes de empezar.',
             warmupDone: 'Hecho',
@@ -191,6 +195,8 @@ export default {
             button: 'See proposal',
         },
         workout: {
+            absTitle: 'Abs (optional)',
+            absText: 'If you feel up to it, do {{sets}} sets of {{reps}} abs.',
             warmupTitle: 'Warm-up',
             warmupText: '5-10 min of general movement (light cardio and mobility) before you start.',
             warmupDone: 'Done',
