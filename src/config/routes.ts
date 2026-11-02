@@ -8,7 +8,6 @@ import BackofficeLayout from '../layouts/backoffice/backoffice.vue';
 // Like default, but without redirecting logged users to '/': for screens only they can see (onboarding)
 import PlainLayout from '../layouts/plain/plain.vue';
 // Grouped pages: each one renders several tabs, one route per tab
-import TrainPage from '../pages/train/train.vue';
 import ProgressPage from '../pages/progress/progress.vue';
 import RoutineDetailPage from '../pages/routine-detail/routine-detail.vue';
 import WorkoutDetailPage from '../pages/workout-detail/workout-detail.vue';
@@ -37,11 +36,11 @@ const routes : IRoutes = {
         },
         {
             path: '/exercises',
-            component: TrainPage
+            component: ProgressPage
         },
         {
             path: '/routines',
-            component: TrainPage
+            component: ProgressPage
         },
         {
             path: '/routines/:id',
@@ -69,7 +68,7 @@ const routes : IRoutes = {
         },
         {
             path: '/measurements',
-            component: ProgressPage
+            component: ProfilePage
         },
         {
             path: '/recommendation',

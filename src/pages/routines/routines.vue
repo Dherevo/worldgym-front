@@ -3,19 +3,14 @@
 
             <div class="page-header">
                 <h1>{{ $t('routines.title') }}</h1>
-                <button class="btn-primary" @click="openCreate()" v-if="activeTab === 'mine'">
+                <button class="btn-primary" @click="openCreate()">
                     {{ $t('routines.newRoutine') }}
                 </button>
             </div>
 
-            <div class="tabs">
-                <button :class="{ active: activeTab === 'mine' }" @click="setTab('mine')">{{ $t('routines.tabs.mine') }}</button>
-                <button :class="{ active: activeTab === 'templates' }" @click="setTab('templates')">{{ $t('routines.tabs.templates') }}</button>
-            </div>
-
             <div v-if="loading" class="loading-text">{{ $t('routines.loading') }}</div>
             <div v-else-if="routines.length === 0" class="empty-text">
-                {{ activeTab === 'templates' ? $t('routines.emptyTemplates') : $t('routines.empty') }}
+                {{ $t('routines.empty') }}
             </div>
             <div v-else class="routine-list">
                 <div v-for="r in routines" :key="r.id" class="routine-card" :class="{ 'is-default': r.is_default }">
@@ -51,6 +46,19 @@
                     <div class="form-group">
                         <label>{{ $t('routines.form.description') }}</label>
                         <textarea v-model="form.description" rows="2" :placeholder="$t('routines.form.descriptionPlaceholder')"></textarea>
+                    </div>
+
+                    <div class="form-templates" v-if="!editingRoutine && templates.length">
+                        <div class="form-templates-title">{{ $t('routines.form.fromTemplate') }}</div>
+                        <div v-for="t in templates" :key="t.id" class="form-template">
+                            <div>
+                                <div class="routine-name">{{ t.name }}</div>
+                                <div class="routine-desc" v-if="t.description">{{ t.description }}</div>
+                            </div>
+                            <button type="button" class="use-template" @click="cloneRoutine(t)" :disabled="cloningId === t.id">
+                                {{ cloningId === t.id ? $t('routines.cloning') : $t('routines.useTemplate') }}
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form-actions">

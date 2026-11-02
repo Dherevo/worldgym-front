@@ -32,6 +32,8 @@ export default {
         card: {
             setOf: 'Sèrie {{current}} de {{total}}',
             plannedDone: 'Sèries pactades fetes ✓',
+            lastTime: 'Última vegada: {{reps}} reps × {{weight}} kg',
+            lastTimeBodyweight: 'Última vegada: {{reps}} reps',
             extraSet: 'Sèrie extra {{current}}',
             set: 'Sèrie {{current}}',
             target: 'Objectiu',
@@ -125,6 +127,8 @@ export default {
         card: {
             setOf: 'Serie {{current}} de {{total}}',
             plannedDone: 'Series pactadas hechas ✓',
+            lastTime: 'Última vez: {{reps}} reps × {{weight}} kg',
+            lastTimeBodyweight: 'Última vez: {{reps}} reps',
             extraSet: 'Serie extra {{current}}',
             set: 'Serie {{current}}',
             target: 'Objetivo',
@@ -218,6 +222,8 @@ export default {
         card: {
             setOf: 'Set {{current}} of {{total}}',
             plannedDone: 'Planned sets done ✓',
+            lastTime: 'Last time: {{reps}} reps × {{weight}} kg',
+            lastTimeBodyweight: 'Last time: {{reps}} reps',
             extraSet: 'Extra set {{current}}',
             set: 'Set {{current}}',
             target: 'Target',

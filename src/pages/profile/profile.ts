@@ -2,8 +2,9 @@ import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import auth from "@/modules/auth";
 import userStore from "@/modules/userStore";
+import MeasurementsPage from "@/pages/measurements/measurements.vue";
 
-@Component({})
+@Component({ components: { MeasurementsPage } })
 class ProfilePage extends Vue {
 
     readonly genders = ['female', 'male', 'other'];

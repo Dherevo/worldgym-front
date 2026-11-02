@@ -5,7 +5,8 @@
             <div class="tab-content">
                 <WorkoutsPage v-if="tab === 'workouts'" />
                 <StatsPage v-else-if="tab === 'stats'" />
-                <MeasurementsPage v-else />
+                <RoutinesPage v-else-if="tab === 'routines'" />
+                <ExercisesPage v-else />
             </div>
         </div>
     </AppPage>

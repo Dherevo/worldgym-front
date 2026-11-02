@@ -793,3 +793,9 @@
     cursor: pointer;
     &:hover { background: var(--surface-2); }
 }
+
+.workout-page .last-time {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
