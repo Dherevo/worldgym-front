@@ -230,6 +230,29 @@ class WorkoutPage extends Vue {
         });
     }
 
+    // Routine exercise with planned sets left: the user wants to move on after fewer sets
+    get canFinishEarly(): boolean {
+        return !this.isFreeWorkout && this.doneCount > 0 && this.totalSets > this.doneCount;
+    }
+
+    // Keeps the sets already logged, drops the planned ones that were never done, and goes to the next exercise
+    finishExerciseEarly() {
+        const we = this.currentExercise;
+        if (!this.canFinishEarly || !we) return;
+
+        if (this.restInterval) clearInterval(this.restInterval);
+        this.restInterval = null;
+        this.releaseWakeLock();
+
+        const unused = (we.sets ?? []).slice(this.doneCount).filter((s: any) => s.id && s.reps === null);
+        Promise.all(unused.map((s: any) => http.delete(`/workouts/${this.workoutId}/exercises/${we.id}/sets/${s.id}`)))
+        .catch(() => App.notification(translate.get('workout.errors.saveSet')).setType('error').show())
+        .finally(() => {
+            we.sets = (we.sets ?? []).slice(0, this.doneCount);
+            this.nextExercise();
+        });
+    }
+
     openAdd() {
         this.exerciseQuery = '';
         this.exerciseResults = [];
