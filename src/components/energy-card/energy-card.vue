@@ -17,10 +17,29 @@
                 </div>
                 <div class="value">≈ {{ tdee }} kcal</div>
             </div>
+            <p class="disclaimer" v-if="tdee">{{ $t('energy.tdeeNote') }}</p>
+
+            <h3 v-if="tdee">{{ $t('energy.guideTitle') }}</h3>
+            <div class="energy-row" v-if="tdee">
+                <div>
+                    <div class="label">{{ $t('energy.lose') }}</div>
+                    <div class="hint">{{ $t('energy.loseHint') }}</div>
+                </div>
+                <div class="value">≈ {{ loseRange }} kcal</div>
+            </div>
+            <div class="energy-row" v-if="tdee">
+                <div>
+                    <div class="label">{{ $t('energy.gain') }}</div>
+                    <div class="hint">{{ $t('energy.gainHint') }}</div>
+                </div>
+                <div class="value">≈ {{ gainRange }} kcal</div>
+            </div>
+            <p class="fact" v-if="tdee">{{ $t('energy.fatFact') }}</p>
         </template>
         <p class="sub" v-else>{{ $t('energy.needData') }}</p>
 
         <p class="disclaimer">{{ $t('energy.disclaimer') }}</p>
+        <p class="disclaimer" v-if="tdee">{{ $t('energy.guideDisclaimer') }}</p>
     </div>
 </template>
 

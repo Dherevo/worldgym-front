@@ -21,6 +21,24 @@ class EnergyCard extends Vue {
         return this.bmr ? Math.round(this.bmr * activityFactor(this.sessionsPerWeek)) : null;
     }
 
+    private round10(n: number): number {
+        return Math.round(n / 10) * 10;
+    }
+
+    // Moderate deficit (15-20% below the daily expenditure), never under the basal metabolic rate
+    get loseRange(): string {
+        if (!this.tdee || !this.bmr) return '';
+        const low = Math.max(this.bmr, this.round10(this.tdee * 0.80));
+        const high = Math.max(low, this.round10(this.tdee * 0.85));
+        return `${low} - ${high}`;
+    }
+
+    // Small surplus (5-10% above the daily expenditure)
+    get gainRange(): string {
+        if (!this.tdee) return '';
+        return `${this.round10(this.tdee * 1.05)} - ${this.round10(this.tdee * 1.10)}`;
+    }
+
     get perWeekLabel(): string {
         return (Math.round(this.sessionsPerWeek * 10) / 10).toString();
     }
