@@ -48,6 +48,8 @@ class WorkoutPage extends Vue {
     // Historial últimes sessions de l'exercici actual
     exerciseHistory: any[] = [];
     lastSetsByEx: Record<number, any[]> = {};
+    lastSetRef: { weId: number; id: number } | null = null;
+    restStartedAt = 0;
     exerciseRecord: { weight: number; reps: number } | null = null;
 
     // Sèries fetes en l'exercici actual (per mostrar taula live)
@@ -139,6 +141,7 @@ class WorkoutPage extends Vue {
 
             // Workout ja finalitzat
             if (res.status === 'finished') {
+                this.activeSeconds = res.active_seconds ?? null;
                 this.state = 'done';
                 return;
             }
@@ -243,6 +246,7 @@ class WorkoutPage extends Vue {
         if (this.restInterval) clearInterval(this.restInterval);
         this.restInterval = null;
         this.releaseWakeLock();
+        this.saveActualRest();
 
         const unused = (we.sets ?? []).slice(this.doneCount).filter((s: any) => s.id && s.reps === null);
         Promise.all(unused.map((s: any) => http.delete(`/workouts/${this.workoutId}/exercises/${we.id}/sets/${s.id}`)))
@@ -320,21 +324,22 @@ class WorkoutPage extends Vue {
         }
     }
 
-    // Sèrie número `idx` (0-based) de l'últim entrenament; si n'hi havia menys, l'última
+    // Sèrie número `idx` (0-based) de l'últim entrenament, o null si no en va fer tantes
     previousSet(idx: number, exerciseId?: number): any | null {
-        const sets = this.lastSetsFor(exerciseId ?? this.currentExercise?.exercise?.id);
-        if (!sets.length) return null;
-        return sets[Math.min(idx, sets.length - 1)];
+        return this.lastSetsFor(exerciseId ?? this.currentExercise?.exercise?.id)[idx] ?? null;
     }
 
-    // Text curt de comparació amb l'última vegada: "(10 · +2)", "(=)" o "" si no hi ha dades
+    // Set to compare with: the same set number of the last workout
+    prevFor(i: number, _sets: any[], exerciseId?: number): any | null {
+        return this.previousSet(i, exerciseId);
+    }
+
+    // Short difference text: "(+2)", "(-5 kg)", "(=)" or "" when there is nothing to compare with
     compareText(cur: any, prevValue: any, unit = ''): string {
         if (prevValue === null || prevValue === undefined) return '';
-        const c = Number(cur) || 0;
-        const p = Number(prevValue) || 0;
-        const d = Math.round((c - p) * 100) / 100;
+        const d = Math.round(((Number(cur) || 0) - (Number(prevValue) || 0)) * 100) / 100;
         if (d === 0) return '(=)';
-        return `(${p}${unit} · ${d > 0 ? '+' : ''}${d}${unit})`;
+        return `(${d > 0 ? '+' : ''}${d}${unit ? ' ' + unit.trim() : ''})`;
     }
 
     lastSetsFor(exerciseId?: number): any[] {
@@ -476,10 +481,12 @@ class WorkoutPage extends Vue {
 
         const lastLogged = this.loggedSets.length > 0 ? this.loggedSets[this.loggedSets.length - 1] : null;
         const lastSessionWeight = this.exerciseHistory.length > 0 ? (parseFloat(this.exerciseHistory[0]?.max_weight) || 0) : 0;
-        const prev = this.previousSet(this.doneCount);
+        // First set: same set of the last workout; the next ones start from the set just done today
+        const prev = lastLogged ?? this.previousSet(0);
 
-        this.logReps = prev?.reps ?? lastLogged?.reps ?? this.targetSet?.reps_target ?? this.targetSet?.reps ?? 12;
-        this.logWeight = this.isBodyweight ? 0 : (prev?.weight ?? lastLogged?.weight ?? this.targetSet?.weight ?? lastSessionWeight);
+        // The API sends decimals as strings ("20.00"): they must be numbers or "+" concatenates
+        this.logReps = Number(prev?.reps ?? this.targetSet?.reps_target ?? this.targetSet?.reps ?? 12) || 12;
+        this.logWeight = this.isBodyweight ? 0 : (Number(prev?.weight ?? this.targetSet?.weight ?? lastSessionWeight) || 0);
         this.logNotes = '';
         this.logFailed = false;
         this.logDropset = false;
@@ -499,7 +506,8 @@ class WorkoutPage extends Vue {
             : http.post(`/workouts/${this.workoutId}/exercises/${we.id}/sets`)
               .data({ set_number: this.doneCount + 1, reps: this.logReps, weight: this.logWeight, rest_seconds: restSecs, notes: this.logNotes, is_failed: this.logFailed, is_dropset: this.logDropset });
 
-        req.then(() => {
+        req.then((res: any) => {
+            this.lastSetRef = { weId: we.id, id: target?.id ?? res?.id };
             this.loggedSets.push({
                 set_number: this.doneCount + 1,
                 reps: this.logReps,
@@ -516,7 +524,18 @@ class WorkoutPage extends Vue {
         .finally(() => { this.savingSet = false; });
     }
 
+    // Saves the rest really taken after the last set (the planned one is only the starting value)
+    saveActualRest() {
+        const ref = this.lastSetRef;
+        if (!ref?.id || !this.restStartedAt) return;
+        const taken = Math.max(0, Math.round((Date.now() - this.restStartedAt) / 1000));
+        this.lastSetRef = null;
+        this.restStartedAt = 0;
+        http.put(`/workouts/${this.workoutId}/exercises/${ref.weId}/sets/${ref.id}`).data({ rest_seconds: taken }).catch(() => {});
+    }
+
     startRest(seconds: number) {
+        this.restStartedAt = Date.now();
         this.restSeconds = seconds;
         this.state = 'resting';
         this.acquireWakeLock();
@@ -545,14 +564,14 @@ class WorkoutPage extends Vue {
     }
 
     afterRest() {
+        this.saveActualRest();
         // Without planned sets (free workout, or a routine exercise with no sets target) there is
         // no count to finish at, so ask instead of offering another set forever
-        if (this.totalSets === -1) {
+        // Planned sets done: let the user add an extra set or move on (never jump on its own)
+        if (this.totalSets === -1 || this.doneCount >= this.totalSets) {
             this.state = 'choose';
-        } else if (this.doneCount < this.totalSets) {
-            this.state = 'idle';
         } else {
-            this.nextExercise();
+            this.state = 'idle';
         }
     }
 
