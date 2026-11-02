@@ -36,6 +36,27 @@ class WorkoutDetailPage extends Vue {
 
     get workoutId() { return this.param('id'); }
 
+    // Title of the workout (the notes field): by default the routine day name, editable afterwards
+    editingTitle = false;
+    titleDraft = '';
+    savingTitle = false;
+
+    startEditTitle() {
+        this.titleDraft = this.workout?.notes ?? '';
+        this.editingTitle = true;
+        this.$nextTick(() => (this.$refs.titleInput as HTMLInputElement | undefined)?.focus());
+    }
+
+    saveTitle() {
+        if (this.savingTitle) return;
+        this.savingTitle = true;
+        const notes = this.titleDraft.trim();
+        http.put(`/workouts/${this.workoutId}`).data({ notes })
+        .then(() => { this.workout.notes = notes; this.editingTitle = false; })
+        .catch(() => App.notification(translate.get('workoutDetail.errors.saveTitle')).setType('error').show())
+        .finally(() => { this.savingTitle = false; });
+    }
+
     created() {
         this.fetchWorkout();
         this.fetchExercises();
