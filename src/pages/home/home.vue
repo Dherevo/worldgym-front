@@ -58,6 +58,7 @@
                     <button class="btn-other-routine" @click="openRoutinePicker()" v-if="otherRoutines.length">
                         {{ $t('home.routine.otherRoutine') }}
                     </button>
+                    <button class="btn-other-routine" @click="to('/recommendation')">{{ $t('recommendation.homeCard.title') }}</button>
                     <button class="btn-free" @click="startEmptyWorkout()">{{ $t('home.routine.freeWorkout') }}</button>
                 </div>
             </div>
@@ -66,6 +67,7 @@
                 <p>{{ $t('home.routine.noDefault') }}</p>
                 <div class="actions-row">
                     <button class="btn-secondary" @click="to('/routines')">{{ $t('home.routine.manage') }}</button>
+                    <button class="btn-secondary" @click="to('/recommendation')">{{ $t('recommendation.homeCard.title') }}</button>
                     <button class="btn-start" @click="startEmptyWorkout()">{{ $t('home.routine.freeWorkout') }}</button>
                 </div>
             </div>
@@ -75,14 +77,6 @@
             <!-- Daily must-dos (steps, abs...) -->
             <!-- How the user feels today: feeds the recommended session -->
             <CheckIn compact />
-
-            <div class="rec-card">
-                <div>
-                    <div class="rec-title">{{ $t('recommendation.homeCard.title') }}</div>
-                    <div class="rec-text">{{ $t('recommendation.homeCard.text') }}</div>
-                </div>
-                <button class="btn-rec" @click="to('/recommendation')">{{ $t('recommendation.homeCard.button') }}</button>
-            </div>
 
             <DailyHabits :restDay="restMode" />
 

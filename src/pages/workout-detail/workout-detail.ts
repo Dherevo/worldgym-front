@@ -41,10 +41,35 @@ class WorkoutDetailPage extends Vue {
         this.fetchExercises();
     }
 
+    // Sets of each exercise in the workout before this one, to show the difference on the first set
+    previousSets: Record<number, any[]> = {};
+
+    loadPreviousSets(workout: any) {
+        for (const we of workout?.workout_exercises ?? []) {
+            const exerciseId = we.exercise?.id;
+            if (!exerciseId || this.previousSets[we.id]) continue;
+            http.get(`/stats/exercises/${exerciseId}/last-sets`).data({ before_workout_id: workout.id })
+            .then((res: any) => { this.previousSets[we.id] = res.sets ?? []; })
+            .catch(() => {});
+        }
+    }
+
+    // Set to compare with: the same set number of the previous workout
+    prevSet(we: any, i: number): any | null {
+        return this.previousSets[we.id]?.[i] ?? null;
+    }
+
+    diffText(cur: any, prev: any, unit = ''): string {
+        if (prev === null || prev === undefined) return '';
+        const d = Math.round(((Number(cur) || 0) - (Number(prev) || 0)) * 100) / 100;
+        if (d === 0) return '(=)';
+        return `(${d > 0 ? '+' : ''}${d}${unit ? ' ' + unit : ''})`;
+    }
+
     fetchWorkout() {
         this.loading = true;
         http.get(`/workouts/${this.workoutId}`)
-        .then((res: any) => { this.workout = res; })
+        .then((res: any) => { this.workout = res; this.loadPreviousSets(res); })
         .catch(() => {})
         .finally(() => { this.loading = false; });
     }

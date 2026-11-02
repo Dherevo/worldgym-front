@@ -18,14 +18,16 @@
 
                 <div class="done-summary" v-if="completedExercises.length">
                     <div class="done-summary-title">{{ $t('workout.done.summary') }}</div>
-                    <div class="done-exercise" v-for="ex in completedExercises" :key="ex.name" v-if="ex.sets.length">
-                        <div class="done-ex-name">{{ ex.name }}</div>
-                        <div class="done-ex-sets">
-                            <span v-for="(s, i) in ex.sets" :key="i" class="done-set-pill" :class="{ failed: s.is_failed, dropset: s.is_dropset }">
-                                {{ s.reps }} × {{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}
-                            </span>
+                    <template v-for="(ex, exI) in completedExercises" :key="exI">
+                        <div class="done-exercise" v-if="ex.sets.length">
+                            <div class="done-ex-name">{{ ex.name }}</div>
+                            <div class="done-ex-sets">
+                                <span v-for="(s, i) in ex.sets" :key="i" class="done-set-pill" :class="{ failed: s.is_failed, dropset: s.is_dropset }">
+                                    {{ s.reps }} × {{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}
+                                </span>
+                            </div>
                         </div>
-                    </div>
+                    </template>
                 </div>
 
                 <div class="wk-extra" v-if="stretchHabit">
@@ -110,8 +112,14 @@
                     <div class="exercise-eq" v-if="currentExercise.exercise?.equipment">
                         {{ currentExercise.exercise.equipment.name }}
                     </div>
-                    <div class="set-info" v-if="totalSets > 0">
+                    <div class="set-info" v-if="totalSets > 0 && doneCount < totalSets">
                         {{ $t('workout.card.setOf', { current: doneCount + 1, total: totalSets }) }}
+                    </div>
+                    <div class="set-info" v-else-if="totalSets > 0 && (state === 'resting' || state === 'choose')">
+                        {{ $t('workout.card.plannedDone') }}
+                    </div>
+                    <div class="set-info" v-else-if="totalSets > 0">
+                        {{ $t('workout.card.extraSet', { current: doneCount + 1 }) }}
                     </div>
                     <div class="set-info" v-else>
                         {{ $t('workout.card.set', { current: doneCount + 1 }) }}
@@ -302,8 +310,8 @@
                                     <template v-if="completedExercises[exIdx]?.sets?.length">
                                         <tr v-for="(s, i) in completedExercises[exIdx].sets" :key="i" class="set-row-done">
                                             <td>{{ s.set_number ?? i + 1 }}</td>
-                                            <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, previousSet(i, ex.exercise?.id)?.reps) }}</small></td>
-                                            <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || previousSet(i, ex.exercise?.id)?.weight > 0">{{ compareText(s.weight, previousSet(i, ex.exercise?.id)?.weight, ' kg') }}</small></td>
+                                            <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.reps) }}</small></td>
+                                            <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.weight > 0">{{ compareText(s.weight, prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.weight, ' kg') }}</small></td>
                                             <td>{{ s.notes || '—' }}</td>
                                         </tr>
                                     </template>
@@ -317,16 +325,16 @@
                                     <!-- Sèries ja fetes -->
                                     <tr v-for="(s, i) in loggedSets" :key="'done-' + i" class="set-row-done">
                                         <td>{{ s.set_number }}</td>
-                                        <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, previousSet(i)?.reps) }}</small></td>
-                                        <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || previousSet(i)?.weight > 0">{{ compareText(s.weight, previousSet(i)?.weight, ' kg') }}</small></td>
+                                        <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, prevFor(i, loggedSets)?.reps) }}</small></td>
+                                        <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || prevFor(i, loggedSets)?.weight > 0">{{ compareText(s.weight, prevFor(i, loggedSets)?.weight, ' kg') }}</small></td>
                                         <td>{{ s.notes || '—' }}</td>
                                     </tr>
 
                                     <!-- Fila live: valors que s'estan introduint -->
                                     <tr v-if="state === 'logging'" class="set-row-live">
                                         <td>{{ doneCount + 1 }}</td>
-                                        <td>{{ logReps }} <small class="cmp">{{ compareText(logReps, previousSet(doneCount)?.reps) }}</small></td>
-                                        <td>{{ isBodyweight ? $t('workout.log.bodyweightShort') : (logWeight + ' kg') }} <small class="cmp" v-if="!isBodyweight">{{ compareText(logWeight, previousSet(doneCount)?.weight, ' kg') }}</small></td>
+                                        <td>{{ logReps }} <small class="cmp">{{ compareText(logReps, prevFor(doneCount, loggedSets)?.reps) }}</small></td>
+                                        <td>{{ isBodyweight ? $t('workout.log.bodyweightShort') : (logWeight + ' kg') }} <small class="cmp" v-if="!isBodyweight">{{ compareText(logWeight, prevFor(doneCount, loggedSets)?.weight, ' kg') }}</small></td>
                                         <td>{{ logNotes || '—' }}</td>
                                     </tr>
 

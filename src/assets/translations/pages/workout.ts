@@ -31,6 +31,8 @@ export default {
         },
         card: {
             setOf: 'Sèrie {{current}} de {{total}}',
+            plannedDone: 'Sèries pactades fetes ✓',
+            extraSet: 'Sèrie extra {{current}}',
             set: 'Sèrie {{current}}',
             target: 'Objectiu',
             restLabel: '{{time}} de descans',
@@ -122,6 +124,8 @@ export default {
         },
         card: {
             setOf: 'Serie {{current}} de {{total}}',
+            plannedDone: 'Series pactadas hechas ✓',
+            extraSet: 'Serie extra {{current}}',
             set: 'Serie {{current}}',
             target: 'Objetivo',
             restLabel: '{{time}} de descanso',
@@ -213,6 +217,8 @@ export default {
         },
         card: {
             setOf: 'Set {{current}} of {{total}}',
+            plannedDone: 'Planned sets done ✓',
+            extraSet: 'Extra set {{current}}',
             set: 'Set {{current}}',
             target: 'Target',
             restLabel: '{{time}} rest',
