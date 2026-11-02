@@ -37,13 +37,6 @@
                     <button v-else class="wk-extra-btn" @click="markHabit('stretch')">{{ $t('recommendation.workout.warmupMark') }}</button>
                 </div>
 
-                <div class="wk-extra" v-if="absHabit">
-                    <div class="wk-extra-title">{{ $t('recommendation.workout.absTitle') }}</div>
-                    <div class="wk-extra-text">{{ $t('recommendation.workout.absText', { sets: absHabit.target_sets, reps: absHabit.target_reps }) }}</div>
-                    <span v-if="absHabit.log?.completed" class="wk-pill">✓ {{ $t('recommendation.workout.warmupDone') }}</span>
-                    <button v-else class="wk-extra-btn" @click="markAbs()">{{ $t('recommendation.workout.warmupMark') }}</button>
-                </div>
-
                 <div class="wk-extra" v-if="!workout?.feedback">
                     <div class="wk-extra-title">{{ $t('recommendation.workout.feedbackTitle') }}</div>
                     <p class="wk-extra-text" v-if="feedbackGiven">{{ $t('recommendation.workout.feedbackThanks') }}</p>
@@ -78,6 +71,19 @@
                 </div>
                 <div class="progress-label" v-if="!isFreeWorkout">
                     {{ $t('workout.exerciseProgress', { current: currentExerciseIdx + 1, total: exercises.length }) }}
+                </div>
+
+                <!-- STATE: abs-offer (optional abdominals before closing a routine workout) -->
+                <div v-if="state === 'abs-offer'" class="action-block pick-exercise-block">
+                    <p class="action-label">{{ $t('workout.abs.question') }}</p>
+                    <p class="pending-sub">{{ $t('workout.abs.sub') }}</p>
+                    <div class="pending-modal-list">
+                        <button v-for="ex in absOptions" :key="ex.id" class="pending-row" :disabled="addingExercise" @click="chooseAbs(ex)">
+                            <span>{{ ex.name }}</span>
+                            <small v-if="ex.equipment">{{ ex.equipment.name }}</small>
+                        </button>
+                    </div>
+                    <button class="btn-action skip" @click="finishRoutine()">{{ $t('workout.abs.skip') }}</button>
                 </div>
 
                 <!-- STATE: pick-exercise -->
