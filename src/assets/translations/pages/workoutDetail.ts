@@ -1,6 +1,6 @@
 export default {
     ca: {
-        titlePlaceholder: "Títol o nota de l\'entreno",
+        titlePlaceholder: "Títol o nota de l'entreno",
         titleSave: "Desar",
         titleCancel: "Cancel·lar",
         titleAdd: "+ Afegir títol",
@@ -34,7 +34,7 @@ export default {
             close: "Tancar",
         },
         errors: {
-            saveTitle: "No s\'ha pogut desar el títol",
+            saveTitle: "No s'ha pogut desar el títol",
             addExercise: "Error al afegir exercici",
             delete: "Error al eliminar",
             save: "Error al desar",
