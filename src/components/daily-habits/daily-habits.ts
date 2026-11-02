@@ -5,8 +5,9 @@ import SectionTile from "@/components/section-tile/section-tile.vue";
 
 // Daily must-dos (steps, abs, custom) shown on the home page, whatever the routine day is.
 // Collapsed into a title row with the day's progress; the list opens in a modal.
-// Habits done inside the workout screen (always on), so they are not listed as daily to-dos
-const IN_WORKOUT = ['warmup', 'stretch', 'abs'];
+// Habits done inside the workout screen (always on), so they are not listed as daily to-dos.
+// Abdominals is listed too, but as a read-only check: it is ticked by doing abdominals in any workout
+const IN_WORKOUT = ['warmup', 'stretch'];
 
 @Component({ components: { SectionTile } })
 class DailyHabits extends Vue {
@@ -74,7 +75,7 @@ class DailyHabits extends Vue {
 
     goalLabel(h: any): string {
         if (h.kind === 'steps') return `${this.format(h.target_value)} ${translate.get('habits.card.steps')}`;
-        if (h.kind === 'sets') return `${h.target_sets} × ${h.target_reps}`;
+        if (h.kind === 'sets' && !h.in_workout) return `${h.target_sets} × ${h.target_reps}`;
         return '';
     }
 
