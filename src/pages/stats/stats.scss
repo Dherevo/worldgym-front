@@ -150,7 +150,7 @@
         .lw-delta { font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
     }
 
-    .up { color: #22c55e; }
+    .up { color: var(--primary-color); }
     .down { color: #ef4444; }
     .flat { color: var(--text-secondary); }
 

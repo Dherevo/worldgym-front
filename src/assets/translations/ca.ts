@@ -13,6 +13,8 @@ import cycle from './pages/cycle';
 import measurements from './pages/measurements';
 import habits from './pages/habits';
 import profile from './pages/profile';
+import access from './pages/access';
+import account from './pages/account';
 import checkin from './pages/checkin';
 import recommendation from './pages/recommendation';
 import notFound from './pages/notFound';
@@ -33,6 +35,8 @@ const ca = {
     measurements: measurements.ca,
     habits: habits.ca,
     profile: profile.ca,
+    access: access.ca,
+    account: account.ca,
     checkin: checkin.ca,
     recommendation: recommendation.ca,
     notFound: notFound.ca,

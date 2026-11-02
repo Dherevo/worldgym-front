@@ -9,6 +9,7 @@
                         <h1 class="capitalize">
                             {{ formatDate(workout.date) }}
                             <span class="duration-tag" v-if="formatDuration()">{{ formatDuration() }}</span>
+                            <span class="duration-tag" v-if="workoutKcal()">🔥 {{ workoutKcal() }}</span>
                         </h1>
                         <form class="title-edit" v-if="editingTitle" @submit.prevent="saveTitle()">
                             <input type="text" v-model="titleDraft" :placeholder="$t('workoutDetail.titlePlaceholder')" maxlength="150" ref="titleInput" />
@@ -38,6 +39,7 @@
                         <div>
                             <span class="exercise-name">{{ we.exercise?.name }}</span>
                             <span class="exercise-muscle" v-if="muscleLabel(we.exercise)"> ({{ muscleLabel(we.exercise) }})</span>
+                            <span class="exercise-muscle" v-if="exerciseKcal(we)"> · {{ exerciseKcal(we) }}</span>
                             <span class="exercise-eq" v-if="we.exercise?.equipment"> · {{ we.exercise.equipment.name }}</span>
                         </div>
                         <div class="exercise-header-right">

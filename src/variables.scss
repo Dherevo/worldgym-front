@@ -8,7 +8,7 @@
     --font-heading: Georgia, "Times New Roman", serif;
 
     // Accents (fixes en ambdós modes)
-    --primary-color: #E09232;
+    --primary-color: #E09132;
     --primary-dark-color: #C97D1E;
     --accent-red: #D9442F;
     --error-color: #D9442F;
@@ -33,23 +33,23 @@
     --menu-background-color: hsl(68 20% 8%);
     --placeholder-color: hsl(44 12% 40%);
 
-    --primary-color: #E09232;
+    --primary-color: #E09132;
     --primary-dark-color: #C97D1E;
 
     --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
     --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
     --shadow-lg: 0 14px 34px rgba(0, 0, 0, 0.55);
-    --shadow-glow: 0 6px 20px rgba(224, 146, 50, 0.3);
+    --shadow-glow: 0 6px 20px rgba(224, 145, 50, 0.3);
 
-    --highlight: rgba(224, 146, 50, 0.2);
+    --highlight: rgba(224, 145, 50, 0.2);
     --highlight-text: hsl(34 80% 64%);
 
     --text-color: hsl(44 60% 91%);
     --text-secondary: hsl(44 28% 72%);
     --text-muted: hsl(44 14% 52%);
 
-    --tint-green-bg: hsl(95 28% 15%);
-    --tint-green-text: hsl(95 45% 66%);
+    --tint-green-bg: hsl(34 45% 17%);
+    --tint-green-text: hsl(34 80% 62%);
     --tint-red-bg: hsl(5 38% 17%);
     --tint-red-text: hsl(5 80% 72%);
     --tint-blue-bg: hsl(30 18% 21%);
@@ -81,17 +81,17 @@
     --shadow-sm: 0 1px 3px rgba(66, 69, 48, 0.10);
     --shadow-md: 0 6px 16px rgba(66, 69, 48, 0.14);
     --shadow-lg: 0 14px 30px rgba(66, 69, 48, 0.18);
-    --shadow-glow: 0 6px 18px rgba(224, 146, 50, 0.35);
+    --shadow-glow: 0 6px 18px rgba(224, 145, 50, 0.35);
 
-    --highlight: rgba(224, 146, 50, 0.14);
+    --highlight: rgba(224, 145, 50, 0.14);
     --highlight-text: #A9640F;
 
     --text-color: #262626;
     --text-secondary: #5c5750;
     --text-muted: #8a8379;
 
-    --tint-green-bg: #E8EDD7;
-    --tint-green-text: #46571F;
+    --tint-green-bg: #FCEBD3;
+    --tint-green-text: #A9640F;
     --tint-red-bg: #FBE3DE;
     --tint-red-text: #A3281C;
     --tint-blue-bg: #EFE6DA;
@@ -101,7 +101,7 @@
 
     --login-gradient-1: #FFEFCD;
     --login-gradient-2: #F6D9A8;
-    --login-gradient-3: #E09232;
+    --login-gradient-3: #E09132;
 
     color-scheme: light;
 }

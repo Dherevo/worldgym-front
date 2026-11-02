@@ -46,6 +46,8 @@
                 </button>
             </div>
 
+            <AccountSettings />
+
             <MeasurementsPage />
         </div>
     </AppPage>

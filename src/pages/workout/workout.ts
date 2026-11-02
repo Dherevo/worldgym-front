@@ -2,6 +2,7 @@ import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import { primaryMuscleNames } from "@/modules/muscles";
 import localDate from "@/modules/localDate";
+import { kcalFromSeconds, kcalLabel } from "@/modules/calories";
 import SectionTile from "@/components/section-tile/section-tile.vue";
 
 type State = 'loading' | 'pick-exercise' | 'idle' | 'active' | 'logging' | 'resting' | 'choose' | 'abs-offer' | 'done';
@@ -108,6 +109,11 @@ class WorkoutPage extends Vue {
         const m = Math.floor((secs % 3600) / 60);
         if (h > 0) return translate.get('workout.duration.hoursMinutes', { h, m });
         return translate.get('workout.duration.minutes', { m });
+    }
+
+    get workoutKcal(): string {
+        const secs = this.activeSeconds ?? Math.round((Date.now() - new Date(this.workoutStartedAt).getTime()) / 1000);
+        return this.workoutStartedAt ? kcalLabel(kcalFromSeconds(secs)) : '';
     }
 
     get targetRestLabel() {

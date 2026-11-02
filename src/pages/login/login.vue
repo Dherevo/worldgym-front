@@ -46,6 +46,8 @@
                 <button type="submit" class="submit" :disabled="loading || !username || !password">
                     {{ loading ? $t('login.signingIn') : $t('login.signIn') }}
                 </button>
+
+                <a class="forgot-link" href="/forgot-password" @click.prevent="to('/forgot-password')">{{ $t('login.forgot') }}</a>
             </form>
         </div>
     </AppPage>
