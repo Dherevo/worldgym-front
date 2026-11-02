@@ -1,0 +1,53 @@
+.account-settings {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+
+    // The cards reuse the profile page look (.profile-page .card)
+    .card h2 { margin: 0; font-size: 1.4rem; }
+    .card h3 { margin: 0; font-size: 1.05rem; }
+
+    .msg { margin: 0; font-size: 0.9rem; }
+    .msg.error { color: var(--tint-red-text); }
+    .msg.ok { color: var(--tint-green-text); }
+
+    .current-email {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        .label { font-size: 0.8rem; color: var(--text-muted); }
+        .value { font-weight: 600; overflow-wrap: anywhere; }
+    }
+
+    .badge {
+        flex-shrink: 0;
+        padding: 0.2rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        &.ok { background: var(--tint-green-bg); color: var(--tint-green-text); }
+        &.warn { background: var(--tint-yellow-bg); color: var(--tint-yellow-text); }
+    }
+
+    .pending {
+        padding: 0.6rem 0.9rem;
+        border-radius: 12px;
+        background: var(--tint-yellow-bg);
+        color: var(--tint-yellow-text);
+        font-size: 0.9rem;
+    }
+
+    .link {
+        align-self: flex-start;
+        background: transparent;
+        border: none;
+        padding: 0;
+        color: var(--primary-color);
+        cursor: pointer;
+        &:hover { text-decoration: underline; }
+        &:disabled { opacity: 0.5; cursor: default; }
+    }
+}

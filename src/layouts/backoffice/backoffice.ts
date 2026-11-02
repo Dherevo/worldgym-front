@@ -34,6 +34,11 @@ class Backoffice extends Vue {
         { code: 'en', label: 'EN' },
     ];
 
+    // First letter of the name, for the avatar circle
+    get initial(): string {
+        return (this.user?.name ?? '?').trim().charAt(0).toUpperCase() || '?';
+    }
+
     get currentLanguage(): string {
         return translate.currentLanguage;
     }

@@ -3,8 +3,9 @@ import { http, App, translate } from "lib";
 import auth from "@/modules/auth";
 import userStore from "@/modules/userStore";
 import MeasurementsPage from "@/pages/measurements/measurements.vue";
+import AccountSettings from "@/components/account-settings/account-settings.vue";
 
-@Component({ components: { MeasurementsPage } })
+@Component({ components: { MeasurementsPage, AccountSettings } })
 class ProfilePage extends Vue {
 
     readonly genders = ['female', 'male', 'other'];

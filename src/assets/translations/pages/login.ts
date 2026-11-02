@@ -9,6 +9,7 @@ export default {
         hide: 'Amagar',
         signIn: 'Entrar',
         signingIn: 'Entrant...',
+        forgot: 'Has oblidat la contrasenya?',
     },
     es: {
         invalidCredentials: 'Credenciales incorrectas',
@@ -20,6 +21,7 @@ export default {
         hide: 'Ocultar',
         signIn: 'Entrar',
         signingIn: 'Entrando...',
+        forgot: '¿Has olvidado la contraseña?',
     },
     en: {
         invalidCredentials: 'Invalid credentials',
@@ -31,5 +33,6 @@ export default {
         hide: 'Hide',
         signIn: 'Sign in',
         signingIn: 'Signing in...',
+        forgot: 'Forgot your password?',
     },
 };

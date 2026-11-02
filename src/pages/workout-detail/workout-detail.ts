@@ -1,6 +1,7 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import { primaryMuscleNames } from "@/modules/muscles";
+import { kcalFromSeconds, kcalLabel, setsSeconds } from "@/modules/calories";
 
 @Component({})
 class WorkoutDetailPage extends Vue {
@@ -200,6 +201,17 @@ class WorkoutDetailPage extends Vue {
 
     formatDate(date: string) {
         return new Date(date).toLocaleDateString(this.dateLocale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    workoutKcal(): string {
+        const w = this.workout;
+        if (!w?.started_at || !w?.finished_at) return '';
+        const secs = w.active_seconds ?? Math.round((new Date(w.finished_at).getTime() - new Date(w.started_at).getTime()) / 1000);
+        return kcalLabel(kcalFromSeconds(secs));
+    }
+
+    exerciseKcal(we: any): string {
+        return we.sets?.length ? kcalLabel(kcalFromSeconds(setsSeconds(we.sets))) : '';
     }
 
     formatDuration(): string | null {

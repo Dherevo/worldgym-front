@@ -13,6 +13,8 @@ import cycle from './pages/cycle';
 import measurements from './pages/measurements';
 import habits from './pages/habits';
 import profile from './pages/profile';
+import access from './pages/access';
+import account from './pages/account';
 import checkin from './pages/checkin';
 import recommendation from './pages/recommendation';
 import notFound from './pages/notFound';
@@ -33,6 +35,8 @@ const en = {
     measurements: measurements.en,
     habits: habits.en,
     profile: profile.en,
+    access: access.en,
+    account: account.en,
     checkin: checkin.en,
     recommendation: recommendation.en,
     notFound: notFound.en,

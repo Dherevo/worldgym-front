@@ -1,6 +1,7 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import { primaryMuscleNames } from "@/modules/muscles";
+import { kcalFromSeconds, kcalLabel, plannedSeconds } from "@/modules/calories";
 
 @Component({})
 class RoutineDetailPage extends Vue {
@@ -56,6 +57,12 @@ class RoutineDetailPage extends Vue {
         .then((res: any) => { this.routine = res; })
         .catch(() => {})
         .finally(() => { this.loading = false; });
+    }
+
+    // Estimated energy of a day from its planned sets and rests
+    dayKcal(day: any): string {
+        const secs = (day.exercises ?? []).reduce((sum: number, ex: any) => sum + plannedSeconds(ex.sets_target, ex.rest_seconds), 0);
+        return kcalLabel(kcalFromSeconds(secs));
     }
 
     muscleLabel(exercise: any): string {

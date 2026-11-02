@@ -17,6 +17,7 @@ import CyclePage from '../pages/cycle/cycle.vue';
 import HabitsPage from '../pages/habits/habits.vue';
 import ProfilePage from '../pages/profile/profile.vue';
 import RecommendationPage from '../pages/recommendation/recommendation.vue';
+import AccessPage from '../pages/access/access.vue';
 
 const routes : IRoutes = {
     layouts: {
@@ -33,6 +34,18 @@ const routes : IRoutes = {
         {
             path: '/login',
             component: LoginPage
+        },
+        {
+            path: '/forgot-password',
+            component: AccessPage
+        },
+        {
+            path: '/reset-password',
+            component: AccessPage
+        },
+        {
+            path: '/verify-email',
+            component: AccessPage
         },
         {
             path: '/exercises',
