@@ -15,7 +15,7 @@
             <span :class="state">{{ left >= 0 ? $t('nutrition.left', { n: left }) : $t('nutrition.over', { n: -left }) }}</span>
         </div>
         <div class="breakdown">
-            {{ $t('nutrition.breakdown', { base: day.base, workout: day.workoutKcal }) }}
+            {{ $t('nutrition.breakdown', { base: day.base, workout: day.workoutKcal }) }}<template v-if="day.stepsKcal"> {{ $t('nutrition.breakdownSteps', { n: day.stepsKcal, steps: day.steps }) }}</template>
             · {{ balance <= 0 ? $t('nutrition.deficit', { n: -balance }) : $t('nutrition.surplus', { n: balance }) }}
         </div>
     </div>

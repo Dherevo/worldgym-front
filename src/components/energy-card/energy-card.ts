@@ -1,14 +1,15 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import userStore from "@/modules/userStore";
-import { baseExpenditure, basalMetabolicRate, bmi, effectiveGoal, goalRange, proteinRange } from "@/modules/calories";
-import type { Goal } from "@/modules/calories";
+import { activityLevel, baseExpenditure, basalMetabolicRate, bmi, effectiveGoal, goalRange, proteinRange } from "@/modules/calories";
+import type { Activity, Goal } from "@/modules/calories";
 
 // Basal metabolic rate, the sedentary expenditure and the calories to eat for the chosen goal
 @Component({})
 class EnergyCard extends Vue {
 
     readonly goals: Goal[] = ['lose', 'maintain', 'gain'];
+    readonly activities: Activity[] = ['sedentary', 'light', 'active'];
     saving = false;
 
     get user(): any {
@@ -20,7 +21,20 @@ class EnergyCard extends Vue {
     }
 
     get base(): number | null {
-        return this.bmr ? baseExpenditure(this.bmr) : null;
+        return this.bmr ? baseExpenditure(this.bmr, this.activity) : null;
+    }
+
+    get activity(): Activity {
+        return activityLevel(this.user);
+    }
+
+    setActivity(activity: Activity) {
+        if (this.saving || this.activity === activity) return;
+        this.saving = true;
+        http.put('/account/activity').data({ activity })
+        .then(() => { userStore.data = { ...userStore.data!, activity }; })
+        .catch(() => App.notification(translate.get('nutrition.errors.save')).setType('error').show())
+        .finally(() => { this.saving = false; });
     }
 
     get goal(): Goal {

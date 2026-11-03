@@ -18,6 +18,14 @@
                 <div class="value">≈ {{ base }} kcal</div>
             </div>
 
+            <h3>{{ $t('energy.activityTitle') }}</h3>
+            <div class="goal-options">
+                <button v-for="a in activities" :key="a" type="button" class="option" :class="{ selected: activity === a }"
+                    :disabled="saving" @click="setActivity(a)">{{ $t('energy.activities.' + a) }}</button>
+            </div>
+            <p class="hint">{{ $t('energy.activityHints.' + activity) }}</p>
+            <p class="hint">{{ $t('energy.stepsNote') }}</p>
+
             <h3>{{ $t('energy.goalTitle') }}</h3>
             <div class="goal-options">
                 <button v-for="g in goals" :key="g" type="button" class="option" :class="{ selected: goal === g }"

@@ -64,11 +64,26 @@ export function activityFactor(sessionsPerWeek: number): number {
 
 export type Goal = 'lose' | 'maintain' | 'gain';
 
-// Sedentary expenditure: the trainings of each day are added on top, so the total follows what was really done
-const SEDENTARY_FACTOR = 1.2;
+export type Activity = 'sedentary' | 'light' | 'active';
 
-export function baseExpenditure(bmr: number): number {
-    return Math.round(bmr * SEDENTARY_FACTOR);
+// How active the user is outside the gym (work, walking). The trainings and the steps of each day are added
+// on top of this base, so the total follows what was really done.
+const ACTIVITY_FACTOR: Record<Activity, number> = { sedentary: 1.2, light: 1.375, active: 1.55 };
+
+export function activityLevel(user: { activity?: string | null } | null): Activity {
+    return user?.activity === 'light' || user?.activity === 'active' ? user.activity : 'sedentary';
+}
+
+export function baseExpenditure(bmr: number, activity: Activity = 'sedentary'): number {
+    return Math.round(bmr * ACTIVITY_FACTOR[activity]);
+}
+
+// Steps up to this many a day are already part of the base; only the ones above add calories
+export const STEPS_BASELINE = 5000;
+const KCAL_PER_STEP = 0.04;
+
+export function stepsKcal(steps: number): number {
+    return steps > STEPS_BASELINE ? Math.round((steps - STEPS_BASELINE) * KCAL_PER_STEP) : 0;
 }
 
 export function bmi(user: { weight_kg?: number | null; height_cm?: number | null } | null): number | null {
