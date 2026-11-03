@@ -108,6 +108,15 @@ export default class HttpRequest {
         return http.exec(this).then(callback);
     }
 
+    // Without these, `http.put(...).catch(...)` threw a TypeError instead of sending the request
+    catch(callback: (reason: any) => void) {
+        return http.exec(this).catch(callback);
+    }
+
+    finally(callback: () => void) {
+        return http.exec(this).finally(callback);
+    }
+
     getFullResponse() {
         this.fullResponse = true;
         return this;

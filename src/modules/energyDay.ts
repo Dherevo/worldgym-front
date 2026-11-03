@@ -1,5 +1,6 @@
 import { http } from "lib";
 import userStore from "@/modules/userStore";
+import auth from "@/modules/auth";
 import localDate from "@/modules/localDate";
 import { baseExpenditure, basalMetabolicRate, effectiveGoal, goalRange, kcalFromSeconds } from "@/modules/calories";
 import type { Goal } from "@/modules/calories";
@@ -36,6 +37,8 @@ async function workoutKcal(date: string): Promise<number> {
 // a saved snapshot) is calculated now and saved, so the follow-up keeps what was true each day.
 export async function loadEnergyDay(date: string = localDate()): Promise<EnergyDay> {
     const day: any = await http.get('/nutrition/day').data({ date });
+    // On a direct page load the profile may still be arriving; the calculation needs it
+    if (!userStore.data) await auth.fetchUserData().catch(() => {});
     const saved = day.energy;
     const user = userStore.data;
 
