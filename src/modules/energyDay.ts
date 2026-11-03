@@ -2,7 +2,7 @@ import { http } from "lib";
 import userStore from "@/modules/userStore";
 import auth from "@/modules/auth";
 import localDate from "@/modules/localDate";
-import { baseExpenditure, basalMetabolicRate, effectiveGoal, goalRange, kcalFromSeconds } from "@/modules/calories";
+import { activityLevel, baseExpenditure, basalMetabolicRate, effectiveGoal, goalRange, kcalFromSeconds, stepsKcal } from "@/modules/calories";
 import type { Goal } from "@/modules/calories";
 
 export interface EnergyDay {
@@ -13,6 +13,8 @@ export interface EnergyDay {
     bmr: number;
     base: number;
     workoutKcal: number;
+    steps: number;
+    stepsKcal: number;
     burned: number;
     goal: Goal;
     min: number;
@@ -33,6 +35,13 @@ async function workoutKcal(date: string): Promise<number> {
     return total;
 }
 
+// Steps logged in the steps habit on a day (0 if none)
+async function stepsOf(date: string): Promise<number> {
+    const res: any = await http.get('/habits').data({ date });
+    const habit = (res.habits ?? []).find((h: any) => h.key === 'steps');
+    return Number(habit?.log?.value) || 0;
+}
+
 // What was eaten and burned on a day. Past days keep the figures saved back then; today (or a day without
 // a saved snapshot) is calculated now and saved, so the follow-up keeps what was true each day.
 export async function loadEnergyDay(date: string = localDate()): Promise<EnergyDay> {
@@ -42,27 +51,29 @@ export async function loadEnergyDay(date: string = localDate()): Promise<EnergyD
     const saved = day.energy;
     const user = userStore.data;
 
-    let bmr: number, base: number, workout: number, goal: Goal, min: number, max: number;
+    let bmr: number, base: number, workout: number, steps = 0, stepKcal: number, goal: Goal, min: number, max: number;
     if (saved && date !== localDate() && saved.goal_min !== null) {
-        bmr = saved.bmr; base = saved.base_kcal; workout = saved.workout_kcal;
+        bmr = saved.bmr; base = saved.base_kcal; workout = saved.workout_kcal; stepKcal = saved.steps_kcal ?? 0;
         goal = saved.goal; min = saved.goal_min; max = saved.goal_max;
     } else {
         const b = basalMetabolicRate(user);
         if (!b) {
-            return { date, entries: day.entries ?? [], eaten: day.kcal ?? 0, protein: day.protein_g ?? 0, bmr: 0, base: 0, workoutKcal: 0, burned: 0, goal: effectiveGoal(user), min: 0, max: 0, ready: false };
+            return { date, entries: day.entries ?? [], eaten: day.kcal ?? 0, protein: day.protein_g ?? 0, bmr: 0, base: 0, workoutKcal: 0, steps: 0, stepsKcal: 0, burned: 0, goal: effectiveGoal(user), min: 0, max: 0, ready: false };
         }
         bmr = b;
-        base = baseExpenditure(b);
+        base = baseExpenditure(b, activityLevel(user));
         workout = await workoutKcal(date);
+        steps = await stepsOf(date);
+        stepKcal = stepsKcal(steps);
         goal = effectiveGoal(user);
-        ({ min, max } = goalRange(goal, base + workout, bmr));
+        ({ min, max } = goalRange(goal, base + workout + stepKcal, bmr));
         http.put(`/nutrition/days/${date}`)
-            .data({ bmr, base_kcal: base, workout_kcal: workout, goal, goal_min: min, goal_max: max })
+            .data({ bmr, base_kcal: base, workout_kcal: workout, steps_kcal: stepKcal, goal, goal_min: min, goal_max: max })
             .catch(() => {});
     }
 
     return {
         date, entries: day.entries ?? [], eaten: day.kcal ?? 0, protein: day.protein_g ?? 0,
-        bmr, base, workoutKcal: workout, burned: base + workout, goal, min, max, ready: true,
+        bmr, base, workoutKcal: workout, steps, stepsKcal: stepKcal, burned: base + workout + stepKcal, goal, min, max, ready: true,
     };
 }
