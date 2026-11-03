@@ -111,6 +111,12 @@ class DailyHabits extends Vue {
     }
 
     toggle(h: any) {
+        // Ticking the steps by hand means "I reached the goal": not valid if the steps written are below it
+        const walked = h.log?.value ?? 0;
+        if (h.kind === 'steps' && !h.log?.completed && walked > 0 && walked < h.target_value) {
+            App.notification(translate.get('habits.card.stepsBelowGoal', { n: this.format(h.target_value - walked) })).setType('error').show();
+            return;
+        }
         this.save(h, { completed: !h.log?.completed });
     }
 
