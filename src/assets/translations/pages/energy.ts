@@ -32,6 +32,8 @@ export default {
         disclaimer: 'Valors aproximats calculats amb fórmules generals (Mifflin-St Jeor). No són dades reals ni consell mèdic.',
         guideDisclaimer: 'Són valors orientatius, no una dieta. Si vols una pauta detallada de veritat, consulta un metge o un dietista.',
         short: 'Valors aproximats, no són dades reals.',
+        full: 'Els càlculs de calories, proteïna i aigua són estimacions orientatives basades en fórmules generals. No substitueixen el consell d\'un metge o dietista, sobretot si tens alguna patologia, estàs embarassada o prens medicació.',
+        water: 'Aigua: uns 2,5 L al dia entre tot el que beus (més els dies d\'entreno o de calor).',
     },
     es: {
         title: 'Metabolismo y gasto',
@@ -66,6 +68,8 @@ export default {
         disclaimer: 'Valores aproximados calculados con fórmulas generales (Mifflin-St Jeor). No son datos reales ni consejo médico.',
         guideDisclaimer: 'Son valores orientativos, no una dieta. Si quieres una pauta detallada de verdad, consulta a un médico o a un dietista.',
         short: 'Valores aproximados, no son datos reales.',
+        full: 'Los cálculos de calorías, proteína y agua son estimaciones orientativas basadas en fórmulas generales. No sustituyen el consejo de un médico o dietista, sobre todo si tienes alguna patología, estás embarazada o tomas medicación.',
+        water: 'Agua: unos 2,5 L al día entre todo lo que bebes (más los días de entreno o de calor).',
     },
     en: {
         title: 'Metabolism and energy',
@@ -100,5 +104,7 @@ export default {
         disclaimer: 'Approximate values from general formulas (Mifflin-St Jeor). Not real data and not medical advice.',
         guideDisclaimer: 'These are guiding values, not a diet. For detailed, personal advice, see a doctor or a dietitian.',
         short: 'Approximate values, not real data.',
+        full: 'Calorie, protein and water figures are rough estimates based on general formulas. They do not replace the advice of a doctor or dietitian, especially if you have a medical condition, are pregnant or take medication.',
+        water: 'Water: about 2.5 L a day from everything you drink (more on training or hot days).',
     },
 };

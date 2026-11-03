@@ -57,6 +57,7 @@
 
         <p class="disclaimer">{{ $t('energy.disclaimer') }}</p>
         <p class="disclaimer" v-if="bmr">{{ $t('energy.guideDisclaimer') }}</p>
+        <p class="disclaimer">{{ $t('energy.full') }}</p>
     </div>
 </template>
 
