@@ -67,9 +67,13 @@ export async function loadEnergyDay(date: string = localDate()): Promise<EnergyD
         stepKcal = stepsKcal(steps);
         goal = effectiveGoal(user);
         ({ min, max } = goalRange(goal, base + workout + stepKcal, bmr));
-        http.put(`/nutrition/days/${date}`)
-            .data({ bmr, base_kcal: base, workout_kcal: workout, steps_kcal: stepKcal, goal, goal_min: min, goal_max: max })
-            .catch(() => {});
+        // Wait for the snapshot to be saved, so the history read afterwards already has today's figures
+        await new Promise<void>(resolve => {
+            http.put(`/nutrition/days/${date}`)
+                .data({ bmr, base_kcal: base, workout_kcal: workout, steps_kcal: stepKcal, goal, goal_min: min, goal_max: max })
+                .then(() => resolve())
+                .catch(() => resolve());
+        });
     }
 
     return {
