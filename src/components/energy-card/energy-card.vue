@@ -10,36 +10,37 @@
                 </div>
                 <div class="value">≈ {{ bmr }} kcal</div>
             </div>
-            <div class="energy-row" v-if="tdee">
+            <div class="energy-row">
                 <div>
-                    <div class="label">{{ $t('energy.tdee') }}</div>
-                    <div class="hint">{{ $t('energy.tdeeHint', { n: perWeekLabel }) }}</div>
+                    <div class="label">{{ $t('energy.base') }}</div>
+                    <div class="hint">{{ $t('energy.baseHint') }}</div>
                 </div>
-                <div class="value">≈ {{ tdee }} kcal</div>
+                <div class="value">≈ {{ base }} kcal</div>
             </div>
-            <p class="disclaimer" v-if="tdee">{{ $t('energy.tdeeNote') }}</p>
 
-            <h3 v-if="tdee">{{ $t('energy.guideTitle') }}</h3>
-            <div class="energy-row" v-if="tdee">
-                <div>
-                    <div class="label">{{ $t('energy.lose') }}</div>
-                    <div class="hint">{{ $t('energy.loseHint') }}</div>
-                </div>
-                <div class="value">≈ {{ loseRange }} kcal</div>
+            <h3>{{ $t('energy.goalTitle') }}</h3>
+            <div class="goal-options">
+                <button v-for="g in goals" :key="g" type="button" class="option" :class="{ selected: goal === g }"
+                    :disabled="saving" @click="setGoal(g)">{{ $t('energy.goals.' + g) }}</button>
             </div>
-            <div class="energy-row" v-if="tdee">
+            <p class="hint" v-if="isAuto">{{ $t('energy.goalAuto', { bmi: bmiLabel, goal: autoGoalLabel }) }}</p>
+            <p class="hint">{{ $t('energy.goalHints.' + goal) }}</p>
+
+            <div class="energy-row">
                 <div>
-                    <div class="label">{{ $t('energy.gain') }}</div>
-                    <div class="hint">{{ $t('energy.gainHint') }}</div>
+                    <div class="label">{{ $t('energy.restDay') }}</div>
+                    <div class="hint">{{ $t('energy.trainDayNote') }}</div>
                 </div>
-                <div class="value">≈ {{ gainRange }} kcal</div>
+                <div class="value">≈ {{ restRange }} kcal</div>
             </div>
-            <p class="fact" v-if="tdee">{{ $t('energy.fatFact') }}</p>
+
+            <button type="button" class="food-link" @click="to('/nutrition')">{{ $t('energy.openFood') }} ›</button>
+            <p class="fact">{{ $t('energy.fatFact') }}</p>
         </template>
         <p class="sub" v-else>{{ $t('energy.needData') }}</p>
 
         <p class="disclaimer">{{ $t('energy.disclaimer') }}</p>
-        <p class="disclaimer" v-if="tdee">{{ $t('energy.guideDisclaimer') }}</p>
+        <p class="disclaimer" v-if="bmr">{{ $t('energy.guideDisclaimer') }}</p>
     </div>
 </template>
 

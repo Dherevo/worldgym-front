@@ -1,0 +1,79 @@
+.nutrition-page {
+    padding: 1rem;
+    max-width: 640px;
+    margin: 0 auto;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+
+    h1 { margin: 0; display: flex; align-items: center; gap: 0.5rem; .title-icon { color: var(--primary-color); } }
+    h2 { margin: 0; font-size: 1.05rem; }
+    .muted { color: var(--text-secondary); margin: 0; }
+    .note { margin: 0; font-size: 0.78rem; color: var(--text-muted); font-style: italic; }
+    .protein { margin: 0; font-size: 0.9rem; color: var(--text-secondary); }
+
+    .card {
+        background: var(--surface-2);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .btn {
+        background: var(--primary-color); color: #fff; border: none; border-radius: 10px;
+        padding: 0.55rem 1rem; font-weight: 600; cursor: pointer;
+        &:disabled { opacity: 0.5; cursor: default; }
+    }
+    .btn-link { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0.5rem; }
+
+    .weigh-banner {
+        display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+        padding: 0.7rem 1rem; border-radius: 12px; font-size: 0.9rem;
+        background: var(--surface-2); border: 1px solid var(--primary-color);
+    }
+
+    .day-nav {
+        display: flex; align-items: center; justify-content: center; gap: 1rem;
+        .day-label { min-width: 9rem; text-align: center; font-weight: 700; text-transform: capitalize; }
+        .nav-btn {
+            width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border-color);
+            background: var(--surface-2); color: inherit; font-size: 1.2rem; cursor: pointer;
+            &:disabled { opacity: 0.3; cursor: default; }
+        }
+    }
+
+    .meal-head { display: flex; justify-content: space-between; align-items: baseline; .subtotal { font-weight: 700; color: var(--primary-color); } }
+
+    .entries {
+        list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;
+        li { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0; border-top: 1px solid var(--border-color); &:first-child { border-top: none; } }
+        .entry-main { flex: 1; min-width: 0; text-align: left; background: none; border: none; color: inherit; cursor: pointer; padding: 0.2rem 0; display: flex; flex-direction: column; }
+        .entry-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        small { color: var(--text-muted); }
+        .entry-kcal { font-weight: 600; white-space: nowrap; }
+        .entry-del { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0.3rem 0.5rem; }
+    }
+
+    .btn-add { align-self: flex-start; background: none; border: none; color: var(--primary-color); font-weight: 600; cursor: pointer; padding: 0.3rem 0; }
+
+    .add-form {
+        display: flex; flex-direction: column; gap: 0.6rem;
+        input { width: 100%; box-sizing: border-box; padding: 0.55rem 0.7rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: inherit; font-size: 1rem; }
+        .row { display: flex; gap: 0.6rem; label { flex: 1; display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.8rem; color: var(--text-secondary); } }
+        .form-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
+        .chips { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.2rem; }
+        .chip { flex: none; border: 1px solid var(--border-color); background: var(--surface-color); color: inherit; border-radius: 999px; padding: 0.3rem 0.7rem; font-size: 0.8rem; cursor: pointer; }
+    }
+
+    .history {
+        list-style: none; margin: 0; padding: 0;
+        li { display: grid; grid-template-columns: 1.3fr 1fr 1fr 0.8fr; gap: 0.4rem; padding: 0.4rem 0; border-top: 1px solid var(--border-color); font-size: 0.88rem; &:first-child { border-top: none; } }
+        small { color: var(--text-muted); }
+        .h-date { text-transform: capitalize; }
+        .h-balance { text-align: right; font-weight: 700; color: #d97706; &.deficit { color: #16a34a; } }
+    }
+}

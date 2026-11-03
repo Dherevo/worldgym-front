@@ -3,8 +3,11 @@ import { http, App, translate } from "lib";
 import DailyHabits from "@/components/daily-habits/daily-habits.vue";
 import CheckIn from "@/components/check-in/check-in.vue";
 import localDate from "@/modules/localDate";
+import EnergyBar from "@/components/energy-bar/energy-bar.vue";
+import { loadEnergyDay } from "@/modules/energyDay";
+import type { EnergyDay } from "@/modules/energyDay";
 
-@Component({ components: { DailyHabits, CheckIn } })
+@Component({ components: { DailyHabits, CheckIn, EnergyBar } })
 class HomePage extends Vue {
 
     activeWorkout: any = null;
@@ -28,6 +31,9 @@ class HomePage extends Vue {
     week: any = null;
     forceTrain = false;
 
+    // Calories eaten against the ones burned today
+    energy: EnergyDay | null = null;
+
     recentWorkouts: any[] = [];
     loadingWorkouts = false;
 
@@ -36,6 +42,7 @@ class HomePage extends Vue {
         this.fetchWeek();
         this.fetchDefaultRoutine();
         this.fetchRecentWorkouts();
+        loadEnergyDay().then(d => { this.energy = d; }).catch(() => {});
     }
 
     fetchWeek() {

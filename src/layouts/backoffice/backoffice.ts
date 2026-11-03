@@ -21,6 +21,7 @@ class Backoffice extends Vue {
         // Grouped entries: `match` lists every route of the group so the entry stays active on all its tabs
         { path: '/stats',     icon: 'prime/bolt',      label: 'layout.menu.progress', match: ['/workouts', '/stats', '/routines', '/exercises'] },
         { path: '/challenges', icon: 'awesome-solid/trophy',   label: 'layout.menu.challenges' },
+        { path: '/nutrition', icon: 'awesome-solid/utensils', label: 'layout.menu.nutrition' },
     ];
 
     get menuItems() {
