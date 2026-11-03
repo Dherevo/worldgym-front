@@ -392,7 +392,7 @@ class WorkoutPage extends Vue {
         const exerciseId = this.currentExercise?.exercise?.id;
         if (!exerciseId) { this.exerciseHistory = []; this.exerciseRecord = null; return; }
         this.loadLastSets(exerciseId);
-        http.get(`/stats/exercises/${exerciseId}`)
+        http.get(`/stats/exercises/${exerciseId}`).data({ exclude_workout_id: this.workoutId })
         .then((res: any) => {
             const sessions = res.sessions ?? [];
             this.exerciseHistory = sessions.slice(-2).reverse(); // les 2 més recents, primer la última

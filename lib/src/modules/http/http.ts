@@ -299,6 +299,7 @@ export default class http {
 
                 // Else, add this request to the queue to be resolved later.
                 this.addPendingRequest(request, resolve, reject);
+                return;
 
             }
 
@@ -330,13 +331,14 @@ export default class http {
                 this.token.Refresh()
                 .then(refreshed => {
 
+                    this.token.refreshing = false;
                     if (!refreshed) return this.rejectPendingRequests(err);
 
                     this.retryPendingRequests();
 
                 })
                 .catch(() => {
-                    http.token.remove();
+                    this.token.refreshing = false;
                     this.rejectPendingRequests(err);
                 });
 

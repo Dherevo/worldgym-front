@@ -17,30 +17,32 @@ export default () => {
         }
     });
 
+    // The session cannot be renewed: leave a notice for the login page and go there
+    const expireSession = () => {
+        http.token.remove();
+        try { sessionStorage.setItem('sessionExpired', '1'); } catch { /* storage unavailable */ }
+        window.location.href = '/login';
+    };
+
     http.token.Refresh = () => new Promise((resolve, reject) => {
         const refreshToken = http.token.getRefreshToken();
-        if (!refreshToken) return reject();
+        if (!refreshToken) { expireSession(); return reject(); }
 
         http.post('/auth/refresh')
-        .data({ refresh_token: refreshToken })
+        .data({ refreshToken })
         .then((response: any) => {
             const data = response.data ?? response;
             if (data.access) {
                 http.token.setInStorage(`Bearer ${data.access}`, data.refresh);
                 resolve(true);
-            } else if (data.error === 'token.invalid') {
-                http.token.remove();
-                window.location.href = '/login';
-                reject();
             } else {
+                expireSession();
                 reject();
             }
         })
         .catch((err: any) => {
-            if (err?.error === 'token.invalid' || err?.data?.error === 'token.invalid') {
-                http.token.remove();
-                window.location.href = '/login';
-            }
+            // A rejected refresh token ends the session; a network failure only fails this request
+            if (err?.status === 400 || err?.status === 401 || err?.status === 403) expireSession();
             reject();
         });
     });

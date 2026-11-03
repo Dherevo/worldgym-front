@@ -32,7 +32,7 @@
             </div>
 
             <!-- Routine card -->
-            <template v-if="!restMode">
+            <template v-if="!restMode && !activeWorkout">
             <div class="today-card" v-if="loadingRoutine">
                 <div class="loading-text">{{ $t('home.routine.loading') }}</div>
             </div>

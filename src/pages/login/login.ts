@@ -12,6 +12,16 @@ class LoginPage extends Vue {
     loading = false;
     error = '';
 
+    created() {
+        // The session expired and could not be renewed: tell the user instead of failing silently
+        try {
+            if (sessionStorage.getItem('sessionExpired')) {
+                sessionStorage.removeItem('sessionExpired');
+                this.error = translate.get('login.sessionExpired');
+            }
+        } catch { /* storage unavailable */ }
+    }
+
     submit() {
         if (this.loading) return;
         this.loading = true;

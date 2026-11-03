@@ -44,6 +44,7 @@
                             <span class="exercise-eq" v-if="we.exercise?.equipment"> · {{ we.exercise.equipment.name }}</span>
                         </div>
                         <div class="exercise-header-right">
+                            <button class="btn-delete-exercise" @click="openChangeExercise(we)" :title="$t('workoutDetail.changeExercise')">⇄</button>
                             <button class="btn-delete-exercise" @click="deleteExercise(we)" :title="$t('workoutDetail.deleteExercise')">✕</button>
                         </div>
                     </div>
@@ -131,9 +132,9 @@
             </div>
 
             <!-- Exercise search modal -->
-            <div v-if="showExerciseSearch" class="modal-overlay" @click.self="showExerciseSearch = false">
+            <div v-if="showExerciseSearch" class="modal-overlay" @click.self="closeExerciseSearch()">
                 <div class="modal">
-                    <h3>{{ $t('workoutDetail.modal.title') }}</h3>
+                    <h3>{{ changingWe ? $t('workoutDetail.modal.changeTitle', { name: changingWe.exercise?.name }) : $t('workoutDetail.modal.title') }}</h3>
                     <div class="search-wrapper">
                         <input
                             type="text"
@@ -148,7 +149,7 @@
                             v-for="ex in filteredExercises"
                             :key="ex.id"
                             class="exercise-result-item"
-                            @click="addExercise(ex)"
+                            @click="pickExercise(ex)"
                         >
                             <span>{{ ex.name }}</span>
                             <small v-if="ex.equipment">{{ ex.equipment.name }}</small>
@@ -156,7 +157,7 @@
                         <div v-if="filteredExercises.length === 0 && exerciseQuery" class="no-results">{{ $t('workoutDetail.modal.noResults') }}</div>
                     </div>
                     <div class="modal-actions">
-                        <button class="btn-cancel" @click="showExerciseSearch = false">{{ $t('workoutDetail.modal.close') }}</button>
+                        <button class="btn-cancel" @click="closeExerciseSearch()">{{ $t('workoutDetail.modal.close') }}</button>
                     </div>
                 </div>
             </div>
