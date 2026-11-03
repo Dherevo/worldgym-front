@@ -13,6 +13,7 @@ import cycle from './pages/cycle';
 import measurements from './pages/measurements';
 import habits from './pages/habits';
 import profile from './pages/profile';
+import challenges from './pages/challenges';
 import access from './pages/access';
 import account from './pages/account';
 import energy from './pages/energy';
@@ -36,6 +37,7 @@ const en = {
     measurements: measurements.en,
     habits: habits.en,
     profile: profile.en,
+    challenges: challenges.en,
     access: access.en,
     account: account.en,
     energy: energy.en,

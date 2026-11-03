@@ -5,8 +5,9 @@ import userStore from "@/modules/userStore";
 import MeasurementsPage from "@/pages/measurements/measurements.vue";
 import AccountSettings from "@/components/account-settings/account-settings.vue";
 import EnergyCard from "@/components/energy-card/energy-card.vue";
+import UserAvatar from "@/components/user-avatar/user-avatar.vue";
 
-@Component({ components: { MeasurementsPage, AccountSettings, EnergyCard } })
+@Component({ components: { MeasurementsPage, AccountSettings, EnergyCard, UserAvatar } })
 class ProfilePage extends Vue {
 
     readonly genders = ['female', 'male', 'other'];
@@ -41,6 +42,36 @@ class ProfilePage extends Vue {
         this.gender = user?.gender ?? '';
         this.birthDate = user?.birth_date ?? '';
         this.homeIds = [...(user?.home_equipment ?? [])];
+    }
+
+    uploadingPhoto = false;
+
+    get photoUrl(): string | null {
+        return userStore.data?.avatar_url ?? null;
+    }
+
+    get nickname(): string {
+        return userStore.data?.nickname || userStore.data?.name || '';
+    }
+
+    uploadPhoto(e: Event) {
+        const input = e.target as HTMLInputElement;
+        const file = input.files?.[0];
+        input.value = '';
+        if (!file || this.uploadingPhoto) return;
+        this.uploadingPhoto = true;
+        http.post('/account/avatar').setDataFormat('formData').data({ avatar: file })
+        .then((user: any) => { if (userStore.data) Object.assign(userStore.data, user); })
+        .catch(() => App.notification(translate.get('profile.photoError')).setType('error').show())
+        .finally(() => { this.uploadingPhoto = false; });
+    }
+
+    removePhoto() {
+        this.uploadingPhoto = true;
+        http.delete('/account/avatar')
+        .then((user: any) => { if (userStore.data) Object.assign(userStore.data, user); })
+        .catch(() => App.notification(translate.get('profile.photoError')).setType('error').show())
+        .finally(() => { this.uploadingPhoto = false; });
     }
 
     toggleHome(id: number) {

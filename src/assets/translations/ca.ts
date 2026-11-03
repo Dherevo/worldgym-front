@@ -13,6 +13,7 @@ import cycle from './pages/cycle';
 import measurements from './pages/measurements';
 import habits from './pages/habits';
 import profile from './pages/profile';
+import challenges from './pages/challenges';
 import access from './pages/access';
 import account from './pages/account';
 import energy from './pages/energy';
@@ -36,6 +37,7 @@ const ca = {
     measurements: measurements.ca,
     habits: habits.ca,
     profile: profile.ca,
+    challenges: challenges.ca,
     access: access.ca,
     account: account.ca,
     energy: energy.ca,

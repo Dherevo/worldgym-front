@@ -1,6 +1,21 @@
 <template>
     <AppPage name="profile-page" layout="backoffice">
         <div class="profile-page">
+            <div class="card photo-card">
+                <UserAvatar :url="photoUrl" :name="nickname" :size="72" />
+                <div class="photo-info">
+                    <strong>{{ $t('profile.photo') }}</strong>
+                    <p class="note">{{ $t('profile.photoNote') }}</p>
+                    <div class="photo-actions">
+                        <label class="option photo-btn">
+                            {{ $t('profile.photoChange') }}
+                            <input type="file" accept="image/png,image/jpeg,image/webp" hidden :disabled="uploadingPhoto" @change="uploadPhoto($event)" />
+                        </label>
+                        <button v-if="photoUrl" type="button" class="option" :disabled="uploadingPhoto" @click="removePhoto()">{{ $t('profile.photoRemove') }}</button>
+                    </div>
+                </div>
+            </div>
+
             <form class="card" @submit.prevent="save()">
                 <h1>{{ $t('profile.title') }}</h1>
                 <p class="sub">{{ $t('profile.sub') }}</p>
