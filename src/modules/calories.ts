@@ -95,3 +95,18 @@ export function goalRange(goal: Goal, tdee: number, bmr: number): { min: number;
     if (goal === 'maintain') return { min: round10(tdee * 0.97), max: round10(tdee * 1.03) };
     return { min: round10(tdee * 1.05), max: round10(tdee * 1.10) };
 }
+
+// Protein to eat in a day, in grams. Per kg of a reference weight: with a BMI over 25 only a quarter of the
+// excess weight counts (adjusted body weight), so that a high weight does not inflate the target.
+const PROTEIN_PER_KG: Record<Goal, [number, number]> = { lose: [1.6, 2.2], maintain: [1.2, 1.6], gain: [1.6, 2.0] };
+
+export function proteinRange(user: { weight_kg?: number | null; height_cm?: number | null } | null, goal: Goal): { min: number; max: number; ref: number } | null {
+    const w = Number(user?.weight_kg);
+    const h = Number(user?.height_cm) / 100;
+    if (Number.isNaN(w) || Number.isNaN(h) || w <= 0 || h <= 0) return null;
+    const normal = 25 * h * h;
+    const ref = w > normal ? normal + 0.25 * (w - normal) : w;
+    const [lo, hi] = PROTEIN_PER_KG[goal];
+    const round5 = (n: number) => Math.round(n / 5) * 5;
+    return { min: round5(ref * lo), max: round5(ref * hi), ref: Math.round(ref) };
+}

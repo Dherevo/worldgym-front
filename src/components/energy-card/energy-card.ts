@@ -1,7 +1,7 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import userStore from "@/modules/userStore";
-import { baseExpenditure, basalMetabolicRate, bmi, effectiveGoal, goalRange } from "@/modules/calories";
+import { baseExpenditure, basalMetabolicRate, bmi, effectiveGoal, goalRange, proteinRange } from "@/modules/calories";
 import type { Goal } from "@/modules/calories";
 
 // Basal metabolic rate, the sedentary expenditure and the calories to eat for the chosen goal
@@ -46,6 +46,11 @@ class EnergyCard extends Vue {
         if (!this.base || !this.bmr) return '';
         const r = goalRange(this.goal, this.base, this.bmr);
         return `${r.min} - ${r.max}`;
+    }
+
+    get proteinLabel(): string {
+        const p = proteinRange(this.user, this.goal);
+        return p ? `${p.min} - ${p.max}` : '';
     }
 
     setGoal(goal: Goal) {

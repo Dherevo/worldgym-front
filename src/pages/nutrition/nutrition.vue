@@ -20,7 +20,14 @@
                 <div class="card">
                     <EnergyBar v-if="day.ready" :day="day" />
                     <p v-else class="muted">{{ $t('energy.needData') }}</p>
-                    <p class="protein" v-if="day.protein > 0">{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }}</p>
+                    <div class="protein-bar" v-if="proteinGoal">
+                        <div class="protein-text">
+                            <span>{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }}</span>
+                            <span class="muted">{{ $t('nutrition.proteinGoal', { min: proteinGoal.min, max: proteinGoal.max }) }}</span>
+                        </div>
+                        <div class="protein-track"><div class="protein-fill" :class="{ reached: day.protein >= proteinGoal.min }" :style="{ width: proteinPct + '%' }"></div></div>
+                    </div>
+                    <p class="protein" v-else-if="day.protein > 0">{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }}</p>
                     <p class="note">{{ $t('energy.short') }}</p>
                 </div>
 

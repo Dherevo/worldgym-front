@@ -34,6 +34,14 @@
                 <div class="value">≈ {{ restRange }} kcal</div>
             </div>
 
+            <div class="energy-row" v-if="proteinLabel">
+                <div>
+                    <div class="label">{{ $t('energy.proteinTitle') }}</div>
+                    <div class="hint">{{ $t('energy.proteinHint') }}</div>
+                </div>
+                <div class="value">≈ {{ proteinLabel }} g</div>
+            </div>
+
             <button type="button" class="food-link" @click="to('/nutrition')">{{ $t('energy.openFood') }} ›</button>
             <p class="fact">{{ $t('energy.fatFact') }}</p>
         </template>
