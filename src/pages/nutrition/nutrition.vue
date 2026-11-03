@@ -29,7 +29,8 @@
                         <span class="muted">{{ $t('nutrition.proteinFor.' + day.goal, { min: proteinGoal.min, max: proteinGoal.max }) }}</span>
                     </div>
                     <p class="protein" v-else-if="day.protein > 0">{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }}</p>
-                    <p class="note">{{ $t('energy.short') }}</p>
+                    <p class="note">{{ $t('energy.water') }}</p>
+                    <p class="note">{{ $t('energy.full') }}</p>
                 </div>
 
                 <div v-for="meal in meals" :key="meal" class="card meal">
