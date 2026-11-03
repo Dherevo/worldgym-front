@@ -14,7 +14,8 @@ export default {
         breakdown: 'Cremades: {{base}} base + {{workout}} d\'entrenos',
         deficit: 'dèficit de {{n}} kcal',
         surplus: 'superàvit de {{n}} kcal',
-        protein: 'Proteïna d\'avui: {{n}} g',
+        protein: 'Proteïna: {{n}} g',
+        proteinGoal: 'objectiu {{min}} - {{max}} g',
         proteinShort: 'prot.',
         proteinG: 'Proteïna (g)',
         meals: {
@@ -57,7 +58,8 @@ export default {
         breakdown: 'Quemadas: {{base}} base + {{workout}} de entrenos',
         deficit: 'déficit de {{n}} kcal',
         surplus: 'superávit de {{n}} kcal',
-        protein: 'Proteína de hoy: {{n}} g',
+        protein: 'Proteína: {{n}} g',
+        proteinGoal: 'objetivo {{min}} - {{max}} g',
         proteinShort: 'prot.',
         proteinG: 'Proteína (g)',
         meals: {
@@ -100,7 +102,8 @@ export default {
         breakdown: 'Burned: {{base}} base + {{workout}} from workouts',
         deficit: '{{n}} kcal deficit',
         surplus: '{{n}} kcal surplus',
-        protein: 'Protein today: {{n}} g',
+        protein: 'Protein: {{n}} g',
+        proteinGoal: 'goal {{min}} - {{max}} g',
         proteinShort: 'prot.',
         proteinG: 'Protein (g)',
         meals: {

@@ -3,6 +3,8 @@ import { http, App, translate } from "lib";
 import EnergyBar from "@/components/energy-bar/energy-bar.vue";
 import localDate from "@/modules/localDate";
 import { loadEnergyDay } from "@/modules/energyDay";
+import userStore from "@/modules/userStore";
+import { proteinRange } from "@/modules/calories";
 import type { EnergyDay } from "@/modules/energyDay";
 
 const MEALS = ['breakfast', 'lunch', 'snack', 'dinner', 'other'];
@@ -32,6 +34,16 @@ class NutritionPage extends Vue {
         this.loadHistory();
         this.loadRecent();
         this.checkWeight();
+    }
+
+    // Protein target for the goal of the day, and how much of it is eaten
+    get proteinGoal(): { min: number; max: number; ref: number } | null {
+        return this.day?.ready ? proteinRange(userStore.data, this.day.goal) : null;
+    }
+
+    get proteinPct(): number {
+        const g = this.proteinGoal;
+        return g && this.day ? Math.min(100, Math.round((this.day.protein / g.max) * 100)) : 0;
     }
 
     get isToday(): boolean {
