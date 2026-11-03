@@ -1,7 +1,7 @@
 <template>
     <AppPage name="challenges-page" layout="backoffice">
         <div class="challenges-page">
-            <h1>{{ $t('challenges.title') }}</h1>
+            <h1><svg-icon name="awesome-solid/trophy" class="title-icon"/> {{ $t('challenges.title') }}</h1>
 
             <div class="medals-card" v-if="medals">
                 <div class="medals-title">{{ $t('challenges.medals.title') }}</div>

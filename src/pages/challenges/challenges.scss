@@ -7,7 +7,7 @@
     flex-direction: column;
     gap: 0.9rem;
 
-    h1 { margin: 0; }
+    h1 { margin: 0; display: flex; align-items: center; gap: 0.5rem; .title-icon { color: var(--primary-color); } }
     .muted { color: var(--text-secondary); margin: 0; }
 
     .medals-card, .card, .empty {
