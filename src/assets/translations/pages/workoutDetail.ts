@@ -10,6 +10,7 @@ export default {
         dragToReorder: "Arrossega per reordenar",
         volumeShort: "Vol: {{v}}",
         deleteExercise: "Eliminar exercici",
+        changeExercise: "Canviar d'exercici (les sèries es mantenen)",
         table: {
             set: "Set",
             reps: "Reps",
@@ -29,6 +30,7 @@ export default {
         addSet: "+ Afegir sèrie",
         modal: {
             title: "Afegir exercici",
+            changeTitle: "Canviar «{{name}}» per...",
             searchPlaceholder: "Cerca un exercici...",
             noResults: "Cap resultat",
             close: "Tancar",
@@ -36,6 +38,7 @@ export default {
         errors: {
             saveTitle: "No s'ha pogut desar el títol",
             addExercise: "Error al afegir exercici",
+            changeExercise: "No s'ha pogut canviar l'exercici",
             delete: "Error al eliminar",
             save: "Error al desar",
             reorder: "Error al reordenar",
@@ -54,6 +57,7 @@ export default {
         dragToReorder: "Arrastra para reordenar",
         volumeShort: "Vol: {{v}}",
         deleteExercise: "Eliminar ejercicio",
+        changeExercise: "Cambiar de ejercicio (las series se mantienen)",
         table: {
             set: "Set",
             reps: "Reps",
@@ -73,6 +77,7 @@ export default {
         addSet: "+ Añadir serie",
         modal: {
             title: "Añadir ejercicio",
+            changeTitle: "Cambiar «{{name}}» por...",
             searchPlaceholder: "Busca un ejercicio...",
             noResults: "Ningún resultado",
             close: "Cerrar",
@@ -80,6 +85,7 @@ export default {
         errors: {
             saveTitle: "No se ha podido guardar el título",
             addExercise: "Error al añadir ejercicio",
+            changeExercise: "No se ha podido cambiar el ejercicio",
             delete: "Error al eliminar",
             save: "Error al guardar",
             reorder: "Error al reordenar",
@@ -98,6 +104,7 @@ export default {
         dragToReorder: "Drag to reorder",
         volumeShort: "Vol: {{v}}",
         deleteExercise: "Remove exercise",
+        changeExercise: "Change exercise (sets are kept)",
         table: {
             set: "Set",
             reps: "Reps",
@@ -117,6 +124,7 @@ export default {
         addSet: "+ Add set",
         modal: {
             title: "Add exercise",
+            changeTitle: "Replace \"{{name}}\" with...",
             searchPlaceholder: "Search for an exercise...",
             noResults: "No results",
             close: "Close",
@@ -124,6 +132,7 @@ export default {
         errors: {
             saveTitle: "Could not save the title",
             addExercise: "Error adding exercise",
+            changeExercise: "Could not change the exercise",
             delete: "Error deleting",
             save: "Error saving",
             reorder: "Error reordering",

@@ -1,6 +1,7 @@
 export default {
     ca: {
         invalidCredentials: 'Credencials incorrectes',
+        sessionExpired: "La sessió ha caducat. Torna a iniciar sessió; l'entrenament en curs no es perd.",
         welcome: 'Hola de nou',
         welcomeSub: 'Inicia sessió per continuar entrenant.',
         username: 'Usuari o correu',
@@ -13,6 +14,7 @@ export default {
     },
     es: {
         invalidCredentials: 'Credenciales incorrectas',
+        sessionExpired: 'La sesión ha caducado. Vuelve a iniciar sesión; el entrenamiento en curso no se pierde.',
         welcome: 'Hola de nuevo',
         welcomeSub: 'Inicia sesión para seguir entrenando.',
         username: 'Usuario o correo',
@@ -25,6 +27,7 @@ export default {
     },
     en: {
         invalidCredentials: 'Invalid credentials',
+        sessionExpired: 'Your session has expired. Sign in again; your workout in progress is kept.',
         welcome: 'Welcome back',
         welcomeSub: 'Sign in to keep training.',
         username: 'Username or email',

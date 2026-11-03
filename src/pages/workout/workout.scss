@@ -333,8 +333,9 @@
                         z-index: 20;
                         box-shadow: 0 4px 16px rgba(0,0,0,0.4);
                     }
-                    &[data-tooltip]:hover::after {
-                        opacity: 1;
+                    // Touch screens keep :hover after a tap, which swallowed the next tap on Confirm
+                    @media (hover: hover) {
+                        &[data-tooltip]:hover::after { opacity: 1; }
                     }
                 }
             }
@@ -375,10 +376,10 @@
                 &:active { transform: scale(0.97); }
                 &:disabled { opacity: 0.6; cursor: not-allowed; }
 
-                &.start { background: var(--primary-color); color: white; &:hover { background: var(--primary-dark-color); } }
-                &.stop { background: #c0392b; color: white; &:hover { background: #a93226; } }
-                &.confirm { background: #16a34a; color: white; &:hover { background: #15803d; } }
-                &.skip { background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--border-color); &:hover { background: var(--surface-3); } }
+                &.start { background: var(--primary-color); color: white; @media (hover: hover) { &:hover { background: var(--primary-dark-color); } } }
+                &.stop { background: #c0392b; color: white; @media (hover: hover) { &:hover { background: #a93226; } } }
+                &.confirm { background: #16a34a; color: white; @media (hover: hover) { &:hover { background: #15803d; } } }
+                &.skip { background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--border-color); @media (hover: hover) { &:hover { background: var(--surface-3); } } }
             }
 
             .choose-buttons {
@@ -463,8 +464,8 @@
                 max-width: 320px;
                 transition: transform 0.1s;
                 &:active { transform: scale(0.97); }
-                &.start { background: var(--primary-color); color: white; &:hover { background: var(--primary-dark-color); } }
-                &.skip { background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--border-color); &:hover { background: var(--surface-3); } }
+                &.start { background: var(--primary-color); color: white; @media (hover: hover) { &:hover { background: var(--primary-dark-color); } } }
+                &.skip { background: var(--surface-2); color: var(--text-secondary); border: 1px solid var(--border-color); @media (hover: hover) { &:hover { background: var(--surface-3); } } }
             }
         }
 

@@ -32,6 +32,8 @@ class WorkoutDetailPage extends Vue {
 
     // Exercise search
     showExerciseSearch = false;
+    // Workout exercise being swapped for another exercise (null: the search adds a new one)
+    changingWe: any = null;
     exerciseQuery = '';
     allExercises: any[] = [];
     filteredExercises: any[] = [];
@@ -120,6 +122,36 @@ class WorkoutDetailPage extends Vue {
         this.filteredExercises = q
             ? this.allExercises.filter(e => e.name.toLowerCase().includes(q)).slice(0, 10)
             : this.allExercises.slice(0, 10);
+    }
+
+    openChangeExercise(we: any) {
+        this.changingWe = we;
+        this.exerciseQuery = '';
+        this.filterExercises();
+        this.showExerciseSearch = true;
+    }
+
+    closeExerciseSearch() {
+        this.showExerciseSearch = false;
+        this.changingWe = null;
+    }
+
+    // Same sets, other exercise: keeps the history exact (machine dumbbells vs free dumbbells)
+    changeExercise(ex: any) {
+        const we = this.changingWe;
+        http.put(`/workouts/${this.workoutId}/exercises/${we.id}`)
+        .data({ exercise_id: ex.id })
+        .then(() => {
+            this.closeExerciseSearch();
+            delete this.previousSets[we.id];
+            this.fetchWorkout();
+        })
+        .catch(() => App.notification(translate.get('workoutDetail.errors.changeExercise')).setType('error').show());
+    }
+
+    pickExercise(ex: any) {
+        if (this.changingWe) this.changeExercise(ex);
+        else this.addExercise(ex);
     }
 
     addExercise(ex: any) {
