@@ -16,6 +16,11 @@ export default {
         surplus: 'superàvit de {{n}} kcal',
         protein: 'Proteïna: {{n}} g',
         proteinGoal: 'objectiu {{min}} - {{max}} g',
+        proteinFor: {
+            lose: 'Menja {{min}} - {{max}} g de proteïna al dia per no perdre múscul mentre perds pes.',
+            maintain: 'Menja {{min}} - {{max}} g de proteïna al dia per mantenir el múscul que tens.',
+            gain: 'Menja {{min}} - {{max}} g de proteïna al dia per guanyar múscul.',
+        },
         proteinShort: 'prot.',
         proteinG: 'Proteïna (g)',
         meals: {
@@ -60,6 +65,11 @@ export default {
         surplus: 'superávit de {{n}} kcal',
         protein: 'Proteína: {{n}} g',
         proteinGoal: 'objetivo {{min}} - {{max}} g',
+        proteinFor: {
+            lose: 'Come {{min}} - {{max}} g de proteína al día para no perder músculo mientras pierdes peso.',
+            maintain: 'Come {{min}} - {{max}} g de proteína al día para mantener el músculo que tienes.',
+            gain: 'Come {{min}} - {{max}} g de proteína al día para ganar músculo.',
+        },
         proteinShort: 'prot.',
         proteinG: 'Proteína (g)',
         meals: {
@@ -104,6 +114,11 @@ export default {
         surplus: '{{n}} kcal surplus',
         protein: 'Protein: {{n}} g',
         proteinGoal: 'goal {{min}} - {{max}} g',
+        proteinFor: {
+            lose: 'Eat {{min}} - {{max}} g of protein a day to avoid losing muscle while you lose weight.',
+            maintain: 'Eat {{min}} - {{max}} g of protein a day to keep the muscle you have.',
+            gain: 'Eat {{min}} - {{max}} g of protein a day to build muscle.',
+        },
         proteinShort: 'prot.',
         proteinG: 'Protein (g)',
         meals: {
