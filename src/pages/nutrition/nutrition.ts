@@ -31,7 +31,6 @@ class NutritionPage extends Vue {
 
     created() {
         this.load();
-        this.loadHistory();
         this.loadRecent();
         this.checkWeight();
     }
@@ -76,7 +75,7 @@ class NutritionPage extends Vue {
         loadEnergyDay(date)
         .then(day => { if (date === this.date) this.day = day; })
         .catch(() => App.notification(translate.get('nutrition.errors.load')).setType('error').show())
-        .finally(() => { this.loading = false; });
+        .finally(() => { this.loading = false; this.loadHistory(); });
     }
 
     loadHistory() {
@@ -158,7 +157,6 @@ class NutritionPage extends Vue {
 
     refresh() {
         this.load();
-        this.loadHistory();
         this.loadRecent();
     }
 

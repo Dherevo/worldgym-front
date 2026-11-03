@@ -40,7 +40,7 @@ export default {
         history: 'Últims 14 dies',
         eatenShort: 'men.',
         burnedShort: 'crem.',
-        weighDue: 'Fa dies que no et peses. Apunta el pes un cop per setmana perquè els càlculs siguin bons.',
+        weighDue: 'Fa dies que no et peses. Apunta el pes un cop per setmana perquè els càlculs siguin bons. Pesa\'t pel matí, després d\'anar al lavabo i abans d\'esmorzar, sempre en les mateixes condicions.',
         weighNow: 'Pesar-me',
         homeTitle: 'Calories d\'avui',
         errors: {
@@ -90,7 +90,7 @@ export default {
         history: 'Últimos 14 días',
         eatenShort: 'com.',
         burnedShort: 'quem.',
-        weighDue: 'Hace días que no te pesas. Apunta el peso una vez por semana para que los cálculos sean buenos.',
+        weighDue: 'Hace días que no te pesas. Apunta el peso una vez por semana para que los cálculos sean buenos. Pésate por la mañana, después de ir al baño y antes de desayunar, siempre en las mismas condiciones.',
         weighNow: 'Pesarme',
         homeTitle: 'Calorías de hoy',
         errors: {
@@ -140,7 +140,7 @@ export default {
         history: 'Last 14 days',
         eatenShort: 'eat.',
         burnedShort: 'burn.',
-        weighDue: 'You have not weighed in for days. Log your weight once a week to keep the numbers good.',
+        weighDue: 'You have not weighed in for days. Log your weight once a week to keep the numbers good. Weigh yourself in the morning, after the bathroom and before breakfast, always in the same conditions.',
         weighNow: 'Weigh in',
         homeTitle: 'Calories today',
         errors: {
