@@ -61,3 +61,37 @@ export function activityFactor(sessionsPerWeek: number): number {
     if (sessionsPerWeek < 6) return 1.725;
     return 1.9;
 }
+
+export type Goal = 'lose' | 'maintain' | 'gain';
+
+// Sedentary expenditure: the trainings of each day are added on top, so the total follows what was really done
+const SEDENTARY_FACTOR = 1.2;
+
+export function baseExpenditure(bmr: number): number {
+    return Math.round(bmr * SEDENTARY_FACTOR);
+}
+
+export function bmi(user: { weight_kg?: number | null; height_cm?: number | null } | null): number | null {
+    const w = Number(user?.weight_kg);
+    const h = Number(user?.height_cm) / 100;
+    return w > 0 && h > 0 ? w / (h * h) : null;
+}
+
+// The chosen goal; without one, by BMI: from 25 up lose weight, otherwise build muscle
+export function effectiveGoal(user: { goal?: string | null; weight_kg?: number | null; height_cm?: number | null } | null): Goal {
+    if (user?.goal === 'lose' || user?.goal === 'maintain' || user?.goal === 'gain') return user.goal;
+    const b = bmi(user);
+    return b !== null && b >= 25 ? 'lose' : 'gain';
+}
+
+const round10 = (n: number) => Math.round(n / 10) * 10;
+
+// Calories to eat in a day with the given expenditure: moderate deficit (never under the BMR), maintenance or small surplus
+export function goalRange(goal: Goal, tdee: number, bmr: number): { min: number; max: number } {
+    if (goal === 'lose') {
+        const min = Math.max(bmr, round10(tdee * 0.80));
+        return { min, max: Math.max(min, round10(tdee * 0.85)) };
+    }
+    if (goal === 'maintain') return { min: round10(tdee * 0.97), max: round10(tdee * 1.03) };
+    return { min: round10(tdee * 1.05), max: round10(tdee * 1.10) };
+}

@@ -1,0 +1,45 @@
+.energy-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+
+    .numbers {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        b { font-size: 1.5rem; }
+        small { color: var(--text-secondary); }
+        .right { text-align: right; }
+    }
+
+    .track {
+        position: relative;
+        height: 16px;
+        border-radius: 8px;
+        background: var(--surface-3, var(--surface-2));
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+
+        // Calories to eat for the goal
+        .goal-zone { position: absolute; top: 0; bottom: 0; background: var(--primary-color); opacity: 0.25; }
+        .fill {
+            position: absolute; top: 0; bottom: 0; left: 0;
+            border-radius: 8px;
+            background: var(--text-muted);
+            transition: width 0.4s ease;
+            &.ok { background: #16a34a; }
+            &.over { background: #d97706; }
+        }
+    }
+
+    .legend {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        .ok { color: #16a34a; font-weight: 600; }
+        .over { color: #d97706; font-weight: 600; }
+    }
+
+    .breakdown { font-size: 0.78rem; color: var(--text-muted); }
+}

@@ -19,6 +19,7 @@ import ProfilePage from '../pages/profile/profile.vue';
 import RecommendationPage from '../pages/recommendation/recommendation.vue';
 import AccessPage from '../pages/access/access.vue';
 import ChallengesPage from '../pages/challenges/challenges.vue';
+import NutritionPage from '../pages/nutrition/nutrition.vue';
 
 const routes : IRoutes = {
     layouts: {
@@ -99,6 +100,10 @@ const routes : IRoutes = {
         {
             path: '/challenges',
             component: ChallengesPage
+        },
+        {
+            path: '/nutrition',
+            component: NutritionPage
         },
         {
             path: '/cycle',

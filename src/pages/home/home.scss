@@ -379,3 +379,12 @@
     font-weight: 500;
     color: var(--text-secondary);
 }
+
+.home-page .energy-home {
+    background: var(--surface-2);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    .energy-home-title { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.5rem; span { color: var(--text-muted); } }
+}

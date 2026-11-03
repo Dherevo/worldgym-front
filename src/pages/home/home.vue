@@ -78,6 +78,12 @@
             <!-- How the user feels today: feeds the recommended session -->
             <CheckIn compact />
 
+            <!-- Calories eaten against the ones burned today -->
+            <div class="energy-home" v-if="energy?.ready" @click="to('/nutrition')">
+                <div class="energy-home-title">{{ $t('nutrition.homeTitle') }} <span>›</span></div>
+                <EnergyBar :day="energy" />
+            </div>
+
             <DailyHabits :restDay="restMode" />
 
             <!-- Recent workouts -->

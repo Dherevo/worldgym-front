@@ -14,6 +14,7 @@ import measurements from './pages/measurements';
 import habits from './pages/habits';
 import profile from './pages/profile';
 import challenges from './pages/challenges';
+import nutrition from './pages/nutrition';
 import access from './pages/access';
 import account from './pages/account';
 import energy from './pages/energy';
@@ -38,6 +39,7 @@ const es = {
     habits: habits.es,
     profile: profile.es,
     challenges: challenges.es,
+    nutrition: nutrition.es,
     access: access.es,
     account: account.es,
     energy: energy.es,
