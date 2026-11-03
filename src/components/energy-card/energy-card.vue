@@ -36,7 +36,7 @@
 
             <div class="energy-row" v-if="proteinLabel">
                 <div>
-                    <div class="label">{{ $t('energy.proteinTitle') }}</div>
+                    <div class="label">{{ $t('energy.proteinTitle') }} {{ $t('energy.proteinFor.' + goal) }}</div>
                     <div class="hint">{{ $t('energy.proteinHint') }}</div>
                 </div>
                 <div class="value">≈ {{ proteinLabel }} g</div>
