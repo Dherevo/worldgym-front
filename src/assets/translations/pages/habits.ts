@@ -14,6 +14,7 @@ export default {
             markDone: 'Marcar com a fet',
             markUndone: 'Desmarcar',
             error: 'Error en desar',
+            stepsBelowGoal: 'Encara et falten {{n}} passos: no es pot marcar com a feta.',
             errorLoad: 'Error en carregar els hàbits',
         },
         tips: {
@@ -85,6 +86,7 @@ export default {
             markDone: 'Marcar como hecho',
             markUndone: 'Desmarcar',
             error: 'Error al guardar',
+            stepsBelowGoal: 'Aún te faltan {{n}} pasos: no se puede marcar como hecha.',
             errorLoad: 'Error al cargar los hábitos',
         },
         tips: {
@@ -156,6 +158,7 @@ export default {
             markDone: 'Mark as done',
             markUndone: 'Unmark',
             error: 'Error saving',
+            stepsBelowGoal: 'You still need {{n}} steps: it cannot be marked as done.',
             errorLoad: 'Error loading habits',
         },
         tips: {

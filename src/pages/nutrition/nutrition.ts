@@ -41,6 +41,11 @@ class NutritionPage extends Vue {
         return this.day?.ready ? proteinRange(userStore.data, this.day.goal) : null;
     }
 
+    // General recommendation of total water a day: 2.5 L for men, 2 L for women (EFSA)
+    get waterLiters(): string {
+        return userStore.data?.gender === 'female' ? '2' : translate.currentLanguage === 'en' ? '2.5' : '2,5';
+    }
+
     get proteinPct(): number {
         const g = this.proteinGoal;
         return g && this.day ? Math.min(100, Math.round((this.day.protein / g.max) * 100)) : 0;
