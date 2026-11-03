@@ -2,9 +2,10 @@ import { Component, Vue, Prop, Watch, toNative } from "vue-facing-decorator";
 import { App, BackofficeLayout, Popup, Avatar, http, Storage, translate } from "lib";
 import auth from "@/modules/auth";
 import userStore from "@/modules/userStore";
+import UserAvatar from "@/components/user-avatar/user-avatar.vue";
 
 @Component({
-    components: { BackofficeLayout, Popup, Avatar },
+    components: { BackofficeLayout, Popup, Avatar, UserAvatar },
 })
 class Backoffice extends Vue {
 
@@ -19,6 +20,7 @@ class Backoffice extends Vue {
         { path: '/',          icon: 'prime/home',      label: 'layout.menu.dashboard' },
         // Grouped entries: `match` lists every route of the group so the entry stays active on all its tabs
         { path: '/stats',     icon: 'prime/bolt',      label: 'layout.menu.progress', match: ['/workouts', '/stats', '/routines', '/exercises'] },
+        { path: '/challenges', icon: 'prime/trophy',   label: 'layout.menu.challenges' },
     ];
 
     get menuItems() {

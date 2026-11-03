@@ -18,6 +18,7 @@ import HabitsPage from '../pages/habits/habits.vue';
 import ProfilePage from '../pages/profile/profile.vue';
 import RecommendationPage from '../pages/recommendation/recommendation.vue';
 import AccessPage from '../pages/access/access.vue';
+import ChallengesPage from '../pages/challenges/challenges.vue';
 
 const routes : IRoutes = {
     layouts: {
@@ -94,6 +95,10 @@ const routes : IRoutes = {
         {
             path: '/habits',
             component: HabitsPage
+        },
+        {
+            path: '/challenges',
+            component: ChallengesPage
         },
         {
             path: '/cycle',

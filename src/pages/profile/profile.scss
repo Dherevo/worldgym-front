@@ -102,3 +102,13 @@
     width: 100%;
     padding: 0;
 }
+
+.profile-page .photo-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .photo-info { flex: 1; min-width: 0; p { margin: 0.2rem 0 0.6rem; } }
+    .photo-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .photo-btn { cursor: pointer; display: inline-flex; align-items: center; }
+}

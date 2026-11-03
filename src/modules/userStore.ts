@@ -5,6 +5,7 @@ interface UserData {
     name: string;
     email: string;
     nickname: string;
+    avatar_url?: string | null;
     height_cm: number | null;
     weight_kg: number | null;
     gender: 'female' | 'male' | 'other' | null;
