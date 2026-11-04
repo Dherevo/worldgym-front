@@ -70,7 +70,7 @@
                 <div class="card" v-if="history.length">
                     <h2>{{ $t('nutrition.history') }}</h2>
                     <ul class="history">
-                        <li v-for="h in history" :key="h.date">
+                        <li v-for="h in history" :key="h.date" :class="{ active: h.date === date }" role="button" tabindex="0" @click="openDay(h.date)" @keyup.enter="openDay(h.date)">
                             <span class="h-date">{{ historyLabel(h.date) }}</span>
                             <span>{{ h.kcal }} <small>{{ $t('nutrition.eatenShort') }}</small></span>
                             <span>{{ h.energy ? h.energy.burned : '—' }} <small>{{ $t('nutrition.burnedShort') }}</small></span>

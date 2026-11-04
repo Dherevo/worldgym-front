@@ -69,6 +69,15 @@ class NutritionPage extends Vue {
         this.load();
     }
 
+    // Jump to a day of the history to see (or fix) what was eaten
+    openDay(date: string) {
+        if (date === this.date) return;
+        this.date = date;
+        this.adding = null;
+        this.load();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     load() {
         this.loading = true;
         const date = this.date;
