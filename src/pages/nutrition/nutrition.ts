@@ -24,9 +24,7 @@ class NutritionPage extends Vue {
     // Form to add (or edit) food in a meal
     adding: string | null = null;
     editingId: number | null = null;
-    name = '';
-    kcal: number | string = '';
-    protein: number | string = '';
+    rows: { name: string; kcal: number | string; protein: number | string }[] = [{ name: '', kcal: '', protein: '' }];
     saving = false;
 
     created() {
@@ -118,44 +116,66 @@ class NutritionPage extends Vue {
         return this.entriesOf(meal).reduce((sum, e) => sum + e.kcal, 0);
     }
 
+    blankRow() {
+        return { name: '', kcal: '' as number | string, protein: '' as number | string };
+    }
+
     openAdd(meal: string) {
         this.adding = meal;
         this.editingId = null;
-        this.name = '';
-        this.kcal = '';
-        this.protein = '';
+        this.rows = [this.blankRow()];
     }
 
     openEdit(e: any) {
         this.adding = e.meal;
         this.editingId = e.id;
-        this.name = e.name;
-        this.kcal = e.kcal;
-        this.protein = e.protein_g ?? '';
+        this.rows = [{ name: e.name, kcal: e.kcal, protein: e.protein_g ?? '' }];
     }
 
-    // Repeat something eaten before with one tap
+    addRow() {
+        this.rows.push(this.blankRow());
+    }
+
+    removeRow(i: number) {
+        this.rows.splice(i, 1);
+        if (!this.rows.length) this.rows.push(this.blankRow());
+    }
+
+    // Repeat something eaten before with one tap: fills the empty row or adds a new one
     useRecent(r: any) {
-        this.name = r.name;
-        this.kcal = r.kcal;
-        this.protein = r.protein_g ?? '';
+        const filled = { name: r.name, kcal: r.kcal, protein: r.protein_g ?? '' };
+        const last = this.rows[this.rows.length - 1];
+        if (this.isBlank(last)) this.rows.splice(this.rows.length - 1, 1, filled);
+        else this.rows.push(filled);
     }
 
+    isBlank(r: { name: string; kcal: number | string; protein: number | string }): boolean {
+        return !r.name.trim() && r.kcal === '' && r.protein === '';
+    }
+
+    isValid(r: { name: string; kcal: number | string }): boolean {
+        const k = Number(r.kcal);
+        return !!r.name.trim() && r.kcal !== '' && Number.isInteger(k) && k >= 0 && k <= 5000;
+    }
+
+    // Empty rows are ignored; every other row must be valid
     get canSave(): boolean {
-        const k = Number(this.kcal);
-        return !!this.name.trim() && this.kcal !== '' && Number.isInteger(k) && k >= 0 && k <= 5000;
+        const used = this.rows.filter(r => !this.isBlank(r));
+        return used.length > 0 && used.every(r => this.isValid(r));
     }
 
     save() {
         if (!this.canSave || this.saving || !this.adding) return;
         this.saving = true;
-        const data: any = { meal: this.adding, name: this.name.trim(), kcal: Number(this.kcal), protein_g: this.protein === '' ? null : Number(this.protein) };
-        const req = this.editingId
-            ? http.put(`/nutrition/entries/${this.editingId}`).data(data)
-            : http.post('/nutrition/entries').data({ ...data, date: this.date });
-        req.then(() => { this.adding = null; this.editingId = null; this.refresh(); })
+        const meal = this.adding;
+        const items = this.rows.filter(r => !this.isBlank(r)).map(r => ({ meal, name: r.name.trim(), kcal: Number(r.kcal), protein_g: r.protein === '' ? null : Number(r.protein) }));
+        const reqs = this.editingId
+            ? [http.put(`/nutrition/entries/${this.editingId}`).data(items[0])]
+            : items.map(data => http.post('/nutrition/entries').data({ ...data, date: this.date }));
+        Promise.all(reqs)
+        .then(() => { this.adding = null; this.editingId = null; })
         .catch(() => App.notification(translate.get('nutrition.errors.save')).setType('error').show())
-        .finally(() => { this.saving = false; });
+        .finally(() => { this.saving = false; this.refresh(); });
     }
 
     remove(e: any) {

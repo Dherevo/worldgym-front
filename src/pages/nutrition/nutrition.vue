@@ -54,11 +54,15 @@
                         <div class="chips" v-if="!editingId && recent.length">
                             <button v-for="r in recent" :key="r.name" type="button" class="chip" @click="useRecent(r)">{{ r.name }} · {{ r.kcal }}</button>
                         </div>
-                        <input type="text" v-model="name" maxlength="150" :placeholder="$t('nutrition.namePlaceholder')" required />
-                        <div class="row">
-                            <label><span>kcal</span><input type="number" inputmode="numeric" min="0" max="5000" step="1" v-model="kcal" required /></label>
-                            <label><span>{{ $t('nutrition.proteinG') }}</span><input type="number" inputmode="decimal" min="0" max="500" step="0.1" v-model="protein" /></label>
+                        <div v-for="(r, i) in rows" :key="i" class="form-row">
+                            <input type="text" v-model="r.name" maxlength="150" :placeholder="$t('nutrition.namePlaceholder')" />
+                            <div class="row">
+                                <label><span>kcal</span><input type="number" inputmode="numeric" min="0" max="5000" step="1" v-model="r.kcal" /></label>
+                                <label><span>{{ $t('nutrition.proteinG') }}</span><input type="number" inputmode="decimal" min="0" max="500" step="0.1" v-model="r.protein" /></label>
+                                <button v-if="rows.length > 1" type="button" class="row-del" @click="removeRow(i)" :aria-label="$t('nutrition.delete')">✕</button>
+                            </div>
                         </div>
+                        <button v-if="!editingId" type="button" class="btn-add" @click="addRow()">+ {{ $t('nutrition.addRow') }}</button>
                         <div class="form-actions">
                             <button type="button" class="btn-link" @click="adding = null">{{ $t('nutrition.cancel') }}</button>
                             <button type="submit" class="btn" :disabled="saving || !canSave">{{ editingId ? $t('nutrition.update') : $t('nutrition.add') }}</button>
