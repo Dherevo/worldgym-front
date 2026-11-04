@@ -34,6 +34,8 @@ class WorkoutPage extends Vue {
     logNotes = '';
     logFailed = false;
     logDropset = false;
+    // After a dropset the user chooses the weight of the next set while resting
+    nextWeight: number | null = null;
     savingSet = false;
 
     // Cercador d'exercicis (entrenament lliure)
@@ -593,6 +595,8 @@ class WorkoutPage extends Vue {
         // The API sends decimals as strings ("20.00"): they must be numbers or "+" concatenates
         this.logReps = Number(prev?.reps ?? this.targetSet?.reps_target ?? this.targetSet?.reps ?? 12) || 12;
         this.logWeight = this.isBodyweight ? 0 : (Number(prev?.weight ?? this.targetSet?.weight ?? lastSessionWeight) || 0);
+        if (this.nextWeight !== null && !this.isBodyweight) this.logWeight = Number(this.nextWeight) || 0;
+        this.nextWeight = null;
         this.logNotes = '';
         this.logFailed = false;
         this.logDropset = false;
@@ -623,6 +627,7 @@ class WorkoutPage extends Vue {
                 is_failed: this.logFailed,
                 is_dropset: this.logDropset,
             });
+            this.nextWeight = this.logDropset && !this.isBodyweight ? this.logWeight : null;
             this.doneCount++;
             this.saveProgress();
             this.startRest(restSecs);
@@ -702,6 +707,7 @@ class WorkoutPage extends Vue {
             });
         }
         this.doneCount = 0;
+        this.nextWeight = null;
         this.exerciseHistory = [];
         this.exerciseRecord = null;
         this.loggedSets = [];

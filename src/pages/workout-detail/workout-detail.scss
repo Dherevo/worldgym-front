@@ -146,11 +146,6 @@
 
                 .editing-row td { background: var(--surface-2); }
 
-                .failed-row td {
-                    opacity: 0.55;
-                    text-decoration: line-through;
-                }
-
                 .set-badge {
                     display: inline-block;
                     border-radius: 6px;

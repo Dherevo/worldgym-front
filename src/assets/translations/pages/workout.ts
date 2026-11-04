@@ -61,6 +61,7 @@ export default {
         rest: {
             title: 'Descansa!',
             skip: 'Saltar descans',
+            nextWeight: 'Pes de la següent sèrie (kg)',
         },
         choose: {
             question: 'Vols fer una altra sèrie?',
@@ -157,6 +158,7 @@ export default {
         rest: {
             title: '¡Descansa!',
             skip: 'Saltar descanso',
+            nextWeight: 'Peso de la siguiente serie (kg)',
         },
         choose: {
             question: '¿Quieres hacer otra serie?',
@@ -253,6 +255,7 @@ export default {
         rest: {
             title: 'Rest!',
             skip: 'Skip rest',
+            nextWeight: 'Weight of the next set (kg)',
         },
         choose: {
             question: 'Do you want to do another set?',
