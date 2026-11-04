@@ -252,6 +252,14 @@
                             <button class="btn-adjust" @click="adjustRest(-30)">−30s</button>
                             <button class="btn-adjust" @click="adjustRest(30)">+30s</button>
                         </div>
+                        <div class="log-field" v-if="nextWeight !== null">
+                            <label>{{ $t('workout.rest.nextWeight') }}</label>
+                            <div class="number-input">
+                                <button @click="nextWeight = Math.max(0, Number(nextWeight) - 2.5)">−</button>
+                                <input type="number" v-model.number="nextWeight" min="0" step="0.5" />
+                                <button @click="nextWeight = Number(nextWeight) + 2.5">+</button>
+                            </div>
+                        </div>
                         <button class="btn-action skip" @click="skipRest()">{{ $t('workout.rest.skip') }}</button>
                         <div class="idle-links" v-if="canFinishEarly">
                             <button class="link-btn" @click="finishExerciseEarly()">{{ $t('workout.finishEarly', { done: doneCount }) }}</button>
