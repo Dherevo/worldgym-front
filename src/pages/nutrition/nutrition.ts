@@ -217,7 +217,7 @@ class NutritionPage extends Vue {
         this.foodQuery = '';
     }
 
-    // kcal and protein of the amount typed, from the values per 100 g / 100 ml
+    // kcal and protein of the amount typed: from the values per 100 g / 100 ml, or per unit
     onAmount(r: FoodRow) {
         const a = Number(r.amount);
         if (!r.food || r.amount === '' || Number.isNaN(a) || a <= 0) {
@@ -225,13 +225,19 @@ class NutritionPage extends Vue {
             r.protein = '';
             return;
         }
-        r.kcal = Math.round(r.food.kcal_100 * a / 100);
-        r.protein = r.food.protein_100 ? Math.round(r.food.protein_100 * a / 10) / 10 : '';
+        const factor = r.food.unit === 'u' ? a : a / 100;
+        r.kcal = Math.round(r.food.kcal_100 * factor);
+        r.protein = r.food.protein_100 ? Math.round(r.food.protein_100 * factor * 10) / 10 : '';
     }
 
     // The name that is saved: with the amount, so the diary says what was eaten
     rowName(r: FoodRow): string {
-        return r.food ? `${r.food.name} (${Number(r.amount)} ${r.food.unit})` : r.name.trim();
+        return r.food ? `${r.food.name} (${Number(r.amount)} ${r.food.unit === 'u' ? 'u.' : r.food.unit})` : r.name.trim();
+    }
+
+    // What the catalog values of a food are for: "/ 100 g", "/ 100 ml" or "/ unit"
+    perLabel(f: any): string {
+        return f.unit === 'u' ? translate.get('nutrition.foods.perUnit') : `/ 100 ${f.unit}`;
     }
 
     isBlank(r: FoodRow): boolean {
@@ -254,7 +260,11 @@ class NutritionPage extends Vue {
         if (!this.canSave || this.saving || !this.adding) return;
         this.saving = true;
         const meal = this.adding;
-        const items = this.rows.filter(r => !this.isBlank(r)).map(r => ({ meal, name: this.rowName(r), kcal: Number(r.kcal), protein_g: r.protein === '' ? null : Number(r.protein) }));
+        const items = this.rows.filter(r => !this.isBlank(r)).map(r => ({
+            meal, name: this.rowName(r), kcal: Number(r.kcal), protein_g: r.protein === '' ? null : Number(r.protein),
+            // Catalog food: keep its id and the amount, so the entry stays linked to it (not sent when editing a text entry)
+            ...(r.food ? { food_id: r.food.id, amount: Number(r.amount) } : {}),
+        }));
         const reqs = this.editingId
             ? [http.put(`/nutrition/entries/${this.editingId}`).data(items[0])]
             : items.map(data => http.post('/nutrition/entries').data({ ...data, date: this.date }));
