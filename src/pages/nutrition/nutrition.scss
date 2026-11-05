@@ -70,15 +70,28 @@
         .form-row { display: flex; flex-direction: column; gap: 0.4rem; padding-bottom: 0.6rem; border-bottom: 1px dashed var(--border-color); }
         .row-del { align-self: flex-end; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0.5rem; }
         .form-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
-        .recent-box { display: flex; flex-direction: column; gap: 0.4rem; }
-        .recent-search { width: 100%; box-sizing: border-box; }
-        .recent-list {
+        .food-line { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; .amount { display: flex; align-items: center; gap: 0.3rem; input { width: 6rem; } } }
+        .food-box { display: flex; flex-direction: column; gap: 0.4rem; }
+        .food-search { width: 100%; box-sizing: border-box; }
+        .food-list {
             list-style: none; margin: 0; padding: 0; max-height: 11rem; overflow-y: auto;
             border: 1px solid var(--border-color); border-radius: 8px;
             li + li { border-top: 1px solid var(--border-color); }
             button { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; width: 100%; background: var(--surface-color); border: none; color: inherit; padding: 0.5rem 0.7rem; font-size: 0.85rem; text-align: left; cursor: pointer; }
-            .r-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .f-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
             small { flex: none; color: var(--text-muted); }
+        }
+    }
+
+    .foods-card {
+        h2 { margin: 0; font-size: 1.2rem; }
+        .foods-list {
+            list-style: none; margin: 0; padding: 0;
+            li { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; border-top: 1px solid var(--border-color); &:first-child { border-top: none; } }
+            .f-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+            .f-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            small { color: var(--text-muted); }
+            .f-btn { background: none; border: none; color: var(--highlight-text); cursor: pointer; font-size: 0.85rem; }
         }
     }
 

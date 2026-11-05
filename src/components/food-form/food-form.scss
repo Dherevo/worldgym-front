@@ -1,0 +1,18 @@
+.food-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.6rem;
+    border: 1px dashed var(--border-color);
+    border-radius: 10px;
+
+    input[type="text"] { width: 100%; box-sizing: border-box; }
+    .ff-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        label { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.8rem; color: var(--text-secondary); flex: 1; min-width: 90px; }
+        input, select { width: 100%; box-sizing: border-box; }
+    }
+    .ff-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; }
+}
