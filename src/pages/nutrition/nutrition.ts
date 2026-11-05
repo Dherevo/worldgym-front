@@ -2,7 +2,7 @@ import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import EnergyBar from "@/components/energy-bar/energy-bar.vue";
 import localDate from "@/modules/localDate";
-import { loadEnergyDay } from "@/modules/energyDay";
+import { loadEnergyDay, recalcPastDay } from "@/modules/energyDay";
 import userStore from "@/modules/userStore";
 import { proteinRange } from "@/modules/calories";
 import type { EnergyDay } from "@/modules/energyDay";
@@ -88,8 +88,27 @@ class NutritionPage extends Vue {
 
     loadHistory() {
         http.get('/nutrition/history').data({ days: 14 })
-        .then((res: any) => { this.history = res.items ?? []; })
+        .then((res: any) => { this.history = res.items ?? []; this.recalcHistory(); })
         .catch(() => {});
+    }
+
+    // One-time recalculation of the workout calories of past days with the new formula (kg lifted)
+    recalcHistory() {
+        const KEY = 'kcal-model-v2:';
+        const today = localDate();
+        for (const h of this.history) {
+            if (!h.energy || h.date >= today) continue;
+            try { if (localStorage.getItem(KEY + h.date)) continue; } catch { /* storage unavailable */ }
+            recalcPastDay(h.date)
+            .then(burned => {
+                if (burned !== null) {
+                    h.energy.burned = burned;
+                    if (h.date === this.date) this.load();
+                }
+                try { localStorage.setItem(KEY + h.date, '1'); } catch { /* storage unavailable */ }
+            })
+            .catch(() => {});
+        }
     }
 
     loadRecent() {
