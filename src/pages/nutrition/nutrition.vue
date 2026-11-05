@@ -52,19 +52,16 @@
 
                     <form v-if="adding === meal" class="add-form" @submit.prevent="save()">
                         <div class="food-box" v-if="!editingId">
-                            <template v-if="foods.length">
-                                <input type="search" class="food-search" v-model="foodQuery" :placeholder="$t('nutrition.searchFood')" />
-                                <ul class="food-list" v-if="filteredFoods.length">
-                                    <li v-for="f in filteredFoods" :key="f.id">
-                                        <button type="button" @click="useFood(f)">
-                                            <span class="f-name">{{ f.name }}</span>
-                                            <small>{{ f.kcal_100 }} kcal<template v-if="f.protein_100"> · {{ f.protein_100 }} g</template> {{ perLabel(f) }}</small>
-                                        </button>
-                                    </li>
-                                </ul>
-                                <p v-else class="muted">{{ $t('nutrition.noFood') }}</p>
-                            </template>
-                            <p v-else class="muted">{{ $t('nutrition.noFoods') }}</p>
+                            <input type="search" class="food-search" v-model="foodQuery" @input="onFoodQuery()" :placeholder="$t('nutrition.searchFood')" />
+                            <ul class="food-list" v-if="foodResults.length">
+                                <li v-for="f in foodResults" :key="f.id">
+                                    <button type="button" @click="useFood(f)">
+                                        <span class="f-name">{{ f.name }}<em v-if="f.shared" class="f-shared">{{ $t('nutrition.foods.shared') }}</em></span>
+                                        <small>{{ f.kcal_100 }} kcal<template v-if="f.protein_100"> · {{ f.protein_100 }} g</template> {{ perLabel(f) }}</small>
+                                    </button>
+                                </li>
+                            </ul>
+                            <p v-else class="muted">{{ foodQuery.trim() ? $t('nutrition.noFood') : $t('nutrition.noFoods') }}</p>
                             <FoodForm v-if="foodForm && foodForm.where === 'add'" :food="null" :presetName="foodForm.preset" @saved="onFoodSaved" @cancel="foodForm = null" />
                             <button v-else type="button" class="btn-add" @click="openFoodForm(null, foodQuery, 'add')">+ {{ foodQuery.trim() ? $t('nutrition.createFood', { name: foodQuery.trim() }) : $t('nutrition.newFood') }}</button>
                         </div>
@@ -104,8 +101,9 @@
                 <div class="card foods-card">
                     <h2>{{ $t('nutrition.foods.title') }}</h2>
                     <p class="muted">{{ $t('nutrition.foods.sub') }}</p>
-                    <ul class="foods-list" v-if="foods.length">
-                        <li v-for="f in foods" :key="f.id">
+                    <input type="search" class="food-search" v-if="myTotal > foodPageSize || myQuery" v-model="myQuery" @input="onMyQuery()" :placeholder="$t('nutrition.searchFood')" />
+                    <ul class="foods-list" v-if="myFoods.length">
+                        <li v-for="f in myFoods" :key="f.id">
                             <template v-if="foodForm && foodForm.where === 'card' && foodForm.food?.id === f.id">
                                 <FoodForm :food="f" @saved="onFoodSaved" @cancel="foodForm = null" />
                             </template>
@@ -119,6 +117,12 @@
                             </template>
                         </li>
                     </ul>
+                    <p v-else-if="myQuery" class="muted">{{ $t('nutrition.noFood') }}</p>
+                    <div class="f-pager" v-if="myTotal > foodPageSize">
+                        <button type="button" :disabled="myPage <= 1" @click="shiftMyPage(-1)">‹</button>
+                        <span>{{ $t('nutrition.foods.page', { page: myPage, pages: myPages }) }}</span>
+                        <button type="button" :disabled="myPage >= myPages" @click="shiftMyPage(1)">›</button>
+                    </div>
                     <FoodForm v-if="foodForm && foodForm.where === 'card' && !foodForm.food" :food="null" @saved="onFoodSaved" @cancel="foodForm = null" />
                     <button v-else-if="!foodForm" type="button" class="btn-add" @click="openFoodForm(null, '', 'card')">+ {{ $t('nutrition.newFood') }}</button>
                 </div>
