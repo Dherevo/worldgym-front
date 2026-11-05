@@ -15,7 +15,7 @@ export default {
         breakdownSteps: '+ {{n}} de passos ({{steps}})',
         deficit: 'dèficit de {{n}} kcal',
         soFar: 'fins ara:',
-        state: { ok: 'Dins de l'objectiu', over: 'Per sobre de l'objectiu', low: 'Per sota de l'objectiu (dèficit més gran del previst)', none: '' },
+        state: { ok: "Dins de l'objectiu", over: "Per sobre de l'objectiu", low: "Per sota de l'objectiu (dèficit més gran del previst)", none: '' },
         targetDeficit: 'Dèficit objectiu: {{min}} - {{max}} kcal',
         targetSurplus: 'Superàvit objectiu: {{min}} - {{max}} kcal',
         targetBalance: 'Balanç objectiu: de {{min}} a {{max}} kcal',

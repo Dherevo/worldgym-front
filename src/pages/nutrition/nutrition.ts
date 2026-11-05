@@ -222,9 +222,10 @@ class NutritionPage extends Vue {
         return new Date(date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
     }
 
-    // Eaten minus burned of a day; null when what was burned was not saved
+    // Eaten minus burned of a day; null when what was burned was not saved or nothing was logged
+    // (a day without food apuntat is a day not tracked, not a day of fasting, so it is not counted)
     balance(h: any): number | null {
-        return h.energy ? h.kcal - h.energy.burned : null;
+        return h.energy && h.kcal > 0 ? h.kcal - h.energy.burned : null;
     }
 
     // Did the day end inside the eating goal saved for it? (days with nothing eaten are not judged)
