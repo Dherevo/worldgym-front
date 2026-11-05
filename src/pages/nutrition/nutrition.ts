@@ -227,6 +227,14 @@ class NutritionPage extends Vue {
         return h.energy ? h.kcal - h.energy.burned : null;
     }
 
+    // Did the day end inside the eating goal saved for it? (days with nothing eaten are not judged)
+    historyState(h: any): string {
+        const e = h.energy;
+        if (!e || e.goal_min == null || !h.kcal) return 'none';
+        if (h.kcal > e.goal_max) return 'over';
+        return h.kcal >= e.goal_min ? 'ok' : 'low';
+    }
+
     balanceLabel(h: any): string {
         const b = this.balance(h);
         return b === null ? '' : (b > 0 ? '+' : '') + b;

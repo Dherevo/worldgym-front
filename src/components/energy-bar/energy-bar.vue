@@ -14,9 +14,14 @@
             <span>{{ $t('nutrition.goalRange', { min: day.min, max: day.max }) }}</span>
             <span :class="state">{{ left >= 0 ? $t('nutrition.left', { n: left }) : $t('nutrition.over', { n: -left }) }}</span>
         </div>
+        <div class="target">
+            <template v-if="goalBalance.hi <= 0">{{ $t('nutrition.targetDeficit', { min: -goalBalance.hi, max: -goalBalance.lo }) }}</template>
+            <template v-else-if="goalBalance.lo >= 0">{{ $t('nutrition.targetSurplus', { min: goalBalance.lo, max: goalBalance.hi }) }}</template>
+            <template v-else>{{ $t('nutrition.targetBalance', { min: signed(goalBalance.lo), max: signed(goalBalance.hi) }) }}</template>
+        </div>
         <div class="breakdown">
             {{ $t('nutrition.breakdown', { base: day.base, workout: day.workoutKcal }) }}<template v-if="day.stepsKcal"> {{ $t('nutrition.breakdownSteps', { n: day.stepsKcal, steps: day.steps }) }}</template>
-            · {{ balance <= 0 ? $t('nutrition.deficit', { n: -balance }) : $t('nutrition.surplus', { n: balance }) }}
+            · {{ isToday ? $t('nutrition.soFar') + ' ' : '' }}{{ balance <= 0 ? $t('nutrition.deficit', { n: -balance }) : $t('nutrition.surplus', { n: balance }) }}
         </div>
     </div>
 </template>

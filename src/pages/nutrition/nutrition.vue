@@ -87,7 +87,7 @@
                             <span class="h-date">{{ historyLabel(h.date) }}</span>
                             <span>{{ h.kcal }} <small>{{ $t('nutrition.eatenShort') }}</small></span>
                             <span>{{ h.energy ? h.energy.burned : '—' }} <small>{{ $t('nutrition.burnedShort') }}</small></span>
-                            <span class="h-balance" :class="{ deficit: (balance(h) ?? 1) <= 0 }">{{ balanceLabel(h) }}</span>
+                            <span class="h-balance" :class="historyState(h)" :title="$t('nutrition.state.' + historyState(h))">{{ balanceLabel(h) }}</span>
                         </li>
                     </ul>
                 </div>

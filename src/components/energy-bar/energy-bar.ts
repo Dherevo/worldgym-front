@@ -1,5 +1,6 @@
 import { Component, Vue, Prop, toNative } from "vue-facing-decorator";
 import type { EnergyDay } from "@/modules/energyDay";
+import localDate from "@/modules/localDate";
 
 // Calories eaten against the ones burned today, with the range to eat for the goal marked on the bar
 @Component({})
@@ -24,6 +25,20 @@ class EnergyBar extends Vue {
     // Left to eat inside the goal (its upper end); negative once over it
     get left(): number {
         return this.day.max - this.day.eaten;
+    }
+
+    // Balance (eaten - burned) that eating inside the goal range gives: negative is a deficit
+    get goalBalance(): { lo: number; hi: number } {
+        return { lo: this.day.min - this.day.burned, hi: this.day.max - this.day.burned };
+    }
+
+    signed(n: number): string {
+        return (n > 0 ? '+' : '') + n;
+    }
+
+    // Today is not over, so its balance only counts what was eaten so far
+    get isToday(): boolean {
+        return this.day.date === localDate();
     }
 
     get balance(): number {
