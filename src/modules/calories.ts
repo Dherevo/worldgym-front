@@ -30,7 +30,7 @@ function liftingKcal(sets: { reps?: number | null; weight?: number | string | nu
     const bw = bodyWeight() ?? 0;
     return sets.reduce((sum, s) => {
         const reps = Number(s.reps);
-        if (s.reps === null || s.reps === undefined || !(reps > 0)) return sum;
+        if (s.reps === null || s.reps === undefined || Number.isNaN(reps) || reps <= 0) return sum;
         const kg = Number(s.weight) > 0 ? Number(s.weight) : bw * BODYWEIGHT_SHARE;
         return sum + kg * reps * KCAL_PER_KG_REP;
     }, 0);
