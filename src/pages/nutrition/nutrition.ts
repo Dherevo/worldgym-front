@@ -31,8 +31,16 @@ class NutritionPage extends Vue {
     weighDue = false;
 
     // Personal catalog of foods (values per 100 g / 100 ml) and its form (create/edit, from a meal or the catalog card)
-    foods: any[] = [];
+    // Search in the add form (own and shared foods, looked up on the server) and the paged list of the own ones
+    readonly foodPageSize = 10;
+    foodResults: any[] = [];
     foodQuery = '';
+    foodTimer: any = null;
+    myFoods: any[] = [];
+    myQuery = '';
+    myOffset = 0;
+    myTotal = 0;
+    myTimer: any = null;
     foodForm: { food: any | null; preset: string; where: 'add' | 'card' } | null = null;
 
     // Form to add (or edit) food in a meal
@@ -43,7 +51,7 @@ class NutritionPage extends Vue {
 
     created() {
         this.load();
-        this.loadFoods();
+        this.loadMyFoods();
         this.checkWeight();
     }
 
@@ -124,15 +132,58 @@ class NutritionPage extends Vue {
         }
     }
 
-    loadFoods() {
-        http.get('/foods')
-        .then((res: any) => { this.foods = res.items ?? []; })
+    // Foods that match the text of the add form
+    searchFoods() {
+        const q = this.foodQuery.trim();
+        http.get('/foods').data({ q, pageSize: this.foodPageSize })
+        .then((res: any) => { if (q === this.foodQuery.trim()) this.foodResults = res.items ?? []; })
         .catch(() => {});
     }
 
-    get filteredFoods(): any[] {
-        const q = this.foodQuery.trim().toLowerCase();
-        return q ? this.foods.filter(f => String(f.name).toLowerCase().includes(q)) : this.foods;
+    onFoodQuery() {
+        clearTimeout(this.foodTimer);
+        this.foodTimer = setTimeout(() => this.searchFoods(), 250);
+    }
+
+    // The user's own foods, a page at a time
+    loadMyFoods() {
+        http.get('/foods').data({ scope: 'mine', q: this.myQuery.trim(), offset: this.myOffset, pageSize: this.foodPageSize })
+        .then((res: any) => {
+            // A page can be empty after deleting its last food: go back one
+            if (!(res.items ?? []).length && this.myOffset > 0) {
+                this.myOffset = Math.max(0, this.myOffset - this.foodPageSize);
+                this.loadMyFoods();
+                return;
+            }
+            this.myFoods = res.items ?? [];
+            this.myTotal = res.total ?? 0;
+        })
+        .catch(() => {});
+    }
+
+    onMyQuery() {
+        clearTimeout(this.myTimer);
+        this.myTimer = setTimeout(() => { this.myOffset = 0; this.loadMyFoods(); }, 250);
+    }
+
+    get myPage(): number {
+        return Math.floor(this.myOffset / this.foodPageSize) + 1;
+    }
+
+    get myPages(): number {
+        return Math.ceil(this.myTotal / this.foodPageSize) || 1;
+    }
+
+    shiftMyPage(n: number) {
+        const next = this.myOffset + n * this.foodPageSize;
+        if (next < 0 || next >= this.myTotal) return;
+        this.myOffset = next;
+        this.loadMyFoods();
+    }
+
+    beforeUnmount() {
+        clearTimeout(this.foodTimer);
+        clearTimeout(this.myTimer);
     }
 
     openFoodForm(food: any | null, preset: string, where: 'add' | 'card') {
@@ -142,8 +193,8 @@ class NutritionPage extends Vue {
     // After creating (from the add form) the food is picked right away; after editing only the list changes
     onFoodSaved(food: any) {
         const form = this.foodForm;
-        this.foods = [...this.foods.filter(f => f.id !== food.id), food].sort((a, b) => a.name.localeCompare(b.name));
         this.foodForm = null;
+        this.loadMyFoods();
         if (form?.where === 'add' && !form.food) {
             this.foodQuery = '';
             this.useFood(food);
@@ -155,7 +206,7 @@ class NutritionPage extends Vue {
         .then((ok: boolean) => {
             if (!ok) return;
             http.delete(`/foods/${f.id}`)
-            .then(() => { this.foods = this.foods.filter(x => x.id !== f.id); })
+            .then(() => { this.loadMyFoods(); this.searchFoods(); })
             .catch(() => App.notification(translate.get('nutrition.errors.foodDelete')).setType('error').show());
         });
     }
@@ -191,6 +242,8 @@ class NutritionPage extends Vue {
         this.adding = meal;
         this.editingId = null;
         this.rows = [this.blankRow()];
+        this.foodQuery = '';
+        this.searchFoods();
     }
 
     openEdit(e: any) {
@@ -215,6 +268,7 @@ class NutritionPage extends Vue {
         if (this.isBlank(last)) this.rows.splice(this.rows.length - 1, 1, row);
         else this.rows.push(row);
         this.foodQuery = '';
+        this.searchFoods();
     }
 
     // kcal and protein of the amount typed: from the values per 100 g / 100 ml, or per unit
