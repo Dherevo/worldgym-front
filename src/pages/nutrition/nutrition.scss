@@ -70,8 +70,16 @@
         .form-row { display: flex; flex-direction: column; gap: 0.4rem; padding-bottom: 0.6rem; border-bottom: 1px dashed var(--border-color); }
         .row-del { align-self: flex-end; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0.5rem; }
         .form-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
-        .chips { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.2rem; }
-        .chip { flex: none; border: 1px solid var(--border-color); background: var(--surface-color); color: inherit; border-radius: 999px; padding: 0.3rem 0.7rem; font-size: 0.8rem; cursor: pointer; }
+        .recent-box { display: flex; flex-direction: column; gap: 0.4rem; }
+        .recent-search { width: 100%; box-sizing: border-box; }
+        .recent-list {
+            list-style: none; margin: 0; padding: 0; max-height: 11rem; overflow-y: auto;
+            border: 1px solid var(--border-color); border-radius: 8px;
+            li + li { border-top: 1px solid var(--border-color); }
+            button { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; width: 100%; background: var(--surface-color); border: none; color: inherit; padding: 0.5rem 0.7rem; font-size: 0.85rem; text-align: left; cursor: pointer; }
+            .r-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            small { flex: none; color: var(--text-muted); }
+        }
     }
 
     .history {

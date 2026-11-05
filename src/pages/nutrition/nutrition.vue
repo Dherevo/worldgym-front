@@ -51,8 +51,17 @@
                     </ul>
 
                     <form v-if="adding === meal" class="add-form" @submit.prevent="save()">
-                        <div class="chips" v-if="!editingId && recent.length">
-                            <button v-for="r in recent" :key="r.name" type="button" class="chip" @click="useRecent(r)">{{ r.name }} · {{ r.kcal }}</button>
+                        <div class="recent-box" v-if="!editingId && recent.length">
+                            <input type="search" class="recent-search" v-model="recentQuery" :placeholder="$t('nutrition.searchRecent')" />
+                            <ul class="recent-list" v-if="filteredRecent.length">
+                                <li v-for="r in filteredRecent" :key="r.name">
+                                    <button type="button" @click="useRecent(r)">
+                                        <span class="r-name">{{ r.name }}</span>
+                                        <small>{{ r.kcal }} kcal<template v-if="r.protein_g"> · {{ r.protein_g }} g</template></small>
+                                    </button>
+                                </li>
+                            </ul>
+                            <p v-else class="muted">{{ $t('nutrition.noRecent') }}</p>
                         </div>
                         <div v-for="(r, i) in rows" :key="i" class="form-row">
                             <input type="text" v-model="r.name" maxlength="150" :placeholder="$t('nutrition.namePlaceholder')" />

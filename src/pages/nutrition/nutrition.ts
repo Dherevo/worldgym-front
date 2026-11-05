@@ -19,6 +19,7 @@ class NutritionPage extends Vue {
     loading = false;
     history: any[] = [];
     recent: any[] = [];
+    recentQuery = '';
     weighDue = false;
 
     // Form to add (or edit) food in a meal
@@ -139,6 +140,11 @@ class NutritionPage extends Vue {
     removeRow(i: number) {
         this.rows.splice(i, 1);
         if (!this.rows.length) this.rows.push(this.blankRow());
+    }
+
+    get filteredRecent(): any[] {
+        const q = this.recentQuery.trim().toLowerCase();
+        return q ? this.recent.filter(r => String(r.name).toLowerCase().includes(q)) : this.recent;
     }
 
     // Repeat something eaten before with one tap: fills the empty row or adds a new one
