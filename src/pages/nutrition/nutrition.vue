@@ -36,7 +36,7 @@
                 <div v-for="meal in meals" :key="meal" class="card meal">
                     <div class="meal-head">
                         <h2>{{ $t('nutrition.meals.' + meal) }}</h2>
-                        <span class="subtotal" v-if="entriesOf(meal).length">{{ subtotal(meal) }} kcal</span>
+                        <span class="subtotal" v-if="entriesOf(meal).length">{{ subtotal(meal) }} kcal<template v-if="proteinOf(meal)"> · {{ proteinOf(meal) }} g {{ $t('nutrition.proteinShort') }}</template></span>
                     </div>
 
                     <ul class="entries" v-if="entriesOf(meal).length">

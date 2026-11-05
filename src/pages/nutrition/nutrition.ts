@@ -117,6 +117,10 @@ class NutritionPage extends Vue {
         return this.entriesOf(meal).reduce((sum, e) => sum + e.kcal, 0);
     }
 
+    proteinOf(meal: string): number {
+        return Math.round(this.entriesOf(meal).reduce((sum, e) => sum + (Number(e.protein_g) || 0), 0));
+    }
+
     blankRow() {
         return { name: '', kcal: '' as number | string, protein: '' as number | string };
     }
