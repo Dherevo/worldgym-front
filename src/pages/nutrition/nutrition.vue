@@ -58,7 +58,7 @@
                                     <li v-for="f in filteredFoods" :key="f.id">
                                         <button type="button" @click="useFood(f)">
                                             <span class="f-name">{{ f.name }}</span>
-                                            <small>{{ f.kcal_100 }} kcal<template v-if="f.protein_100"> · {{ f.protein_100 }} g</template> / 100 {{ f.unit }}</small>
+                                            <small>{{ f.kcal_100 }} kcal<template v-if="f.protein_100"> · {{ f.protein_100 }} g</template> {{ perLabel(f) }}</small>
                                         </button>
                                     </li>
                                 </ul>
@@ -71,7 +71,7 @@
                         <div v-for="(r, i) in rows" :key="i" class="form-row">
                             <div v-if="r.food" class="food-line">
                                 <strong>{{ r.food.name }}</strong>
-                                <label class="amount"><input type="number" inputmode="decimal" min="0" step="1" v-model="r.amount" @input="onAmount(r)" :placeholder="$t('nutrition.amount')" /> <span>{{ r.food.unit }}</span></label>
+                                <label class="amount"><input type="number" inputmode="decimal" min="0" step="1" v-model="r.amount" @input="onAmount(r)" :placeholder="$t('nutrition.amount')" /> <span>{{ r.food.unit === 'u' ? 'u.' : r.food.unit }}</span></label>
                             </div>
                             <input v-else type="text" v-model="r.name" maxlength="150" :placeholder="$t('nutrition.namePlaceholder')" />
                             <div class="row">
@@ -112,7 +112,7 @@
                             <template v-else>
                                 <span class="f-main">
                                     <span class="f-name">{{ f.name }}</span>
-                                    <small>{{ f.kcal_100 }} kcal<template v-if="f.protein_100"> · {{ f.protein_100 }} g {{ $t('nutrition.proteinShort') }}</template> / 100 {{ f.unit }}</small>
+                                    <small>{{ f.kcal_100 }} kcal<template v-if="f.protein_100"> · {{ f.protein_100 }} g {{ $t('nutrition.proteinShort') }}</template> {{ perLabel(f) }}<template v-if="f.unit_g"> · {{ f.unit_g }} g</template></small>
                                 </span>
                                 <button type="button" class="f-btn" @click="openFoodForm(f, '', 'card')">{{ $t('nutrition.foods.edit') }}</button>
                                 <button type="button" class="entry-del" @click="removeFood(f)" :aria-label="$t('nutrition.delete')">✕</button>
