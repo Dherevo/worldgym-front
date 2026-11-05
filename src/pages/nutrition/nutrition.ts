@@ -1,6 +1,7 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import EnergyBar from "@/components/energy-bar/energy-bar.vue";
+import FoodForm from "@/components/food-form/food-form.vue";
 import localDate from "@/modules/localDate";
 import { loadEnergyDay, recalcPastDay } from "@/modules/energyDay";
 import userStore from "@/modules/userStore";
@@ -9,8 +10,17 @@ import type { EnergyDay } from "@/modules/energyDay";
 
 const MEALS = ['breakfast', 'lunch', 'snack', 'dinner', 'other'];
 
+// A line of the add form: free text, or a food of the catalog with the amount eaten
+interface FoodRow {
+    name: string;
+    kcal: number | string;
+    protein: number | string;
+    food?: any;
+    amount?: number | string;
+}
+
 // Food diary of a day next to what was burned, plus the follow-up of the last days
-@Component({ components: { EnergyBar } })
+@Component({ components: { EnergyBar, FoodForm } })
 class NutritionPage extends Vue {
 
     readonly meals = MEALS;
@@ -18,19 +28,22 @@ class NutritionPage extends Vue {
     day: EnergyDay | null = null;
     loading = false;
     history: any[] = [];
-    recent: any[] = [];
-    recentQuery = '';
     weighDue = false;
+
+    // Personal catalog of foods (values per 100 g / 100 ml) and its form (create/edit, from a meal or the catalog card)
+    foods: any[] = [];
+    foodQuery = '';
+    foodForm: { food: any | null; preset: string; where: 'add' | 'card' } | null = null;
 
     // Form to add (or edit) food in a meal
     adding: string | null = null;
     editingId: number | null = null;
-    rows: { name: string; kcal: number | string; protein: number | string }[] = [{ name: '', kcal: '', protein: '' }];
+    rows: FoodRow[] = [{ name: '', kcal: '', protein: '' }];
     saving = false;
 
     created() {
         this.load();
-        this.loadRecent();
+        this.loadFoods();
         this.checkWeight();
     }
 
@@ -111,10 +124,40 @@ class NutritionPage extends Vue {
         }
     }
 
-    loadRecent() {
-        http.get('/nutrition/recent')
-        .then((res: any) => { this.recent = res.items ?? []; })
+    loadFoods() {
+        http.get('/foods')
+        .then((res: any) => { this.foods = res.items ?? []; })
         .catch(() => {});
+    }
+
+    get filteredFoods(): any[] {
+        const q = this.foodQuery.trim().toLowerCase();
+        return q ? this.foods.filter(f => String(f.name).toLowerCase().includes(q)) : this.foods;
+    }
+
+    openFoodForm(food: any | null, preset: string, where: 'add' | 'card') {
+        this.foodForm = { food, preset, where };
+    }
+
+    // After creating (from the add form) the food is picked right away; after editing only the list changes
+    onFoodSaved(food: any) {
+        const form = this.foodForm;
+        this.foods = [...this.foods.filter(f => f.id !== food.id), food].sort((a, b) => a.name.localeCompare(b.name));
+        this.foodForm = null;
+        if (form?.where === 'add' && !form.food) {
+            this.foodQuery = '';
+            this.useFood(food);
+        }
+    }
+
+    removeFood(f: any) {
+        App.confirm(translate.get('nutrition.foods.confirmDelete', { name: f.name }))
+        .then((ok: boolean) => {
+            if (!ok) return;
+            http.delete(`/foods/${f.id}`)
+            .then(() => { this.foods = this.foods.filter(x => x.id !== f.id); })
+            .catch(() => App.notification(translate.get('nutrition.errors.foodDelete')).setType('error').show());
+        });
     }
 
     // A weight at least once a week keeps the calculation honest
@@ -165,26 +208,40 @@ class NutritionPage extends Vue {
         if (!this.rows.length) this.rows.push(this.blankRow());
     }
 
-    get filteredRecent(): any[] {
-        const q = this.recentQuery.trim().toLowerCase();
-        return q ? this.recent.filter(r => String(r.name).toLowerCase().includes(q)) : this.recent;
-    }
-
-    // Repeat something eaten before with one tap: fills the empty row or adds a new one
-    useRecent(r: any) {
-        const filled = { name: r.name, kcal: r.kcal, protein: r.protein_g ?? '' };
+    // Pick a food of the catalog: the row asks for the amount and works out the calories and protein
+    useFood(f: any) {
+        const row: FoodRow = { name: f.name, kcal: '', protein: '', food: f, amount: '' };
         const last = this.rows[this.rows.length - 1];
-        if (this.isBlank(last)) this.rows.splice(this.rows.length - 1, 1, filled);
-        else this.rows.push(filled);
+        if (this.isBlank(last)) this.rows.splice(this.rows.length - 1, 1, row);
+        else this.rows.push(row);
+        this.foodQuery = '';
     }
 
-    isBlank(r: { name: string; kcal: number | string; protein: number | string }): boolean {
-        return !r.name.trim() && r.kcal === '' && r.protein === '';
+    // kcal and protein of the amount typed, from the values per 100 g / 100 ml
+    onAmount(r: FoodRow) {
+        const a = Number(r.amount);
+        if (!r.food || r.amount === '' || Number.isNaN(a) || a <= 0) {
+            r.kcal = '';
+            r.protein = '';
+            return;
+        }
+        r.kcal = Math.round(r.food.kcal_100 * a / 100);
+        r.protein = r.food.protein_100 ? Math.round(r.food.protein_100 * a / 10) / 10 : '';
     }
 
-    isValid(r: { name: string; kcal: number | string }): boolean {
+    // The name that is saved: with the amount, so the diary says what was eaten
+    rowName(r: FoodRow): string {
+        return r.food ? `${r.food.name} (${Number(r.amount)} ${r.food.unit})` : r.name.trim();
+    }
+
+    isBlank(r: FoodRow): boolean {
+        return !r.food && !r.name.trim() && r.kcal === '' && r.protein === '';
+    }
+
+    isValid(r: FoodRow): boolean {
         const k = Number(r.kcal);
-        return !!r.name.trim() && r.kcal !== '' && Number.isInteger(k) && k >= 0 && k <= 5000;
+        const hasAmount = !r.food || Number(r.amount) > 0;
+        return !!r.name.trim() && hasAmount && r.kcal !== '' && Number.isInteger(k) && k >= 0 && k <= 5000;
     }
 
     // Empty rows are ignored; every other row must be valid
@@ -197,7 +254,7 @@ class NutritionPage extends Vue {
         if (!this.canSave || this.saving || !this.adding) return;
         this.saving = true;
         const meal = this.adding;
-        const items = this.rows.filter(r => !this.isBlank(r)).map(r => ({ meal, name: r.name.trim(), kcal: Number(r.kcal), protein_g: r.protein === '' ? null : Number(r.protein) }));
+        const items = this.rows.filter(r => !this.isBlank(r)).map(r => ({ meal, name: this.rowName(r), kcal: Number(r.kcal), protein_g: r.protein === '' ? null : Number(r.protein) }));
         const reqs = this.editingId
             ? [http.put(`/nutrition/entries/${this.editingId}`).data(items[0])]
             : items.map(data => http.post('/nutrition/entries').data({ ...data, date: this.date }));
@@ -215,7 +272,6 @@ class NutritionPage extends Vue {
 
     refresh() {
         this.load();
-        this.loadRecent();
     }
 
     historyLabel(date: string): string {

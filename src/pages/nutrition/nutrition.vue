@@ -51,24 +51,33 @@
                     </ul>
 
                     <form v-if="adding === meal" class="add-form" @submit.prevent="save()">
-                        <div class="recent-box" v-if="!editingId && recent.length">
-                            <input type="search" class="recent-search" v-model="recentQuery" :placeholder="$t('nutrition.searchRecent')" />
-                            <ul class="recent-list" v-if="filteredRecent.length">
-                                <li v-for="r in filteredRecent" :key="r.name">
-                                    <button type="button" @click="useRecent(r)">
-                                        <span class="r-name">{{ r.name }}</span>
-                                        <small>{{ r.kcal }} kcal<template v-if="r.protein_g"> · {{ r.protein_g }} g</template></small>
-                                    </button>
-                                </li>
-                            </ul>
-                            <p v-else class="muted">{{ $t('nutrition.noRecent') }}</p>
+                        <div class="food-box" v-if="!editingId">
+                            <template v-if="foods.length">
+                                <input type="search" class="food-search" v-model="foodQuery" :placeholder="$t('nutrition.searchFood')" />
+                                <ul class="food-list" v-if="filteredFoods.length">
+                                    <li v-for="f in filteredFoods" :key="f.id">
+                                        <button type="button" @click="useFood(f)">
+                                            <span class="f-name">{{ f.name }}</span>
+                                            <small>{{ f.kcal_100 }} kcal<template v-if="f.protein_100"> · {{ f.protein_100 }} g</template> / 100 {{ f.unit }}</small>
+                                        </button>
+                                    </li>
+                                </ul>
+                                <p v-else class="muted">{{ $t('nutrition.noFood') }}</p>
+                            </template>
+                            <p v-else class="muted">{{ $t('nutrition.noFoods') }}</p>
+                            <FoodForm v-if="foodForm && foodForm.where === 'add'" :food="null" :presetName="foodForm.preset" @saved="onFoodSaved" @cancel="foodForm = null" />
+                            <button v-else type="button" class="btn-add" @click="openFoodForm(null, foodQuery, 'add')">+ {{ foodQuery.trim() ? $t('nutrition.createFood', { name: foodQuery.trim() }) : $t('nutrition.newFood') }}</button>
                         </div>
                         <div v-for="(r, i) in rows" :key="i" class="form-row">
-                            <input type="text" v-model="r.name" maxlength="150" :placeholder="$t('nutrition.namePlaceholder')" />
+                            <div v-if="r.food" class="food-line">
+                                <strong>{{ r.food.name }}</strong>
+                                <label class="amount"><input type="number" inputmode="decimal" min="0" step="1" v-model="r.amount" @input="onAmount(r)" :placeholder="$t('nutrition.amount')" /> <span>{{ r.food.unit }}</span></label>
+                            </div>
+                            <input v-else type="text" v-model="r.name" maxlength="150" :placeholder="$t('nutrition.namePlaceholder')" />
                             <div class="row">
                                 <label><span>kcal</span><input type="number" inputmode="numeric" min="0" max="5000" step="1" v-model="r.kcal" /></label>
                                 <label><span>{{ $t('nutrition.proteinG') }}</span><input type="number" inputmode="decimal" min="0" max="500" step="0.1" v-model="r.protein" /></label>
-                                <button v-if="rows.length > 1" type="button" class="row-del" @click="removeRow(i)" :aria-label="$t('nutrition.delete')">✕</button>
+                                <button v-if="rows.length > 1 || r.food" type="button" class="row-del" @click="removeRow(i)" :aria-label="$t('nutrition.delete')">✕</button>
                             </div>
                         </div>
                         <button v-if="!editingId" type="button" class="btn-add" @click="addRow()">+ {{ $t('nutrition.addRow') }}</button>
@@ -90,6 +99,28 @@
                             <span class="h-balance" :class="historyState(h)" :title="$t('nutrition.state.' + historyState(h))">{{ balanceLabel(h) }}</span>
                         </li>
                     </ul>
+                </div>
+
+                <div class="card foods-card">
+                    <h2>{{ $t('nutrition.foods.title') }}</h2>
+                    <p class="muted">{{ $t('nutrition.foods.sub') }}</p>
+                    <ul class="foods-list" v-if="foods.length">
+                        <li v-for="f in foods" :key="f.id">
+                            <template v-if="foodForm && foodForm.where === 'card' && foodForm.food?.id === f.id">
+                                <FoodForm :food="f" @saved="onFoodSaved" @cancel="foodForm = null" />
+                            </template>
+                            <template v-else>
+                                <span class="f-main">
+                                    <span class="f-name">{{ f.name }}</span>
+                                    <small>{{ f.kcal_100 }} kcal<template v-if="f.protein_100"> · {{ f.protein_100 }} g {{ $t('nutrition.proteinShort') }}</template> / 100 {{ f.unit }}</small>
+                                </span>
+                                <button type="button" class="f-btn" @click="openFoodForm(f, '', 'card')">{{ $t('nutrition.foods.edit') }}</button>
+                                <button type="button" class="entry-del" @click="removeFood(f)" :aria-label="$t('nutrition.delete')">✕</button>
+                            </template>
+                        </li>
+                    </ul>
+                    <FoodForm v-if="foodForm && foodForm.where === 'card' && !foodForm.food" :food="null" @saved="onFoodSaved" @cancel="foodForm = null" />
+                    <button v-else-if="!foodForm" type="button" class="btn-add" @click="openFoodForm(null, '', 'card')">+ {{ $t('nutrition.newFood') }}</button>
                 </div>
             </template>
         </div>
