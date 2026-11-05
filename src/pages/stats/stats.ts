@@ -2,13 +2,14 @@ import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, translate } from "lib";
 import { Chart, registerables } from 'chart.js';
 import SectionTile from "@/components/section-tile/section-tile.vue";
+import HabitsStreak from "@/components/habits-streak/habits-streak.vue";
 
 Chart.register(...registerables);
 
 // Chart.js instances must not be reactive (Vue would wrap them in proxies)
 const charts: Record<string, Chart | null> = { monthly: null, group: null, weight: null, volume: null, reps: null };
 
-@Component({ components: { SectionTile } })
+@Component({ components: { SectionTile, HabitsStreak } })
 class StatsPage extends Vue {
 
     // Overview (the totals follow the selected range)
