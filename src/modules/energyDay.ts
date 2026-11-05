@@ -2,7 +2,7 @@ import { http } from "lib";
 import userStore from "@/modules/userStore";
 import auth from "@/modules/auth";
 import localDate from "@/modules/localDate";
-import { activityLevel, baseExpenditure, basalMetabolicRate, effectiveGoal, goalRange, kcalFromSeconds, stepsKcal } from "@/modules/calories";
+import { activityLevel, baseExpenditure, basalMetabolicRate, effectiveGoal, goalRange, kcalFromSets, stepsKcal } from "@/modules/calories";
 import type { Goal } from "@/modules/calories";
 
 export interface EnergyDay {
@@ -30,9 +30,27 @@ async function workoutKcal(date: string): Promise<number> {
     for (const w of res.items ?? []) {
         if (w.status !== 'finished') continue;
         const secs = w.active_seconds ?? (w.started_at && w.finished_at ? Math.round((new Date(w.finished_at).getTime() - new Date(w.started_at).getTime()) / 1000) : 0);
-        total += kcalFromSeconds(secs) ?? 0;
+        const sets = (w.workout_exercises ?? []).flatMap((we: any) => we.sets ?? []);
+        total += kcalFromSets(secs, sets) ?? 0;
     }
     return total;
+}
+
+// Past days keep a saved snapshot. After the energy formula changed (it now counts the kg lifted), recalculate
+// the workout part of a past day once and save it, so the history matches the workouts. Returns the new
+// total burned, or null when nothing changed.
+export async function recalcPastDay(date: string): Promise<number | null> {
+    const day: any = await http.get('/nutrition/day').data({ date });
+    const s = day.energy;
+    if (!s || s.goal_min === null || s.goal_min === undefined) return null;
+    if (!userStore.data) await auth.fetchUserData().catch(() => {});
+    const workout = await workoutKcal(date);
+    if (workout === s.workout_kcal) return null;
+    await http.put(`/nutrition/days/${date}`).data({
+        bmr: s.bmr, base_kcal: s.base_kcal, workout_kcal: workout, steps_kcal: s.steps_kcal ?? 0,
+        goal: s.goal, goal_min: s.goal_min, goal_max: s.goal_max,
+    });
+    return s.base_kcal + workout + (s.steps_kcal ?? 0);
 }
 
 // Steps logged in the steps habit on a day (0 if none)
