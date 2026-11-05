@@ -82,6 +82,9 @@
             </template>
         </div>
 
+        <!-- Streak of the daily must-dos -->
+        <HabitsStreak />
+
         <!-- Calendar: the current month, the whole year in a modal -->
         <div class="section-card calendar-card" v-if="overview">
             <div class="cal-head">

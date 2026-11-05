@@ -67,6 +67,12 @@
                 </button>
             </div>
 
+            <div class="card habits-card">
+                <h2>{{ $t('habits.card.profileTitle') }}</h2>
+                <p class="sub">{{ $t('habits.card.profileText') }}</p>
+                <button type="button" class="submit" @click="to('/habits')">{{ $t('habits.card.profileBtn') }}</button>
+            </div>
+
             <EnergyCard />
 
             <AccountSettings />
