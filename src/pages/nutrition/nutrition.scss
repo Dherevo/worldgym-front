@@ -51,14 +51,22 @@
 
     .meal-head { display: flex; justify-content: space-between; align-items: baseline; .subtotal { font-weight: 700; color: var(--primary-color); } }
 
+    .table-wrap { overflow-x: auto; }
     .entries {
-        list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column;
-        li { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0; border-top: 1px solid var(--border-color); &:first-child { border-top: none; } cursor: pointer; &:hover, &.active { background: var(--bg-hover, rgba(128,128,128,0.1)); } }
-        .entry-main { flex: 1; min-width: 0; text-align: left; background: none; border: none; color: inherit; cursor: pointer; padding: 0.2rem 0; display: flex; flex-direction: column; }
-        .entry-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        small { color: var(--text-muted); }
-        .entry-kcal { font-weight: 600; white-space: nowrap; }
-        .entry-del { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0.3rem 0.5rem; }
+        width: 100%; border-collapse: collapse; font-size: 0.88rem;
+        th { text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); padding: 0.25rem 0.4rem; border-bottom: 1px solid var(--border-color); }
+        td { padding: 0.4rem; border-top: 1px solid var(--border-color); vertical-align: middle; }
+        tbody tr:first-child td { border-top: none; }
+        .num { text-align: right; white-space: nowrap; }
+        td.num:nth-child(3) { font-weight: 600; }
+        .entry-name { word-break: break-word; }
+        .actions { white-space: nowrap; text-align: right; }
+        .btn-edit, .btn-delete {
+            background: transparent; border: none; color: var(--text-muted); cursor: pointer;
+            padding: 0.25rem 0.5rem; border-radius: 6px; line-height: 1; font-size: 1rem;
+        }
+        .btn-edit:hover { background: var(--tint-blue-bg); color: var(--tint-blue-text); }
+        .btn-delete:hover { background: var(--tint-red-bg); color: var(--tint-red-text); }
     }
 
     .btn-add { align-self: flex-start; background: none; border: none; color: var(--primary-color); font-weight: 600; cursor: pointer; padding: 0.3rem 0; }
