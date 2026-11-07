@@ -29,6 +29,7 @@ class NutritionPage extends Vue {
     loading = false;
     history: any[] = [];
     weighDue = false;
+    weights: any[] = [];
 
     // Personal catalog of foods (values per 100 g / 100 ml) and its form (create/edit, from a meal or the catalog card)
     // Search in the add form (own and shared foods, looked up on the server) and the paged list of the own ones
@@ -211,10 +212,48 @@ class NutritionPage extends Vue {
         });
     }
 
+    // Weight trend of the last weeks (needs two weighings at least 5 days apart)
+    get weightTrend(): { latest: number; date: string; perWeek: number | null } | null {
+        const items = this.weights;
+        if (!items.length) return null;
+        const last = items[items.length - 1];
+        const lastMs = new Date(last.date + 'T00:00:00').getTime();
+        const from = lastMs - 28 * 86400000;
+        const ref = items.find(i => new Date(i.date + 'T00:00:00').getTime() >= from);
+        const span = ref ? (lastMs - new Date(ref.date + 'T00:00:00').getTime()) / 86400000 : 0;
+        const perWeek = ref && span >= 5 ? ((last.weight_kg - ref.weight_kg) / span) * 7 : null;
+        return { latest: last.weight_kg, date: last.date, perWeek };
+    }
+
+    // Average deficit (kcal/day) of the logged days of the history; null with fewer than 3 days. Positive = deficit.
+    get avgDeficit(): number | null {
+        const bal = this.history.map(h => this.balance(h)).filter((b): b is number => b !== null);
+        return bal.length >= 3 ? -bal.reduce((s, b) => s + b, 0) / bal.length : null;
+    }
+
+    // kg a week that the average deficit should change (1 kg of body fat is about 7700 kcal); negative = loss
+    get expectedPerWeek(): number | null {
+        return this.avgDeficit === null ? null : (-this.avgDeficit * 7) / 7700;
+    }
+
+    // How the real trend compares with the one the deficit predicts
+    get weightVerdict(): 'match' | 'slower' | 'faster' | null {
+        const real = this.weightTrend?.perWeek, exp = this.expectedPerWeek;
+        if (real == null || exp === null) return null;
+        if (real > exp + 0.25) return 'slower';
+        return real < exp - 0.25 ? 'faster' : 'match';
+    }
+
+    kgLabel(n: number): string {
+        const s = (Math.round(n * 10) / 10).toFixed(1);
+        return (n > 0 ? '+' : '') + (translate.currentLanguage === 'en' ? s : s.replace('.', ','));
+    }
+
     // A weight at least once a week keeps the calculation honest
     checkWeight() {
         http.get('/measurements')
         .then((res: any) => {
+            this.weights = res.items ?? [];
             const last = (res.items ?? []).at(-1)?.date;
             const days = last ? (Date.now() - new Date(last + 'T00:00:00').getTime()) / 86400000 : Infinity;
             this.weighDue = days >= 7;
