@@ -39,16 +39,31 @@
                         <span class="subtotal" v-if="entriesOf(meal).length">{{ subtotal(meal) }} kcal<template v-if="proteinOf(meal)"> · {{ proteinOf(meal) }} g {{ $t('nutrition.proteinShort') }}</template></span>
                     </div>
 
-                    <ul class="entries" v-if="entriesOf(meal).length">
-                        <li v-for="e in entriesOf(meal)" :key="e.id">
-                            <button type="button" class="entry-main" @click="openEdit(e)">
-                                <span class="entry-name">{{ e.name }}</span>
-                                <small v-if="e.protein_g">{{ e.protein_g }} g {{ $t('nutrition.proteinShort') }}</small>
-                            </button>
-                            <span class="entry-kcal">{{ e.kcal }} kcal</span>
-                            <button type="button" class="entry-del" @click="remove(e)" :aria-label="$t('nutrition.delete')">✕</button>
-                        </li>
-                    </ul>
+                    <div class="table-wrap" v-if="entriesOf(meal).length">
+                        <table class="entries">
+                            <thead>
+                                <tr>
+                                    <th>{{ $t('nutrition.table.name') }}</th>
+                                    <th class="num">{{ $t('nutrition.table.amount') }}</th>
+                                    <th class="num">kcal</th>
+                                    <th class="num">{{ $t('nutrition.table.protein') }}</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="e in entriesOf(meal)" :key="e.id">
+                                    <td class="entry-name">{{ entryParts(e).name }}</td>
+                                    <td class="num">{{ entryParts(e).qty }}</td>
+                                    <td class="num">{{ e.kcal }}</td>
+                                    <td class="num">{{ e.protein_g ? e.protein_g : '—' }}</td>
+                                    <td class="actions">
+                                        <button type="button" class="btn-edit" @click="openEdit(e)" :title="$t('nutrition.edit')">✎</button>
+                                        <button type="button" class="btn-delete" @click="remove(e)" :title="$t('nutrition.delete')">✕</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                     <form v-if="adding === meal" class="add-form" @submit.prevent="save()">
                         <div class="food-box" v-if="!editingId">

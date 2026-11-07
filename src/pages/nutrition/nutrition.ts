@@ -367,10 +367,20 @@ class NutritionPage extends Vue {
         .finally(() => { this.saving = false; this.refresh(); });
     }
 
+    // The name is saved with the amount in brackets ("Pollastre cru (160 g)"): split it for the table columns
+    entryParts(e: any): { name: string; qty: string } {
+        const m = /^(.*?)\s*\(([\d.,]+\s*(?:g|ml|u\.))\)$/.exec(e.name ?? '');
+        return m ? { name: m[1], qty: m[2] } : { name: e.name, qty: '—' };
+    }
+
     remove(e: any) {
-        http.delete(`/nutrition/entries/${e.id}`)
-        .then(() => this.refresh())
-        .catch(() => App.notification(translate.get('nutrition.errors.delete')).setType('error').show());
+        App.confirm(translate.get('nutrition.confirmDeleteEntry', { name: this.entryParts(e).name }))
+        .then((ok: boolean) => {
+            if (!ok) return;
+            http.delete(`/nutrition/entries/${e.id}`)
+            .then(() => this.refresh())
+            .catch(() => App.notification(translate.get('nutrition.errors.delete')).setType('error').show());
+        });
     }
 
     refresh() {
