@@ -98,6 +98,19 @@
                     </ul>
                 </div>
 
+                <div class="card weight-card">
+                    <h2>{{ $t('nutrition.weightCard.title') }}</h2>
+                    <template v-if="weightTrend">
+                        <p class="w-big">{{ weightTrend.latest }} kg <small class="muted">· {{ historyLabel(weightTrend.date) }}</small></p>
+                        <p v-if="weightTrend.perWeek !== null">{{ $t('nutrition.weightCard.real', { n: kgLabel(weightTrend.perWeek) }) }}</p>
+                        <p v-else class="muted">{{ $t('nutrition.weightCard.needMore') }}</p>
+                        <p v-if="expectedPerWeek !== null">{{ $t('nutrition.weightCard.expected', { n: kgLabel(expectedPerWeek), kcal: Math.round(avgDeficit!) }) }}</p>
+                        <p v-if="weightVerdict" class="w-verdict" :class="weightVerdict">{{ $t('nutrition.weightCard.verdict.' + weightVerdict) }}</p>
+                    </template>
+                    <p v-else class="muted">{{ $t('nutrition.weightCard.empty') }}</p>
+                    <button type="button" class="btn-add" @click="to('/measurements')">+ {{ $t('nutrition.weightCard.log') }}</button>
+                </div>
+
                 <div class="card foods-card">
                     <h2>{{ $t('nutrition.foods.title') }}</h2>
                     <p class="muted">{{ $t('nutrition.foods.sub') }}</p>
@@ -127,6 +140,24 @@
                     <button v-else-if="!foodForm" type="button" class="btn-add" @click="openFoodForm(null, '', 'card')">+ {{ $t('nutrition.newFood') }}</button>
                 </div>
             </template>
+
+            <details class="card calc-card">
+                <summary>{{ $t('nutrition.calc.title') }}</summary>
+                <h3>{{ $t('nutrition.calc.burnedTitle') }}</h3>
+                <p>{{ $t('nutrition.calc.burned') }}</p>
+                <h3>{{ $t('nutrition.calc.eatenTitle') }}</h3>
+                <p>{{ $t('nutrition.calc.eaten') }}</p>
+                <h3>{{ $t('nutrition.calc.goalTitle') }}</h3>
+                <p>{{ $t('nutrition.calc.goal') }}</p>
+                <h3>{{ $t('nutrition.calc.marginTitle') }}</h3>
+                <p>{{ $t('nutrition.calc.margin') }}</p>
+                <h3>{{ $t('nutrition.calc.weightTitle') }}</h3>
+                <p>{{ $t('nutrition.calc.weight') }}</p>
+                <h3>{{ $t('nutrition.calc.tipsTitle') }}</h3>
+                <ul>
+                    <li v-for="n in 6" :key="n">{{ $t('nutrition.calc.tip' + n) }}</li>
+                </ul>
+            </details>
         </div>
     </AppPage>
 </template>
