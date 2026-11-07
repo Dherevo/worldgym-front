@@ -225,9 +225,11 @@ class NutritionPage extends Vue {
         return { latest: last.weight_kg, date: last.date, perWeek };
     }
 
-    // Average deficit (kcal/day) of the logged days of the history; null with fewer than 3 days. Positive = deficit.
+    // Average deficit (kcal/day) of the logged, finished days of the history; null with fewer than 3 days. Positive = deficit.
     get avgDeficit(): number | null {
-        const bal = this.history.map(h => this.balance(h)).filter((b): b is number => b !== null);
+        // Today is left out: it is not finished, so its deficit would look bigger than it ends up
+        const today = localDate();
+        const bal = this.history.filter(h => h.date < today).map(h => this.balance(h)).filter((b): b is number => b !== null);
         return bal.length >= 3 ? -bal.reduce((s, b) => s + b, 0) / bal.length : null;
     }
 
