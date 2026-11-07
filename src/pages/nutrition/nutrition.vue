@@ -104,7 +104,7 @@
                         <p class="w-big">{{ weightTrend.latest }} kg <small class="muted">· {{ historyLabel(weightTrend.date) }}</small></p>
                         <p v-if="weightTrend.perWeek !== null">{{ $t('nutrition.weightCard.real', { n: kgLabel(weightTrend.perWeek) }) }}</p>
                         <p v-else class="muted">{{ $t('nutrition.weightCard.needMore') }}</p>
-                        <p v-if="expectedPerWeek !== null">{{ $t('nutrition.weightCard.expected', { n: kgLabel(expectedPerWeek), kcal: Math.round(avgDeficit!) }) }}</p>
+                        <p v-if="expectedPerWeek !== null">{{ $t('nutrition.weightCard.expected', { n: kgLabel(expectedPerWeek), kcal: Math.round(avgDeficit) }) }}</p>
                         <p v-if="weightVerdict" class="w-verdict" :class="weightVerdict">{{ $t('nutrition.weightCard.verdict.' + weightVerdict) }}</p>
                     </template>
                     <p v-else class="muted">{{ $t('nutrition.weightCard.empty') }}</p>
