@@ -1,0 +1,41 @@
+.circuit-page {
+    min-height: 100%;
+    background: var(--background-color);
+    padding: 1rem;
+
+    .center-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; gap: 1rem; }
+
+    .c-card {
+        max-width: 520px; margin: 0 auto; padding: 1.5rem 1.25rem;
+        background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 20px;
+        display: flex; flex-direction: column; gap: 0.9rem; text-align: center;
+        h1 { margin: 0; font-size: 1.6rem; color: var(--text-color); }
+    }
+
+    .c-big-minutes { margin: 0; font-size: 1.3rem; font-weight: 700; color: var(--primary-color); }
+    .c-hint { margin: 0; color: var(--text-secondary); font-size: 0.9rem; line-height: 1.4; }
+
+    .c-list {
+        list-style: none; margin: 0; padding: 0; text-align: left;
+        li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.55rem 0; border-top: 1px solid var(--border-color); &:first-child { border-top: none; } }
+    }
+
+    .c-btn {
+        border: none; border-radius: 16px; padding: 1rem; font-size: 1.15rem; font-weight: 800; cursor: pointer;
+        background: var(--primary-color); color: #fff;
+        &.done { padding: 1.6rem 1rem; font-size: 1.6rem; }
+        &:active { transform: scale(0.98); }
+    }
+
+    .c-link { background: none; border: none; color: var(--text-muted); text-decoration: underline; cursor: pointer; font-size: 0.9rem; &:disabled { opacity: 0.4; cursor: default; } }
+    .c-links { display: flex; justify-content: center; gap: 1.5rem; }
+
+    .running {
+        .c-timer { font-size: 4.5rem; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; color: var(--text-color); &.low { color: #d97706; } }
+        .c-round { color: var(--text-muted); font-size: 0.95rem; }
+        .c-now { padding: 0.8rem 0; }
+        .c-now-name { font-size: 1.9rem; font-weight: 800; color: var(--text-color); }
+        .c-now-reps { font-size: 2.6rem; font-weight: 800; color: var(--primary-color); }
+        .c-next, .c-stats { color: var(--text-secondary); font-size: 0.9rem; }
+    }
+}

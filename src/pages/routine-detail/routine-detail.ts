@@ -18,7 +18,7 @@ class RoutineDetailPage extends Vue {
 
     showDayForm = false;
     editingDay: any = null;
-    dayForm = { day_number: 1, name: '' };
+    dayForm: any = { day_number: 1, name: '', circuit_minutes: '' };
     savingDay = false;
 
     showExerciseForm = false;
@@ -65,6 +65,8 @@ class RoutineDetailPage extends Vue {
 
     // Estimated energy of a day from its planned sets and rests
     dayKcal(day: any): string {
+        // A circuit has no planned sets or rests to estimate from
+        if (day.circuit_minutes) return '';
         const secs = (day.exercises ?? []).reduce((sum: number, ex: any) => sum + plannedSeconds(ex.sets_target, ex.rest_seconds), 0);
         return kcalLabel(kcalFromSeconds(secs, MET_PLANNED));
     }
@@ -101,6 +103,8 @@ class RoutineDetailPage extends Vue {
     }
 
     startDay(day: any) {
+        // A circuit day has its own screen: countdown and rounds without rest
+        if (day.circuit_minutes) return this.to(`/circuit/${this.routineId}/${day.id}`);
         const today = new Date().toISOString().split('T')[0];
         this.starting = true;
         http.post(`/routines/${this.routineId}/days/${day.id}/start`)
@@ -160,22 +164,24 @@ class RoutineDetailPage extends Vue {
     openAddDay() {
         this.editingDay = null;
         const nextNum = (this.routine?.days?.length || 0) + 1;
-        this.dayForm = { day_number: nextNum, name: '' };
+        this.dayForm = { day_number: nextNum, name: '', circuit_minutes: '' };
         this.showDayForm = true;
     }
 
     openEditDay(day: any) {
         this.editingDay = day;
-        this.dayForm = { day_number: day.day_number, name: day.name };
+        this.dayForm = { day_number: day.day_number, name: day.name, circuit_minutes: day.circuit_minutes ?? '' };
         this.showDayForm = true;
     }
 
     saveDay() {
         if (!this.dayForm.name.trim()) return;
         this.savingDay = true;
+        // 0 = a normal day (not a circuit)
+        const body = { ...this.dayForm, circuit_minutes: Number(this.dayForm.circuit_minutes) > 0 ? Number(this.dayForm.circuit_minutes) : 0 };
         const req = this.editingDay
-            ? http.put(`/routines/${this.routineId}/days/${this.editingDay.id}`).data(this.dayForm)
-            : http.post(`/routines/${this.routineId}/days`).data(this.dayForm);
+            ? http.put(`/routines/${this.routineId}/days/${this.editingDay.id}`).data(body)
+            : http.post(`/routines/${this.routineId}/days`).data(body);
 
         req.then(() => {
             this.showDayForm = false;
@@ -242,7 +248,10 @@ class RoutineDetailPage extends Vue {
         this.exerciseQuery = '';
         this.editingExercise = null;
         const nextOrder = (day.exercises?.length || 0) + 1;
-        this.exerciseForm = { exercise_id: null, order_index: nextOrder, sets_target: 3, reps_target: 10, weight_target: 0, rest_seconds: 90 };
+        // In a circuit each exercise is done once per round: no sets, weight or rest to plan
+        this.exerciseForm = day.circuit_minutes
+            ? { exercise_id: null, order_index: nextOrder, sets_target: 1, reps_target: 10, weight_target: 0, rest_seconds: 0 }
+            : { exercise_id: null, order_index: nextOrder, sets_target: 3, reps_target: 10, weight_target: 0, rest_seconds: 90 };
         this.showExerciseForm = true;
     }
 

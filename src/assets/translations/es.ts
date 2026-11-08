@@ -7,6 +7,7 @@ import routineDetail from './pages/routineDetail';
 import workouts from './pages/workouts';
 import workoutDetail from './pages/workoutDetail';
 import workout from './pages/workout';
+import circuit from './pages/circuit';
 import stats from './pages/stats';
 import onboarding from './pages/onboarding';
 import cycle from './pages/cycle';
@@ -32,6 +33,7 @@ const es = {
     workouts: workouts.es,
     workoutDetail: workoutDetail.es,
     workout: workout.es,
+    circuit: circuit.es,
     stats: stats.es,
     onboarding: onboarding.es,
     cycle: cycle.es,
