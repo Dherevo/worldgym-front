@@ -10,6 +10,7 @@
                     <option value="u">{{ $t('nutrition.foods.unitOne') }}</option>
                 </select>
             </label>
+            <label v-if="unit !== 'u'"><span>{{ $t('nutrition.foods.refAmount', { unit }) }}</span><input type="number" inputmode="decimal" min="0" step="any" placeholder="100" v-model="refAmount" /></label>
             <label><span>kcal {{ per }}</span><input type="number" inputmode="decimal" min="0" max="5000" step="0.1" v-model="kcal" /></label>
             <label><span>{{ $t('nutrition.foods.protein', { per }) }}</span><input type="number" inputmode="decimal" min="0" max="500" step="0.1" v-model="protein" /></label>
             <label v-if="unit === 'u'"><span>{{ $t('nutrition.foods.unitWeight') }}</span><input type="number" inputmode="decimal" min="0" step="0.1" v-model="unitG" /></label>
