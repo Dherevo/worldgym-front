@@ -192,13 +192,13 @@ class NutritionPage extends Vue {
     }
 
     // After creating (from the add form) the food is picked right away; after editing only the list changes
-    onFoodSaved(food: any) {
+    onFoodSaved(food: any, eaten: number | null = null) {
         const form = this.foodForm;
         this.foodForm = null;
         this.loadMyFoods();
         if (form?.where === 'add' && !form.food) {
             this.foodQuery = '';
-            this.useFood(food);
+            this.useFood(food, eaten);
         }
     }
 
@@ -303,11 +303,13 @@ class NutritionPage extends Vue {
     }
 
     // Pick a food of the catalog: the row asks for the amount and works out the calories and protein
-    useFood(f: any) {
-        const row: FoodRow = { name: f.name, kcal: '', protein: '', food: f, amount: '' };
+    useFood(f: any, eaten: number | null = null) {
+        const row: FoodRow = { name: f.name, kcal: '', protein: '', food: f, amount: eaten ?? '' };
         const last = this.rows[this.rows.length - 1];
         if (this.isBlank(last)) this.rows.splice(this.rows.length - 1, 1, row);
         else this.rows.push(row);
+        // Work out kcal and protein on the reactive row, not on the plain object
+        if (eaten) this.onAmount(this.rows[this.rows.indexOf(row)] ?? this.rows[this.rows.length - 1]);
         this.foodQuery = '';
         this.searchFoods();
     }
