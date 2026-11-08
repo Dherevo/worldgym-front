@@ -103,11 +103,13 @@
 
                 <div class="card" v-if="history.length">
                     <h2>{{ $t('nutrition.history') }}</h2>
+                    <p class="muted history-protein" v-if="proteinSummary">{{ $t('nutrition.proteinSummary', { reached: proteinSummary.reached, days: proteinSummary.days, avg: proteinSummary.avg, min: proteinGoal?.min }) }}</p>
                     <ul class="history">
                         <li v-for="h in history" :key="h.date" :class="{ active: h.date === date }" role="button" tabindex="0" @click="openDay(h.date)" @keyup.enter="openDay(h.date)">
                             <span class="h-date">{{ historyLabel(h.date) }}</span>
                             <span>{{ h.kcal }} <small>{{ $t('nutrition.eatenShort') }}</small></span>
                             <span>{{ h.energy ? h.energy.burned : '—' }} <small>{{ $t('nutrition.burnedShort') }}</small></span>
+                            <span class="h-protein" :class="{ ok: proteinOk(h) === true, short: proteinOk(h) === false }">{{ h.kcal ? Math.round(h.protein_g || 0) : '—' }} <small>{{ $t('nutrition.proteinShort') }}</small></span>
                             <span class="h-balance" :class="historyState(h)" :title="$t('nutrition.state.' + historyState(h))">{{ balanceLabel(h) }}</span>
                         </li>
                     </ul>

@@ -409,6 +409,25 @@ class NutritionPage extends Vue {
         return h.kcal >= e.goal_min ? 'ok' : 'low';
     }
 
+    // Did the day reach the minimum protein? null for days without food apuntat (not judged) or without a goal
+    proteinOk(h: any): boolean | null {
+        const g = this.proteinGoal;
+        if (!g || !h.kcal) return null;
+        return (h.protein_g ?? 0) >= g.min;
+    }
+
+    // Protein of the finished, logged days of the history (today is left out: it can still grow)
+    get proteinSummary(): { reached: number; days: number; avg: number } | null {
+        const today = localDate();
+        const g = this.proteinGoal;
+        if (!g) return null;
+        const days = this.history.filter(h => h.date < today && h.kcal > 0);
+        if (days.length < 3) return null;
+        const reached = days.filter(h => (h.protein_g ?? 0) >= g.min).length;
+        const avg = Math.round(days.reduce((s, h) => s + (h.protein_g ?? 0), 0) / days.length);
+        return { reached, days: days.length, avg };
+    }
+
     balanceLabel(h: any): string {
         const b = this.balance(h);
         return b === null ? '' : (b > 0 ? '+' : '') + b;
