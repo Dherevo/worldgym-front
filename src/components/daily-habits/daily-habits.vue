@@ -19,6 +19,7 @@
                         <span class="habit-name">{{ habitName(h) }}</span>
                         <span class="habit-goal" v-if="goalLabel(h)">{{ $t('habits.card.goal') }}: {{ goalLabel(h) }}</span>
                     </div>
+                    <div class="habit-last" :class="{ never: !h.last_done }">{{ lastDone(h) }}</div>
 
                     <div class="habit-inputs" v-if="h.kind === 'steps'">
                         <input type="number" inputmode="numeric" min="0" max="100000" step="100"

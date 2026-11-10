@@ -13,6 +13,7 @@ export default {
             perHabit: 'Per hàbit',
             bestShort: 'millor {{n}}',
         },
+        lastDone: { never: 'Encara no fet', today: 'Últim cop: avui', yesterday: 'Últim cop: ahir', days: 'Últim cop: fa {{n}} dies' },
         names: { steps: 'Passos', abs: 'Abdominals', warmup: 'Escalfament', stretch: 'Estiraments' },
         card: {
             inWorkoutHint: 'Opcional, al final de l\'entreno',
@@ -101,6 +102,7 @@ export default {
             perHabit: 'Por hábito',
             bestShort: 'mejor {{n}}',
         },
+        lastDone: { never: 'Aún sin hacer', today: 'Última vez: hoy', yesterday: 'Última vez: ayer', days: 'Última vez: hace {{n}} días' },
         names: { steps: 'Pasos', abs: 'Abdominales', warmup: 'Calentamiento', stretch: 'Estiramientos' },
         card: {
             inWorkoutHint: 'Opcional, al final del entreno',
@@ -189,6 +191,7 @@ export default {
             perHabit: 'Per habit',
             bestShort: 'best {{n}}',
         },
+        lastDone: { never: 'Not done yet', today: 'Last done: today', yesterday: 'Last done: yesterday', days: 'Last done: {{n}} days ago' },
         names: { steps: 'Steps', abs: 'Abs', warmup: 'Warm-up', stretch: 'Stretching' },
         card: {
             inWorkoutHint: 'Optional, at the end of the workout',

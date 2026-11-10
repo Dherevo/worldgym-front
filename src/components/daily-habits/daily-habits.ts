@@ -1,6 +1,7 @@
 import { Component, Vue, Prop, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
+import { lastDoneLabel } from "@/modules/lastDone";
 import SectionTile from "@/components/section-tile/section-tile.vue";
 
 // Daily must-dos (steps, abs, custom) shown on the home page, whatever the routine day is.
@@ -51,6 +52,10 @@ class DailyHabits extends Vue {
             };
         }
         this.drafts = drafts;
+    }
+
+    lastDone(h: any): string {
+        return lastDoneLabel(h.last_done);
     }
 
     get doneCount(): number {

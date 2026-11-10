@@ -49,6 +49,7 @@ class NutritionPage extends Vue {
     editingId: number | null = null;
     rows: FoodRow[] = [{ name: '', kcal: '', protein: '' }];
     saving = false;
+    copying = false;
 
     created() {
         this.load();
@@ -385,6 +386,28 @@ class NutritionPage extends Vue {
             .then(() => this.refresh())
             .catch(() => App.notification(translate.get('nutrition.errors.delete')).setType('error').show());
         });
+    }
+
+    // Same breakfast as the day before: copy what the previous day has in this meal (the catalog link and amount go with it)
+    copyPrevious(meal: string) {
+        if (this.copying) return;
+        const d = new Date(this.date + 'T00:00:00');
+        d.setDate(d.getDate() - 1);
+        this.copying = true;
+        http.get('/nutrition/day').data({ date: localDate(d) })
+        .then((res: any) => {
+            const prev = (res.entries ?? []).filter((e: any) => e.meal === meal);
+            if (!prev.length) {
+                App.notification(translate.get('nutrition.copyPrevEmpty')).show();
+                return null;
+            }
+            return Promise.all(prev.map((e: any) => http.post('/nutrition/entries').data({
+                date: this.date, meal, name: e.name, kcal: e.kcal, protein_g: e.protein_g,
+                ...(e.food_id ? { food_id: e.food_id, amount: e.amount } : {}),
+            })));
+        })
+        .catch(() => App.notification(translate.get('nutrition.errors.copy')).setType('error').show())
+        .finally(() => { this.copying = false; this.refresh(); });
     }
 
     refresh() {

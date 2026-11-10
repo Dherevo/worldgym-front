@@ -328,6 +328,7 @@
                                     <th>{{ $t('workout.progress.reps') }}</th>
                                     <th>{{ $t('workout.progress.weight') }}</th>
                                     <th>{{ $t('workout.progress.notes') }}</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -340,6 +341,7 @@
                                             <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.reps) }}</small></td>
                                             <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.weight > 0">{{ compareText(s.weight, prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.weight, ' kg') }}</small></td>
                                             <td class="note-cell" @click="openNote($event, s.notes)">{{ s.notes || '—' }}</td>
+                                            <td class="edit-cell"><button class="set-edit-btn" @click="openEdit(exIdx, s)">✎</button></td>
                                         </tr>
                                     </template>
                                     <tr v-else class="set-row-empty">
@@ -355,6 +357,7 @@
                                         <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, prevFor(i, loggedSets)?.reps) }}</small></td>
                                         <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || prevFor(i, loggedSets)?.weight > 0">{{ compareText(s.weight, prevFor(i, loggedSets)?.weight, ' kg') }}</small></td>
                                         <td class="note-cell" @click="openNote($event, s.notes)">{{ s.notes || '—' }}</td>
+                                        <td class="edit-cell"><button class="set-edit-btn" @click="openEdit(exIdx, s)">✎</button></td>
                                     </tr>
 
                                     <!-- Fila live: valors que s'estan introduint -->
@@ -402,6 +405,37 @@
 
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- Edit / delete a set already logged -->
+                <div v-if="editing" class="modal-overlay" @click.self="closeEdit()">
+                    <div class="modal edit-set-modal">
+                        <h3>{{ $t('workout.editSet.title', { n: editing.set.set_number ?? '' }) }}</h3>
+                        <div class="log-field">
+                            <label>{{ $t('workout.log.repetitions') }}</label>
+                            <div class="number-input">
+                                <button @click="editing.reps = Math.max(1, editing.reps - 1)">−</button>
+                                <input type="number" v-model.number="editing.reps" min="1" />
+                                <button @click="editing.reps++">+</button>
+                            </div>
+                        </div>
+                        <div class="log-field" v-if="!editingBodyweight">
+                            <label>{{ $t('workout.log.weightKg') }}</label>
+                            <div class="number-input">
+                                <button @click="editing.weight = Math.max(0, editing.weight - 2.5)">−</button>
+                                <input type="number" v-model.number="editing.weight" min="0" step="0.5" />
+                                <button @click="editing.weight += 2.5">+</button>
+                            </div>
+                        </div>
+                        <div class="set-flags">
+                            <button class="flag-btn failed" :class="{ active: editing.failed }" type="button" @click="editing.failed = !editing.failed">✕ {{ $t('workout.log.failed') }}</button>
+                            <button class="flag-btn dropset" :class="{ active: editing.dropset }" type="button" @click="editing.dropset = !editing.dropset">↓ {{ $t('workout.log.dropset') }}</button>
+                        </div>
+                        <input type="text" class="log-notes" v-model="editing.notes" :placeholder="$t('workout.log.notesPlaceholder')" />
+                        <button class="btn-action confirm" :disabled="savingEdit" @click="saveEdit()">{{ $t('workout.editSet.save') }}</button>
+                        <button class="btn-action skip" :disabled="savingEdit" @click="closeEdit()">{{ $t('workout.editSet.cancel') }}</button>
+                        <button class="link-btn danger" :disabled="savingEdit" @click="deleteEdit()">{{ $t('workout.editSet.delete') }}</button>
                     </div>
                 </div>
 

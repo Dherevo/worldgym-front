@@ -12,10 +12,9 @@ class HomePage extends Vue {
 
     activeWorkout: any = null;
 
-    defaultRoutine: any = null;
-    nextDay: any = null;
-    doneDayIds: number[] = [];
-    showDayPicker = false;
+    // Active routines (the user can switch several on): each with its days and the day that comes next
+    activeRoutines: { routine: any; nextDay: any; doneDayIds: number[] }[] = [];
+    dayPickerEntry: { routine: any; nextDay: any; doneDayIds: number[] } | null = null;
     loadingRoutine = false;
     starting = false;
 
@@ -63,6 +62,11 @@ class HomePage extends Vue {
         return missing > w.days_left + (w.trained_today ? 0 : 1);
     }
 
+    // With a single active routine the card works as always; with several, each one gets its own start button
+    get defaultRoutine(): any { return this.activeRoutines[0]?.routine ?? null; }
+    get nextDay(): any { return this.activeRoutines[0]?.nextDay ?? null; }
+    get doneDayIds(): number[] { return this.activeRoutines[0]?.doneDayIds ?? []; }
+
     fetchActiveWorkout() {
         http.get('/workouts/active')
         .then((res: any) => { this.activeWorkout = res?.id ? res : null; })
@@ -74,40 +78,38 @@ class HomePage extends Vue {
         http.get('/routines')
         .then((res: any) => {
             const routines = res.items ?? [];
-            const def = routines.find((r: any) => r.is_default);
             this.otherRoutines = routines.filter((r: any) => !r.is_default);
 
-            if (!def) { this.loadingRoutine = false; return; }
-
-            http.get(`/routines/${def.id}`)
-            .then((r: any) => {
-                this.defaultRoutine = r;
-                this.determineNextDay();
-            })
-            .finally(() => { this.loadingRoutine = false; });
+            return Promise.all(routines.filter((r: any) => r.is_default).map((r: any) => this.loadEntry(r.id)));
         })
-        .catch(() => { this.loadingRoutine = false; });
+        .then((entries: any[]) => { this.activeRoutines = entries.filter(Boolean); })
+        .catch(() => {})
+        .finally(() => { this.loadingRoutine = false; });
     }
 
-    determineNextDay() {
-        const days = this.defaultRoutine?.days ?? [];
-        if (!days.length) return;
-
-        http.get(`/routines/${this.defaultRoutine.id}/next-day`)
-        .then((res: any) => { this.nextDay = res.day; this.doneDayIds = res.done_day_ids ?? []; })
-        .catch(() => { this.nextDay = days[0]; });
+    // A routine with its days and the next day to train; null if it has no days
+    loadEntry(id: number): Promise<any> {
+        return http.get(`/routines/${id}`)
+        .then((routine: any) => {
+            const days = routine.days ?? [];
+            if (!days.length) return null;
+            return http.get(`/routines/${id}/next-day`)
+            .then((res: any) => ({ routine, nextDay: res.day, doneDayIds: res.done_day_ids ?? [] }))
+            .catch(() => ({ routine, nextDay: days[0], doneDayIds: [] }));
+        })
+        .catch(() => null);
     }
 
     startNextDay() {
         this.startDay(this.nextDay);
     }
 
-    // Starts any day of the default routine (the suggested one or one picked by the user)
-    startDay(day: any) {
-        if (!day || this.starting) return;
+    // Starts any day of an active routine (the suggested one or one picked by the user)
+    startDay(day: any, entry: any = this.activeRoutines[0]) {
+        if (!day || !entry || this.starting) return;
         const today = new Date().toISOString().split('T')[0];
         this.starting = true;
-        http.post(`/routines/${this.defaultRoutine.id}/days/${day.id}/start`)
+        http.post(`/routines/${entry.routine.id}/days/${day.id}/start`)
         .data({ date: today, notes: day.name })
         .then((res: any) => { this.to(`/workout/${res.id}`); })
         .catch(() => App.notification(translate.get('home.errors.start')).setType('error').show())

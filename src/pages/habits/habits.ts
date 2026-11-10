@@ -1,6 +1,7 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
+import { lastDoneLabel } from "@/modules/lastDone";
 
 @Component({})
 class HabitsPage extends Vue {
@@ -75,6 +76,10 @@ class HabitsPage extends Vue {
         if (t.schedule_type === 'weekdays') return (t.schedule_days ?? []).map((d: number) => translate.get('habits.page.days.' + d)).join(' ');
         if (t.schedule_type === 'interval') return `${translate.get('habits.page.schedule.every')} ${t.schedule_every} ${translate.get('habits.page.schedule.days')}`;
         return translate.get('habits.page.schedule.daily');
+    }
+
+    lastDone(h: any): string {
+        return lastDoneLabel(h.last_done);
     }
 
     habitName(h: any): string {
@@ -186,7 +191,7 @@ class HabitsPage extends Vue {
         .finally(() => { this.historyLoading = false; });
     }
 
-    // Last 30 days oldest first: done / missed (logged but not completed) / empty
+    // Last 30 days oldest first: done / missed (due and not completed, today excluded) / pending today / off (not scheduled)
     get historyCells(): any[] {
         if (!this.history) return [];
         const byDate: Record<string, any> = {};
@@ -199,7 +204,10 @@ class HabitsPage extends Vue {
             const day = new Date(y, m - 1, d - i);
             const key = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
             const log = byDate[key];
-            cells.push({ date: key, day: day.getDate(), state: log ? (log.completed ? 'done' : 'missed') : (due.has(key) ? 'empty' : 'off') });
+            let state = 'off';
+            if (log?.completed) state = 'done';
+            else if (log || due.has(key)) state = key < this.history.to ? 'missed' : 'empty';
+            cells.push({ date: key, day: day.getDate(), state });
         }
         return cells;
     }

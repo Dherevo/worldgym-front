@@ -95,6 +95,7 @@ export default {
             saveSet: 'Error al desar la sèrie',
         },
         finishConfirm: 'Finalitzar l\'entrenament?',
+        editSet: { title: 'Editar sèrie {{n}}', save: 'Desar', delete: 'Eliminar sèrie', deleteConfirm: 'Eliminar aquesta sèrie?', cancel: 'Cancel·lar', error: 'Error en editar la sèrie' },
     },
     es: {
         loading: 'Cargando entrenamiento...',
@@ -192,6 +193,7 @@ export default {
             saveSet: 'Error al guardar la serie',
         },
         finishConfirm: '¿Finalizar el entrenamiento?',
+        editSet: { title: 'Editar serie {{n}}', save: 'Guardar', delete: 'Eliminar serie', deleteConfirm: '¿Eliminar esta serie?', cancel: 'Cancelar', error: 'Error al editar la serie' },
     },
     en: {
         loading: 'Loading workout...',
@@ -289,5 +291,6 @@ export default {
             saveSet: 'Error saving set',
         },
         finishConfirm: 'Finish the workout?',
+        editSet: { title: 'Edit set {{n}}', save: 'Save', delete: 'Delete set', deleteConfirm: 'Delete this set?', cancel: 'Cancel', error: 'Error editing the set' },
     },
 };

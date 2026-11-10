@@ -100,3 +100,9 @@
     font-size: 0.85rem;
     color: var(--text-secondary);
 }
+
+.daily-habits .habit-last {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    &.never { color: var(--text-muted); font-style: italic; }
+}
