@@ -28,7 +28,10 @@
                             {{ cloningId === r.id ? $t('routines.cloning') : $t('routines.useTemplate') }}
                         </button>
                         <button v-if="canEdit(r)" @click="openEdit(r)">{{ $t('routines.edit') }}</button>
-                        <button v-if="!r.is_global && !r.is_default" @click="setDefault(r)">{{ $t('routines.makeDefault') }}</button>
+                        <label v-if="!r.is_global" class="active-switch">
+                            <input type="checkbox" :checked="r.is_default" @change="toggleActive(r)" />
+                            <span>{{ $t('routines.activeToggle') }}</span>
+                        </label>
                         <button v-if="canEdit(r)" class="danger" @click="deleteRoutine(r)">{{ $t('routines.delete') }}</button>
                     </div>
                 </div>

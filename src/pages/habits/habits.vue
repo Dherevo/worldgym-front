@@ -18,7 +18,7 @@
             <div class="habit-row" :class="{ inactive: !h.is_active }">
                 <div class="drag-handle" draggable="true" :title="$t('habits.page.dragToReorder')"
                     @dragstart="dragStart(i)" @dragend="dragEnd()">⠿</div>
-                <div class="habit-name">{{ habitName(h) }}</div>
+                <div class="habit-name">{{ habitName(h) }}<small class="last-done" :class="{ never: !h.last_done }">{{ lastDone(h) }}</small></div>
 
                 <div class="habit-fields">
                     <label v-if="h.kind === 'steps'" class="field">

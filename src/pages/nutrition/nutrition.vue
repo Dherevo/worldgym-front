@@ -98,7 +98,10 @@
                             <button type="submit" class="btn" :disabled="saving || !canSave">{{ editingId ? $t('nutrition.update') : $t('nutrition.add') }}</button>
                         </div>
                     </form>
-                    <button v-else type="button" class="btn-add" @click="openAdd(meal)">+ {{ $t('nutrition.addTo', { meal: $t('nutrition.meals.' + meal).toLowerCase() }) }}</button>
+                    <template v-else>
+                        <button type="button" class="btn-add" @click="openAdd(meal)">+ {{ $t('nutrition.addTo', { meal: $t('nutrition.meals.' + meal).toLowerCase() }) }}</button>
+                        <button v-if="!entriesOf(meal).length" type="button" class="btn-add" :disabled="copying" @click="copyPrevious(meal)">⎘ {{ $t('nutrition.copyPrev') }}</button>
+                    </template>
                 </div>
 
                 <div class="card" v-if="history.length">

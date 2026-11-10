@@ -68,7 +68,7 @@ class RoutinesPage extends Vue {
             App.notification(translate.get('routines.cloned', { name: r.name })).setType('success').show();
             return App.confirm(translate.get('routines.askDefault', { name: created.name }))
             .then((ok: boolean) => ok
-                ? http.put(`/routines/${created.id}/set-default`).catch(() => {
+                ? http.put(`/routines/${created.id}/set-default`).data({ active: true }).catch(() => {
                     App.notification(translate.get('routines.errors.setDefault')).setType('error').show();
                 })
                 : null)
@@ -78,8 +78,9 @@ class RoutinesPage extends Vue {
         .finally(() => { this.cloningId = null; });
     }
 
-    setDefault(r: any) {
-        http.put(`/routines/${r.id}/set-default`)
+    // Several routines can be active at once (e.g. gym + flexibility): this only switches this one
+    toggleActive(r: any) {
+        http.put(`/routines/${r.id}/set-default`).data({ active: !r.is_default })
         .then(() => this.fetchRoutines())
         .catch(() => App.notification(translate.get('routines.errors.setDefault')).setType('error').show());
     }

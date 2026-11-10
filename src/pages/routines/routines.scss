@@ -199,3 +199,13 @@
         .use-template { flex-shrink: 0; }
     }
 }
+
+.routine-card .active-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    input { width: 1.15rem; height: 1.15rem; min-height: 0; accent-color: var(--primary-color); cursor: pointer; }
+}

@@ -69,6 +69,10 @@ class WorkoutPage extends Vue {
     // Resum final de l'entrenament
     completedExercises: any[] = [];
 
+    // Edit or delete a set already logged in this workout (current or earlier exercise)
+    editing: { weId: number; set: any; exIdx: number; reps: number; weight: number; notes: string; failed: boolean; dropset: boolean } | null = null;
+    savingEdit = false;
+
     // Daily must-dos done around the workout (warm-up, stretching) and the rating of the session
     habitsByKey: Record<string, any> = {};
     feedbackGiven: string | null = null;
@@ -326,6 +330,7 @@ class WorkoutPage extends Vue {
             if (logged.length === sets.length && sets.length > 0 && i < this.exercises.length - 1) {
                 // Totes les sèries fetes i no és l'últim exercici → completat
                 this.completedExercises.push({
+                    weId: this.exercises[i].id,
                     name: this.exercises[i].exercise?.name,
                     sets: logged,
                 });
@@ -443,6 +448,72 @@ class WorkoutPage extends Vue {
         })
         .catch(() => App.notification(translate.get('workout.errors.addExercise')).setType('error').show())
         .finally(() => { this.addingExercise = false; });
+    }
+
+    // --- EDITAR / ELIMINAR SÈRIES JA FETES ---
+
+    openEdit(exIdx: number, set: any) {
+        const we = this.exercises[exIdx];
+        if (!we || !set?.id) return;
+        this.editing = {
+            weId: we.id, set, exIdx,
+            reps: Number(set.reps) || 0, weight: Number(set.weight) || 0, notes: set.notes ?? '',
+            failed: !!set.is_failed, dropset: !!set.is_dropset,
+        };
+    }
+
+    closeEdit() {
+        this.editing = null;
+    }
+
+    get editingBodyweight(): boolean {
+        return !!this.exercises[this.editing?.exIdx ?? -1]?.exercise?.is_bodyweight;
+    }
+
+    saveEdit() {
+        const e = this.editing;
+        if (!e || this.savingEdit) return;
+        const data = { reps: e.reps, weight: this.editingBodyweight ? 0 : e.weight, notes: e.notes, is_failed: e.failed, is_dropset: e.dropset };
+        this.savingEdit = true;
+        http.put(`/workouts/${this.workoutId}/exercises/${e.weId}/sets/${e.set.id}`).data(data)
+        .then(() => {
+            Object.assign(e.set, data);
+            const planned = (this.exercises[e.exIdx]?.sets ?? []).find((s: any) => s.id === e.set.id);
+            if (planned && planned !== e.set) Object.assign(planned, data);
+            this.editing = null;
+        })
+        .catch(() => App.notification(translate.get('workout.editSet.error')).setType('error').show())
+        .finally(() => { this.savingEdit = false; });
+    }
+
+    deleteEdit() {
+        const e = this.editing;
+        if (!e || this.savingEdit) return;
+        App.confirm(translate.get('workout.editSet.deleteConfirm')).then((ok: boolean) => {
+            if (!ok) return;
+            this.savingEdit = true;
+            http.delete(`/workouts/${this.workoutId}/exercises/${e.weId}/sets/${e.set.id}`)
+            .then(() => this.removeLoggedSet(e.exIdx, e.set.id))
+            .then(() => { this.editing = null; })
+            .catch(() => App.notification(translate.get('workout.editSet.error')).setType('error').show())
+            .finally(() => { this.savingEdit = false; });
+        });
+    }
+
+    removeLoggedSet(exIdx: number, setId: number) {
+        const we = this.exercises[exIdx];
+        const without = (list: any[]) => list.filter((s: any) => s.id !== setId);
+        we.sets = without(we.sets ?? []);
+        if (exIdx === this.currentExerciseIdx) {
+            this.loggedSets = without(this.loggedSets);
+            this.doneCount = this.loggedSets.length;
+        } else if (this.completedExercises[exIdx]) {
+            this.completedExercises[exIdx].sets = without(this.completedExercises[exIdx].sets);
+        }
+        // Rest time still pending for the deleted set is no longer needed
+        if (this.lastSetRef?.id === setId) this.lastSetRef = null;
+        if (this.pendingRest?.id === setId) this.pendingRest = null;
+        this.saveProgress();
     }
 
     // --- ESCALFAMENT, ESTIRAMENTS I FEEDBACK ---
@@ -621,6 +692,7 @@ class WorkoutPage extends Vue {
         req.then((res: any) => {
             this.lastSetRef = { weId: we.id, id: target?.id ?? res?.id };
             this.loggedSets.push({
+                id: target?.id ?? res?.id,
                 set_number: this.doneCount + 1,
                 reps: this.logReps,
                 weight: this.logWeight,
@@ -703,6 +775,7 @@ class WorkoutPage extends Vue {
         this.markAbsDone();
         if (this.currentExercise) {
             this.completedExercises.push({
+                weId: this.currentExercise.id,
                 name: this.currentExercise.exercise?.name,
                 sets: [...this.loggedSets],
             });

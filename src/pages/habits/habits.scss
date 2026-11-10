@@ -233,3 +233,11 @@
 }
 
 .habit-block.in-workout { display: none; }
+
+.habits-page .habit-name .last-done {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    &.never { color: var(--text-muted); font-style: italic; }
+}

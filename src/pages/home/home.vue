@@ -37,7 +37,7 @@
                 <div class="loading-text">{{ $t('home.routine.loading') }}</div>
             </div>
 
-            <div class="today-card" v-else-if="defaultRoutine && nextDay">
+            <div class="today-card" v-else-if="activeRoutines.length === 1">
                 <div class="today-info">
                     <div class="routine-name">{{ defaultRoutine.name }}</div>
                     <div class="today-label">{{ $t('home.routine.todayLabel') }}</div>
@@ -52,12 +52,35 @@
                     <button class="btn-start" @click="startNextDay()" :disabled="starting">
                         {{ starting ? $t('home.routine.starting') : $t('home.routine.start') }}
                     </button>
-                    <button class="btn-other-routine" @click="showDayPicker = true" v-if="(defaultRoutine.days?.length ?? 0) > 1">
+                    <button class="btn-other-routine" @click="dayPickerEntry = activeRoutines[0]" v-if="(defaultRoutine.days?.length ?? 0) > 1">
                         {{ $t('home.routine.chooseDay') }}
                     </button>
                     <button class="btn-other-routine" @click="openRoutinePicker()" v-if="otherRoutines.length">
                         {{ $t('home.routine.otherRoutine') }}
                     </button>
+                    <button class="btn-other-routine" @click="to('/recommendation')">{{ $t('recommendation.homeCard.title') }}</button>
+                    <button class="btn-free" @click="startEmptyWorkout()">{{ $t('home.routine.freeWorkout') }}</button>
+                </div>
+            </div>
+
+            <div class="today-card multi" v-else-if="activeRoutines.length > 1">
+                <div class="multi-title">{{ $t('home.routine.startYours') }}</div>
+                <div class="multi-item" v-for="e in activeRoutines" :key="e.routine.id">
+                    <div class="today-info">
+                        <div class="routine-name">{{ e.routine.name }}</div>
+                        <div class="day-name">{{ e.nextDay?.name }}</div>
+                    </div>
+                    <div class="start-actions">
+                        <button class="btn-start" @click="startDay(e.nextDay, e)" :disabled="starting">
+                            {{ starting ? $t('home.routine.starting') : $t('home.routine.start') }}
+                        </button>
+                        <button class="btn-other-routine" @click="dayPickerEntry = e" v-if="(e.routine.days?.length ?? 0) > 1">
+                            {{ $t('home.routine.chooseDay') }}
+                        </button>
+                    </div>
+                </div>
+                <div class="multi-extra">
+                    <button class="btn-other-routine" @click="openRoutinePicker()" v-if="otherRoutines.length">{{ $t('home.routine.otherRoutine') }}</button>
                     <button class="btn-other-routine" @click="to('/recommendation')">{{ $t('recommendation.homeCard.title') }}</button>
                     <button class="btn-free" @click="startEmptyWorkout()">{{ $t('home.routine.freeWorkout') }}</button>
                 </div>
@@ -104,26 +127,26 @@
             </div>
 
             <!-- Day picker modal (days of the default routine) -->
-            <div v-if="showDayPicker" class="modal-overlay" @click.self="showDayPicker = false">
+            <div v-if="dayPickerEntry" class="modal-overlay" @click.self="dayPickerEntry = null">
                 <div class="modal">
                     <h3>{{ $t('home.dayPicker.title') }}</h3>
                     <div class="picker-list">
                         <div
-                            v-for="d in defaultRoutine.days"
+                            v-for="d in dayPickerEntry.routine.days"
                             :key="d.id"
                             class="picker-item"
-                            :class="{ selected: nextDay?.id === d.id }"
-                            @click="showDayPicker = false; startDay(d)"
+                            :class="{ selected: dayPickerEntry.nextDay?.id === d.id }"
+                            @click="startDay(d, dayPickerEntry); dayPickerEntry = null"
                         >
                             <div class="picker-name">
                                 {{ d.name }}
-                                <span v-if="doneDayIds.includes(d.id)" class="picker-done">✓ {{ $t('home.dayPicker.done') }}</span>
-                                <span v-else-if="nextDay?.id === d.id" class="picker-done">{{ $t('home.dayPicker.suggested') }}</span>
+                                <span v-if="dayPickerEntry.doneDayIds.includes(d.id)" class="picker-done">✓ {{ $t('home.dayPicker.done') }}</span>
+                                <span v-else-if="dayPickerEntry.nextDay?.id === d.id" class="picker-done">{{ $t('home.dayPicker.suggested') }}</span>
                             </div>
                         </div>
                     </div>
                     <div class="modal-actions">
-                        <button class="btn-cancel" @click="showDayPicker = false">{{ $t('home.picker.cancel') }}</button>
+                        <button class="btn-cancel" @click="dayPickerEntry = null">{{ $t('home.picker.cancel') }}</button>
                     </div>
                 </div>
             </div>
