@@ -799,6 +799,13 @@
     font-size: 1.05rem;
     font-weight: 600;
     color: var(--text-secondary);
+
+    .last-time-note {
+        margin-top: 2px;
+        font-size: 0.9rem;
+        font-weight: 400;
+        font-style: italic;
+    }
 }
 
 .workout-progress .note-cell {
@@ -833,9 +840,17 @@
     padding: 0 0.4rem;
     min-height: 0;
 }
-.workout-page .edit-set-modal {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    h3 { margin: 0; }
+.workout-progress .set-edit-btn.save { color: var(--tint-green-text); font-weight: 700; }
+.workout-progress .set-edit-btn.danger { color: var(--tint-red-text); }
+.workout-progress .set-edit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+// Set being edited in place (same idea as the history): inputs inside the row
+.workout-progress .set-row-editing {
+    td { background: var(--surface-2); }
+    .cell-input { width: 4rem; max-width: 100%; box-sizing: border-box; padding: 0.25rem 0.3rem; font-size: 1rem; }
+    .cell-input.wide { width: 100%; }
+    .flag-row { display: flex; flex-wrap: wrap; gap: 0.25rem 0.6rem; margin-top: 0.25rem; font-size: 0.85rem; }
+    .flag-check { display: flex; align-items: center; gap: 0.2rem; cursor: pointer; }
+    .note-cell { max-width: none; white-space: normal; overflow: visible; }
+    .edit-cell { white-space: normal; }
 }
