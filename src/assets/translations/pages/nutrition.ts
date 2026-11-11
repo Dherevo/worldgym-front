@@ -93,7 +93,7 @@ export default {
         calc: {
             title: 'Com calculem tot això',
             burnedTitle: 'Calories cremades',
-            burned: 'Base = metabolisme basal (fórmula de Mifflin-St Jeor: pes, alçada, edat i sexe) × el teu nivell d\'activitat fora del gimnàs (1,2 si fas vida sedentària). A això hi sumem les kcal dels entrenos (temps × intensitat + el pes aixecat) i els passos per sobre de 5.000 (0,04 kcal cada un). És una fórmula general, no una mesura teva.',
+            burned: 'Base = metabolisme basal (fórmula de Mifflin-St Jeor: pes, alçada, edat i sexe) × el teu nivell d\'activitat fora del gimnàs (1,2 si fas vida sedentària). A això hi sumem les kcal dels entrenos (temps × intensitat + el pes aixecat) i els passos per sobre de 5.000 (uns 0,04 kcal cada un, segons el teu pes i alçada). És una fórmula general, no una mesura teva.',
             eatenTitle: 'Calories menjades',
             eaten: 'La suma del que apuntes. Si tries un aliment del catàleg, es calcula amb els valors per 100 g/ml o per unitat. Un dia sense res apuntat no es compta com a dèficit: es considera un dia no registrat.',
             goalTitle: 'Objectiu del dia',
@@ -215,7 +215,7 @@ export default {
         calc: {
             title: 'Cómo calculamos todo esto',
             burnedTitle: 'Calorías quemadas',
-            burned: 'Base = metabolismo basal (fórmula de Mifflin-St Jeor: peso, altura, edad y sexo) × tu nivel de actividad fuera del gimnasio (1,2 si haces vida sedentaria). A eso sumamos las kcal de los entrenos (tiempo × intensidad + el peso levantado) y los pasos por encima de 5.000 (0,04 kcal cada uno). Es una fórmula general, no una medida tuya.',
+            burned: 'Base = metabolismo basal (fórmula de Mifflin-St Jeor: peso, altura, edad y sexo) × tu nivel de actividad fuera del gimnasio (1,2 si haces vida sedentaria). A eso sumamos las kcal de los entrenos (tiempo × intensidad + el peso levantado) y los pasos por encima de 5.000 (unas 0,04 kcal cada uno, según tu peso y altura). Es una fórmula general, no una medida tuya.',
             eatenTitle: 'Calorías comidas',
             eaten: 'La suma de lo que apuntas. Si eliges un alimento del catálogo, se calcula con los valores por 100 g/ml o por unidad. Un día sin nada apuntado no cuenta como déficit: se considera un día no registrado.',
             goalTitle: 'Objetivo del día',
@@ -337,7 +337,7 @@ export default {
         calc: {
             title: 'How we calculate all this',
             burnedTitle: 'Calories burned',
-            burned: 'Base = basal metabolic rate (Mifflin-St Jeor formula: weight, height, age and sex) × your activity level outside the gym (1.2 if sedentary). On top we add the kcal of workouts (time × intensity + weight lifted) and the steps above 5,000 (0.04 kcal each). It is a general formula, not a measurement of you.',
+            burned: 'Base = basal metabolic rate (Mifflin-St Jeor formula: weight, height, age and sex) × your activity level outside the gym (1.2 if sedentary). On top we add the kcal of workouts (time × intensity + weight lifted) and the steps above 5,000 (about 0.04 kcal each, depending on your weight and height). It is a general formula, not a measurement of you.',
             eatenTitle: 'Calories eaten',
             eaten: 'The sum of what you log. If you pick a food from the catalog, it is worked out from the values per 100 g/ml or per unit. A day with nothing logged is not counted as a deficit: it is treated as an untracked day.',
             goalTitle: 'Goal of the day',
