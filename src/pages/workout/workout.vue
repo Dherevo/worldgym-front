@@ -127,6 +127,20 @@
                     <div class="exercise-eq" v-if="currentExercise.exercise?.equipment">
                         {{ currentExercise.exercise.equipment.name }}
                     </div>
+
+                    <!-- Variant: how this exercise is done today (comparisons only use the same variant) -->
+                    <div class="variant-row" v-if="canPickVariant">
+                        <span class="variant-label">{{ $t('workout.variant.label') }}</span>
+                        <button type="button" class="variant-chip" :class="{ active: !currentExercise.variant }" @click="setVariant(null)">{{ $t('workout.variant.usual') }}</button>
+                        <button v-for="v in variantOptions" :key="v" type="button" class="variant-chip" :class="{ active: currentExercise.variant === v }" @click="setVariant(v)">{{ v }}</button>
+                        <button v-if="!addingVariant" type="button" class="variant-chip add" @click="addingVariant = true">+ {{ $t('workout.variant.new') }}</button>
+                    </div>
+                    <form class="variant-add" v-if="canPickVariant && addingVariant" @submit.prevent="addVariant()">
+                        <input type="text" maxlength="60" v-model="newVariant" :placeholder="$t('workout.variant.placeholder')" />
+                        <button type="submit" class="variant-chip active">✓</button>
+                        <button type="button" class="variant-chip" @click="addingVariant = false">✕</button>
+                    </form>
+                    <div class="variant-current" v-else-if="currentExercise.variant">{{ $t('workout.variant.label') }} {{ currentExercise.variant }}</div>
                     <div class="set-info" v-if="totalSets > 0 && doneCount < totalSets">
                         {{ $t('workout.card.setOf', { current: doneCount + 1, total: totalSets }) }}
                     </div>
@@ -357,8 +371,8 @@
                                         </tr>
                                         <tr v-else class="set-row-done">
                                             <td>{{ s.set_number ?? i + 1 }}</td>
-                                            <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.reps) }}</small></td>
-                                            <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.weight > 0">{{ compareText(s.weight, prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id)?.weight, ' kg') }}</small></td>
+                                            <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id, ex.variant)?.reps) }}</small></td>
+                                            <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id, ex.variant)?.weight > 0">{{ compareText(s.weight, prevFor(i, completedExercises[exIdx].sets, ex.exercise?.id, ex.variant)?.weight, ' kg') }}</small></td>
                                             <td class="note-cell" @click="openNote($event, s.notes)">{{ s.notes || '—' }}</td>
                                             <td class="edit-cell"><button class="set-edit-btn" @click="openEdit(exIdx, s)">✎</button></td>
                                         </tr>

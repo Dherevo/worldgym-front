@@ -96,6 +96,7 @@ export default {
         },
         finishConfirm: 'Finalitzar l\'entrenament?',
         editSet: { title: 'Editar sèrie {{n}}', save: 'Desar', delete: 'Eliminar sèrie', deleteConfirm: 'Eliminar aquesta sèrie?', cancel: 'Cancel·lar', error: 'Error en editar la sèrie' },
+        variant: { label: 'Variant:', usual: 'Habitual', new: 'Nova', placeholder: 'Ex.: Multipower, barra lliure...', error: 'No s\'ha pogut desar la variant' },
     },
     es: {
         loading: 'Cargando entrenamiento...',
@@ -194,6 +195,7 @@ export default {
         },
         finishConfirm: '¿Finalizar el entrenamiento?',
         editSet: { title: 'Editar serie {{n}}', save: 'Guardar', delete: 'Eliminar serie', deleteConfirm: '¿Eliminar esta serie?', cancel: 'Cancelar', error: 'Error al editar la serie' },
+        variant: { label: 'Variante:', usual: 'Habitual', new: 'Nueva', placeholder: 'Ej.: Multipower, barra libre...', error: 'No se pudo guardar la variante' },
     },
     en: {
         loading: 'Loading workout...',
@@ -292,5 +294,6 @@ export default {
         },
         finishConfirm: 'Finish the workout?',
         editSet: { title: 'Edit set {{n}}', save: 'Save', delete: 'Delete set', deleteConfirm: 'Delete this set?', cancel: 'Cancel', error: 'Error editing the set' },
+        variant: { label: 'Variant:', usual: 'Usual', new: 'New', placeholder: 'E.g. Smith machine, free barbell...', error: 'Could not save the variant' },
     },
 };
