@@ -112,10 +112,17 @@ export function baseExpenditure(bmr: number, activity: Activity = 'sedentary'): 
 
 // Steps up to this many a day are already part of the base; only the ones above add calories
 export const STEPS_BASELINE = 5000;
-const KCAL_PER_STEP = 0.04;
+const FALLBACK_KCAL_PER_STEP = 0.04;
 
-export function stepsKcal(steps: number): number {
-    return steps > STEPS_BASELINE ? Math.round((steps - STEPS_BASELINE) * KCAL_PER_STEP) : 0;
+// Net cost of walking ≈ 0.5 kcal per kg and km; stride ≈ 0.415 × height. Without weight or height, a fixed average
+export function kcalPerStep(user: { weight_kg?: number | null; height_cm?: number | null } | null): number {
+    const w = Number(user?.weight_kg);
+    const h = Number(user?.height_cm) / 100;
+    return w > 0 && h > 0 ? (0.5 * w * 0.415 * h) / 1000 : FALLBACK_KCAL_PER_STEP;
+}
+
+export function stepsKcal(steps: number, user: { weight_kg?: number | null; height_cm?: number | null } | null = null): number {
+    return steps > STEPS_BASELINE ? Math.round((steps - STEPS_BASELINE) * kcalPerStep(user)) : 0;
 }
 
 export function bmi(user: { weight_kg?: number | null; height_cm?: number | null } | null): number | null {

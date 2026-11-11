@@ -82,7 +82,7 @@ export async function loadEnergyDay(date: string = localDate()): Promise<EnergyD
         base = baseExpenditure(b, activityLevel(user));
         workout = await workoutKcal(date);
         steps = await stepsOf(date);
-        stepKcal = stepsKcal(steps);
+        stepKcal = stepsKcal(steps, user);
         goal = effectiveGoal(user);
         ({ min, max } = goalRange(goal, base + workout + stepKcal, bmr));
         // Wait for the snapshot to be saved, so the history read afterwards already has today's figures
