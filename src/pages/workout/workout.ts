@@ -51,7 +51,11 @@ class WorkoutPage extends Vue {
 
     // Historial últimes sessions de l'exercici actual
     exerciseHistory: any[] = [];
-    lastSetsByEx: Record<number, any[]> = {};
+    lastSetsByEx: Record<string, any[]> = {};
+    // Ways the current exercise has been done before (Smith machine, free barbell...) and the form to add a new one
+    variantOptions: string[] = [];
+    addingVariant = false;
+    newVariant = '';
     lastSetRef: { weId: number; id: number } | null = null;
     pendingRest: { weId: number; id: number; taken: number } | null = null;
     absOptions: any[] = [];
@@ -336,7 +340,7 @@ class WorkoutPage extends Vue {
                 });
                 this.currentExerciseIdx = i + 1;
                 const doneId = this.exercises[i].exercise?.id;
-                if (doneId) this.loadLastSets(doneId);
+                if (doneId) this.loadLastSets(doneId, this.exercises[i].variant ?? null);
             } else {
                 // Exercici actual: algunes o cap sèrie feta
                 this.currentExerciseIdx = i;
@@ -348,8 +352,9 @@ class WorkoutPage extends Vue {
     }
 
     // Sèrie número `idx` (0-based) de l'últim entrenament, o null si no en va fer tantes
-    previousSet(idx: number, exerciseId?: number): any | null {
-        return this.lastSetsFor(exerciseId ?? this.currentExercise?.exercise?.id)[idx] ?? null;
+    previousSet(idx: number, exerciseId?: number, variant?: string | null): any | null {
+        if (exerciseId === undefined) return this.lastSetsFor(this.currentExercise?.exercise?.id, this.currentExercise?.variant)[idx] ?? null;
+        return this.lastSetsFor(exerciseId, variant)[idx] ?? null;
     }
 
     // What the user did in this same set the last time, to know where to start: "12 reps × 70 kg"
@@ -379,8 +384,8 @@ class WorkoutPage extends Vue {
     }
 
     // Set to compare with: the same set number of the last workout
-    prevFor(i: number, _sets: any[], exerciseId?: number): any | null {
-        return this.previousSet(i, exerciseId);
+    prevFor(i: number, _sets: any[], exerciseId?: number, variant?: string | null): any | null {
+        return this.previousSet(i, exerciseId, variant);
     }
 
     // Short difference text: "(+2)", "(-5 kg)", "(=)" or "" when there is nothing to compare with
@@ -391,22 +396,72 @@ class WorkoutPage extends Vue {
         return `(${d > 0 ? '+' : ''}${d}${unit ? ' ' + unit.trim() : ''})`;
     }
 
-    lastSetsFor(exerciseId?: number): any[] {
-        return (exerciseId && this.lastSetsByEx[exerciseId]) || [];
+    // Last sets are compared only with sessions done the same way (same variant, or none)
+    lastKey(exerciseId: number, variant?: string | null): string {
+        return `${exerciseId}|${variant ?? ''}`;
     }
 
-    loadLastSets(exerciseId: number) {
-        if (this.lastSetsByEx[exerciseId]) return;
-        http.get(`/stats/exercises/${exerciseId}/last-sets`).data({ exclude_workout_id: this.workoutId })
-        .then((res: any) => { this.lastSetsByEx[exerciseId] = res.sets ?? []; })
+    lastSetsFor(exerciseId?: number, variant?: string | null): any[] {
+        return (exerciseId && this.lastSetsByEx[this.lastKey(exerciseId, variant)]) || [];
+    }
+
+    loadLastSets(exerciseId: number, variant?: string | null) {
+        const key = this.lastKey(exerciseId, variant);
+        if (this.lastSetsByEx[key]) return;
+        http.get(`/stats/exercises/${exerciseId}/last-sets`).data({ exclude_workout_id: this.workoutId, with_variant: 1, variant: variant ?? '' })
+        .then((res: any) => { this.lastSetsByEx[key] = res.sets ?? []; })
         .catch(() => {});
     }
 
-    loadExerciseHistory() {
+    // The variant can only be chosen before the first set of the exercise is done
+    get canPickVariant(): boolean {
+        return this.state === 'idle' && this.doneCount === 0 && !!this.currentExercise;
+    }
+
+    loadVariants() {
         const exerciseId = this.currentExercise?.exercise?.id;
-        if (!exerciseId) { this.exerciseHistory = []; this.exerciseRecord = null; return; }
-        this.loadLastSets(exerciseId);
-        http.get(`/stats/exercises/${exerciseId}`).data({ exclude_workout_id: this.workoutId })
+        this.variantOptions = [];
+        this.addingVariant = false;
+        this.newVariant = '';
+        if (!exerciseId) return;
+        http.get(`/stats/exercises/${exerciseId}/variants`)
+        .then((res: any) => {
+            if (this.currentExercise?.exercise?.id !== exerciseId) return;
+            const list: string[] = res.variants ?? [];
+            const current = this.currentExercise?.variant;
+            this.variantOptions = current && !list.includes(current) ? [current, ...list] : list;
+        })
+        .catch(() => {});
+    }
+
+    setVariant(variant: string | null) {
+        const we = this.currentExercise;
+        if (!we || !this.canPickVariant || (we.variant ?? null) === variant) return;
+        http.put(`/workouts/${this.workoutId}/exercises/${we.id}`).data({ variant: variant ?? '' })
+        .then(() => {
+            we.variant = variant;
+            if (variant && !this.variantOptions.includes(variant)) this.variantOptions.push(variant);
+            this.addingVariant = false;
+            this.newVariant = '';
+            this.exerciseHistory = [];
+            this.exerciseRecord = null;
+            this.loadExerciseHistory(false);
+        })
+        .catch(() => App.notification(translate.get('workout.variant.error')).setType('error').show());
+    }
+
+    addVariant() {
+        const name = this.newVariant.trim().slice(0, 60);
+        if (name) this.setVariant(name);
+    }
+
+    loadExerciseHistory(reloadVariants = true) {
+        const exerciseId = this.currentExercise?.exercise?.id;
+        if (!exerciseId) { this.exerciseHistory = []; this.exerciseRecord = null; this.variantOptions = []; return; }
+        const variant = this.currentExercise?.variant ?? null;
+        if (reloadVariants) this.loadVariants();
+        this.loadLastSets(exerciseId, variant);
+        http.get(`/stats/exercises/${exerciseId}`).data({ exclude_workout_id: this.workoutId, with_variant: 1, variant: variant ?? '' })
         .then((res: any) => {
             const sessions = res.sessions ?? [];
             this.exerciseHistory = sessions.slice(-2).reverse(); // les 2 més recents, primer la última

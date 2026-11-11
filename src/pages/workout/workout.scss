@@ -830,6 +830,41 @@
     color: var(--text-muted);
 }
 
+.workout-page .variant-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin: 0.4rem 0;
+    .variant-label { font-size: 0.9rem; color: var(--text-muted); }
+}
+.workout-page .variant-add {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-bottom: 0.4rem;
+    input { flex: 1; max-width: 14rem; padding: 0.35rem 0.6rem; font-size: 1rem; }
+}
+.workout-page .variant-current {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 0.2rem 0;
+}
+.workout-page .variant-chip {
+    border: 1px solid var(--border, rgba(128, 128, 128, 0.4));
+    background: transparent;
+    color: inherit;
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.95rem;
+    cursor: pointer;
+    min-height: 0;
+    &.active { background: var(--tint-blue-bg); color: var(--tint-blue-text); border-color: transparent; font-weight: 600; }
+    &.add { border-style: dashed; color: var(--text-muted); }
+}
+
 .workout-progress .edit-cell { width: 1%; white-space: nowrap; text-align: right; }
 .workout-progress .set-edit-btn {
     background: transparent;

@@ -38,7 +38,7 @@
                 >
                     <div class="exercise-header">
                         <div>
-                            <span class="exercise-name">{{ we.exercise?.name }}</span>
+                            <span class="exercise-name">{{ we.exercise?.name }}<small v-if="we.variant" class="exercise-variant"> · {{ we.variant }}</small></span>
                             <span class="exercise-muscle" v-if="muscleLabel(we.exercise)"> ({{ muscleLabel(we.exercise) }})</span>
                             <span class="exercise-muscle" v-if="exerciseKcal(we)"> · {{ exerciseKcal(we) }}</span>
                             <span class="exercise-eq" v-if="we.exercise?.equipment"> · {{ we.exercise.equipment.name }}</span>
