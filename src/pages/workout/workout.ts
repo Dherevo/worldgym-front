@@ -362,6 +362,12 @@ class WorkoutPage extends Vue {
             : translate.get('workout.card.lastTimeBodyweight', { reps: Number(prev.reps) });
     }
 
+    // Comment written on that same set the last time ("knee hurt", "lighter weight"...)
+    get lastTimeNote(): string | null {
+        const note = this.previousSet(this.doneCount)?.notes;
+        return typeof note === 'string' && note.trim() ? note.trim() : null;
+    }
+
     muscleLabel(exercise: any): string {
         return primaryMuscleNames(exercise);
     }
