@@ -2,6 +2,10 @@
     <SectionTile v-model:open="open" :title="$t('habits.card.title')" :status="statusLabel" :tone="allDone ? 'done' : 'pending'">
         <div class="daily-habits">
             <div class="dh-head">
+                <div class="dh-days">
+                    <button type="button" :class="{ on: day === 'today' }" @click="setDay('today')">{{ $t('habits.card.dayToday') }}</button>
+                    <button type="button" :class="{ on: day === 'yesterday' }" @click="setDay('yesterday')">{{ $t('habits.card.dayYesterday') }}</button>
+                </div>
                 <a class="dh-link" @click.prevent="to('/habits')" href="/habits">{{ $t('habits.card.configure') }}</a>
             </div>
 

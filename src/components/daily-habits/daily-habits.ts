@@ -1,4 +1,4 @@
-import { Component, Vue, Prop, toNative } from "vue-facing-decorator";
+import { Component, Vue, Prop, Watch, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
 import { lastDoneLabel } from "@/modules/lastDone";
@@ -24,15 +24,35 @@ class DailyHabits extends Vue {
     savingId: number | null = null;
 
     readonly today = localDate();
+    readonly yesterday = localDate(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 1));
+
+    // The modal can also show yesterday, to tick what was forgotten. It goes back to today when closed
+    day: 'today' | 'yesterday' = 'today';
+
+    get date(): string {
+        return this.day === 'yesterday' ? this.yesterday : this.today;
+    }
 
     created() {
         this.fetchHabits();
     }
 
+    @Watch('open')
+    onOpenChange(open: boolean) {
+        if (!open && this.day !== 'today') this.setDay('today');
+    }
+
+    setDay(day: 'today' | 'yesterday') {
+        if (this.day === day) return;
+        this.day = day;
+        this.fetchHabits();
+    }
+
     fetchHabits() {
+        const date = this.date;
         this.loading = true;
-        http.get('/habits').data({ date: this.today })
-        .then((res: any) => this.apply(res))
+        http.get('/habits').data({ date })
+        .then((res: any) => { if (date === this.date) this.apply(res); })
         .catch(() => App.notification(translate.get('habits.card.errorLoad')).setType('error').show())
         .finally(() => { this.loading = false; });
     }
@@ -93,7 +113,7 @@ class DailyHabits extends Vue {
 
     get tip(): string {
         const steps = this.habits.find(h => h.key === 'steps');
-        if (!steps) return '';
+        if (!steps || this.day !== 'today') return '';
 
         const goal = this.format(steps.target_value);
         const walked = steps.log?.value ?? 0;
@@ -108,9 +128,10 @@ class DailyHabits extends Vue {
     }
 
     private save(h: any, body: any) {
+        const date = this.date;
         this.savingId = h.id;
-        http.put(`/habits/${h.id}/log`).data({ date: this.today, ...body })
-        .then((res: any) => this.apply(res))
+        http.put(`/habits/${h.id}/log`).data({ date, ...body })
+        .then((res: any) => { if (date === this.date) this.apply(res); })
         .catch(() => App.notification(translate.get('habits.card.error')).setType('error').show())
         .finally(() => { this.savingId = null; });
     }
