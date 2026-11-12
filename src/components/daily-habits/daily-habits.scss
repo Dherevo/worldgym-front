@@ -15,6 +15,21 @@
         .dh-link { font-size: 0.85rem; color: var(--highlight-text); cursor: pointer; text-decoration: none; }
     }
 
+    .dh-days {
+        display: flex;
+        gap: 0.35rem;
+        button {
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 999px;
+            padding: 0.3rem 0.85rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            &.on { background: var(--primary-color); border-color: var(--primary-color); color: #fff; }
+        }
+    }
+
     .dh-tip {
         background: var(--tint-blue-bg);
         color: var(--tint-blue-text);
