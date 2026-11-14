@@ -73,6 +73,19 @@ export async function loadEnergyDay(date: string = localDate()): Promise<EnergyD
     if (saved && date !== localDate() && saved.goal_min !== null) {
         bmr = saved.bmr; base = saved.base_kcal; workout = saved.workout_kcal; stepKcal = saved.steps_kcal ?? 0;
         goal = saved.goal; min = saved.goal_min; max = saved.goal_max;
+        // Steps can be logged after the snapshot was saved (e.g. the day after): if they differ, update the snapshot
+        steps = await stepsOf(date);
+        const newStepKcal = stepsKcal(steps, user);
+        if (newStepKcal !== stepKcal) {
+            stepKcal = newStepKcal;
+            ({ min, max } = goalRange(goal, base + workout + stepKcal, bmr));
+            await new Promise<void>(resolve => {
+                http.put(`/nutrition/days/${date}`)
+                    .data({ bmr, base_kcal: base, workout_kcal: workout, steps_kcal: stepKcal, goal, goal_min: min, goal_max: max })
+                    .then(() => resolve())
+                    .catch(() => resolve());
+            });
+        }
     } else {
         const b = basalMetabolicRate(user);
         if (!b) {
