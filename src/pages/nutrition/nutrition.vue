@@ -89,7 +89,7 @@
                             <div class="row">
                                 <label><span>kcal</span><input type="number" inputmode="numeric" min="0" max="5000" step="1" v-model="r.kcal" /></label>
                                 <label><span>{{ $t('nutrition.proteinG') }}</span><input type="number" inputmode="decimal" min="0" max="500" step="0.1" v-model="r.protein" /></label>
-                                <button v-if="rows.length > 1 || r.food" type="button" class="row-del" @click="removeRow(i)" :aria-label="$t('nutrition.delete')">✕</button>
+                                <button v-if="!editingId && (rows.length > 1 || r.food)" type="button" class="row-del" @click="removeRow(i)" :aria-label="$t('nutrition.delete')">✕</button>
                             </div>
                         </div>
                         <button v-if="!editingId" type="button" class="btn-add" @click="addRow()">+ {{ $t('nutrition.addRow') }}</button>

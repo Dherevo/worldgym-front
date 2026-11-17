@@ -291,7 +291,18 @@ class NutritionPage extends Vue {
     openEdit(e: any) {
         this.adding = e.meal;
         this.editingId = e.id;
-        this.rows = [{ name: e.name, kcal: e.kcal, protein: e.protein_g ?? '' }];
+        const qty = this.entryParts(e);
+        const amount = Number(e.amount);
+        if (e.food_id && amount > 0 && qty.qty !== '—') {
+            // Linked to a catalog food: the amount can be edited and kcal/protein follow it.
+            // The values per 100 g/ml (or per unit) are worked out from what the entry has now.
+            const unit = /ml$/.test(qty.qty) ? 'ml' : /u\.$/.test(qty.qty) ? 'u' : 'g';
+            const k = unit === 'u' ? 1 : 100;
+            const food = { id: e.food_id, name: qty.name, unit, kcal_100: e.kcal * k / amount, protein_100: e.protein_g ? e.protein_g * k / amount : 0 };
+            this.rows = [{ name: e.name, kcal: e.kcal, protein: e.protein_g ?? '', food, amount }];
+        } else {
+            this.rows = [{ name: e.name, kcal: e.kcal, protein: e.protein_g ?? '' }];
+        }
     }
 
     addRow() {
