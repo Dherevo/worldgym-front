@@ -77,6 +77,21 @@
                                 </li>
                             </ul>
                             <p v-else class="muted">{{ foodQuery.trim() ? $t('nutrition.noFood') : $t('nutrition.noFoods') }}</p>
+                            <template v-if="foodQuery.trim().length >= 2 && !foodForm">
+                                <button type="button" class="btn-add" :disabled="offSearching" @click="searchOff()">🔎 {{ offSearching ? $t('nutrition.off.searching') : $t('nutrition.off.search') }}</button>
+                                <p v-if="offSearched && !offResults.length" class="muted">{{ $t('nutrition.off.none') }}</p>
+                                <template v-if="offResults.length">
+                                    <ul class="food-list">
+                                        <li v-for="p in offResults" :key="p.code">
+                                            <button type="button" :disabled="offSaving" @click="pickOff(p)">
+                                                <span class="f-name">{{ p.name }}<em v-if="p.brand" class="f-shared">{{ p.brand }}</em></span>
+                                                <small>{{ p.kcal_100 }} kcal<template v-if="p.protein_100"> · {{ p.protein_100 }} g</template> / 100 {{ p.unit }}</small>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                    <p class="muted">{{ $t('nutrition.off.hint') }}</p>
+                                </template>
+                            </template>
                             <FoodForm v-if="foodForm && foodForm.where === 'add'" :food="null" :presetName="foodForm.preset" @saved="onFoodSaved" @cancel="foodForm = null" />
                             <button v-else type="button" class="btn-add" @click="openFoodForm(null, foodQuery, 'add')">+ {{ foodQuery.trim() ? $t('nutrition.createFood', { name: foodQuery.trim() }) : $t('nutrition.newFood') }}</button>
                         </div>

@@ -1,6 +1,13 @@
 <template>
     <form class="food-form" @submit.prevent="save()">
+        <div class="ff-code">
+            <input type="text" v-model="offCode" maxlength="14" inputmode="numeric" :placeholder="$t('nutrition.foods.barcode')" />
+            <button type="button" class="btn-link" :disabled="!codeValid || looking" @click="lookup()">{{ looking ? $t('nutrition.off.searching') : $t('nutrition.foods.barcodeSearch') }}</button>
+        </div>
+        <p class="ff-hint" v-if="filled">{{ $t('nutrition.foods.barcodeFilled') }}</p>
+        <p class="ff-hint" v-else>{{ $t('nutrition.foods.barcodeHint') }}</p>
         <input type="text" v-model="name" maxlength="150" :placeholder="$t('nutrition.foods.name')" />
+        <input type="text" v-model="brand" maxlength="100" :placeholder="$t('nutrition.foods.brand')" />
         <div class="ff-row">
             <label>
                 <span>{{ $t('nutrition.foods.unit') }}</span>
