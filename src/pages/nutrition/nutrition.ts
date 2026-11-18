@@ -38,6 +38,11 @@ class NutritionPage extends Vue {
     foodQuery = '';
     foodTimer: any = null;
     myFoods: any[] = [];
+    // Open Food Facts search from the add form: by name or by barcode. Picking one saves it in the catalog
+    offResults: any[] = [];
+    offSearching = false;
+    offSearched = false;
+    offSaving = false;
     myQuery = '';
     myOffset = 0;
     myTotal = 0;
@@ -142,7 +147,54 @@ class NutritionPage extends Vue {
         .catch(() => {});
     }
 
+    // Open Food Facts: a barcode is looked up directly, anything else is a search by name
+    searchOff() {
+        const q = this.foodQuery.trim();
+        if (q.length < 2 || this.offSearching) return;
+        this.offSearching = true;
+        this.offSearched = false;
+
+        const isCode = /^\d{6,14}$/.test(q);
+        const req = isCode ? http.get(`/foods/off/${q}`) : http.get('/foods/off').data({ q });
+        req.then((res: any) => { this.offResults = isCode ? [res] : (res.items ?? []); })
+        .catch((e: any) => {
+            this.offResults = [];
+            // A barcode OFF does not have is an empty result, not a failure
+            if (isCode && e?.data?.error !== 'off.unavailable') return;
+            App.notification(translate.get('nutrition.off.unavailable')).setType('error').show();
+        })
+        .finally(() => { this.offSearching = false; this.offSearched = true; });
+    }
+
+    // Save the product in the user's catalog (with its barcode, brand, fiber and saturated fat) and use it
+    pickOff(p: any) {
+        if (this.offSaving) return;
+        this.offSaving = true;
+
+        const save = (name: string) => http.post('/foods').data({
+            name, unit: p.unit, kcal_100: p.kcal_100, protein_100: p.protein_100 ?? 0,
+            fiber_100: p.fiber_100, saturates_100: p.saturates_100, brand: p.brand ?? '', off_code: p.code,
+        });
+
+        // The name is unique per user: with the same name from another brand the brand goes with it
+        save(p.name)
+        .catch((e: any) => {
+            if (e?.data?.error === 'name.taken' && p.brand) return save(`${p.name} ${p.brand}`.slice(0, 150));
+            throw e;
+        })
+        .then((food: any) => {
+            this.offResults = [];
+            this.offSearched = false;
+            this.loadMyFoods();
+            this.useFood(food);
+        })
+        .catch(() => App.notification(translate.get('nutrition.off.saveError')).setType('error').show())
+        .finally(() => { this.offSaving = false; });
+    }
+
     onFoodQuery() {
+        this.offResults = [];
+        this.offSearched = false;
         clearTimeout(this.foodTimer);
         this.foodTimer = setTimeout(() => this.searchFoods(), 250);
     }
