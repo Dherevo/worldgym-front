@@ -1,0 +1,33 @@
+// A color theme is three maps of design tokens: `shared` (the same in light and dark: accents, header,
+// typography), `dark` and `light`. The tokens become CSS custom properties.
+//
+// The page picks its theme with two attributes on <html>: data-palette (which theme) and data-theme
+// (light or dark). Without data-palette, the one marked as $default is used.
+
+@mixin emit($tokens) {
+    @each $name, $value in $tokens {
+        --#{$name}: #{$value};
+    }
+}
+
+@mixin palette($name, $shared, $dark, $light, $default: false) {
+    $roots: ':root[data-palette="#{$name}"]';
+    @if $default {
+        $roots: ':root[data-palette="#{$name}"], :root:not([data-palette])';
+    }
+
+    #{$roots} {
+        @include emit($shared);
+    }
+
+    @each $root in selector-parse($roots) {
+        #{selector-append($root, ':not([data-theme="light"])')} {
+            @include emit($dark);
+            color-scheme: dark;
+        }
+        #{selector-append($root, '[data-theme="light"]')} {
+            @include emit($light);
+            color-scheme: light;
+        }
+    }
+}

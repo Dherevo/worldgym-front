@@ -2,6 +2,7 @@ import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import auth from "@/modules/auth";
 import userStore from "@/modules/userStore";
+import { PALETTES, currentPalette, savePalette } from "@/modules/theme";
 
 // Account section of the profile: name and username, e-mail (confirmed through a link) and password
 @Component({})
@@ -27,6 +28,10 @@ class AccountSettings extends Vue {
     passwordError = '';
     passwordOk = false;
 
+    readonly palettes = PALETTES;
+    palette = currentPalette();
+    themeError = '';
+
     get user(): any {
         return userStore.data;
     }
@@ -38,6 +43,15 @@ class AccountSettings extends Vue {
         if (!this.user) {
             auth.fetchUserData().then(() => { this.name = this.user?.name ?? ''; this.nickname = this.user?.nickname ?? ''; });
         }
+    }
+
+    // The theme is applied at once; if the account cannot save it, it stays on this device
+    pickPalette(key: string) {
+        this.palette = key;
+        this.themeError = '';
+        savePalette(key)
+        .then(() => { if (userStore.data) userStore.data.theme = key; })
+        .catch(() => { this.themeError = translate.get('account.theme.errSave'); });
     }
 
     // The API answers with a code such as "email.taken": look for it whatever the body looks like

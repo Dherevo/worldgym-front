@@ -18,7 +18,7 @@
         text-transform: uppercase;
         margin-right: 8px;
         white-space: nowrap;
-        font-family: system-ui, sans-serif;
+        font-family: var(--font-body, system-ui, sans-serif);
 
         .logo-accent { color: #E09132; }
     }

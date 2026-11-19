@@ -1,0 +1,5 @@
+// One file per color theme. To add one: copy a theme file, change its tokens and import it here
+// (then add it to the list in src/modules/theme.ts).
+@import 'worldgym';
+@import 'ocean';
+@import 'violet';

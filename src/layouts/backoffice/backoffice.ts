@@ -2,6 +2,7 @@ import { Component, Vue, Prop, Watch, toNative } from "vue-facing-decorator";
 import { App, BackofficeLayout, Popup, Avatar, http, Storage, translate } from "lib";
 import auth from "@/modules/auth";
 import userStore from "@/modules/userStore";
+import { applyUserPalette } from "@/modules/theme";
 import UserAvatar from "@/components/user-avatar/user-avatar.vue";
 
 @Component({
@@ -101,6 +102,7 @@ class Backoffice extends Vue {
     }
 
     requireProfile() {
+        applyUserPalette(this.user);
         if (auth.needsProfile(this.user)) this.to('/onboarding');
     }
 
