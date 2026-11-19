@@ -166,14 +166,14 @@ class NutritionPage extends Vue {
         .finally(() => { this.offSearching = false; this.offSearched = true; });
     }
 
-    // Save the product in the user's catalog (with its barcode, brand, fiber and saturated fat) and use it
+    // Save the product in the user's catalog (with its barcode, brand, fiber, saturated fat, carbohydrates and sodium) and use it
     pickOff(p: any) {
         if (this.offSaving) return;
         this.offSaving = true;
 
         const save = (name: string) => http.post('/foods').data({
             name, unit: p.unit, kcal_100: p.kcal_100, protein_100: p.protein_100 ?? 0,
-            fiber_100: p.fiber_100, saturates_100: p.saturates_100, brand: p.brand ?? '', off_code: p.code,
+            fiber_100: p.fiber_100, saturates_100: p.saturates_100, carbs_100: p.carbs_100, sodium_100: p.sodium_100, brand: p.brand ?? '', off_code: p.code,
         });
 
         // The name is unique per user: with the same name from another brand the brand goes with it
