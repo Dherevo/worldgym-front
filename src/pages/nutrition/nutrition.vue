@@ -3,9 +3,14 @@
         <div class="nutrition-page">
             <h1><svg-icon name="awesome-solid/utensils" class="title-icon"/> {{ $t('nutrition.title') }}</h1>
 
-            <button v-if="history.length" type="button" class="history-link" @click="goHistory">
-                {{ $t('nutrition.historyLink') }} ↓
-            </button>
+            <div class="quick-links">
+                <button v-if="history.length" type="button" class="history-link" @click="goHistory">
+                    {{ $t('nutrition.historyLink') }} ↓
+                </button>
+                <button v-if="!isToday" type="button" class="history-link today-link" @click="selectDay(localToday)">
+                    ↩ {{ $t('nutrition.toToday') }}
+                </button>
+            </div>
 
             <div v-if="noPlantsAlert" class="weigh-banner plants-banner">
                 <span>{{ $t('nutrition.noPlants') }}</span>
@@ -41,46 +46,41 @@
                         <p class="big"><b>{{ day.eaten }}</b> <span class="muted">/ {{ day.min }} - {{ day.max }} kcal</span></p>
                         <div class="slim-track kcal-track"><div class="slim-fill" :class="kcalState" :style="{ width: kcalPct + '%' }"></div><div class="slim-mark" :style="{ left: kcalMinPct + '%' }"></div></div>
                         <p class="kcal-left" :class="kcalState">{{ day.max - day.eaten >= 0 ? $t('nutrition.left', { n: day.max - day.eaten }) : $t('nutrition.over', { n: day.eaten - day.max }) }}</p>
+                        <div class="protein-bar" v-if="proteinGoal">
+                            <div class="protein-text">
+                                <span>{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }}</span>
+                                <span class="muted">{{ $t('nutrition.proteinGoal', { min: proteinGoal.min, max: proteinGoal.max }) }}</span>
+                            </div>
+                            <div class="protein-track"><div class="protein-fill" :class="{ reached: day.protein >= proteinGoal.min }" :style="{ width: proteinPct + '%' }"></div></div>
+                        </div>
+                        <p class="protein" v-else-if="day.protein > 0">{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }}</p>
                     </template>
                     <p v-else class="muted">{{ $t('energy.needData') }}</p>
                 </div>
 
-                <div class="card macros-card">
-                    <div class="card-head">
-                        <h2>{{ $t('nutrition.macros.cardTitle') }}</h2>
-                        <button type="button" class="info-btn" :aria-label="$t('nutrition.info')" @click="infoModal = 'macros'">ⓘ</button>
-                    </div>
-                    <div class="macro-cols">
-                        <div v-for="c in macroCols" :key="c.key" class="macro-col">
-                            <span class="mc-label">{{ $t('nutrition.macros.' + c.key) }}</span>
-                            <span class="mc-value"><b>{{ c.noData ? '—' : c.value }}</b> <small>g</small><small v-if="c.target" class="muted"> / {{ c.target }}</small></span>
-                            <div class="slim-track"><div class="slim-fill" :class="[c.key, { over: c.over, reached: c.reached }]" :style="{ width: c.pct + '%' }"></div></div>
-                        </div>
-                    </div>
-                    <details class="macros" v-if="day.entries.length">
-                        <summary>{{ $t('nutrition.macros.more') }}</summary>
-                        <div v-if="macroMore" class="macro-bars">
-                            <div v-for="b in macroMore" :key="b.key" class="macro-bar">
-                                <div class="macro-text">
-                                    <span>{{ $t('nutrition.macros.' + b.key) }}: {{ b.noData ? '—' : b.value + ' ' + b.unit }}</span>
-                                    <span class="muted">{{ $t(b.ceiling ? 'nutrition.macros.max' : (b.range ? 'nutrition.macros.range' : 'nutrition.macros.goal'), { n: b.target, range: b.range, unit: b.unit }) }}</span>
-                                </div>
-                                <div class="protein-track"><div class="protein-fill macro-fill" :class="{ over: b.over }" :style="{ width: b.pct + '%' }"></div></div>
+                <details class="card macros-card fold" v-if="day.entries.length">
+                    <summary>{{ $t('nutrition.macros.title') }}</summary>
+                    <div v-if="macroBars" class="macro-bars">
+                        <div v-for="b in macroBars" :key="b.key" class="macro-bar">
+                            <div class="macro-text">
+                                <span>{{ $t('nutrition.macros.' + b.key) }}: {{ b.noData ? '—' : b.value + ' ' + b.unit }}</span>
+                                <span class="muted">{{ $t(b.ceiling ? 'nutrition.macros.max' : (b.range ? 'nutrition.macros.range' : 'nutrition.macros.goal'), { n: b.target, range: b.range, unit: b.unit }) }}</span>
                             </div>
+                            <div class="protein-track"><div class="protein-fill macro-fill" :class="{ over: b.over }" :style="{ width: b.pct + '%' }"></div></div>
                         </div>
-                        <p v-else class="extras">{{ $t('nutrition.extras', { carbs: dayExtras.carbs, fiber: dayExtras.fiber, saturates: dayExtras.saturates, sodium: dayExtras.sodium }) }}</p>
-                    </details>
-                    <small v-if="dayExtras.missing && day.entries.length" class="muted">{{ $t('nutrition.extrasMissing', { n: dayExtras.missing }) }}</small>
-                </div>
+                    </div>
+                    <p v-else class="extras">{{ $t('nutrition.extras', { carbs: dayExtras.carbs, fiber: dayExtras.fiber, saturates: dayExtras.saturates, sodium: dayExtras.sodium }) }}</p>
+                    <small v-if="dayExtras.missing" class="muted">{{ $t('nutrition.extrasMissing', { n: dayExtras.missing }) }}</small>
+                    <small class="muted">{{ $t('nutrition.macros.how') }}</small>
+                </details>
 
                 <div v-for="meal in meals" :key="meal" class="card meal">
                     <div class="meal-head">
                         <div class="meal-title">
                             <h2>{{ $t('nutrition.meals.' + meal) }}</h2>
-                            <small v-if="entriesOf(meal).length" class="meal-macros">{{ mealMacros(meal) }}</small>
+                            <small v-if="entriesOf(meal).length" class="meal-macros">{{ subtotal(meal) }} kcal<template v-if="proteinOf(meal)"> / {{ proteinOf(meal) }} g P</template></small>
                         </div>
                         <div class="meal-side">
-                            <span class="subtotal" v-if="entriesOf(meal).length">{{ subtotal(meal) }} kcal</span>
                             <button v-if="entriesOf(meal).length" type="button" class="meal-menu" :class="{ active: editMeal === meal }" :title="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.editMeal')" :aria-label="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.editMeal')" @click="toggleEdit(meal)">{{ editMeal === meal ? '✓' : '⋯' }}</button>
                         </div>
                     </div>
@@ -216,12 +216,8 @@
                     <button type="button" class="modal-close" :aria-label="$t('nutrition.close')" @click="infoModal = null">✕</button>
                     <template v-if="infoModal === 'energy' && day">
                         <EnergyBar v-if="day.ready" :day="day" />
-                        <p class="note">{{ $t('energy.water', { l: waterLiters }) }}</p>
-                    </template>
-                    <template v-else-if="infoModal === 'macros' && day">
-                        <p v-if="proteinGoal">{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }} · {{ $t('nutrition.proteinGoal', { min: proteinGoal.min, max: proteinGoal.max }) }}</p>
                         <p v-if="proteinGoal" class="muted">{{ $t('nutrition.proteinFor.' + day.goal, { min: proteinGoal.min, max: proteinGoal.max }) }}</p>
-                        <p class="muted">{{ $t('nutrition.macros.how') }}</p>
+                        <p class="note">{{ $t('energy.water', { l: waterLiters }) }}</p>
                     </template>
                     <p class="note">{{ $t('energy.full') }}</p>
                 </div>

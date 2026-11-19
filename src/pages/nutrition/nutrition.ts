@@ -54,7 +54,9 @@ class NutritionPage extends Vue {
     adding: string | null = null;
     // The meal whose rows show the edit and delete buttons, and the info modal that is open
     editMeal: string | null = null;
-    infoModal: 'energy' | 'macros' | null = null;
+    infoModal: 'energy' | null = null;
+    // Today as a date, to jump back to it from another day
+    get localToday(): string { return localDate(); }
     editingId: number | null = null;
     rows: FoodRow[] = [{ name: '', kcal: '', protein: '' }];
     saving = false;
@@ -150,38 +152,6 @@ class NutritionPage extends Vue {
     get kcalMinPct(): number {
         const d = this.day;
         return d && d.max > 0 ? Math.round((d.min / d.max) * 100) : 0;
-    }
-
-    // Carbohydrates, fat and protein as three columns; the target is empty while the profile lacks the data for it
-    get macroCols(): { key: string; value: number; target: string; pct: number; noData: boolean; over: boolean; reached: boolean }[] {
-        const x = this.dayExtras;
-        const entries: any[] = this.day?.entries ?? [];
-        const t = this.day?.ready ? macroTargets(userStore.data, this.day.goal, this.day.min, this.day.max) : null;
-        const pg = this.proteinGoal;
-        const has = (f: string) => entries.some((e: any) => e[f] != null);
-        const pct = (v: number, target: number) => (target > 0 ? Math.min(100, Math.round((v / target) * 100)) : 0);
-        const protein = Math.round(this.day?.protein ?? 0);
-
-        return [
-            { key: 'carbs', value: x.carbs, target: t ? String(t.carbs) : '', pct: pct(x.carbs, t?.carbs ?? 0), noData: entries.length > 0 && !has('carbs_g'), over: !!t && x.carbs > t.carbs * 1.15, reached: false },
-            { key: 'fat', value: x.fat, target: t ? `${t.fat.min}-${t.fat.max}` : '', pct: pct(x.fat, t?.fat.max ?? 0), noData: entries.length > 0 && !has('fat_g'), over: !!t && x.fat > t.fat.max * 1.15, reached: false },
-            { key: 'protein', value: protein, target: pg ? `${pg.min}-${pg.max}` : '', pct: pct(protein, pg?.max ?? 0), noData: false, over: false, reached: !!pg && protein >= pg.min },
-        ];
-    }
-
-    // Fiber, saturated fat and sodium: what is left of the old macro bars
-    get macroMore() {
-        return this.macroBars ? this.macroBars.filter(b => ['fiber', 'saturates', 'sodium'].includes(b.key)) : null;
-    }
-
-    // "C 54 g · G 20 g · P 54 g" under the name of a meal; a dash where no entry knows the figure
-    mealMacros(meal: string): string {
-        const list: any[] = this.entriesOf(meal);
-        const part = (letter: string, field: string) => {
-            if (!list.some((e: any) => e[field] != null)) return `${letter} —`;
-            return `${letter} ${Math.round(list.reduce((s: number, e: any) => s + (Number(e[field]) || 0), 0))} g`;
-        };
-        return [part('C', 'carbs_g'), part('G', 'fat_g'), part('P', 'protein_g')].join(' · ');
     }
 
     toggleEdit(meal: string) {
