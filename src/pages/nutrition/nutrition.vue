@@ -42,7 +42,7 @@
                         <div v-if="macroBars" class="macro-bars">
                             <div v-for="b in macroBars" :key="b.key" class="macro-bar">
                                 <div class="macro-text">
-                                    <span>{{ $t('nutrition.macros.' + b.key) }}: {{ b.value }} {{ b.unit }}</span>
+                                    <span>{{ $t('nutrition.macros.' + b.key) }}: {{ b.noData ? '—' : b.value + ' ' + b.unit }}</span>
                                     <span class="muted">{{ $t(b.ceiling ? 'nutrition.macros.max' : (b.range ? 'nutrition.macros.range' : 'nutrition.macros.goal'), { n: b.target, range: b.range, unit: b.unit }) }}</span>
                                 </div>
                                 <div class="protein-track"><div class="protein-fill macro-fill" :class="{ over: b.over }" :style="{ width: b.pct + '%' }"></div></div>
