@@ -90,13 +90,17 @@ class NutritionPage extends Vue {
 
     // Bars of the other nutrients against their targets (the protein has its own bar). Goals fill up; ceilings
     // (saturated fat, sodium) turn red when passed. null while the profile lacks the data for the targets
-    get macroBars(): { key: string; value: number; target: number; unit: string; ceiling: boolean; pct: number; over: boolean; range?: string }[] | null {
+    get macroBars(): { key: string; value: number; target: number; unit: string; ceiling: boolean; pct: number; over: boolean; noData: boolean; range?: string }[] | null {
         const x = this.dayExtras;
         const t = this.day?.ready ? macroTargets(userStore.data, this.day.goal, this.day.min, this.day.max) : null;
         if (!x || !t) return null;
 
+        // No entry of the day has a figure for it: that is "no data", not a real 0
+        const entries: any[] = this.day?.entries ?? [];
+        const field: Record<string, string> = { carbs: 'carbs_g', fat: 'fat_g', fiber: 'fiber_g', saturates: 'saturates_g', sodium: 'sodium_mg' };
         const bar = (key: string, value: number, target: number, unit: string, ceiling: boolean, range?: string) => ({
             key, value, target, unit, ceiling, range,
+            noData: !entries.some((e: any) => e[field[key]] != null),
             pct: Math.min(100, Math.round((value / target) * 100)),
             over: ceiling ? value > target : value > target * 1.15,
         });
