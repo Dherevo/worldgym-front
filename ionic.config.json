@@ -1,0 +1,7 @@
+{
+  "name": "WorldGym",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}

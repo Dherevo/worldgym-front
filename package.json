@@ -22,7 +22,11 @@
   "dependencies": {
     "@capacitor/android": "^8.6.0",
     "@capacitor/core": "^8.6.0",
+    "@ionic/vue": "^9.0.12",
+    "@ionic/vue-router": "^9.0.12",
+    "capacitor-health": "^8.4.0",
     "chart.js": "^4.5.1",
+    "ionicons": "^8.1.0",
     "lib": "file:lib",
     "vue": "^3.5.17",
     "vue-facing-decorator": "^4.0.1",
