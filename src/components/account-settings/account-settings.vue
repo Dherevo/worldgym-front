@@ -21,6 +21,19 @@
             <button type="submit" class="submit" :disabled="savingDetails || !name || !nickname">{{ $t('account.details.save') }}</button>
         </form>
 
+        <!-- Color theme -->
+        <section class="card">
+            <h3>{{ $t('account.theme.title') }}</h3>
+            <p class="note">{{ $t('account.theme.hint') }}</p>
+            <div class="palettes">
+                <button v-for="p in palettes" :key="p.key" type="button" class="palette" :class="{ active: p.key === palette }" @click="pickPalette(p.key)">
+                    <span class="swatch"><i :style="{ background: p.swatch[0] }"></i><i :style="{ background: p.swatch[1] }"></i><i :style="{ background: p.swatch[2] }"></i></span>
+                    <span class="p-name">{{ $t('account.theme.names.' + p.key) }}</span>
+                </button>
+            </div>
+            <p class="msg error" v-if="themeError">{{ themeError }}</p>
+        </section>
+
         <!-- E-mail -->
         <form class="card" @submit.prevent="saveEmail()">
             <h3>{{ $t('account.email.title') }}</h3>

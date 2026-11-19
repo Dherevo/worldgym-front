@@ -66,7 +66,7 @@
                                 <span>{{ $t('nutrition.macros.' + b.key) }}: {{ b.noData ? '—' : b.value + ' ' + b.unit }}</span>
                                 <span class="muted">{{ $t(b.ceiling ? 'nutrition.macros.max' : (b.range ? 'nutrition.macros.range' : 'nutrition.macros.goal'), { n: b.target, range: b.range, unit: b.unit }) }}</span>
                             </div>
-                            <div class="protein-track"><div class="protein-fill macro-fill" :class="{ over: b.over }" :style="{ width: b.pct + '%' }"></div></div>
+                            <div class="protein-track"><div class="protein-fill macro-fill" :class="[b.key, { over: b.over }]" :style="{ width: b.pct + '%' }"></div></div>
                         </div>
                     </div>
                     <p v-else class="extras">{{ $t('nutrition.extras', { carbs: dayExtras.carbs, fiber: dayExtras.fiber, saturates: dayExtras.saturates, sodium: dayExtras.sodium }) }}</p>

@@ -33,6 +33,7 @@
       (function() {
         var theme = localStorage.getItem('wg_theme') || 'dark';
         document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-palette', localStorage.getItem('wg_palette') || 'worldgym');
       })();
     </script>
     <script type="module" src="/src/main.ts"></script>
