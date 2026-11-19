@@ -3,6 +3,8 @@ import { http, App, translate } from "lib";
 import { primaryMuscleNames } from "@/modules/muscles";
 import localDate from "@/modules/localDate";
 import { kcalFromSets, kcalLabel } from "@/modules/calories";
+import { isApp } from "@/modules/platform";
+import { startRestNotification, stopRestNotification, listenRestNotification } from "@/modules/restTimer";
 import SectionTile from "@/components/section-tile/section-tile.vue";
 
 type State = 'loading' | 'pick-exercise' | 'idle' | 'active' | 'logging' | 'resting' | 'choose' | 'abs-offer' | 'done';
@@ -27,6 +29,9 @@ class WorkoutPage extends Vue {
     // Timer descans (compta avall)
     restSeconds = 0;
     restInterval: any = null;
+    // Absolute end of the rest (epoch ms): the countdown is computed from it, so it stays right if the phone is locked
+    restEndsAt = 0;
+    removeRestListeners: (() => void) | null = null;
 
     // Formulari de log
     logReps = 10;
@@ -144,11 +149,26 @@ class WorkoutPage extends Vue {
         this.fetchExerciseList();
         this.fetchHabits();
         this.fetchPending();
+
+        // Buttons of the lock screen notification (only in the app)
+        listenRestNotification({
+            onStartSet: () => {
+                if (this.state === 'resting') this.skipRest();
+                if (this.state === 'idle') this.startSet();
+            },
+            onChanged: (endsAt: number) => {
+                if (this.state !== 'resting') return;
+                this.restEndsAt = endsAt;
+                this.restSeconds = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+            },
+        }).then(remove => { this.removeRestListeners = remove; });
     }
 
     unmounted() {
         if (this.exerciseInterval) clearInterval(this.exerciseInterval);
         if (this.restInterval) clearInterval(this.restInterval);
+        stopRestNotification();
+        if (this.removeRestListeners) this.removeRestListeners();
         this.releaseWakeLock();
         this.saveProgress();
     }
@@ -271,6 +291,7 @@ class WorkoutPage extends Vue {
 
         if (this.restInterval) clearInterval(this.restInterval);
         this.restInterval = null;
+        stopRestNotification();
         this.releaseWakeLock();
 
         const unused = (we.sets ?? []).slice(this.doneCount).filter((s: any) => s.id && s.reps === null);
@@ -710,6 +731,7 @@ class WorkoutPage extends Vue {
 
     startSet() {
         this.captureRest();
+        stopRestNotification();
         this.exerciseSeconds = 0;
         this.state = 'active';
         this.exerciseInterval = setInterval(() => { this.exerciseSeconds++; }, 1000);
@@ -790,28 +812,48 @@ class WorkoutPage extends Vue {
     startRest(seconds: number) {
         this.restStartedAt = Date.now();
         this.restSeconds = seconds;
+        this.restEndsAt = Date.now() + seconds * 1000;
         this.state = 'resting';
         this.acquireWakeLock();
+        this.notifyRest();
         this.restInterval = setInterval(() => {
-            if (this.restSeconds > 0) {
-                this.restSeconds--;
-            } else {
+            this.restSeconds = Math.max(0, Math.ceil((this.restEndsAt - Date.now()) / 1000));
+            if (this.restSeconds <= 0) {
                 clearInterval(this.restInterval);
                 this.restInterval = null;
                 this.releaseWakeLock();
-                this.vibrate();
+                // In the app the notification already makes the sound and vibrates
+                if (!isApp) this.vibrate();
                 this.afterRest();
             }
         }, 1000);
     }
 
+    // Lock screen notification with the countdown (only in the app)
+    notifyRest() {
+        const name = this.currentExercise?.exercise?.name ?? '';
+        startRestNotification({
+            endsAt: this.restEndsAt,
+            title: translate.get('workout.rest.title'),
+            text: name,
+            addLabel: translate.get('workout.rest.notificationAdd'),
+            subLabel: translate.get('workout.rest.notificationSub'),
+            startLabel: translate.get('workout.rest.notificationStart'),
+            doneTitle: translate.get('workout.rest.notificationDone'),
+            doneText: name,
+        });
+    }
+
     adjustRest(delta: number) {
-        this.restSeconds = Math.max(0, this.restSeconds + delta);
+        this.restEndsAt += delta * 1000;
+        this.restSeconds = Math.max(0, Math.ceil((this.restEndsAt - Date.now()) / 1000));
+        this.notifyRest();
     }
 
     skipRest() {
         if (this.restInterval) clearInterval(this.restInterval);
         this.restInterval = null;
+        stopRestNotification();
         this.releaseWakeLock();
         this.afterRest();
     }
