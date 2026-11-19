@@ -1,0 +1,39 @@
+// Colors come from the theme, so the splash follows the theme and mode of the user
+.app-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    background: var(--header-bg);
+    color: var(--header-text);
+    padding: env(safe-area-inset-top) 1.5rem env(safe-area-inset-bottom);
+
+    .splash-logo {
+        font-family: var(--font-heading);
+        font-size: clamp(2rem, 9vw, 3.4rem);
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        animation: splash-in 0.7s ease both;
+        .logo-accent { color: var(--primary-color); }
+    }
+
+    .splash-welcome {
+        margin: 0;
+        font-size: 0.95rem;
+        letter-spacing: 0.08em;
+        opacity: 0.75;
+        animation: splash-in 0.7s 0.25s ease both;
+    }
+}
+
+.splash-fade-leave-active { transition: opacity 0.45s ease; }
+.splash-fade-leave-to { opacity: 0; }
+
+@keyframes splash-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}

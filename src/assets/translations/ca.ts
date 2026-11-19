@@ -22,6 +22,7 @@ import energy from './pages/energy';
 import checkin from './pages/checkin';
 import recommendation from './pages/recommendation';
 import notFound from './pages/notFound';
+import splash from './pages/splash';
 
 const ca = {
     layout: layout.ca,
@@ -48,6 +49,7 @@ const ca = {
     checkin: checkin.ca,
     recommendation: recommendation.ca,
     notFound: notFound.ca,
+    splash: splash.ca,
 };
 
 export default ca;
