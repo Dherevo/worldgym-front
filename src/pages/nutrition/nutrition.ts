@@ -52,6 +52,9 @@ class NutritionPage extends Vue {
 
     // Form to add (or edit) food in a meal
     adding: string | null = null;
+    // The meal whose rows show the edit and delete buttons, and the info modal that is open
+    editMeal: string | null = null;
+    infoModal: 'energy' | 'macros' | null = null;
     editingId: number | null = null;
     rows: FoodRow[] = [{ name: '', kcal: '', protein: '' }];
     saving = false;
@@ -75,9 +78,8 @@ class NutritionPage extends Vue {
 
     // Carbohydrates, fiber, saturated fat and sodium of the day, added from the entries that know them.
     // `missing` is how many entries have no figure (no catalog food, or a food without that value): the total is then a minimum
-    get dayExtras(): { carbs: number; fat: number; fiber: number; saturates: number; sodium: number; missing: number } | null {
+    get dayExtras(): { carbs: number; fat: number; fiber: number; saturates: number; sodium: number; missing: number } {
         const entries: any[] = this.day?.entries ?? [];
-        if (!entries.length) return null;
 
         const sum = (key: string) => Math.round(entries.reduce((s, e) => s + (Number(e[key]) || 0), 0) * 10) / 10;
         const known = (e: any) => e.carbs_g != null && e.fat_g != null && e.sodium_mg != null;
@@ -93,7 +95,7 @@ class NutritionPage extends Vue {
     get macroBars(): { key: string; value: number; target: number; unit: string; ceiling: boolean; pct: number; over: boolean; noData: boolean; range?: string }[] | null {
         const x = this.dayExtras;
         const t = this.day?.ready ? macroTargets(userStore.data, this.day.goal, this.day.min, this.day.max) : null;
-        if (!x || !t) return null;
+        if (!(this.day?.entries ?? []).length || !t) return null;
 
         // No entry of the day has a figure for it: that is "no data", not a real 0
         const entries: any[] = this.day?.entries ?? [];
@@ -131,6 +133,85 @@ class NutritionPage extends Vue {
         document.getElementById('history-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // ---- Redesign: calories bar, macro columns, week strip ----
+
+    get kcalState(): 'low' | 'ok' | 'over' {
+        const d = this.day;
+        if (!d) return 'low';
+        if (d.eaten > d.max) return 'over';
+        return d.eaten >= d.min ? 'ok' : 'low';
+    }
+
+    get kcalPct(): number {
+        const d = this.day;
+        return d && d.max > 0 ? Math.min(100, Math.round((d.eaten / d.max) * 100)) : 0;
+    }
+
+    get kcalMinPct(): number {
+        const d = this.day;
+        return d && d.max > 0 ? Math.round((d.min / d.max) * 100) : 0;
+    }
+
+    // Carbohydrates, fat and protein as three columns; the target is empty while the profile lacks the data for it
+    get macroCols(): { key: string; value: number; target: string; pct: number; noData: boolean; over: boolean; reached: boolean }[] {
+        const x = this.dayExtras;
+        const entries: any[] = this.day?.entries ?? [];
+        const t = this.day?.ready ? macroTargets(userStore.data, this.day.goal, this.day.min, this.day.max) : null;
+        const pg = this.proteinGoal;
+        const has = (f: string) => entries.some((e: any) => e[f] != null);
+        const pct = (v: number, target: number) => (target > 0 ? Math.min(100, Math.round((v / target) * 100)) : 0);
+        const protein = Math.round(this.day?.protein ?? 0);
+
+        return [
+            { key: 'carbs', value: x.carbs, target: t ? String(t.carbs) : '', pct: pct(x.carbs, t?.carbs ?? 0), noData: entries.length > 0 && !has('carbs_g'), over: !!t && x.carbs > t.carbs * 1.15, reached: false },
+            { key: 'fat', value: x.fat, target: t ? `${t.fat.min}-${t.fat.max}` : '', pct: pct(x.fat, t?.fat.max ?? 0), noData: entries.length > 0 && !has('fat_g'), over: !!t && x.fat > t.fat.max * 1.15, reached: false },
+            { key: 'protein', value: protein, target: pg ? `${pg.min}-${pg.max}` : '', pct: pct(protein, pg?.max ?? 0), noData: false, over: false, reached: !!pg && protein >= pg.min },
+        ];
+    }
+
+    // Fiber, saturated fat and sodium: what is left of the old macro bars
+    get macroMore() {
+        return this.macroBars ? this.macroBars.filter(b => ['fiber', 'saturates', 'sodium'].includes(b.key)) : null;
+    }
+
+    // "C 54 g · G 20 g · P 54 g" under the name of a meal; a dash where no entry knows the figure
+    mealMacros(meal: string): string {
+        const list: any[] = this.entriesOf(meal);
+        const part = (letter: string, field: string) => {
+            if (!list.some((e: any) => e[field] != null)) return `${letter} —`;
+            return `${letter} ${Math.round(list.reduce((s: number, e: any) => s + (Number(e[field]) || 0), 0))} g`;
+        };
+        return [part('C', 'carbs_g'), part('G', 'fat_g'), part('P', 'protein_g')].join(' · ');
+    }
+
+    toggleEdit(meal: string) {
+        this.editMeal = this.editMeal === meal ? null : meal;
+    }
+
+    // The days of the week of the selected day (Monday first), with the ones that have food logged
+    get weekDays(): { date: string; letter: string; logged: boolean; selected: boolean; future: boolean }[] {
+        const sel = new Date(this.date + 'T00:00:00');
+        const monday = new Date(sel);
+        monday.setDate(sel.getDate() - ((sel.getDay() + 6) % 7));
+        const today = localDate();
+        const logged = new Set(this.history.filter((h: any) => h.kcal > 0).map((h: any) => h.date));
+
+        return Array.from({ length: 7 }, (_, i) => {
+            const d = new Date(monday);
+            d.setDate(monday.getDate() + i);
+            const date = localDate(d);
+            return { date, letter: d.toLocaleDateString(undefined, { weekday: 'narrow' }).toUpperCase(), logged: logged.has(date), selected: date === this.date, future: date > today };
+        });
+    }
+
+    selectDay(date: string) {
+        if (date > localDate() || date === this.date) return;
+        this.date = date;
+        this.adding = null;
+        this.editMeal = null;
+        this.load();
+    }
+
     get proteinPct(): number {
         const g = this.proteinGoal;
         return g && this.day ? Math.min(100, Math.round((this.day.protein / g.max) * 100)) : 0;
@@ -152,6 +233,7 @@ class NutritionPage extends Vue {
         if (next > localDate()) return;
         this.date = next;
         this.adding = null;
+        this.editMeal = null;
         this.load();
     }
 
