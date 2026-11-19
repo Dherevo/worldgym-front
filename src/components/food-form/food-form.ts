@@ -23,6 +23,7 @@ class FoodForm extends Vue {
     fiber: number | string = '';
     saturates: number | string = '';
     carbs: number | string = '';
+    fat: number | string = '';
     // Sodium in mg
     sodium: number | string = '';
     unitG: number | string = '';
@@ -43,6 +44,7 @@ class FoodForm extends Vue {
             this.fiber = this.food.fiber_100 ?? '';
             this.saturates = this.food.saturates_100 ?? '';
             this.carbs = this.food.carbs_100 ?? '';
+            this.fat = this.food.fat_100 ?? '';
             this.sodium = this.food.sodium_100 ?? '';
             this.unitG = this.food.unit_g ?? '';
         } else {
@@ -105,6 +107,7 @@ class FoodForm extends Vue {
             this.fiber = p.fiber_100 ?? '';
             this.saturates = p.saturates_100 ?? '';
             this.carbs = p.carbs_100 ?? '';
+            this.fat = p.fat_100 ?? '';
             this.sodium = p.sodium_100 ?? '';
             this.filled = true;
         })
@@ -127,6 +130,7 @@ class FoodForm extends Vue {
             fiber_100: optional(this.fiber),
             saturates_100: optional(this.saturates),
             carbs_100: optional(this.carbs),
+            fat_100: optional(this.fat),
             sodium_100: optional(this.sodium),
             brand: this.brand.trim(),
             off_code: this.offCode.trim(),
