@@ -2,7 +2,7 @@ import { Component, Vue, Prop, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 
 // Form to create or edit a food of the catalog: its values per 100 g (or 100 ml). With a barcode, Open Food Facts
-// can fill the name, the values, the brand, the fiber and the saturated fat; fruit and the like have no barcode.
+// can fill the name, the values, the brand, the fiber, the saturated fat, the carbohydrates and the sodium; fruit and the like have no barcode.
 @Component({ emits: ['saved', 'cancel'] })
 class FoodForm extends Vue {
 
@@ -22,6 +22,9 @@ class FoodForm extends Vue {
     // Per 100 (or per unit): they only come from Open Food Facts or from a food already saved
     fiber: number | string = '';
     saturates: number | string = '';
+    carbs: number | string = '';
+    // Sodium in mg
+    sodium: number | string = '';
     unitG: number | string = '';
     // Amount the kcal and protein typed are for (empty = per 100); saved always per 100
     refAmount: number | string = '';
@@ -39,6 +42,8 @@ class FoodForm extends Vue {
             this.protein = this.food.protein_100 || '';
             this.fiber = this.food.fiber_100 ?? '';
             this.saturates = this.food.saturates_100 ?? '';
+            this.carbs = this.food.carbs_100 ?? '';
+            this.sodium = this.food.sodium_100 ?? '';
             this.unitG = this.food.unit_g ?? '';
         } else {
             this.name = this.presetName;
@@ -99,6 +104,8 @@ class FoodForm extends Vue {
             this.protein = p.protein_100 || '';
             this.fiber = p.fiber_100 ?? '';
             this.saturates = p.saturates_100 ?? '';
+            this.carbs = p.carbs_100 ?? '';
+            this.sodium = p.sodium_100 ?? '';
             this.filled = true;
         })
         .catch((e: any) => {
@@ -119,6 +126,8 @@ class FoodForm extends Vue {
             protein_100: this.protein === '' ? 0 : this.per100(Number(this.protein)),
             fiber_100: optional(this.fiber),
             saturates_100: optional(this.saturates),
+            carbs_100: optional(this.carbs),
+            sodium_100: optional(this.sodium),
             brand: this.brand.trim(),
             off_code: this.offCode.trim(),
             unit_g: this.unit === 'u' && this.unitG !== '' ? Number(this.unitG) : null,
