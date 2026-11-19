@@ -21,6 +21,73 @@
     .protein-track { height: 8px; border-radius: 4px; background: var(--surface-3, var(--surface-2)); border: 1px solid var(--border-color); overflow: hidden; }
     .protein-fill { height: 100%; background: var(--text-muted); transition: width 0.4s ease; &.reached { background: #16a34a; } }
 
+    // Colors of the three macros and of the calorie bar (a theme can change them)
+    --macro-carbs: #2ab7a9;
+    --macro-fat: #b86fd8;
+    --macro-protein: #f5a524;
+    --kcal-low: var(--primary-color);
+    --kcal-ok: #16a34a;
+    --kcal-over: #d97706;
+
+    .card-head { display: flex; justify-content: space-between; align-items: center; }
+    .info-btn { background: none; border: none; color: var(--text-muted); font-size: 1.15rem; cursor: pointer; padding: 0.1rem 0.4rem; border-radius: 50%; &:hover { color: var(--primary-color); } }
+
+    .week-strip {
+        display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.3rem;
+        .wk-day {
+            display: flex; flex-direction: column; align-items: center; gap: 0.3rem; background: none; border: none; color: inherit; cursor: pointer; padding: 0.2rem 0;
+            &:disabled { opacity: 0.35; cursor: default; }
+            .wk-letter { font-size: 0.8rem; color: var(--text-muted); }
+            .wk-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; }
+            &.logged .wk-dot { background: var(--surface-3, var(--surface-2)); color: var(--kcal-ok); }
+            &.selected .wk-letter { color: inherit; font-weight: 700; }
+            &.selected .wk-dot { border-color: var(--primary-color); }
+        }
+    }
+
+    .slim-track { position: relative; height: 10px; border-radius: 5px; background: var(--surface-3, var(--surface-color)); overflow: hidden; }
+    .slim-fill {
+        height: 100%; border-radius: 5px; transition: width 0.4s ease; background: var(--kcal-low);
+        &.ok { background: var(--kcal-ok); } &.over { background: var(--kcal-over); }
+        &.carbs { background: var(--macro-carbs); } &.fat { background: var(--macro-fat); } &.protein { background: var(--macro-protein); }
+        &.protein.reached { background: var(--kcal-ok); }
+    }
+    .kcal-track { overflow: visible; background: var(--surface-3, var(--surface-color)); .slim-mark { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text-muted); } }
+    .kcal-card {
+        .big { margin: 0; font-size: 0.95rem; b { font-size: 1.9rem; } }
+        .kcal-left { margin: 0; font-size: 0.85rem; color: var(--text-secondary); &.over { color: var(--kcal-over); } }
+    }
+    .macro-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+    .macro-col { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; .mc-label { font-size: 0.82rem; color: var(--text-secondary); } .mc-value b { font-size: 1.25rem; } .mc-value small { font-size: 0.8rem; } }
+
+    .meal { gap: 0.4rem; }
+    .meal-title { display: flex; flex-direction: column; gap: 0.15rem; .meal-macros { font-size: 0.78rem; color: var(--text-muted); } }
+    .meal-side { display: flex; align-items: center; gap: 0.4rem; }
+    .meal-menu { background: none; border: none; color: var(--text-muted); font-size: 1.3rem; line-height: 1; cursor: pointer; padding: 0.15rem 0.5rem; border-radius: 8px; &.active { color: var(--primary-color); font-weight: 700; } &:hover { background: var(--surface-3, var(--surface-color)); } }
+    .entry-list {
+        list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border-color);
+        li { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0; & + li { border-top: 1px solid var(--border-color); } }
+        .e-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        .e-name { word-break: break-word; }
+        .e-sub { color: var(--text-muted); font-size: 0.78rem; }
+        .e-kcal { font-weight: 600; white-space: nowrap; }
+        .e-actions { display: flex; gap: 0.1rem; }
+        .btn-edit, .btn-delete { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px; line-height: 1; font-size: 1rem; }
+        .btn-edit:hover { background: var(--tint-blue-bg); color: var(--tint-blue-text); }
+        .btn-delete:hover { background: var(--tint-red-bg); color: var(--tint-red-text); }
+    }
+    .btn-pill { align-self: stretch; text-align: center; background: var(--tint-blue-bg, var(--surface-3)); color: var(--primary-color); border: none; border-radius: 999px; padding: 0.6rem 1rem; font-weight: 600; cursor: pointer; }
+
+    .fold { display: block; summary { cursor: pointer; font-weight: 700; font-size: 1.05rem; } > :not(summary) { margin-top: 0.6rem; } }
+
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 50; }
+    .modal-box {
+        position: relative; background: var(--surface-2); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.2rem 1rem 1rem;
+        width: 100%; max-width: 520px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.7rem;
+        p { margin: 0; }
+    }
+    .modal-close { position: absolute; top: 0.4rem; right: 0.5rem; background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; }
+
     .card {
         background: var(--surface-2);
         border: 1px solid var(--border-color);
@@ -61,7 +128,7 @@
         }
     }
 
-    .meal-head { display: flex; justify-content: space-between; align-items: baseline; .subtotal { font-weight: 700; color: var(--primary-color); } }
+    .meal-head { display: flex; justify-content: space-between; align-items: flex-start; .subtotal { font-weight: 700; color: var(--primary-color); } }
 
     .table-wrap { overflow-x: auto; }
     .entries {

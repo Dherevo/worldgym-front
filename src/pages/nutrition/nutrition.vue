@@ -22,25 +22,45 @@
                 <button type="button" class="nav-btn" @click="shiftDay(1)" :disabled="isToday" :aria-label="$t('nutrition.nextDay')">›</button>
             </div>
 
+            <div class="week-strip">
+                <button v-for="d in weekDays" :key="d.date" type="button" class="wk-day" :class="{ selected: d.selected, logged: d.logged }" :disabled="d.future" @click="selectDay(d.date)">
+                    <span class="wk-letter">{{ d.letter }}</span>
+                    <span class="wk-dot">{{ d.logged ? '✓' : '' }}</span>
+                </button>
+            </div>
+
             <p v-if="loading && !day" class="muted">{{ $t('nutrition.loading') }}</p>
 
             <template v-if="day">
-                <div class="card">
-                    <EnergyBar v-if="day.ready" :day="day" />
-                    <p v-else class="muted">{{ $t('energy.needData') }}</p>
-                    <div class="protein-bar" v-if="proteinGoal">
-                        <div class="protein-text">
-                            <span>{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }}</span>
-                            <span class="muted">{{ $t('nutrition.proteinGoal', { min: proteinGoal.min, max: proteinGoal.max }) }}</span>
-                        </div>
-                        <div class="protein-track"><div class="protein-fill" :class="{ reached: day.protein >= proteinGoal.min }" :style="{ width: proteinPct + '%' }"></div></div>
-                        <span class="muted">{{ $t('nutrition.proteinFor.' + day.goal, { min: proteinGoal.min, max: proteinGoal.max }) }}</span>
+                <div class="card kcal-card">
+                    <div class="card-head">
+                        <h2>{{ $t('nutrition.calories') }}</h2>
+                        <button type="button" class="info-btn" :aria-label="$t('nutrition.info')" @click="infoModal = 'energy'">ⓘ</button>
                     </div>
-                    <p class="protein" v-else-if="day.protein > 0">{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }}</p>
-                    <details class="macros" v-if="dayExtras">
-                        <summary>{{ $t('nutrition.macros.title') }}</summary>
-                        <div v-if="macroBars" class="macro-bars">
-                            <div v-for="b in macroBars" :key="b.key" class="macro-bar">
+                    <template v-if="day.ready">
+                        <p class="big"><b>{{ day.eaten }}</b> <span class="muted">/ {{ day.min }} - {{ day.max }} kcal</span></p>
+                        <div class="slim-track kcal-track"><div class="slim-fill" :class="kcalState" :style="{ width: kcalPct + '%' }"></div><div class="slim-mark" :style="{ left: kcalMinPct + '%' }"></div></div>
+                        <p class="kcal-left" :class="kcalState">{{ day.max - day.eaten >= 0 ? $t('nutrition.left', { n: day.max - day.eaten }) : $t('nutrition.over', { n: day.eaten - day.max }) }}</p>
+                    </template>
+                    <p v-else class="muted">{{ $t('energy.needData') }}</p>
+                </div>
+
+                <div class="card macros-card">
+                    <div class="card-head">
+                        <h2>{{ $t('nutrition.macros.cardTitle') }}</h2>
+                        <button type="button" class="info-btn" :aria-label="$t('nutrition.info')" @click="infoModal = 'macros'">ⓘ</button>
+                    </div>
+                    <div class="macro-cols">
+                        <div v-for="c in macroCols" :key="c.key" class="macro-col">
+                            <span class="mc-label">{{ $t('nutrition.macros.' + c.key) }}</span>
+                            <span class="mc-value"><b>{{ c.noData ? '—' : c.value }}</b> <small>g</small><small v-if="c.target" class="muted"> / {{ c.target }}</small></span>
+                            <div class="slim-track"><div class="slim-fill" :class="[c.key, { over: c.over, reached: c.reached }]" :style="{ width: c.pct + '%' }"></div></div>
+                        </div>
+                    </div>
+                    <details class="macros" v-if="day.entries.length">
+                        <summary>{{ $t('nutrition.macros.more') }}</summary>
+                        <div v-if="macroMore" class="macro-bars">
+                            <div v-for="b in macroMore" :key="b.key" class="macro-bar">
                                 <div class="macro-text">
                                     <span>{{ $t('nutrition.macros.' + b.key) }}: {{ b.noData ? '—' : b.value + ' ' + b.unit }}</span>
                                     <span class="muted">{{ $t(b.ceiling ? 'nutrition.macros.max' : (b.range ? 'nutrition.macros.range' : 'nutrition.macros.goal'), { n: b.target, range: b.range, unit: b.unit }) }}</span>
@@ -49,43 +69,35 @@
                             </div>
                         </div>
                         <p v-else class="extras">{{ $t('nutrition.extras', { carbs: dayExtras.carbs, fiber: dayExtras.fiber, saturates: dayExtras.saturates, sodium: dayExtras.sodium }) }}</p>
-                        <small v-if="dayExtras.missing" class="muted">{{ $t('nutrition.extrasMissing', { n: dayExtras.missing }) }}</small>
                     </details>
-                    <p class="note">{{ $t('energy.water', { l: waterLiters }) }}</p>
-                    <p class="note">{{ $t('energy.full') }}</p>
+                    <small v-if="dayExtras.missing && day.entries.length" class="muted">{{ $t('nutrition.extrasMissing', { n: dayExtras.missing }) }}</small>
                 </div>
 
                 <div v-for="meal in meals" :key="meal" class="card meal">
                     <div class="meal-head">
-                        <h2>{{ $t('nutrition.meals.' + meal) }}</h2>
-                        <span class="subtotal" v-if="entriesOf(meal).length">{{ subtotal(meal) }} kcal<template v-if="proteinOf(meal)"> · {{ proteinOf(meal) }} g {{ $t('nutrition.proteinShort') }}</template></span>
+                        <div class="meal-title">
+                            <h2>{{ $t('nutrition.meals.' + meal) }}</h2>
+                            <small v-if="entriesOf(meal).length" class="meal-macros">{{ mealMacros(meal) }}</small>
+                        </div>
+                        <div class="meal-side">
+                            <span class="subtotal" v-if="entriesOf(meal).length">{{ subtotal(meal) }} kcal</span>
+                            <button v-if="entriesOf(meal).length" type="button" class="meal-menu" :class="{ active: editMeal === meal }" :title="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.editMeal')" :aria-label="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.editMeal')" @click="toggleEdit(meal)">{{ editMeal === meal ? '✓' : '⋯' }}</button>
+                        </div>
                     </div>
 
-                    <div class="table-wrap" v-if="entriesOf(meal).length">
-                        <table class="entries">
-                            <thead>
-                                <tr>
-                                    <th>{{ $t('nutrition.table.name') }}</th>
-                                    <th class="num">{{ $t('nutrition.table.amount') }}</th>
-                                    <th class="num">kcal</th>
-                                    <th class="num">{{ $t('nutrition.table.protein') }}</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="e in entriesOf(meal)" :key="e.id">
-                                    <td class="entry-name">{{ entryParts(e).name }}</td>
-                                    <td class="num">{{ entryParts(e).qty }}</td>
-                                    <td class="num">{{ e.kcal }}</td>
-                                    <td class="num">{{ e.protein_g ? e.protein_g : '—' }}</td>
-                                    <td class="actions">
-                                        <button type="button" class="btn-edit" @click="openEdit(e)" :title="$t('nutrition.edit')">✎</button>
-                                        <button type="button" class="btn-delete" @click="remove(e)" :title="$t('nutrition.delete')">✕</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                    <ul class="entry-list" v-if="entriesOf(meal).length">
+                        <li v-for="e in entriesOf(meal)" :key="e.id">
+                            <div class="e-main">
+                                <span class="e-name">{{ entryParts(e).name }}</span>
+                                <small class="e-sub">{{ entryParts(e).qty !== '—' ? entryParts(e).qty : '' }}<template v-if="e.protein_g"><template v-if="entryParts(e).qty !== '—'"> · </template>{{ e.protein_g }} g {{ $t('nutrition.proteinShort') }}</template></small>
+                            </div>
+                            <span class="e-kcal">{{ e.kcal }}</span>
+                            <span class="e-actions" v-if="editMeal === meal">
+                                <button type="button" class="btn-edit" @click="openEdit(e)" :title="$t('nutrition.edit')">✎</button>
+                                <button type="button" class="btn-delete" @click="remove(e)" :title="$t('nutrition.delete')">✕</button>
+                            </span>
+                        </li>
+                    </ul>
 
                     <form v-if="adding === meal" class="add-form" @submit.prevent="save()">
                         <div class="food-box" v-if="!editingId">
@@ -136,7 +148,7 @@
                         </div>
                     </form>
                     <template v-else>
-                        <button type="button" class="btn-add" @click="openAdd(meal)">+ {{ $t('nutrition.addTo', { meal: $t('nutrition.meals.' + meal).toLowerCase() }) }}</button>
+                        <button type="button" class="btn-pill" @click="openAdd(meal)">+ {{ $t('nutrition.addTo', { meal: $t('nutrition.meals.' + meal).toLowerCase() }) }}</button>
                         <button v-if="!entriesOf(meal).length" type="button" class="btn-add" :disabled="copying" @click="copyPrevious(meal)">⎘ {{ $t('nutrition.copyPrev') }}</button>
                     </template>
                 </div>
@@ -156,8 +168,8 @@
                     </ul>
                 </div>
 
-                <div class="card weight-card">
-                    <h2>{{ $t('nutrition.weightCard.title') }}</h2>
+                <details class="card weight-card fold">
+                    <summary>{{ $t('nutrition.weightCard.title') }}</summary>
                     <template v-if="weightTrend">
                         <p class="w-big">{{ weightTrend.latest }} kg <small class="muted">· {{ historyLabel(weightTrend.date) }}</small></p>
                         <p v-if="weightTrend.perWeek !== null">{{ $t('nutrition.weightCard.real', { n: kgLabel(weightTrend.perWeek) }) }}</p>
@@ -167,10 +179,10 @@
                     </template>
                     <p v-else class="muted">{{ $t('nutrition.weightCard.empty') }}</p>
                     <button type="button" class="btn-add" @click="to('/measurements')">+ {{ $t('nutrition.weightCard.log') }}</button>
-                </div>
+                </details>
 
-                <div class="card foods-card">
-                    <h2>{{ $t('nutrition.foods.title') }}</h2>
+                <details class="card foods-card fold">
+                    <summary>{{ $t('nutrition.foods.title') }}</summary>
                     <p class="muted">{{ $t('nutrition.foods.sub') }}</p>
                     <input type="search" class="food-search" v-if="myTotal > foodPageSize || myQuery" v-model="myQuery" @input="onMyQuery()" :placeholder="$t('nutrition.searchFood')" />
                     <ul class="foods-list" v-if="myFoods.length">
@@ -196,8 +208,24 @@
                     </div>
                     <FoodForm v-if="foodForm && foodForm.where === 'card' && !foodForm.food" :food="null" @saved="onFoodSaved" @cancel="foodForm = null" />
                     <button v-else-if="!foodForm" type="button" class="btn-add" @click="openFoodForm(null, '', 'card')">+ {{ $t('nutrition.newFood') }}</button>
-                </div>
+                </details>
             </template>
+
+            <div v-if="infoModal" class="modal-backdrop" @click.self="infoModal = null">
+                <div class="modal-box" role="dialog" aria-modal="true">
+                    <button type="button" class="modal-close" :aria-label="$t('nutrition.close')" @click="infoModal = null">✕</button>
+                    <template v-if="infoModal === 'energy' && day">
+                        <EnergyBar v-if="day.ready" :day="day" />
+                        <p class="note">{{ $t('energy.water', { l: waterLiters }) }}</p>
+                    </template>
+                    <template v-else-if="infoModal === 'macros' && day">
+                        <p v-if="proteinGoal">{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }} · {{ $t('nutrition.proteinGoal', { min: proteinGoal.min, max: proteinGoal.max }) }}</p>
+                        <p v-if="proteinGoal" class="muted">{{ $t('nutrition.proteinFor.' + day.goal, { min: proteinGoal.min, max: proteinGoal.max }) }}</p>
+                        <p class="muted">{{ $t('nutrition.macros.how') }}</p>
+                    </template>
+                    <p class="note">{{ $t('energy.full') }}</p>
+                </div>
+            </div>
 
             <details class="card calc-card">
                 <summary>{{ $t('nutrition.calc.title') }}</summary>
