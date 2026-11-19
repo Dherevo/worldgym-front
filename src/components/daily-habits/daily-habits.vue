@@ -30,6 +30,12 @@
                             v-model="drafts[h.id].value" @change="saveSteps(h)" @keyup.enter="saveSteps(h)" />
                         <span>{{ $t('habits.card.steps') }}</span>
                     </div>
+                    <div class="habit-sync" v-if="h.kind === 'steps' && isApp && day === 'today'">
+                        <button type="button" class="sync-btn" :disabled="syncing" @click="phoneSteps()">
+                            {{ syncing ? $t('habits.card.syncing') : (health === 'ready' ? $t('habits.card.syncPhone') : $t('habits.card.connectHealth')) }}
+                        </button>
+                        <small v-if="health === 'unavailable'" class="muted">{{ $t('habits.card.healthMissing') }}</small>
+                    </div>
 
                     <div class="habit-note" v-else-if="h.in_workout">
                         {{ h.log?.completed ? $t('habits.card.inWorkoutDone') : $t('habits.card.inWorkoutHint') }}

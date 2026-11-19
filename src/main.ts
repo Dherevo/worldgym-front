@@ -3,6 +3,7 @@ import './assets/styles.scss';
 //////////////////////////
 
 import { createApp } from 'vue';
+import { IonicVue } from '@ionic/vue';
 import { App, AppPage, Storage, translate } from 'lib';
 
 import AppMain from './App.vue';
@@ -26,6 +27,8 @@ const app = createApp(AppMain);
 // Initialize Phyrus
 App.init(packageJSON.version, app, config, routes, locales);
 app.component('AppPage', AppPage);
+// Ionic components (their CSS is loaded where they are used, so the current pages are not restyled)
+app.use(IonicVue);
 
 // translate.initialize() prioritizes the browser's language over defaultLanguage,
 // so a saved preference must be re-applied explicitly to actually take over.

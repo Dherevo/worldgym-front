@@ -3,6 +3,9 @@ import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
 import { lastDoneLabel } from "@/modules/lastDone";
 import SectionTile from "@/components/section-tile/section-tile.vue";
+import { isApp } from "@/modules/platform";
+import { healthState, connectHealth, syncSteps } from "@/modules/healthSteps";
+import type { HealthState } from "@/modules/healthSteps";
 
 // Daily must-dos (steps, abs, custom) shown on the home page, whatever the routine day is.
 // Collapsed into a title row with the day's progress; the list opens in a modal.
@@ -33,8 +36,46 @@ class DailyHabits extends Vue {
         return this.day === 'yesterday' ? this.yesterday : this.today;
     }
 
+    // Steps of the phone (installed app only): its state, and whether a sync is going on
+    readonly isApp = isApp;
+    health: HealthState = 'unavailable';
+    syncing = false;
+
     created() {
         this.fetchHabits();
+        this.initHealth();
+    }
+
+    // In the app, the steps are synced on their own when the permission is already given
+    private initHealth() {
+        if (!isApp) return;
+        healthState().then(state => {
+            this.health = state;
+            if (state === 'ready') this.syncPhone(true);
+        });
+    }
+
+    // The button of the steps: connects the first time (asks the permission), syncs after that
+    phoneSteps() {
+        if (this.syncing) return;
+        if (this.health === 'ready') return this.syncPhone(false);
+
+        this.syncing = true;
+        connectHealth().then(ok => {
+            this.health = ok ? 'ready' : this.health;
+            if (ok) this.syncPhone(false);
+        }).finally(() => { this.syncing = false; });
+    }
+
+    private syncPhone(silent: boolean) {
+        this.syncing = true;
+        syncSteps()
+        .then(() => {
+            this.fetchHabits();
+            if (!silent) App.notification(translate.get('habits.card.synced')).setType('success').show();
+        })
+        .catch(() => { if (!silent) App.notification(translate.get('habits.card.syncError')).setType('error').show(); })
+        .finally(() => { this.syncing = false; });
     }
 
     @Watch('open')
