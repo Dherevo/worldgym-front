@@ -6,6 +6,7 @@ import localDate from "@/modules/localDate";
 import { loadEnergyDay, recalcPastDay } from "@/modules/energyDay";
 import userStore from "@/modules/userStore";
 import { proteinRange } from "@/modules/calories";
+import { macroTargets } from "@/modules/macros";
 import type { EnergyDay } from "@/modules/energyDay";
 
 const MEALS = ['breakfast', 'lunch', 'snack', 'dinner', 'other'];
@@ -70,6 +71,60 @@ class NutritionPage extends Vue {
     // General recommendation of total water a day: 2.5 L for men, 2 L for women (EFSA)
     get waterLiters(): string {
         return userStore.data?.gender === 'female' ? '2' : translate.currentLanguage === 'en' ? '2.5' : '2,5';
+    }
+
+    // Carbohydrates, fiber, saturated fat and sodium of the day, added from the entries that know them.
+    // `missing` is how many entries have no figure (no catalog food, or a food without that value): the total is then a minimum
+    get dayExtras(): { carbs: number; fat: number; fiber: number; saturates: number; sodium: number; missing: number } | null {
+        const entries: any[] = this.day?.entries ?? [];
+        if (!entries.length) return null;
+
+        const sum = (key: string) => Math.round(entries.reduce((s, e) => s + (Number(e[key]) || 0), 0) * 10) / 10;
+        const known = (e: any) => e.carbs_g != null && e.fat_g != null && e.sodium_mg != null;
+
+        return {
+            carbs: Math.round(sum('carbs_g')), fat: Math.round(sum('fat_g')), fiber: sum('fiber_g'), saturates: sum('saturates_g'), sodium: Math.round(sum('sodium_mg')),
+            missing: entries.filter((e: any) => !known(e)).length,
+        };
+    }
+
+    // Bars of the other nutrients against their targets (the protein has its own bar). Goals fill up; ceilings
+    // (saturated fat, sodium) turn red when passed. null while the profile lacks the data for the targets
+    get macroBars(): { key: string; value: number; target: number; unit: string; ceiling: boolean; pct: number; over: boolean; range?: string }[] | null {
+        const x = this.dayExtras;
+        const t = this.day?.ready ? macroTargets(userStore.data, this.day.goal, this.day.min, this.day.max) : null;
+        if (!x || !t) return null;
+
+        const bar = (key: string, value: number, target: number, unit: string, ceiling: boolean, range?: string) => ({
+            key, value, target, unit, ceiling, range,
+            pct: Math.min(100, Math.round((value / target) * 100)),
+            over: ceiling ? value > target : value > target * 1.15,
+        });
+
+        return [
+            bar('carbs', x.carbs, t.carbs, 'g', false),
+            bar('fat', x.fat, t.fat.max, 'g', false, `${t.fat.min} - ${t.fat.max}`),
+            bar('fiber', x.fiber, t.fiber, 'g', false),
+            bar('saturates', x.saturates, t.saturatesMax, 'g', true),
+            bar('sodium', x.sodium, t.sodiumMax, 'mg', true),
+        ];
+    }
+
+    // 7 days without vegetables or fruit: the last 7 days have food logged on at least 3 of them and none has a
+    // vegetable or fruit. Days without anything logged do not count; an old API without the `plant` flag never alerts
+    get noPlantsAlert(): boolean {
+        const from = new Date(localDate() + 'T00:00:00');
+        from.setDate(from.getDate() - 6);
+        const start = localDate(from);
+
+        const logged = this.history.filter((h: any) => h.date >= start && h.kcal > 0);
+        if (logged.length < 3 || logged.some((h: any) => h.plant === undefined)) return false;
+        return logged.every((h: any) => !h.plant);
+    }
+
+    // Scroll to the history of the last days
+    goHistory() {
+        document.getElementById('history-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     get proteinPct(): number {
@@ -173,7 +228,7 @@ class NutritionPage extends Vue {
 
         const save = (name: string) => http.post('/foods').data({
             name, unit: p.unit, kcal_100: p.kcal_100, protein_100: p.protein_100 ?? 0,
-            fiber_100: p.fiber_100, saturates_100: p.saturates_100, carbs_100: p.carbs_100, sodium_100: p.sodium_100, brand: p.brand ?? '', off_code: p.code,
+            fiber_100: p.fiber_100, saturates_100: p.saturates_100, carbs_100: p.carbs_100, fat_100: p.fat_100, sodium_100: p.sodium_100, brand: p.brand ?? '', off_code: p.code,
         });
 
         // The name is unique per user: with the same name from another brand the brand goes with it

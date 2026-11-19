@@ -3,6 +3,14 @@
         <div class="nutrition-page">
             <h1><svg-icon name="awesome-solid/utensils" class="title-icon"/> {{ $t('nutrition.title') }}</h1>
 
+            <button v-if="history.length" type="button" class="history-link" @click="goHistory">
+                {{ $t('nutrition.historyLink') }} ↓
+            </button>
+
+            <div v-if="noPlantsAlert" class="weigh-banner plants-banner">
+                <span>{{ $t('nutrition.noPlants') }}</span>
+            </div>
+
             <div v-if="weighDue" class="weigh-banner">
                 <span>{{ $t('nutrition.weighDue') }}</span>
                 <button type="button" class="btn" @click="to('/profile')">{{ $t('nutrition.weighNow') }}</button>
@@ -29,6 +37,20 @@
                         <span class="muted">{{ $t('nutrition.proteinFor.' + day.goal, { min: proteinGoal.min, max: proteinGoal.max }) }}</span>
                     </div>
                     <p class="protein" v-else-if="day.protein > 0">{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }}</p>
+                    <details class="macros" v-if="dayExtras">
+                        <summary>{{ $t('nutrition.macros.title') }}</summary>
+                        <div v-if="macroBars" class="macro-bars">
+                            <div v-for="b in macroBars" :key="b.key" class="macro-bar">
+                                <div class="macro-text">
+                                    <span>{{ $t('nutrition.macros.' + b.key) }}: {{ b.value }} {{ b.unit }}</span>
+                                    <span class="muted">{{ $t(b.ceiling ? 'nutrition.macros.max' : (b.range ? 'nutrition.macros.range' : 'nutrition.macros.goal'), { n: b.target, range: b.range, unit: b.unit }) }}</span>
+                                </div>
+                                <div class="protein-track"><div class="protein-fill macro-fill" :class="{ over: b.over }" :style="{ width: b.pct + '%' }"></div></div>
+                            </div>
+                        </div>
+                        <p v-else class="extras">{{ $t('nutrition.extras', { carbs: dayExtras.carbs, fiber: dayExtras.fiber, saturates: dayExtras.saturates, sodium: dayExtras.sodium }) }}</p>
+                        <small v-if="dayExtras.missing" class="muted">{{ $t('nutrition.extrasMissing', { n: dayExtras.missing }) }}</small>
+                    </details>
                     <p class="note">{{ $t('energy.water', { l: waterLiters }) }}</p>
                     <p class="note">{{ $t('energy.full') }}</p>
                 </div>
@@ -119,8 +141,9 @@
                     </template>
                 </div>
 
-                <div class="card" v-if="history.length">
+                <div class="card" id="history-card" v-if="history.length">
                     <h2>{{ $t('nutrition.history') }}</h2>
+                    <p class="muted">{{ $t('nutrition.historyHint') }}</p>
                     <p class="muted history-protein" v-if="proteinSummary">{{ $t('nutrition.proteinSummary', { reached: proteinSummary.reached, days: proteinSummary.days, avg: proteinSummary.avg, min: proteinGoal?.min }) }}</p>
                     <ul class="history">
                         <li v-for="h in history" :key="h.date" :class="{ active: h.date === date }" role="button" tabindex="0" @click="openDay(h.date)" @keyup.enter="openDay(h.date)">
