@@ -22,6 +22,7 @@ import energy from './pages/energy';
 import checkin from './pages/checkin';
 import recommendation from './pages/recommendation';
 import notFound from './pages/notFound';
+import splash from './pages/splash';
 
 const en = {
     layout: layout.en,
@@ -48,6 +49,7 @@ const en = {
     checkin: checkin.en,
     recommendation: recommendation.en,
     notFound: notFound.en,
+    splash: splash.en,
 };
 
 export default en;
