@@ -6,10 +6,13 @@ import MeasurementsPage from "@/pages/measurements/measurements.vue";
 import AccountSettings from "@/components/account-settings/account-settings.vue";
 import EnergyCard from "@/components/energy-card/energy-card.vue";
 import UserAvatar from "@/components/user-avatar/user-avatar.vue";
+import { isApp } from "@/modules/platform";
+import AppPreferences from "@/components/app-preferences/app-preferences.vue";
 
-@Component({ components: { MeasurementsPage, AccountSettings, EnergyCard, UserAvatar } })
+@Component({ components: { MeasurementsPage, AccountSettings, EnergyCard, UserAvatar, AppPreferences } })
 class ProfilePage extends Vue {
 
+    readonly isApp = isApp;
     readonly genders = ['female', 'male', 'other'];
 
     height = '';

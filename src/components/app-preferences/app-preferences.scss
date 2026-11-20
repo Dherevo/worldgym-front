@@ -1,0 +1,42 @@
+.app-preferences {
+    h2 { margin: 0; font-size: 1.4rem; }
+
+    .language-switcher {
+        display: flex;
+        gap: 0.5rem;
+
+        .language-option {
+            flex: 1;
+            min-height: 44px;
+            background: var(--surface-2);
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 999px;
+            font-weight: 700;
+            cursor: pointer;
+
+            &.active { border-color: var(--primary-color); color: var(--primary-color); box-shadow: var(--shadow-glow); }
+        }
+    }
+
+    .pref-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        width: 100%;
+        min-height: 44px;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-2);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        font-size: 0.95rem;
+        text-align: left;
+        cursor: pointer;
+
+        span { color: inherit; }
+        svg { width: 18px; height: 18px; }
+
+        &.logout { color: var(--tint-red-text); }
+    }
+}

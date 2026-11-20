@@ -78,6 +78,8 @@
             <AccountSettings />
 
             <MeasurementsPage />
+
+            <AppPreferences v-if="isApp" />
         </div>
     </AppPage>
 </template>

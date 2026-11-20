@@ -5,7 +5,7 @@
     :menuWidthCollapsed="0">
 
         <template #logo>
-            <button class="burger-btn" :aria-expanded="menuOpen" aria-controls="sidebar"
+            <button v-if="!isApp" class="burger-btn" :aria-expanded="menuOpen" aria-controls="sidebar"
                 :aria-label="$t('layout.menu.menu')" @click="menuOpen = !menuOpen">
                 <svg-icon :name="menuOpen ? 'radix/cross-1' : 'radix/hamburger-menu'"/>
             </button>
@@ -15,10 +15,16 @@
         <template #top>
             <div class="flex-grow"></div>
 
-            <!-- Side menu: slides in over the page on every screen size -->
-            <div v-if="menuOpen" class="sidebar-backdrop" @click="menuOpen = false"></div>
+            <!-- App: the profile is the avatar at the right of the top bar -->
+            <a v-if="isApp && user" class="top-avatar" href="/profile" :class="{ active: isProfileActive() }"
+                :aria-label="$t('layout.profile')" @click.prevent="to('/profile')">
+                <UserAvatar :url="user.avatar_url" :name="user.nickname || user.name" :size="38" />
+            </a>
 
-            <aside id="sidebar" class="sidebar" :class="{ open: menuOpen }">
+            <!-- Web: side menu, slides in over the page below 1100px and is permanent above -->
+            <div v-if="!isApp && menuOpen" class="sidebar-backdrop" @click="menuOpen = false"></div>
+
+            <aside v-if="!isApp" id="sidebar" class="sidebar" :class="{ open: menuOpen }">
                 <div class="sidebar-logo">
                     <span class="app-logo">WORLD<span class="logo-accent">GYM</span></span>
                 </div>
@@ -36,7 +42,7 @@
                         <svg-icon :name="item.icon"/>
                         <span>{{ $t(item.label) }}</span>
                     </a>
-                    <a class="nav-item" href="/profile" :class="{ active: isActive({ path: '/profile', match: ['/profile', '/measurements', '/habits'] }) }"
+                    <a class="nav-item" href="/profile" :class="{ active: isProfileActive() }"
                         @click.prevent="to('/profile')">
                         <svg-icon name="prime/user"/>
                         <span>{{ $t('layout.profile') }}</span>
@@ -61,6 +67,15 @@
         </template>
 
         <slot/>
+
+        <!-- App: bottom tab bar -->
+        <nav v-if="isApp" class="tab-bar" :aria-label="$t('layout.menu.menu')">
+            <a v-for="item in menuItems" :key="item.path" class="tab" :href="item.path"
+                :class="{ active: isActive(item) }" @click.prevent="to(item.path)">
+                <svg-icon :name="item.icon"/>
+                <span>{{ $t(item.short || item.label) }}</span>
+            </a>
+        </nav>
 
     </BackofficeLayout>
 </template>
