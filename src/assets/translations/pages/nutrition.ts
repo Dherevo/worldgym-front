@@ -51,6 +51,15 @@ export default {
         copyPrevEmpty: 'Ahir no hi havia res apuntat en aquest àpat.',
         namePlaceholder: 'Què has menjat?',
         addRow: 'Afegir una altra línia',
+        scan: {
+            button: 'Escanejar codi de barres',
+            installing: "Descarregant l'escàner de Google. Torna-ho a provar d'aquí uns segons.",
+            error: "No s'ha pogut escanejar el codi",
+            notFound: "No és al catàleg ni a Open Food Facts. Crea'l amb aquest codi.",
+        },
+        hintAmount: 'Falta la quantitat de {name}.',
+        hintName: 'Falta el nom d\'una línia.',
+        hintKcal: 'Falten les kcal de {name}.',
         searchFood: 'Cerca un aliment',
         noFood: 'Cap aliment amb aquest nom',
         off: {
@@ -207,6 +216,15 @@ export default {
         copyPrevEmpty: 'Ayer no había nada apuntado en esta comida.',
         namePlaceholder: '¿Qué has comido?',
         addRow: 'Añadir otra línea',
+        scan: {
+            button: 'Escanear código de barras',
+            installing: 'Descargando el escáner de Google. Vuelve a intentarlo en unos segundos.',
+            error: 'No se ha podido escanear el código',
+            notFound: 'No está en el catálogo ni en Open Food Facts. Créalo con este código.',
+        },
+        hintAmount: 'Falta la cantidad de {name}.',
+        hintName: 'Falta el nombre de una línea.',
+        hintKcal: 'Faltan las kcal de {name}.',
         searchFood: 'Busca un alimento',
         noFood: 'Ningún alimento con ese nombre',
         off: {
@@ -363,6 +381,15 @@ export default {
         copyPrevEmpty: 'Nothing was logged in this meal yesterday.',
         namePlaceholder: 'What did you eat?',
         addRow: 'Add another line',
+        scan: {
+            button: 'Scan barcode',
+            installing: "Downloading Google's scanner. Try again in a few seconds.",
+            error: 'The code could not be scanned',
+            notFound: 'Not in the catalog or in Open Food Facts. Create it with this code.',
+        },
+        hintAmount: 'The amount of {name} is missing.',
+        hintName: 'A line has no name.',
+        hintKcal: 'The kcal of {name} are missing.',
         searchFood: 'Search a food',
         noFood: 'No food with that name',
         off: {

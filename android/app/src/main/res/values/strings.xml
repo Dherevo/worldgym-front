@@ -4,4 +4,6 @@
     <string name="title_activity_main">WorldGym</string>
     <string name="package_name">com.mateuarbo.worldgym</string>
     <string name="custom_url_scheme">com.mateuarbo.worldgym</string>
+    <string name="rest_channel_timer">Descans (compte enrere)</string>
+    <string name="rest_channel_done">Descans acabat (so i vibració)</string>
 </resources>

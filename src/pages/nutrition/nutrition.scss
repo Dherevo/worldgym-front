@@ -161,6 +161,8 @@
         .food-line { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; .amount { display: flex; align-items: center; gap: 0.3rem; input { width: 6rem; } } }
         .food-box { display: flex; flex-direction: column; gap: 0.4rem; }
         .food-search { width: 100%; box-sizing: border-box; }
+        .food-search-row { display: flex; gap: 0.4rem; .food-search { flex: 1; min-width: 0; } }
+        .btn-scan { flex: none; padding: 0 0.8rem; font-size: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); cursor: pointer; }
         .food-list {
             list-style: none; margin: 0; padding: 0; max-height: 11rem; overflow-y: auto;
             border: 1px solid var(--border-color); border-radius: 8px;

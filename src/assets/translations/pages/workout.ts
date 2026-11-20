@@ -60,6 +60,10 @@ export default {
         },
         rest: {
             title: 'Descansa!',
+            notificationDone: 'Descans acabat',
+            notificationAdd: '+30 s',
+            notificationSub: '-30 s',
+            notificationStart: 'Començar sèrie',
             skip: 'Saltar descans',
             nextWeight: 'Pes de la següent sèrie (kg)',
         },
@@ -159,6 +163,10 @@ export default {
         },
         rest: {
             title: '¡Descansa!',
+            notificationDone: 'Descanso terminado',
+            notificationAdd: '+30 s',
+            notificationSub: '-30 s',
+            notificationStart: 'Empezar serie',
             skip: 'Saltar descanso',
             nextWeight: 'Peso de la siguiente serie (kg)',
         },
@@ -258,6 +266,10 @@ export default {
         },
         rest: {
             title: 'Rest!',
+            notificationDone: 'Rest over',
+            notificationAdd: '+30 s',
+            notificationSub: '-30 s',
+            notificationStart: 'Start set',
             skip: 'Skip rest',
             nextWeight: 'Weight of the next set (kg)',
         },

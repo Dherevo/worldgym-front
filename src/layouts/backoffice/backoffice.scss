@@ -217,6 +217,52 @@
         }
     }
 
+    // ---- app only: profile avatar at the right of the top bar
+    .top-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        text-decoration: none;
+
+        &.active { border-color: #E09132; }
+    }
+
+    // ---- app only: bottom tab bar
+    .tab-bar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 100;
+        display: flex;
+        padding-bottom: env(safe-area-inset-bottom);
+        background: var(--header-bg);
+        border-top: 1px solid rgba(255, 239, 205, 0.12);
+        box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.25);
+
+        .tab {
+            flex: 1;
+            min-width: 0;
+            min-height: 56px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            color: rgba(255, 246, 227, 0.65);
+            text-decoration: none;
+            font-size: 0.7rem;
+            -webkit-tap-highlight-color: transparent;
+
+            svg { width: 22px; height: 22px; }
+            span { color: inherit; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            &.active { color: #E09132; font-weight: 700; }
+        }
+    }
+
     @media (max-width: 520px) {
         .app-logo { font-size: 1rem; margin-right: 0; }
     }
@@ -265,7 +311,7 @@
 
 // Wide screens: the side menu is always open and visible, with the page next to it
 @media (min-width: 1100px) {
-    #backoffice-layout {
+    html:not(.is-app) #backoffice-layout {
         padding-left: 260px;
 
         // The top bar only held the logo and the burger: its content is not needed (the menu has the logo)
@@ -293,4 +339,10 @@
             .sidebar-logo { padding-left: 20px; }
         }
     }
+}
+
+// App: no burger, so the logo needs no room on the left, and the page leaves room for the bottom tab bar
+html.is-app #backoffice-layout {
+    #backoffice-top-menu .app-logo { margin-left: 12px; }
+    #backoffice-content { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
 }

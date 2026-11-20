@@ -20,6 +20,7 @@
     "version:add": "node ./lib/cli/index.js version:add"
   },
   "dependencies": {
+    "@capacitor-mlkit/barcode-scanning": "^8.2.2",
     "@capacitor/android": "^8.6.0",
     "@capacitor/core": "^8.6.0",
     "@ionic/vue": "^9.0.12",
