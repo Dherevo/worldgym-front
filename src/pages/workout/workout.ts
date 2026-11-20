@@ -911,7 +911,8 @@ class WorkoutPage extends Vue {
             const nums = (set.input.match(/\d+(?:[.,]\d+)?/g) ?? []).map(n => parseFloat(n.replace(',', '.')));
             const reps = Math.round(nums[0]);
             const weight = this.isBodyweight ? 0 : nums[1];
-            if (!(reps > 0) || !(this.isBodyweight || weight >= 0)) {
+            // Not numbers (or no weight typed for a weighted exercise) are rejected too, hence isFinite
+            if (!Number.isFinite(reps) || reps <= 0 || !Number.isFinite(weight) || weight < 0) {
                 this.notifyLogging();
                 return;
             }
