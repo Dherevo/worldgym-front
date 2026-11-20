@@ -155,17 +155,19 @@ class WorkoutPage extends Vue {
             onStartSet: () => {
                 // The service already removed its own notification: no need to stop it (it would race with the next one)
                 if (this.state === 'resting') this.skipRest(false);
-                if (this.state === 'choose') this.continueSet();
                 if (this.state === 'idle') this.startSet();
             },
             onStopSet: () => { if (this.state === 'active') this.stopSet(); },
             onLogSet: (set: LoggedSet) => this.logFromNotification(set),
             onExtraSet: () => {
+                // From the countdown: the rest is cut short (the service already removed its notification)
+                if (this.state === 'resting') this.skipRest(false);
                 if (this.state !== 'choose') return;
                 this.continueSet();
                 this.startSet();
             },
             onNextExercise: () => {
+                if (this.state === 'resting') this.skipRest(false);
                 if (this.state !== 'choose') return;
                 this.nextExercise();
                 // Waiting to start the first set of the next exercise (otherwise the screen of the app asks what to do)
