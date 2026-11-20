@@ -23,9 +23,13 @@ import checkin from './pages/checkin';
 import recommendation from './pages/recommendation';
 import notFound from './pages/notFound';
 import splash from './pages/splash';
+import push from './pages/push';
+import weekly from './pages/weekly';
 
 const es = {
     layout: layout.es,
+    push: push.es,
+    weekly: weekly.es,
     home: home.es,
     login: login.es,
     exercises: exercises.es,

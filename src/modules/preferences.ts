@@ -1,6 +1,7 @@
 import { App, http, Storage, translate } from "lib";
 import auth from "@/modules/auth";
 import userStore from "@/modules/userStore";
+import { forgetPush } from "@/modules/push";
 
 // Device preferences shared by the side menu (wide screens) and the profile (phones): language, light/dark mode, log out
 
@@ -45,7 +46,9 @@ export function toggleDarkTheme(): boolean {
 // Asks for confirmation; resolves to true when the session was closed
 export function logout(): Promise<boolean> {
     return App.confirm(translate.get('layout.logoutConfirm'))
-    .then((value: boolean) => {
+    .then(async (value: boolean) => {
+        // Before the session goes away: the token is removed with the user's credentials
+        if (value) await forgetPush();
         if (value) auth.logout();
         return !!value;
     });

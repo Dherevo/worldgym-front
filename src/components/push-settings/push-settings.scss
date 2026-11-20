@@ -1,0 +1,77 @@
+.push-settings {
+    h2 { margin: 0; font-size: 1.4rem; }
+    .sub { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+
+    .warn {
+        margin: 0;
+        padding: 0.6rem 0.9rem;
+        border-radius: 12px;
+        background: var(--tint-yellow-bg);
+        color: var(--tint-yellow-text);
+        font-size: 0.9rem;
+    }
+
+    .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        min-height: 44px;
+        padding: 0.3rem 0;
+        border-bottom: 1px solid var(--border-subtle);
+        cursor: pointer;
+
+        span { color: inherit; }
+        &.master { font-weight: 700; }
+    }
+
+    // Native checkbox drawn as a switch
+    .switch {
+        appearance: none;
+        -webkit-appearance: none;
+        flex: 0 0 auto;
+        position: relative;
+        width: 46px;
+        height: 26px;
+        border-radius: 999px;
+        background: var(--surface-3);
+        border: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: background 0.15s;
+
+        &::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--text-color);
+            transition: transform 0.15s;
+        }
+
+        &:checked { background: var(--primary-color); border-color: var(--primary-color); }
+        &:checked::after { transform: translateX(20px); background: #fff; }
+    }
+
+    .quiet {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding-top: 0.4rem;
+
+        .quiet-inputs { display: flex; gap: 1rem; flex-wrap: wrap; }
+        label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
+    }
+
+    .link {
+        align-self: flex-start;
+        background: transparent;
+        border: none;
+        padding: 0;
+        color: var(--primary-color);
+        cursor: pointer;
+        &:hover { text-decoration: underline; }
+    }
+}
