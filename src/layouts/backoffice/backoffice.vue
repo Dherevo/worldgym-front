@@ -69,8 +69,8 @@
         <slot/>
 
         <!-- App: bottom tab bar -->
-        <nav v-if="isApp" class="tab-bar" :aria-label="$t('layout.menu.menu')">
-            <a v-for="item in menuItems" :key="item.path" class="tab" :href="item.path"
+        <nav v-if="isApp" class="app-tabbar" :aria-label="$t('layout.menu.menu')">
+            <a v-for="item in menuItems" :key="item.path" class="app-tab" :href="item.path"
                 :class="{ active: isActive(item) }" @click.prevent="to(item.path)">
                 <svg-icon :name="item.icon"/>
                 <span>{{ $t(item.short || item.label) }}</span>
