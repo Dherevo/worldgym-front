@@ -4,7 +4,7 @@ import { primaryMuscleNames } from "@/modules/muscles";
 import localDate from "@/modules/localDate";
 import { kcalFromSets, kcalLabel } from "@/modules/calories";
 import { isApp } from "@/modules/platform";
-import { startRestNotification, stopRestNotification, listenRestNotification } from "@/modules/restTimer";
+import { startRestNotification, stopRestNotification, listenRestNotification, showActiveNotification, showLoggingNotification, showReadyNotification, LoggedSet } from "@/modules/restTimer";
 import SectionTile from "@/components/section-tile/section-tile.vue";
 
 type State = 'loading' | 'pick-exercise' | 'idle' | 'active' | 'logging' | 'resting' | 'choose' | 'abs-offer' | 'done';
@@ -153,8 +153,23 @@ class WorkoutPage extends Vue {
         // Buttons of the lock screen notification (only in the app)
         listenRestNotification({
             onStartSet: () => {
-                if (this.state === 'resting') this.skipRest();
+                // The service already removed its own notification: no need to stop it (it would race with the next one)
+                if (this.state === 'resting') this.skipRest(false);
+                if (this.state === 'choose') this.continueSet();
                 if (this.state === 'idle') this.startSet();
+            },
+            onStopSet: () => { if (this.state === 'active') this.stopSet(); },
+            onLogSet: (set: LoggedSet) => this.logFromNotification(set),
+            onExtraSet: () => {
+                if (this.state !== 'choose') return;
+                this.continueSet();
+                this.startSet();
+            },
+            onNextExercise: () => {
+                if (this.state !== 'choose') return;
+                this.nextExercise();
+                // Waiting to start the first set of the next exercise (otherwise the screen of the app asks what to do)
+                if (this.state === 'idle') this.notifyReady();
             },
             onChanged: (endsAt: number) => {
                 if (this.state !== 'resting') return;
@@ -731,11 +746,11 @@ class WorkoutPage extends Vue {
 
     startSet() {
         this.captureRest();
-        stopRestNotification();
         this.exerciseSeconds = 0;
         this.state = 'active';
         this.exerciseInterval = setInterval(() => { this.exerciseSeconds++; }, 1000);
         this.acquireWakeLock();
+        this.notifyActive();
     }
 
     stopSet() {
@@ -757,6 +772,7 @@ class WorkoutPage extends Vue {
         this.logDropset = false;
         this.state = 'logging';
         this.releaseWakeLock();
+        this.notifyLogging();
     }
 
     submitSet() {
@@ -788,7 +804,11 @@ class WorkoutPage extends Vue {
             this.saveProgress();
             this.startRest(restSecs);
         })
-        .catch(() => App.notification(translate.get('workout.errors.saveSet')).setType('error').show())
+        .catch(() => {
+            App.notification(translate.get('workout.errors.saveSet')).setType('error').show();
+            // The notification was left as "saving": offer the buttons again
+            this.notifyLogging();
+        })
         .finally(() => { this.savingSet = false; });
     }
 
@@ -841,7 +861,65 @@ class WorkoutPage extends Vue {
             startLabel: translate.get('workout.rest.notificationStart'),
             doneTitle: translate.get('workout.rest.notificationDone'),
             doneText: name,
+            choose: this.totalSets === -1 || this.doneCount >= this.totalSets,
+            extraLabel: translate.get('workout.rest.notificationExtra'),
+            nextLabel: translate.get('workout.rest.notificationNext'),
         });
+    }
+
+    // Lock screen notification while the set is running (stopwatch + "finish set")
+    notifyActive() {
+        showActiveNotification({
+            startedAt: Date.now() - this.exerciseSeconds * 1000,
+            title: this.currentExercise?.exercise?.name ?? '',
+            text: translate.get('workout.rest.notificationSetN', { n: this.doneCount + 1 }),
+            finishLabel: translate.get('workout.rest.notificationFinish'),
+        });
+    }
+
+    // Lock screen notification to log the set: the suggested reps and weight in one tap, or typed
+    notifyLogging() {
+        const bodyweight = this.isBodyweight;
+        showLoggingNotification({
+            title: translate.get('workout.rest.notificationLogTitle'),
+            text: this.currentExercise?.exercise?.name ?? '',
+            sameLabel: bodyweight ? `✓ ${this.logReps} reps` : `✓ ${this.logReps} × ${this.logWeight} kg`,
+            editLabel: translate.get('workout.rest.notificationEdit'),
+            inputHint: translate.get(bodyweight ? 'workout.rest.notificationHintBodyweight' : 'workout.rest.notificationHint'),
+            savingText: translate.get('workout.rest.notificationSaving'),
+            reps: this.logReps,
+            weight: this.logWeight,
+        });
+    }
+
+    notifyReady() {
+        showReadyNotification({
+            title: this.currentExercise?.exercise?.name ?? '',
+            text: translate.get('workout.rest.notificationReady'),
+            startLabel: translate.get('workout.rest.notificationStart'),
+        });
+    }
+
+    // The set was logged from the notification: with the suggested values, or with "reps kg" typed in the text field
+    logFromNotification(set: LoggedSet) {
+        if (this.state !== 'logging' || this.savingSet) return;
+
+        if (set.input !== undefined) {
+            // "12 70", "12x70", "12 70,5": first number reps, second one weight (bodyweight exercises only need reps)
+            const nums = (set.input.match(/\d+(?:[.,]\d+)?/g) ?? []).map(n => parseFloat(n.replace(',', '.')));
+            const reps = Math.round(nums[0]);
+            const weight = this.isBodyweight ? 0 : nums[1];
+            if (!(reps > 0) || !(this.isBodyweight || weight >= 0)) {
+                this.notifyLogging();
+                return;
+            }
+            this.logReps = reps;
+            this.logWeight = weight;
+        } else {
+            this.logReps = Number(set.reps) || this.logReps;
+            this.logWeight = this.isBodyweight ? 0 : Number(set.weight) || 0;
+        }
+        this.submitSet();
     }
 
     adjustRest(delta: number) {
@@ -850,10 +928,10 @@ class WorkoutPage extends Vue {
         this.notifyRest();
     }
 
-    skipRest() {
+    skipRest(stopNotification = true) {
         if (this.restInterval) clearInterval(this.restInterval);
         this.restInterval = null;
-        stopRestNotification();
+        if (stopNotification) stopRestNotification();
         this.releaseWakeLock();
         this.afterRest();
     }
