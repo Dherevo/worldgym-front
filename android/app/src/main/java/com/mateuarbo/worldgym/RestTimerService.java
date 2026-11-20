@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -101,7 +99,6 @@ public class RestTimerService extends Service {
     private String savingText = "";
     private int sameReps;
     private double sameWeight;
-    private Bitmap logo;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -253,8 +250,7 @@ public class RestTimerService extends Service {
         NotificationManagerCompat.from(this).cancel(ID_TIMER);
 
         NotificationCompat.Builder done = new NotificationCompat.Builder(this, CHANNEL_DONE)
-            .setSmallIcon(R.drawable.ic_stat_rest)
-            .setLargeIcon(logo())
+            .setSmallIcon(R.drawable.ic_stat_logo)
             .setColor(BRAND_COLOR)
             .setContentTitle(doneTitle)
             .setContentText(doneText)
@@ -285,9 +281,8 @@ public class RestTimerService extends Service {
     }
 
     private Notification buildTimerNotification() {
-        return new NotificationCompat.Builder(this, CHANNEL_TIMER)
-            .setSmallIcon(R.drawable.ic_stat_rest)
-            .setLargeIcon(logo())
+        NotificationCompat.Builder b = new NotificationCompat.Builder(this, CHANNEL_TIMER)
+            .setSmallIcon(R.drawable.ic_stat_logo)
             .setColor(BRAND_COLOR)
             .setColorized(true)
             .setContentTitle(title)
@@ -301,11 +296,19 @@ public class RestTimerService extends Service {
             .setCategory(NotificationCompat.CATEGORY_PROGRESS)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-            .setContentIntent(openAppIntent())
-            .addAction(0, subLabel, serviceIntent(ACTION_SUB, 3))
-            .addAction(0, addLabel, serviceIntent(ACTION_ADD, 1))
-            .addAction(0, startLabel, serviceIntent(ACTION_START_SET, 2))
-            .build();
+            .setContentIntent(openAppIntent());
+
+        if (choose) {
+            // Planned sets done: the next step is an extra set or the next exercise (Android shows three buttons at most)
+            b.addAction(0, addLabel, serviceIntent(ACTION_ADD, 1))
+             .addAction(0, extraLabel, serviceIntent(ACTION_EXTRA_SET, 7))
+             .addAction(0, nextLabel, serviceIntent(ACTION_NEXT_EXERCISE, 8));
+        } else {
+            b.addAction(0, subLabel, serviceIntent(ACTION_SUB, 3))
+             .addAction(0, addLabel, serviceIntent(ACTION_ADD, 1))
+             .addAction(0, startLabel, serviceIntent(ACTION_START_SET, 2));
+        }
+        return b.build();
     }
 
     // A step that is not the rest takes over: the end-of-rest timer must not fire
@@ -323,17 +326,10 @@ public class RestTimerService extends Service {
         }
     }
 
-    // The app logo on the right of the notification (decoded once)
-    private Bitmap logo() {
-        if (logo == null) logo = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        return logo;
-    }
-
-    // Common look: logo, brand colour as the background and an ongoing foreground-service notification
+    // Common look: brand colour as the background and an ongoing foreground-service notification
     private NotificationCompat.Builder baseBuilder() {
         return new NotificationCompat.Builder(this, CHANNEL_TIMER)
-            .setSmallIcon(R.drawable.ic_stat_rest)
-            .setLargeIcon(logo())
+            .setSmallIcon(R.drawable.ic_stat_logo)
             .setColor(BRAND_COLOR)
             .setColorized(true)
             .setContentTitle(title)
