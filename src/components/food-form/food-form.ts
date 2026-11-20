@@ -13,6 +13,10 @@ class FoodForm extends Vue {
     @Prop({ type: String, default: '' })
     presetName!: string;
 
+    // Barcode to start with when creating (a scanned code Open Food Facts does not have)
+    @Prop({ type: String, default: '' })
+    presetCode!: string;
+
     name = '';
     brand = '';
     offCode = '';
@@ -49,6 +53,7 @@ class FoodForm extends Vue {
             this.unitG = this.food.unit_g ?? '';
         } else {
             this.name = this.presetName;
+            this.offCode = this.presetCode;
         }
     }
 

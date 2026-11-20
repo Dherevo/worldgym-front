@@ -101,7 +101,10 @@
 
                     <form v-if="adding === meal" class="add-form" @submit.prevent="save()">
                         <div class="food-box" v-if="!editingId">
-                            <input type="search" class="food-search" v-model="foodQuery" @input="onFoodQuery()" :placeholder="$t('nutrition.searchFood')" />
+                            <div class="food-search-row">
+                                <input type="search" class="food-search" v-model="foodQuery" @input="onFoodQuery()" :placeholder="$t('nutrition.searchFood')" />
+                                <button v-if="isApp" type="button" class="btn-scan" :disabled="scanning" :title="$t('nutrition.scan.button')" :aria-label="$t('nutrition.scan.button')" @click="scanFood()">📷</button>
+                            </div>
                             <ul class="food-list" v-if="foodResults.length">
                                 <li v-for="f in foodResults" :key="f.id">
                                     <button type="button" @click="useFood(f)">
@@ -126,7 +129,7 @@
                                     <p class="muted">{{ $t('nutrition.off.hint') }}</p>
                                 </template>
                             </template>
-                            <FoodForm v-if="foodForm && foodForm.where === 'add'" :food="null" :presetName="foodForm.preset" @saved="onFoodSaved" @cancel="foodForm = null" />
+                            <FoodForm v-if="foodForm && foodForm.where === 'add'" :food="null" :presetName="foodForm.preset" :presetCode="foodForm.code ?? ''" @saved="onFoodSaved" @cancel="foodForm = null" />
                             <button v-else type="button" class="btn-add" @click="openFoodForm(null, foodQuery, 'add')">+ {{ foodQuery.trim() ? $t('nutrition.createFood', { name: foodQuery.trim() }) : $t('nutrition.newFood') }}</button>
                         </div>
                         <div v-for="(r, i) in rows" :key="i" class="form-row">
@@ -142,6 +145,7 @@
                             </div>
                         </div>
                         <button v-if="!editingId" type="button" class="btn-add" @click="addRow()">+ {{ $t('nutrition.addRow') }}</button>
+                        <p v-if="saveHint" class="muted save-hint">{{ saveHint }}</p>
                         <div class="form-actions">
                             <button type="button" class="btn-link" @click="adding = null">{{ $t('nutrition.cancel') }}</button>
                             <button type="submit" class="btn" :disabled="saving || !canSave">{{ editingId ? $t('nutrition.update') : $t('nutrition.add') }}</button>

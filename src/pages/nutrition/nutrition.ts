@@ -3,6 +3,8 @@ import { http, App, translate } from "lib";
 import EnergyBar from "@/components/energy-bar/energy-bar.vue";
 import FoodForm from "@/components/food-form/food-form.vue";
 import localDate from "@/modules/localDate";
+import { isApp } from "@/modules/platform";
+import { scanBarcode } from "@/modules/barcode";
 import { loadEnergyDay, recalcPastDay } from "@/modules/energyDay";
 import userStore from "@/modules/userStore";
 import { proteinRange } from "@/modules/calories";
@@ -25,6 +27,8 @@ interface FoodRow {
 class NutritionPage extends Vue {
 
     readonly meals = MEALS;
+    readonly isApp = isApp;
+    scanning = false;
     date = localDate();
     day: EnergyDay | null = null;
     loading = false;
@@ -48,7 +52,7 @@ class NutritionPage extends Vue {
     myOffset = 0;
     myTotal = 0;
     myTimer: any = null;
-    foodForm: { food: any | null; preset: string; where: 'add' | 'card' } | null = null;
+    foodForm: { food: any | null; preset: string; where: 'add' | 'card'; code?: string } | null = null;
 
     // Form to add (or edit) food in a meal
     adding: string | null = null;
@@ -258,23 +262,68 @@ class NutritionPage extends Vue {
         .catch(() => {});
     }
 
+    // Scans a barcode with the camera: the food saved in the catalog with it is used straight away; if there is
+    // none, Open Food Facts is searched and its product is shown to pick
+    async scanFood() {
+        if (this.scanning) return;
+        this.scanning = true;
+        try {
+            const res = await scanBarcode();
+            if (res.status === 'installing') {
+                App.notification(translate.get('nutrition.scan.installing')).show();
+                return;
+            }
+            if (res.status === 'error') {
+                App.notification(translate.get('nutrition.scan.error')).setType('error').show();
+                return;
+            }
+            if (res.status !== 'ok') return;
+
+            this.foodQuery = res.code;
+            this.offResults = [];
+            this.offSearched = false;
+            const list: any = await http.get('/foods').data({ q: res.code, pageSize: this.foodPageSize });
+            this.foodResults = list.items ?? [];
+
+            const own = this.foodResults.find((f: any) => f.off_code === res.code);
+            if (own) this.useFood(own);
+            else if (!this.foodResults.length) {
+                // Not in the catalog: Open Food Facts; if it does not have it either, create the food with this barcode
+                const found = await this.searchOff();
+                if (found === 'none') {
+                    App.notification(translate.get('nutrition.scan.notFound')).show();
+                    this.openFoodForm(null, '', 'add', res.code);
+                }
+            }
+        } catch {
+            App.notification(translate.get('nutrition.scan.error')).setType('error').show();
+        } finally {
+            this.scanning = false;
+        }
+    }
+
     // Open Food Facts: a barcode is looked up directly, anything else is a search by name
-    searchOff() {
+    // Returns 'found', 'none' (OFF answered but has nothing) or 'error' (OFF not available)
+    searchOff(): Promise<'found' | 'none' | 'error'> {
         const q = this.foodQuery.trim();
-        if (q.length < 2 || this.offSearching) return;
+        if (q.length < 2 || this.offSearching) return Promise.resolve('error');
         this.offSearching = true;
         this.offSearched = false;
 
         const isCode = /^\d{6,14}$/.test(q);
         const req = isCode ? http.get(`/foods/off/${q}`) : http.get('/foods/off').data({ q });
-        req.then((res: any) => { this.offResults = isCode ? [res] : (res.items ?? []); })
+        return req.then((res: any) => {
+            this.offResults = isCode ? [res] : (res.items ?? []);
+            return this.offResults.length ? 'found' : 'none';
+        })
         .catch((e: any) => {
             this.offResults = [];
             // A barcode OFF does not have is an empty result, not a failure
-            if (isCode && e?.data?.error !== 'off.unavailable') return;
+            if (isCode && e?.data?.error !== 'off.unavailable') return 'none';
             App.notification(translate.get('nutrition.off.unavailable')).setType('error').show();
+            return 'error';
         })
-        .finally(() => { this.offSearching = false; this.offSearched = true; });
+        .finally(() => { this.offSearching = false; this.offSearched = true; }) as Promise<'found' | 'none' | 'error'>;
     }
 
     // Save the product in the user's catalog (with its barcode, brand, fiber, saturated fat, carbohydrates and sodium) and use it
@@ -282,16 +331,24 @@ class NutritionPage extends Vue {
         if (this.offSaving) return;
         this.offSaving = true;
 
+        // OFF data has mistakes (more than 100 g of something in 100 g): the API refuses them, so a figure out of range is left empty
+        const ok = (v: any, max: number) => (typeof v === 'number' && v >= 0 && v <= max ? v : null);
         const save = (name: string) => http.post('/foods').data({
-            name, unit: p.unit, kcal_100: p.kcal_100, protein_100: p.protein_100 ?? 0,
-            fiber_100: p.fiber_100, saturates_100: p.saturates_100, carbs_100: p.carbs_100, fat_100: p.fat_100, sodium_100: p.sodium_100, brand: p.brand ?? '', off_code: p.code,
+            name, unit: p.unit, kcal_100: p.kcal_100, protein_100: ok(p.protein_100, 100) ?? 0,
+            fiber_100: ok(p.fiber_100, 100), saturates_100: ok(p.saturates_100, 100), carbs_100: ok(p.carbs_100, 100),
+            fat_100: ok(p.fat_100, 100), sodium_100: ok(p.sodium_100, 40000), brand: p.brand ?? '', off_code: p.code,
         });
 
-        // The name is unique per user: with the same name from another brand the brand goes with it
+        // The name is unique per user: if it is taken, try with the brand and then with the barcode
+        const taken = (e: any) => e?.data?.error === 'name.taken';
         save(p.name)
         .catch((e: any) => {
-            if (e?.data?.error === 'name.taken' && p.brand) return save(`${p.name} ${p.brand}`.slice(0, 150));
-            throw e;
+            if (!taken(e)) throw e;
+            return p.brand ? save(`${p.name} ${p.brand}`.slice(0, 150)) : Promise.reject(e);
+        })
+        .catch((e: any) => {
+            if (!taken(e)) throw e;
+            return save(`${p.name} ${p.code}`.slice(0, 150));
         })
         .then((food: any) => {
             this.offResults = [];
@@ -299,7 +356,10 @@ class NutritionPage extends Vue {
             this.loadMyFoods();
             this.useFood(food);
         })
-        .catch(() => App.notification(translate.get('nutrition.off.saveError')).setType('error').show())
+        .catch((e: any) => {
+            const code = e?.data?.error;
+            App.notification(translate.get('nutrition.off.saveError') + (code ? ` (${code})` : '')).setType('error').show();
+        })
         .finally(() => { this.offSaving = false; });
     }
 
@@ -351,8 +411,8 @@ class NutritionPage extends Vue {
         clearTimeout(this.myTimer);
     }
 
-    openFoodForm(food: any | null, preset: string, where: 'add' | 'card') {
-        this.foodForm = { food, preset, where };
+    openFoodForm(food: any | null, preset: string, where: 'add' | 'card', code = '') {
+        this.foodForm = { food, preset, where, code };
     }
 
     // After creating (from the add form) the food is picked right away; after editing only the list changes
@@ -526,6 +586,18 @@ class NutritionPage extends Vue {
     get canSave(): boolean {
         const used = this.rows.filter(r => !this.isBlank(r));
         return used.length > 0 && used.every(r => this.isValid(r));
+    }
+
+    // Why the save button is disabled: the first row that is not complete
+    get saveHint(): string {
+        if (this.canSave || this.editingId) return '';
+        const bad = this.rows.filter(r => !this.isBlank(r)).find(r => !this.isValid(r));
+        if (!bad) return '';
+        const name = bad.food ? bad.food.name : bad.name.trim();
+        const amount = Number(bad.amount);
+        if (bad.food && (Number.isNaN(amount) || amount <= 0)) return translate.get('nutrition.hintAmount', { name });
+        if (!name) return translate.get('nutrition.hintName');
+        return translate.get('nutrition.hintKcal', { name });
     }
 
     save() {
