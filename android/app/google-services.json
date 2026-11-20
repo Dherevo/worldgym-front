@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "40079631873",
+    "project_id": "worldgym-4b2ff",
+    "storage_bucket": "worldgym-4b2ff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40079631873:android:245e25c1467e4123f58200",
+        "android_client_info": {
+          "package_name": "com.mateuarbo.worldgym"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwMp0gBhiL5dfjeoIIW7rae_1ro7v1bBQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

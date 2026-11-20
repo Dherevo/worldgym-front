@@ -79,6 +79,8 @@
 
             <MeasurementsPage />
 
+            <PushSettings v-if="isApp" />
+
             <AppPreferences v-if="isApp" />
         </div>
     </AppPage>

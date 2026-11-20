@@ -8,8 +8,9 @@ import EnergyCard from "@/components/energy-card/energy-card.vue";
 import UserAvatar from "@/components/user-avatar/user-avatar.vue";
 import { isApp } from "@/modules/platform";
 import AppPreferences from "@/components/app-preferences/app-preferences.vue";
+import PushSettings from "@/components/push-settings/push-settings.vue";
 
-@Component({ components: { MeasurementsPage, AccountSettings, EnergyCard, UserAvatar, AppPreferences } })
+@Component({ components: { MeasurementsPage, AccountSettings, EnergyCard, UserAvatar, AppPreferences, PushSettings } })
 class ProfilePage extends Vue {
 
     readonly isApp = isApp;

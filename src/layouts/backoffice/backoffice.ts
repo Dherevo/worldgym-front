@@ -5,6 +5,7 @@ import userStore from "@/modules/userStore";
 import { applyUserPalette } from "@/modules/theme";
 import { LANGUAGES, currentLanguage, setLanguage, isDarkTheme, toggleDarkTheme, logout } from "@/modules/preferences";
 import { isApp } from "@/modules/platform";
+import { initPush, setPushRouteHandler } from "@/modules/push";
 import UserAvatar from "@/components/user-avatar/user-avatar.vue";
 
 // App (Capacitor): bottom tab bar + avatar (profile) in the top bar.
@@ -123,7 +124,15 @@ class Backoffice extends Vue {
 
     requireProfile() {
         applyUserPalette(this.user);
-        if (auth.needsProfile(this.user)) this.to('/onboarding');
+        if (auth.needsProfile(this.user)) {
+            this.to('/onboarding');
+            return;
+        }
+        // Reminders (app only): the token of the phone goes to the API, and a tapped notification opens its screen
+        if (isApp) {
+            setPushRouteHandler((route: string) => this.to(route));
+            initPush();
+        }
     }
 
     toggleTheme() {

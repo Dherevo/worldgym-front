@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Accent colour of the notifications sent by Firebase (the app's orange) -->
+    <color name="notification_color">#E09132</color>
+</resources>

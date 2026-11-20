@@ -21,6 +21,7 @@ import RecommendationPage from '../pages/recommendation/recommendation.vue';
 import AccessPage from '../pages/access/access.vue';
 import ChallengesPage from '../pages/challenges/challenges.vue';
 import NutritionPage from '../pages/nutrition/nutrition.vue';
+import WeeklySummaryPage from '../pages/weekly-summary/weekly-summary.vue';
 
 const routes : IRoutes = {
     layouts: {
@@ -113,6 +114,10 @@ const routes : IRoutes = {
         {
             path: '/cycle',
             component: CyclePage
+        },
+        {
+            path: '/weekly-summary',
+            component: WeeklySummaryPage
         },
 
         // Leave always 404 Page always at the end
