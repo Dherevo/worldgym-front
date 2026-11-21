@@ -54,8 +54,11 @@ export async function connectHealth(): Promise<boolean> {
 
 // Steps per day of the last `days` days, today included
 export async function readSteps(days = 14): Promise<{ date: string; steps: number }[]> {
-    const end = new Date();
-    const start = new Date(end.getFullYear(), end.getMonth(), end.getDate() - (days - 1));
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1));
+    // Until the end of today (not "now"): Health Connect prorates records that go past the end of the range,
+    // so a band batch ending a few minutes ahead of the phone clock would be cut
+    const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
     const res: any = await Health.queryAggregated({
         startDate: start.toISOString(),
@@ -80,4 +83,23 @@ export async function syncSteps(days = 14): Promise<number> {
 
     const res: any = await http.post('/steps/sync').data({ days: list });
     return res?.updated ?? 0;
+}
+
+// Syncs the steps every time the app comes back to the foreground (the webview becomes visible again).
+// Silent: if the user is not logged in or there is no permission, nothing happens
+export function autoSyncSteps() {
+    if (!isApp) return;
+
+    let running = false;
+    const run = async () => {
+        if (running || document.visibilityState !== 'visible') return;
+        running = true;
+        try {
+            if (await healthState() === 'ready') await syncSteps();
+        } catch { /* silent */ } finally {
+            running = false;
+        }
+    };
+
+    document.addEventListener('visibilitychange', run);
 }
