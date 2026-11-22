@@ -148,11 +148,26 @@
                         <span>{{ $t('foodAdd.sheet.quantity') }} ({{ unitLabel(sheet.food) }})</span>
                         <input type="number" inputmode="decimal" min="0" step="any" v-model="sheet.amount" @keyup.enter="confirmSheet()" />
                     </label>
-                    <div class="fa-macros">
-                        <div><b>{{ sheetMacros.kcal }}</b><small>{{ $t('foodAdd.sheet.kcal') }}</small></div>
-                        <div><b>{{ sheetMacros.carbs ?? '—' }}</b><small>{{ $t('foodAdd.sheet.carbs') }}</small></div>
-                        <div><b>{{ sheetMacros.fat ?? '—' }}</b><small>{{ $t('foodAdd.sheet.fat') }}</small></div>
-                        <div><b>{{ sheetMacros.protein }}</b><small>{{ $t('foodAdd.sheet.protein') }}</small></div>
+                    <div class="fa-ringrow">
+                        <svg class="fa-ring" viewBox="0 0 64 64" aria-hidden="true">
+                            <circle class="bg" cx="32" cy="32" r="26" />
+                            <circle v-for="seg in ringSegs" :key="seg.key" :class="seg.key" cx="32" cy="32" r="26" :stroke-dasharray="seg.dash" :stroke-dashoffset="seg.offset" transform="rotate(-90 32 32)" />
+                        </svg>
+                        <div class="fa-ringkcal"><b>{{ sheetMacros.kcal }}</b><small>{{ $t('foodAdd.sheet.kcal') }}</small></div>
+                        <div class="fa-split">
+                            <div v-for="s in macroSplit" :key="s.key" :class="s.key">
+                                <small class="fa-pct">{{ s.pct }}%</small>
+                                <b>{{ s.grams ?? '—' }} g</b>
+                                <small>{{ $t('foodAdd.sheet.' + s.key) }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="goalBars.length" class="fa-goals">
+                        <h3>{{ $t('foodAdd.sheet.goalsTitle') }}</h3>
+                        <div v-for="b in goalBars" :key="b.key" class="fa-goal" :class="[b.key, { over: b.over }]">
+                            <div class="fa-goal-text"><span>{{ $t('foodAdd.sheet.' + b.key) }}</span><span>{{ b.value }} / {{ b.goal }} {{ b.unit }} · {{ b.total }}%</span></div>
+                            <div class="fa-goal-track"><div class="eaten" :style="{ width: b.pctEaten + '%' }"></div><div class="add" :style="{ width: b.pctAdd + '%' }"></div></div>
+                        </div>
                     </div>
                     <div class="fa-sheet-actions">
                         <button type="button" class="btn-link" @click="sheet = null">{{ $t('nutrition.cancel') }}</button>

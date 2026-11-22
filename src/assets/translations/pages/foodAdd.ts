@@ -29,6 +29,7 @@ export default {
             addToMeal: 'Afegir a la comida',
             kcal: 'Calories', protein: 'Proteïnes', carbs: 'Carbohidrats', fat: 'Greixos',
             unitOne: 'u.',
+            goalsTitle: 'Percentatge dels teus objectius diaris',
         },
         tpl: {
             newMeal: 'Nova comida',
@@ -114,6 +115,7 @@ export default {
             addToMeal: 'Añadir a la comida',
             kcal: 'Calorías', protein: 'Proteínas', carbs: 'Carbohidratos', fat: 'Grasas',
             unitOne: 'u.',
+            goalsTitle: 'Porcentaje de tus objetivos diarios',
         },
         tpl: {
             newMeal: 'Nueva comida',
@@ -199,6 +201,7 @@ export default {
             addToMeal: 'Add to the meal',
             kcal: 'Calories', protein: 'Protein', carbs: 'Carbs', fat: 'Fat',
             unitOne: 'u.',
+            goalsTitle: 'Percentage of your daily goals',
         },
         tpl: {
             newMeal: 'New meal',
