@@ -162,20 +162,10 @@
             border: 1px solid var(--border-color);
             border-radius: 10px;
             padding: 0.7rem 1rem;
-            margin-bottom: 0.4rem;
+            
             .history-dates { flex: 1; }
-            button {
-                background: transparent;
-                border: none;
-                color: var(--text-muted);
-                font-size: 1rem;
-                cursor: pointer;
-                padding: 0.25rem 0.5rem;
-                border-radius: 6px;
-            }
-            .btn-edit:hover { background: var(--surface-2); color: var(--text-color); }
-            .btn-delete:hover { background: var(--tint-red-bg); color: var(--tint-red-text); }
         }
+        .history-swipe { margin-bottom: 0.4rem; }
     }
 
     .summary .phase-card {

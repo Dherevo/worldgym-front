@@ -76,11 +76,11 @@
 
             <div class="history" v-if="hasData">
                 <h3>{{ $t('cycle.history') }}</h3>
-                <div v-for="p in history" :key="p.id" class="history-row">
-                    <span class="history-dates">{{ periodRange(p) }}</span>
-                    <button class="btn-edit" @click="openEdit(p)" :title="$t('cycle.edit')">✎</button>
-                    <button class="btn-delete" @click="remove(p)" :title="$t('cycle.delete')">✕</button>
-                </div>
+                <SwipeRow v-for="p in history" :key="p.id" class="history-swipe" @edit="openEdit(p)" @delete="remove(p)">
+                    <div class="history-row">
+                        <span class="history-dates">{{ periodRange(p) }}</span>
+                    </div>
+                </SwipeRow>
             </div>
 
             <div class="settings">

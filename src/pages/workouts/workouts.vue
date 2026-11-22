@@ -21,9 +21,8 @@
             <div v-if="loading" class="loading-text">{{ $t('workouts.loading') }}</div>
             <div v-else-if="workouts.length === 0" class="empty-text">{{ $t('workouts.empty') }}</div>
             <div v-else class="workout-list">
+                <SwipeRow v-for="w in workouts" :key="w.id" @edit="openEdit(w)" @delete="deleteWorkout(w)">
                 <div
-                    v-for="w in workouts"
-                    :key="w.id"
                     class="workout-card"
                     @click="to('/workouts/' + w.id)"
                 >
@@ -35,10 +34,9 @@
                         </div>
                         <div class="workout-notes">{{ w.notes || $t('workouts.noNotes') }}</div>
                     </div>
-                    <button class="btn-edit" @click.stop="openEdit(w)" :title="$t('workouts.edit')">✎</button>
-                    <button class="btn-delete" @click.stop="deleteWorkout(w)" :title="$t('workouts.delete')">✕</button>
-                    <div class="workout-arrow">&rsaquo;</div>
+                    <svg-icon class="workout-arrow" name="heroicons-outline/chevron-right" />
                 </div>
+                </SwipeRow>
             </div>
 
         <!-- Create / Edit modal -->

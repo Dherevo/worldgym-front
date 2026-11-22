@@ -35,7 +35,8 @@ interface Builder {
 // the barcode scanner and the form of a new food. Every food asks for its amount before it goes to the diary.
 import BackButton from "@/components/back-button/back-button.vue";
 import SearchInput from "@/components/search-input/search-input.vue";
-@Component({ components: { FoodForm, BackButton, SearchInput } })
+import SwipeRow from "@/components/swipe-row/swipe-row.vue";
+@Component({ components: { FoodForm, BackButton, SearchInput, SwipeRow } })
 class FoodAddPage extends Vue {
 
     readonly meals = MEALS;

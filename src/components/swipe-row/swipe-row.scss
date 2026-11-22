@@ -1,0 +1,55 @@
+.swipe-row {
+    display: flex;
+    min-width: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border-radius: 12px;
+    &::-webkit-scrollbar { display: none; }
+
+    // The row fills the width; the actions wait to the right until the row is slid
+    .sr-main {
+        flex: 0 0 100%;
+        min-width: 0;
+        display: flex;
+        scroll-snap-align: start;
+        > * { flex: 1; min-width: 0; }
+    }
+    .sr-actions { flex: none; display: flex; scroll-snap-align: end; }
+
+    .sr-btn {
+        flex: none;
+        width: 4.2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.2rem;
+        border: none;
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 600;
+        cursor: pointer;
+        svg.icon { width: 22px; height: 22px; }
+        &.share { background: #16a34a; }
+        &.edit { background: #2563eb; }
+        &.del { background: #dc2626; border-radius: 0 12px 12px 0; }
+    }
+
+    // With a mouse there is nothing to slide: small icon buttons next to the row
+    @media (hover: hover) and (pointer: fine) {
+        overflow: visible;
+        scroll-snap-type: none;
+        align-items: center;
+        gap: 0.4rem;
+        .sr-main { flex: 1; }
+        .sr-actions { gap: 0.3rem; }
+        .sr-btn {
+            width: 2.3rem; height: 2.3rem; border-radius: 8px !important; font-size: 0;
+            svg.icon { width: 18px; height: 18px; }
+            &:hover { filter: brightness(1.1); }
+        }
+    }
+
+    &.plain { overflow: visible; scroll-snap-type: none; .sr-main { flex: 1; } }
+}

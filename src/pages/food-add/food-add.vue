@@ -48,21 +48,18 @@
                 <section v-if="suggested.length">
                     <h2>{{ $t('foodAdd.suggestions') }}</h2>
                     <ul class="fa-list">
-                        <li v-for="f in suggested" :key="'s' + f.id" :class="{ 'fa-swipe': tab === 'mine' }">
-                            <button type="button" class="fa-row" @click="openSheet(f)">
-                                <img v-if="f.image_url" class="fa-thumb" :src="f.image_url" alt="" loading="lazy" />
-                                <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
-                                <span class="fa-main">
-                                    <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
-                                    <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template></small>
-                                </span>
-                                <span class="fa-plus">+</span>
-                            </button>
-                            <span v-if="tab === 'mine'" class="fa-rev">
-                                <button v-if="isAdmin" type="button" class="fa-rev-btn share" :aria-label="$t('foodAdd.share.button')" @click="shareFood(f)"><span>⇪</span>{{ $t('foodAdd.share.short') }}</button>
-                                <button type="button" class="fa-rev-btn edit" :aria-label="$t('nutrition.foods.edit')" @click="editFood(f)"><span>✎</span>{{ $t('nutrition.foods.edit') }}</button>
-                                <button type="button" class="fa-rev-btn del" :aria-label="$t('nutrition.delete')" @click="removeFood(f)"><span>✕</span>{{ $t('nutrition.delete') }}</button>
-                            </span>
+                        <li v-for="f in suggested" :key="'s' + f.id">
+                            <SwipeRow :enabled="tab === 'mine'" :actions="isAdmin ? ['share', 'edit', 'delete'] : ['edit', 'delete']" @share="shareFood(f)" @edit="editFood(f)" @delete="removeFood(f)">
+                                <button type="button" class="fa-row" @click="openSheet(f)">
+                                    <img v-if="f.image_url" class="fa-thumb" :src="f.image_url" alt="" loading="lazy" />
+                                    <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
+                                    <span class="fa-main">
+                                        <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
+                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template></small>
+                                    </span>
+                                    <span class="fa-plus">+</span>
+                                </button>
+                            </SwipeRow>
                         </li>
                     </ul>
                 </section>
@@ -70,21 +67,18 @@
                 <section v-if="listed.length">
                     <h2 v-if="suggested.length">{{ $t('foodAdd.foods') }}</h2>
                     <ul class="fa-list">
-                        <li v-for="f in listed" :key="f.id" :class="{ 'fa-swipe': tab === 'mine' }">
-                            <button type="button" class="fa-row" @click="openSheet(f)">
-                                <img v-if="f.image_url" class="fa-thumb" :src="f.image_url" alt="" loading="lazy" />
-                                <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
-                                <span class="fa-main">
-                                    <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
-                                    <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template></small>
-                                </span>
-                                <span class="fa-plus">+</span>
-                            </button>
-                            <span v-if="tab === 'mine'" class="fa-rev">
-                                <button v-if="isAdmin" type="button" class="fa-rev-btn share" :aria-label="$t('foodAdd.share.button')" @click="shareFood(f)"><span>⇪</span>{{ $t('foodAdd.share.short') }}</button>
-                                <button type="button" class="fa-rev-btn edit" :aria-label="$t('nutrition.foods.edit')" @click="editFood(f)"><span>✎</span>{{ $t('nutrition.foods.edit') }}</button>
-                                <button type="button" class="fa-rev-btn del" :aria-label="$t('nutrition.delete')" @click="removeFood(f)"><span>✕</span>{{ $t('nutrition.delete') }}</button>
-                            </span>
+                        <li v-for="f in listed" :key="f.id">
+                            <SwipeRow :enabled="tab === 'mine'" :actions="isAdmin ? ['share', 'edit', 'delete'] : ['edit', 'delete']" @share="shareFood(f)" @edit="editFood(f)" @delete="removeFood(f)">
+                                <button type="button" class="fa-row" @click="openSheet(f)">
+                                    <img v-if="f.image_url" class="fa-thumb" :src="f.image_url" alt="" loading="lazy" />
+                                    <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
+                                    <span class="fa-main">
+                                        <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
+                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template></small>
+                                    </span>
+                                    <span class="fa-plus">+</span>
+                                </button>
+                            </SwipeRow>
                         </li>
                     </ul>
                 </section>

@@ -1,7 +1,8 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 
-@Component({})
+import SwipeRow from "@/components/swipe-row/swipe-row.vue";
+@Component({ components: { SwipeRow } })
 class WorkoutsPage extends Vue {
 
     workouts: any[] = [];

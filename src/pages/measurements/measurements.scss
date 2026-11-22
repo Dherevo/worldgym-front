@@ -117,6 +117,7 @@
                 padding: 0.25rem 0.5rem;
                 border-radius: 6px;
             }
+            svg.icon { width: 18px; height: 18px; vertical-align: middle; }
             .btn-edit:hover { background: var(--surface-2); color: var(--text-color); }
             .btn-delete:hover { background: var(--tint-red-bg); color: var(--tint-red-text); }
         }
