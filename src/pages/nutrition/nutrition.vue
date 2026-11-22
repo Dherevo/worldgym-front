@@ -70,11 +70,10 @@
                             <small v-if="entriesOf(meal).length" class="meal-macros">{{ subtotal(meal) }} kcal<template v-if="proteinOf(meal)"> / {{ proteinOf(meal) }} g P</template></small>
                         </div>
                         <div class="meal-side">
-                            <button type="button" class="meal-menu" :class="{ active: editMeal === meal || menuMeal === meal }" :title="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.menu.title')" :aria-label="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.menu.title')" @click="onMealMenu(meal)"><svg-icon :name="editMeal === meal ? 'heroicons-outline/check' : 'heroicons-outline/ellipsis-horizontal'" /></button>
+                            <button type="button" class="meal-menu" :class="{ active: menuMeal === meal }" :title="$t('nutrition.menu.title')" :aria-label="$t('nutrition.menu.title')" @click="onMealMenu(meal)"><svg-icon name="heroicons-outline/ellipsis-horizontal" /></button>
                             <template v-if="menuMeal === meal">
                                 <div class="menu-backdrop" @click="menuMeal = null"></div>
                                 <ul class="meal-popup" role="menu">
-                                    <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="menuEdit(meal)"><svg-icon name="heroicons-outline/pencil-square" /><span>{{ $t('nutrition.menu.edit') }}</span></button></li>
                                     <li><button type="button" role="menuitem" @click="openCopy(meal, 'from')"><svg-icon name="heroicons-outline/arrow-down-tray" /><span>{{ $t('nutrition.menu.copyFrom') }}</span></button></li>
                                     <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="openCopy(meal, 'to')"><svg-icon name="heroicons-outline/arrow-up-tray" /><span>{{ $t('nutrition.menu.copyTo') }}</span></button></li>
                                     <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="menuSave(meal)"><svg-icon name="heroicons-outline/bookmark" /><span>{{ $t('foodAdd.saveMeal.action') }}</span></button></li>
@@ -85,15 +84,15 @@
 
                     <ul class="entry-list" v-if="entriesOf(meal).length">
                         <li v-for="e in entriesOf(meal)" :key="e.id">
+                            <SwipeRow @edit="openEdit(e)" @delete="remove(e)">
+                                <div class="e-row">
                             <div class="e-main">
                                 <span class="e-name">{{ entryParts(e).name }}</span>
                                 <small class="e-sub">{{ entryParts(e).qty !== '—' ? entryParts(e).qty : '' }}<template v-if="e.protein_g"><template v-if="entryParts(e).qty !== '—'"> · </template>{{ e.protein_g }} g {{ $t('nutrition.proteinShort') }}</template></small>
                             </div>
                             <span class="e-kcal">{{ e.kcal }}</span>
-                            <span class="e-actions" v-if="editMeal === meal">
-                                <button type="button" class="btn-edit" @click="openEdit(e)" :title="$t('nutrition.edit')" :aria-label="$t('nutrition.edit')"><svg-icon name="heroicons-outline/pencil-square" /></button>
-                                <button type="button" class="btn-delete" @click="remove(e)" :title="$t('nutrition.delete')" :aria-label="$t('nutrition.delete')"><svg-icon name="heroicons-outline/trash" /></button>
-                            </span>
+                                </div>
+                            </SwipeRow>
                         </li>
                     </ul>
 

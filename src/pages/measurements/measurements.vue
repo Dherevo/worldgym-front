@@ -48,30 +48,21 @@
                     <canvas id="measurementsWaistCanvas"></canvas>
                 </div>
 
-                <div class="table-wrap">
-                    <table class="measurements-table">
-                        <thead>
-                            <tr>
-                                <th>{{ $t('measurements.table.date') }}</th>
-                                <th>{{ $t('measurements.table.weight') }}</th>
-                                <th>{{ $t('measurements.table.waist') }}</th>
-                                <th>{{ $t('measurements.table.bmi') }}</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="m in tableRows" :key="m.id">
-                                <td>{{ formatDate(m.date) }}</td>
-                                <td>{{ m.weight_kg }}</td>
-                                <td>{{ m.waist_cm ?? '—' }}</td>
-                                <td>{{ m.bmi ?? '—' }}</td>
-                                <td class="actions">
-                                    <button class="btn-edit" @click="openEdit(m)" :title="$t('measurements.edit')" :aria-label="$t('measurements.edit')"><svg-icon name="heroicons-outline/pencil-square" /></button>
-                                    <button class="btn-delete" @click="remove(m)" :title="$t('measurements.delete')" :aria-label="$t('measurements.delete')"><svg-icon name="heroicons-outline/trash" /></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="mt-list">
+                    <div class="mt-row mt-head">
+                        <span>{{ $t('measurements.table.date') }}</span>
+                        <span>{{ $t('measurements.table.weight') }}</span>
+                        <span>{{ $t('measurements.table.waist') }}</span>
+                        <span>{{ $t('measurements.table.bmi') }}</span>
+                    </div>
+                    <SwipeRow v-for="m in tableRows" :key="m.id" class="mt-swipe" @edit="openEdit(m)" @delete="remove(m)">
+                        <div class="mt-row">
+                            <span>{{ formatDate(m.date) }}</span>
+                            <span>{{ m.weight_kg }}</span>
+                            <span>{{ m.waist_cm ?? '—' }}</span>
+                            <span>{{ m.bmi ?? '—' }}</span>
+                        </div>
+                    </SwipeRow>
                 </div>
             </template>
 

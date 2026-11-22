@@ -1,9 +1,10 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
+import { IonToggle } from "@ionic/vue";
 import userStore from "@/modules/userStore";
 
 // Reminders of the profile (app only): what the user wants to be told about, quiet hours and a test button
-@Component({})
+@Component({ components: { IonToggle } })
 class PushSettings extends Vue {
 
     settings: any = null;
@@ -35,8 +36,10 @@ class PushSettings extends Vue {
         });
     }
 
-    toggle(key: string) {
-        this.save({ [key]: !this.settings[key] });
+    // The Ionic switch also fires when the value is set from the server answer: only a real change is saved
+    onToggle(key: string, e: CustomEvent) {
+        const checked = !!e.detail?.checked;
+        if (checked !== !!this.settings[key]) this.save({ [key]: checked });
     }
 
     setQuiet(key: 'quiet_from' | 'quiet_to', e: Event) {
