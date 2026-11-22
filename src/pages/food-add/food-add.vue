@@ -50,6 +50,8 @@
                     <ul class="fa-list">
                         <li v-for="f in suggested" :key="'s' + f.id">
                             <button type="button" class="fa-row" @click="openSheet(f)">
+                                <img v-if="f.image_url" class="fa-thumb" :src="f.image_url" alt="" loading="lazy" />
+                                <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                 <span class="fa-main">
                                     <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
                                     <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template></small>
@@ -65,6 +67,8 @@
                     <ul class="fa-list">
                         <li v-for="f in listed" :key="f.id">
                             <button type="button" class="fa-row" @click="openSheet(f)">
+                                <img v-if="f.image_url" class="fa-thumb" :src="f.image_url" alt="" loading="lazy" />
+                                <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                 <span class="fa-main">
                                     <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
                                     <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template></small>
@@ -84,6 +88,8 @@
                     <ul v-if="offResults.length" class="fa-list">
                         <li v-for="p in offResults" :key="p.code">
                             <button type="button" class="fa-row" :disabled="offSaving" @click="pickOff(p)">
+                                <img v-if="p.image" class="fa-thumb" :src="p.image" alt="" loading="lazy" />
+                                <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                 <span class="fa-main">
                                     <span class="fa-name">{{ p.name }}</span>
                                     <small>{{ p.kcal_100 }} kcal · {{ $t('foodAdd.per100', { unit: p.unit }) }}<template v-if="p.brand"> · {{ p.brand }}</template></small>
@@ -117,6 +123,7 @@
             <!-- Amount of a food -->
             <div v-if="sheet" class="fa-backdrop" @click.self="sheet = null">
                 <div class="fa-sheet" role="dialog" aria-modal="true">
+                    <img v-if="sheet.food.image_url" class="fa-photo" :src="sheet.food.image_url" alt="" />
                     <h2>{{ sheet.food.name }}</h2>
                     <p v-if="sheet.food.brand" class="muted">{{ sheet.food.brand }}</p>
                     <label class="fa-field">
