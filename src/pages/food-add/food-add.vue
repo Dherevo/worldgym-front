@@ -58,6 +58,7 @@
                                 </span>
                                 <span class="fa-plus">+</span>
                             </button>
+                            <button v-if="tab === 'mine' && isAdmin" type="button" class="fa-edit" :title="$t('foodAdd.share.button')" :aria-label="$t('foodAdd.share.button')" @click="shareFood(f)">⇪</button>
                             <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.foods.edit')" @click="editFood(f)">✎</button>
                             <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.delete')" @click="removeFood(f)">✕</button>
                         </li>
@@ -77,6 +78,7 @@
                                 </span>
                                 <span class="fa-plus">+</span>
                             </button>
+                            <button v-if="tab === 'mine' && isAdmin" type="button" class="fa-edit" :title="$t('foodAdd.share.button')" :aria-label="$t('foodAdd.share.button')" @click="shareFood(f)">⇪</button>
                             <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.foods.edit')" @click="editFood(f)">✎</button>
                             <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.delete')" @click="removeFood(f)">✕</button>
                         </li>

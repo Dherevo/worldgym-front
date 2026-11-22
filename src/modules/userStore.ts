@@ -13,6 +13,7 @@ interface UserData {
     gender: 'female' | 'male' | 'other' | null;
     birth_date?: string | null;
     theme?: string | null;
+    isAdmin?: boolean;
     email_verified?: boolean;
     pending_email?: string | null;
     home_equipment: number[] | null;
