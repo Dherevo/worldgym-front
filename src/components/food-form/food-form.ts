@@ -20,6 +20,8 @@ class FoodForm extends Vue {
     name = '';
     brand = '';
     offCode = '';
+    // Vegetable or fruit: '' = decided by the name, 'yes' or 'no'
+    plant: '' | 'yes' | 'no' = '';
     unit: 'g' | 'ml' | 'u' = 'g';
     kcal: number | string = '';
     protein: number | string = '';
@@ -42,6 +44,7 @@ class FoodForm extends Vue {
             this.name = this.food.name;
             this.brand = this.food.brand ?? '';
             this.offCode = this.food.off_code ?? '';
+            this.plant = this.food.plant === true ? 'yes' : this.food.plant === false ? 'no' : '';
             this.unit = this.food.unit;
             this.kcal = this.food.kcal_100;
             this.protein = this.food.protein_100 || '';
@@ -138,6 +141,7 @@ class FoodForm extends Vue {
             fat_100: optional(this.fat),
             sodium_100: optional(this.sodium),
             brand: this.brand.trim(),
+            plant: this.plant === '' ? null : this.plant === 'yes',
             off_code: this.offCode.trim(),
             unit_g: this.unit === 'u' && this.unitG !== '' ? Number(this.unitG) : null,
         };

@@ -22,6 +22,14 @@
             <label><span>{{ $t('nutrition.foods.protein', { per }) }}</span><input type="number" inputmode="decimal" min="0" max="500" step="0.1" v-model="protein" /></label>
             <label v-if="unit === 'u'"><span>{{ $t('nutrition.foods.unitWeight') }}</span><input type="number" inputmode="decimal" min="0" step="0.1" v-model="unitG" /></label>
         </div>
+        <label class="ff-plant">
+            <span>{{ $t('nutrition.foods.plant') }}</span>
+            <select v-model="plant">
+                <option value="">{{ $t('nutrition.foods.plantAuto') }}</option>
+                <option value="yes">{{ $t('nutrition.foods.plantYes') }}</option>
+                <option value="no">{{ $t('nutrition.foods.plantNo') }}</option>
+            </select>
+        </label>
         <div class="ff-actions">
             <button type="button" class="btn-link" @click="$emit('cancel')">{{ $t('nutrition.cancel') }}</button>
             <button type="submit" class="btn" :disabled="saving || !valid">{{ $t('nutrition.foods.save') }}</button>
