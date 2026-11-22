@@ -1,6 +1,11 @@
 <template>
-    <div class="swipe-row" :class="{ plain: !enabled }">
-        <div class="sr-main"><slot /></div>
+    <div class="swipe-row" ref="root" :class="{ plain: !enabled }">
+        <div class="sr-main">
+            <slot />
+            <button v-if="enabled" type="button" class="sr-more" :aria-label="$t('common.moreActions')" @click.stop="toggle()">
+                <svg-icon name="heroicons-outline/ellipsis-vertical" />
+            </button>
+        </div>
         <div v-if="enabled" class="sr-actions">
             <button v-if="has('share')" type="button" class="sr-btn share" :aria-label="$t('common.share')" @click.stop="$emit('share')">
                 <svg-icon name="heroicons-outline/arrow-up-on-square" /><span>{{ $t('common.share') }}</span>
