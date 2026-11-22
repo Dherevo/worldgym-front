@@ -79,6 +79,13 @@
             &.edit { background: #2563eb; }
             &.del { background: #dc2626; border-radius: 0 12px 12px 0; }
         }
+        // With a mouse there is nothing to slide: small icon buttons next to the row
+        @media (hover: hover) and (pointer: fine) {
+            overflow: visible; scroll-snap-type: none; gap: 0.4rem;
+            .fa-row { flex: 1; }
+            .fa-rev { gap: 0.3rem; }
+            .fa-rev-btn { width: 2.3rem; height: 2.3rem; align-self: center; border-radius: 8px !important; font-size: 0; }
+        }
     }
     .fa-edit { flex: none; background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 0 0.6rem; }
     .fa-more {
