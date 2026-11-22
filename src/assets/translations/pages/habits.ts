@@ -18,6 +18,7 @@ export default {
         card: {
             inWorkoutHint: 'Opcional, al final de l\'entreno',
             inWorkoutDone: 'Fet a l\'entreno',
+            proteinAuto: 'Es marca sol: {{n}} de {{goal}} g de proteïna',
             title: 'Obligats d\'avui',
             dayToday: 'Avui',
             dayYesterday: 'Ahir',
@@ -115,6 +116,7 @@ export default {
         card: {
             inWorkoutHint: 'Opcional, al final del entreno',
             inWorkoutDone: 'Hecho en el entreno',
+            proteinAuto: 'Se marca solo: {{n}} de {{goal}} g de proteína',
             title: 'Obligatorios de hoy',
             dayToday: 'Hoy',
             dayYesterday: 'Ayer',
@@ -212,6 +214,7 @@ export default {
         card: {
             inWorkoutHint: 'Optional, at the end of the workout',
             inWorkoutDone: 'Done in the workout',
+            proteinAuto: 'It ticks itself: {{n}} of {{goal}} g of protein',
             title: 'Today\'s must-dos',
             dayToday: 'Today',
             dayYesterday: 'Yesterday',

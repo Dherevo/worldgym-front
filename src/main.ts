@@ -14,6 +14,7 @@ import locales from './assets/translations/locales';
 import packageJSON from '../package.json';
 import initScrollReveal from './modules/scrollReveal';
 import { autoSyncSteps } from './modules/healthSteps';
+import { initBackButton } from './modules/backButton';
 //import baseComponent from './modules/baseComponent';
 
 const savedLanguage = Storage.get('language');
@@ -47,3 +48,4 @@ http();                         // HTTP Client configuration
 app.mount('#app');
 initScrollReveal();
 autoSyncSteps();
+initBackButton(app.config.globalProperties.$router);
