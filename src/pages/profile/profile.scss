@@ -85,6 +85,21 @@
         }
     }
 
+    .profile-head { flex-direction: row; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem; .ph-name { font-size: 1.2rem; } }
+    .profile-menu {
+        padding: 0.4rem 0;
+        gap: 0;
+        .pm-row {
+            display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+            padding: 0.95rem 1.5rem; border: 0; background: none; color: var(--text-color); text-align: left; cursor: pointer;
+            & + .pm-row { border-top: 1px solid var(--border-color); }
+            &:hover { background: var(--surface-2); }
+            .pm-text { display: flex; flex-direction: column; gap: 0.15rem; strong { font-size: 1rem; } small { color: var(--text-secondary); font-size: 0.8rem; } }
+            svg { width: 1.1rem; height: 1.1rem; color: var(--text-muted); flex: none; }
+        }
+    }
+    .profile-back { align-self: flex-start; max-width: 480px; }
+
     .habits-card h2 { margin: 0; font-size: 1.2rem; }
 
     .equipment-card {

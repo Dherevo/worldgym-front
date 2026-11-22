@@ -101,6 +101,10 @@ const routes : IRoutes = {
             component: ProfilePage
         },
         {
+            path: '/profile/:section',
+            component: ProfilePage
+        },
+        {
             path: '/habits',
             component: HabitsPage
         },

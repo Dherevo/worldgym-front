@@ -1,7 +1,26 @@
 <template>
     <AppPage name="profile-page" layout="backoffice">
         <div class="profile-page">
-            <div class="card photo-card">
+            <template v-if="!section">
+                <div class="card profile-head">
+                    <UserAvatar :url="photoUrl" :name="nickname" :size="64" />
+                    <strong class="ph-name">{{ nickname }}</strong>
+                </div>
+                <nav class="card profile-menu">
+                    <button v-for="m in menu" :key="m.key" type="button" class="pm-row" @click="to('/profile/' + m.key)">
+                        <span class="pm-text">
+                            <strong>{{ $t('profile.menu.' + m.key) }}</strong>
+                            <small>{{ $t('profile.menu.' + m.key + 'Sub') }}</small>
+                        </span>
+                        <svg-icon name="heroicons-outline/chevron-right" />
+                    </button>
+                </nav>
+            </template>
+
+            <template v-else>
+            <BackButton class="profile-back" :label="$t('profile.menu.' + section)" @click="to('/profile')" />
+
+            <div class="card photo-card" v-if="section === 'personal'">
                 <UserAvatar :url="photoUrl" :name="nickname" :size="72" />
                 <div class="photo-info">
                     <strong>{{ $t('profile.photo') }}</strong>
@@ -16,7 +35,7 @@
                 </div>
             </div>
 
-            <form class="card" @submit.prevent="save()">
+            <form class="card" v-if="section === 'personal'" @submit.prevent="save()">
                 <h1>{{ $t('profile.title') }}</h1>
                 <p class="sub">{{ $t('profile.sub') }}</p>
 
@@ -53,7 +72,7 @@
                 </button>
             </form>
 
-            <div class="card equipment-card">
+            <div class="card equipment-card" v-if="section === 'goals'">
                 <h2>{{ $t('recommendation.homeEquipment.title') }}</h2>
                 <p class="sub">{{ $t('recommendation.homeEquipment.text') }}</p>
                 <div class="equipment-list">
@@ -67,21 +86,22 @@
                 </button>
             </div>
 
-            <div class="card habits-card">
+            <div class="card habits-card" v-if="section === 'goals'">
                 <h2>{{ $t('habits.card.profileTitle') }}</h2>
                 <p class="sub">{{ $t('habits.card.profileText') }}</p>
                 <button type="button" class="submit" @click="to('/habits')">{{ $t('habits.card.profileBtn') }}</button>
             </div>
 
-            <EnergyCard />
+            <EnergyCard v-if="section === 'body'" />
 
-            <AccountSettings />
+            <AccountSettings v-if="section === 'account'" />
 
-            <MeasurementsPage />
+            <MeasurementsPage v-if="section === 'body'" />
 
-            <PushSettings v-if="isApp" />
+            <PushSettings v-if="section === 'reminders'" />
 
-            <AppPreferences v-if="isApp" />
+            <AppPreferences v-if="section === 'app'" />
+            </template>
         </div>
     </AppPage>
 </template>
