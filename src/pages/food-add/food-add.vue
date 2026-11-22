@@ -118,7 +118,13 @@
                 <p v-else-if="!loading" class="muted">{{ tab === 'recipes' ? $t('foodAdd.tpl.emptyRecipes') : $t('foodAdd.tpl.emptyMeals') }}</p>
             </template>
 
-            <FoodForm v-if="foodForm" class="fa-foodform" :food="null" :presetName="foodForm.preset" :presetCode="foodForm.code" @saved="onFoodSaved" @cancel="foodForm = null" />
+            <!-- New food: a sheet, so it opens in sight whatever the length of the list -->
+            <div v-if="foodForm" class="fa-backdrop" @click.self="foodForm = null">
+                <div class="fa-sheet" role="dialog" aria-modal="true">
+                    <h2>{{ $t('foodAdd.newFood') }}</h2>
+                    <FoodForm class="fa-foodform" :food="null" :presetName="foodForm.preset" :presetCode="foodForm.code" @saved="onFoodSaved" @cancel="foodForm = null" />
+                </div>
+            </div>
 
             <!-- Amount of a food -->
             <div v-if="sheet" class="fa-backdrop" @click.self="sheet = null">
