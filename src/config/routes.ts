@@ -21,6 +21,7 @@ import RecommendationPage from '../pages/recommendation/recommendation.vue';
 import AccessPage from '../pages/access/access.vue';
 import ChallengesPage from '../pages/challenges/challenges.vue';
 import NutritionPage from '../pages/nutrition/nutrition.vue';
+import FoodAddPage from '../pages/food-add/food-add.vue';
 import WeeklySummaryPage from '../pages/weekly-summary/weekly-summary.vue';
 
 const routes : IRoutes = {
@@ -110,6 +111,10 @@ const routes : IRoutes = {
         {
             path: '/nutrition',
             component: NutritionPage
+        },
+        {
+            path: '/nutrition/add',
+            component: FoodAddPage
         },
         {
             path: '/cycle',
