@@ -128,7 +128,8 @@ export default {
         },
         toToday: 'Tornar a avui',
         historyBtn: 'Historial',
-        cal: { title: 'Alimentació', prevMonth: 'Mes anterior', nextMonth: 'Mes següent', logged: 'Dies registrats', avgKcal: 'Mitjana kcal', avgProtein: 'Mitjana proteïna (g)', proteinDays: 'Dies amb proteïna assolida', state: { ok: 'Dins de l\'objectiu', over: 'Per sobre', low: 'Per sota', none: 'Sense dades' }, hint: 'Toca un dia per veure què vas menjar i corregir-ho.' },
+        cal: {
+            listTitle: 'Dies del mes', title: 'Alimentació', prevMonth: 'Mes anterior', nextMonth: 'Mes següent', logged: 'Dies registrats', avgKcal: 'Mitjana kcal', avgProtein: 'Mitjana proteïna (g)', proteinDays: 'Dies amb proteïna assolida', state: { ok: 'Dins de l\'objectiu', over: 'Per sobre', low: 'Per sota', none: 'Sense dades' }, hint: 'Toca un dia per veure què vas menjar i corregir-ho.' },
         historyHint: 'Toca un dia per veure què vas menjar i corregir-ho.',
         noPlants: 'Fa 7 dies que no apuntes cap verdura ni fruita. Posa\'n una ració a cada àpat principal.',
         proteinShort: 'prot.',
@@ -310,7 +311,8 @@ export default {
         },
         toToday: 'Volver a hoy',
         historyBtn: 'Historial',
-        cal: { title: 'Alimentación', prevMonth: 'Mes anterior', nextMonth: 'Mes siguiente', logged: 'Días registrados', avgKcal: 'Media kcal', avgProtein: 'Media proteína (g)', proteinDays: 'Días con proteína alcanzada', state: { ok: 'Dentro del objetivo', over: 'Por encima', low: 'Por debajo', none: 'Sin datos' }, hint: 'Toca un día para ver qué comiste y corregirlo.' },
+        cal: {
+            listTitle: 'Días del mes', title: 'Alimentación', prevMonth: 'Mes anterior', nextMonth: 'Mes siguiente', logged: 'Días registrados', avgKcal: 'Media kcal', avgProtein: 'Media proteína (g)', proteinDays: 'Días con proteína alcanzada', state: { ok: 'Dentro del objetivo', over: 'Por encima', low: 'Por debajo', none: 'Sin datos' }, hint: 'Toca un día para ver qué comiste y corregirlo.' },
         historyHint: 'Toca un día para ver qué comiste y corregirlo.',
         noPlants: 'Hace 7 días que no apuntas ninguna verdura ni fruta. Pon una ración en cada comida principal.',
         proteinShort: 'prot.',
@@ -492,7 +494,8 @@ export default {
         },
         toToday: 'Back to today',
         historyBtn: 'History',
-        cal: { title: 'Nutrition', prevMonth: 'Previous month', nextMonth: 'Next month', logged: 'Days logged', avgKcal: 'Average kcal', avgProtein: 'Average protein (g)', proteinDays: 'Days protein goal met', state: { ok: 'Within the goal', over: 'Above', low: 'Below', none: 'No data' }, hint: 'Tap a day to see what you ate and fix it.' },
+        cal: {
+            listTitle: 'Days of the month', title: 'Nutrition', prevMonth: 'Previous month', nextMonth: 'Next month', logged: 'Days logged', avgKcal: 'Average kcal', avgProtein: 'Average protein (g)', proteinDays: 'Days protein goal met', state: { ok: 'Within the goal', over: 'Above', low: 'Below', none: 'No data' }, hint: 'Tap a day to see what you ate and fix it.' },
         historyHint: 'Tap a day to see what you ate and fix it.',
         noPlants: 'It has been 7 days without any vegetable or fruit logged. Add a serving to each main meal.',
         proteinShort: 'prot.',
