@@ -13,7 +13,21 @@
         min-width: 0;
         display: flex;
         scroll-snap-align: start;
-        > * { flex: 1; min-width: 0; }
+        > :not(.sr-more) { flex: 1; min-width: 0; }
+    }
+
+    // The handle that tells the row can be pulled (and does it with a tap); not needed with a mouse
+    .sr-more {
+        flex: none;
+        width: 2.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        svg.icon { width: 20px; height: 20px; }
     }
     .sr-actions { flex: none; display: flex; scroll-snap-align: end; }
 
@@ -42,6 +56,7 @@
         scroll-snap-type: none;
         align-items: center;
         gap: 0.4rem;
+        .sr-more { display: none; }
         .sr-main { flex: 1; }
         .sr-actions { gap: 0.3rem; }
         .sr-btn {
