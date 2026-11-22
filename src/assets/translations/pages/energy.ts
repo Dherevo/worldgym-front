@@ -15,6 +15,8 @@ export default {
         stepsNote: 'Els passos que fas per sobre de 5.000 al dia se sumen a la despesa.',
         goalTitle: 'El teu objectiu',
         goalAuto: 'Segons el teu IMC ({{bmi}}) l\'objectiu suggerit és {{goal}}. Pots canviar-lo.',
+        goalCardTitle: 'El teu objectiu',
+        goalAutoWaist: 'El teu IMC ({{bmi}}) és alt, però la cintura és menys de la meitat de l\'alçada: el pes probablement és múscul. L\'objectiu suggerit és {{goal}}. Pots canviar-lo.',
         goals: { lose: 'Perdre pes', maintain: 'Mantenir', gain: 'Guanyar múscul' },
         goalHints: {
             lose: 'Dèficit moderat (15-20%): uns 0,3-0,5 kg per setmana. Mai per sota del metabolisme basal.',
@@ -51,6 +53,8 @@ export default {
         stepsNote: 'Los pasos que haces por encima de 5.000 al día se suman al gasto.',
         goalTitle: 'Tu objetivo',
         goalAuto: 'Según tu IMC ({{bmi}}) el objetivo sugerido es {{goal}}. Puedes cambiarlo.',
+        goalCardTitle: 'Tu objetivo',
+        goalAutoWaist: 'Tu IMC ({{bmi}}) es alto, pero la cintura mide menos de la mitad de tu altura: el peso probablemente es músculo. El objetivo sugerido es {{goal}}. Puedes cambiarlo.',
         goals: { lose: 'Perder peso', maintain: 'Mantener', gain: 'Ganar músculo' },
         goalHints: {
             lose: 'Déficit moderado (15-20%): unos 0,3-0,5 kg por semana. Nunca por debajo del metabolismo basal.',
@@ -87,6 +91,8 @@ export default {
         stepsNote: 'Steps above 5,000 a day are added to the expenditure.',
         goalTitle: 'Your goal',
         goalAuto: 'By your BMI ({{bmi}}) the suggested goal is {{goal}}. You can change it.',
+        goalCardTitle: 'Your goal',
+        goalAutoWaist: 'Your BMI ({{bmi}}) is high, but your waist is under half your height: the weight is probably muscle. The suggested goal is {{goal}}. You can change it.',
         goals: { lose: 'Lose weight', maintain: 'Maintain', gain: 'Build muscle' },
         goalHints: {
             lose: 'Moderate deficit (15-20%): about 0.3-0.5 kg per week. Never below the basal metabolic rate.',

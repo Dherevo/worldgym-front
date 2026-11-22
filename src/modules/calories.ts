@@ -131,11 +131,21 @@ export function bmi(user: { weight_kg?: number | null; height_cm?: number | null
     return w > 0 && h > 0 ? w / (h * h) : null;
 }
 
-// The chosen goal; without one, by BMI: from 25 up lose weight, otherwise build muscle
-export function effectiveGoal(user: { goal?: string | null; weight_kg?: number | null; height_cm?: number | null } | null): Goal {
+// Waist divided by height: under 0.5 is a lean waist, so a high BMI is probably muscle and not fat
+export function waistRatio(user: { waist_cm?: number | null; height_cm?: number | null } | null): number | null {
+    const waist = Number(user?.waist_cm);
+    const height = Number(user?.height_cm);
+    return waist > 0 && height > 0 ? waist / height : null;
+}
+
+// The chosen goal; without one, by BMI: from 25 up lose weight, otherwise build muscle. A high BMI with a lean waist
+// (under half the height) suggests maintaining instead of losing. Same rule as the API (Support/Nutrition.php)
+export function effectiveGoal(user: { goal?: string | null; weight_kg?: number | null; height_cm?: number | null; waist_cm?: number | null } | null): Goal {
     if (user?.goal === 'lose' || user?.goal === 'maintain' || user?.goal === 'gain') return user.goal;
     const b = bmi(user);
-    return b !== null && b >= 25 ? 'lose' : 'gain';
+    if (b === null || b < 25) return 'gain';
+    const r = waistRatio(user);
+    return r !== null && r < 0.5 ? 'maintain' : 'lose';
 }
 
 const round10 = (n: number) => Math.round(n / 10) * 10;

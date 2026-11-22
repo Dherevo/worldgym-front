@@ -72,6 +72,8 @@
                 </button>
             </form>
 
+            <GoalCard v-if="section === 'goals'" />
+
             <div class="card equipment-card" v-if="section === 'goals'">
                 <h2>{{ $t('recommendation.homeEquipment.title') }}</h2>
                 <p class="sub">{{ $t('recommendation.homeEquipment.text') }}</p>

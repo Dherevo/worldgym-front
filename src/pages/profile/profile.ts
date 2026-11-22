@@ -4,6 +4,7 @@ import auth from "@/modules/auth";
 import userStore from "@/modules/userStore";
 import MeasurementsPage from "@/pages/measurements/measurements.vue";
 import AccountSettings from "@/components/account-settings/account-settings.vue";
+import GoalCard from "@/components/goal-card/goal-card.vue";
 import EnergyCard from "@/components/energy-card/energy-card.vue";
 import UserAvatar from "@/components/user-avatar/user-avatar.vue";
 import { isApp } from "@/modules/platform";
@@ -11,7 +12,7 @@ import AppPreferences from "@/components/app-preferences/app-preferences.vue";
 import BackButton from "@/components/back-button/back-button.vue";
 import PushSettings from "@/components/push-settings/push-settings.vue";
 
-@Component({ components: { MeasurementsPage, AccountSettings, EnergyCard, UserAvatar, AppPreferences, PushSettings, BackButton } })
+@Component({ components: { MeasurementsPage, AccountSettings, EnergyCard, GoalCard, UserAvatar, AppPreferences, PushSettings, BackButton } })
 class ProfilePage extends Vue {
 
     readonly isApp = isApp;
