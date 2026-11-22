@@ -1,7 +1,6 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import EnergyBar from "@/components/energy-bar/energy-bar.vue";
-import FoodForm from "@/components/food-form/food-form.vue";
 import localDate from "@/modules/localDate";
 import { loadEnergyDay, recalcPastDay } from "@/modules/energyDay";
 import userStore from "@/modules/userStore";
@@ -21,7 +20,7 @@ interface FoodRow {
 }
 
 // Food diary of a day next to what was burned, plus the follow-up of the last days
-@Component({ components: { EnergyBar, FoodForm } })
+@Component({ components: { EnergyBar } })
 class NutritionPage extends Vue {
 
     readonly meals = MEALS;
@@ -31,15 +30,6 @@ class NutritionPage extends Vue {
     history: any[] = [];
     weighDue = false;
     weights: any[] = [];
-
-    // Personal catalog of foods (values per 100 g / 100 ml), edited from the card below. Adding food to a meal is the screen /nutrition/add
-    readonly foodPageSize = 10;
-    myFoods: any[] = [];
-    myQuery = '';
-    myOffset = 0;
-    myTotal = 0;
-    myTimer: any = null;
-    foodForm: { food: any | null; preset: string; where: 'card'; code?: string } | null = null;
 
     // Form to add (or edit) food in a meal
     adding: string | null = null;
@@ -59,7 +49,6 @@ class NutritionPage extends Vue {
 
     created() {
         this.load();
-        this.loadMyFoods();
         this.checkWeight();
     }
 
@@ -245,66 +234,6 @@ class NutritionPage extends Vue {
         }
     }
 
-    // The user's own foods, a page at a time
-    loadMyFoods() {
-        http.get('/foods').data({ scope: 'mine', q: this.myQuery.trim(), offset: this.myOffset, pageSize: this.foodPageSize })
-        .then((res: any) => {
-            // A page can be empty after deleting its last food: go back one
-            if (!(res.items ?? []).length && this.myOffset > 0) {
-                this.myOffset = Math.max(0, this.myOffset - this.foodPageSize);
-                this.loadMyFoods();
-                return;
-            }
-            this.myFoods = res.items ?? [];
-            this.myTotal = res.total ?? 0;
-        })
-        .catch(() => {});
-    }
-
-    onMyQuery() {
-        clearTimeout(this.myTimer);
-        this.myTimer = setTimeout(() => { this.myOffset = 0; this.loadMyFoods(); }, 250);
-    }
-
-    get myPage(): number {
-        return Math.floor(this.myOffset / this.foodPageSize) + 1;
-    }
-
-    get myPages(): number {
-        return Math.ceil(this.myTotal / this.foodPageSize) || 1;
-    }
-
-    shiftMyPage(n: number) {
-        const next = this.myOffset + n * this.foodPageSize;
-        if (next < 0 || next >= this.myTotal) return;
-        this.myOffset = next;
-        this.loadMyFoods();
-    }
-
-    beforeUnmount() {
-        clearTimeout(this.myTimer);
-    }
-
-    openFoodForm(food: any | null, preset: string, where: 'card', code = '') {
-        this.foodForm = { food, preset, where, code };
-    }
-
-    // The list of the card changes after creating or editing a food
-    onFoodSaved() {
-        this.foodForm = null;
-        this.loadMyFoods();
-    }
-
-    removeFood(f: any) {
-        App.confirm(translate.get('nutrition.foods.confirmDelete', { name: f.name }))
-        .then((ok: boolean) => {
-            if (!ok) return;
-            http.delete(`/foods/${f.id}`)
-            .then(() => this.loadMyFoods())
-            .catch(() => App.notification(translate.get('nutrition.errors.foodDelete')).setType('error').show());
-        });
-    }
-
     // Weight trend of the last weeks (needs two weighings at least 5 days apart)
     get weightTrend(): { latest: number; date: string; perWeek: number | null } | null {
         const items = this.weights;
@@ -406,11 +335,6 @@ class NutritionPage extends Vue {
     // The name that is saved: with the amount, so the diary says what was eaten
     rowName(r: FoodRow): string {
         return r.food ? `${r.food.name} (${Number(r.amount)} ${r.food.unit === 'u' ? 'u.' : r.food.unit})` : r.name.trim();
-    }
-
-    // What the catalog values of a food are for: "/ 100 g", "/ 100 ml" or "/ unit"
-    perLabel(f: any): string {
-        return f.unit === 'u' ? translate.get('nutrition.foods.perUnit') : `/ 100 ${f.unit}`;
     }
 
     isBlank(r: FoodRow): boolean {

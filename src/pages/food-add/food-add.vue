@@ -58,6 +58,8 @@
                                 </span>
                                 <span class="fa-plus">+</span>
                             </button>
+                            <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.foods.edit')" @click="editFood(f)">✎</button>
+                            <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.delete')" @click="removeFood(f)">✕</button>
                         </li>
                     </ul>
                 </section>
@@ -75,6 +77,8 @@
                                 </span>
                                 <span class="fa-plus">+</span>
                             </button>
+                            <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.foods.edit')" @click="editFood(f)">✎</button>
+                            <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.delete')" @click="removeFood(f)">✕</button>
                         </li>
                     </ul>
                 </section>
@@ -121,8 +125,8 @@
             <!-- New food: a sheet, so it opens in sight whatever the length of the list -->
             <div v-if="foodForm" class="fa-backdrop" @click.self="foodForm = null">
                 <div class="fa-sheet" role="dialog" aria-modal="true">
-                    <h2>{{ $t('foodAdd.newFood') }}</h2>
-                    <FoodForm class="fa-foodform" :food="null" :presetName="foodForm.preset" :presetCode="foodForm.code" @saved="onFoodSaved" @cancel="foodForm = null" />
+                    <h2>{{ foodForm.food ? $t('nutrition.foods.edit') : $t('foodAdd.newFood') }}</h2>
+                    <FoodForm class="fa-foodform" :food="foodForm.food" :presetName="foodForm.preset" :presetCode="foodForm.code" @saved="onFoodSaved" @cancel="foodForm = null" />
                 </div>
             </div>
 

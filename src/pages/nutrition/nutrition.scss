@@ -175,23 +175,6 @@
         }
     }
 
-    .foods-card {
-        h2 { margin: 0; font-size: 1.2rem; }
-        .foods-list {
-            list-style: none; margin: 0; padding: 0;
-            li { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; border-top: 1px solid var(--border-color); &:first-child { border-top: none; } }
-            .f-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-            .f-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-            small { color: var(--text-muted); }
-            .f-btn { background: none; border: none; color: var(--highlight-text); cursor: pointer; font-size: 0.85rem; }
-        }
-        .food-search { width: 100%; box-sizing: border-box; padding: 0.55rem 0.7rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: inherit; font-size: 1rem; }
-        .f-pager {
-            display: flex; justify-content: center; align-items: center; gap: 0.75rem; font-size: 0.85rem; color: var(--text-secondary);
-            button { background: var(--surface-color); border: 1px solid var(--border-color); color: inherit; border-radius: 8px; width: 2rem; height: 2rem; cursor: pointer; &:disabled { opacity: 0.4; cursor: default; } }
-        }
-    }
-
     .weight-card {
         p { margin: 0; font-size: 0.9rem; }
         .w-big { font-size: 1.6rem; font-weight: 700; small { font-size: 0.8rem; font-weight: 400; } }
