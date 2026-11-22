@@ -149,6 +149,7 @@
         .btn-delete:hover { background: var(--tint-red-bg); color: var(--tint-red-text); }
     }
 
+    .save-meal { .save-meal-form { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; input { flex: 1; min-width: 10rem; width: auto; box-sizing: border-box; padding: 0.55rem 0.7rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: inherit; font-size: 1rem; } } }
     .btn-add { align-self: flex-start; background: none; border: none; color: var(--primary-color); font-weight: 600; cursor: pointer; padding: 0.3rem 0; }
 
     .add-form {

@@ -99,39 +99,16 @@
                         </li>
                     </ul>
 
+                    <div v-if="editMeal === meal && entriesOf(meal).length" class="save-meal">
+                        <form v-if="saveMealFor === meal" class="save-meal-form" @submit.prevent="saveAsMeal(meal)">
+                            <input type="text" v-model="saveMealName" maxlength="150" :placeholder="$t('foodAdd.saveMeal.placeholder')" />
+                            <button type="submit" class="btn" :disabled="!saveMealName.trim() || saveMealBusy">{{ $t('foodAdd.saveMeal.save') }}</button>
+                            <button type="button" class="btn-link" @click="saveMealFor = null">{{ $t('nutrition.cancel') }}</button>
+                        </form>
+                        <button v-else type="button" class="btn-add" @click="openSaveMeal(meal)">⭐ {{ $t('foodAdd.saveMeal.action') }}</button>
+                    </div>
+
                     <form v-if="adding === meal" class="add-form" @submit.prevent="save()">
-                        <div class="food-box" v-if="!editingId">
-                            <div class="food-search-row">
-                                <input type="search" class="food-search" v-model="foodQuery" @input="onFoodQuery()" :placeholder="$t('nutrition.searchFood')" />
-                                <button v-if="isApp" type="button" class="btn-scan" :disabled="scanning" :title="$t('nutrition.scan.button')" :aria-label="$t('nutrition.scan.button')" @click="scanFood()">📷</button>
-                            </div>
-                            <ul class="food-list" v-if="foodResults.length">
-                                <li v-for="f in foodResults" :key="f.id">
-                                    <button type="button" @click="useFood(f)">
-                                        <span class="f-name">{{ f.name }}<em v-if="f.shared" class="f-shared">{{ $t('nutrition.foods.shared') }}</em></span>
-                                        <small>{{ f.kcal_100 }} kcal<template v-if="f.protein_100"> · {{ f.protein_100 }} g</template> {{ perLabel(f) }}</small>
-                                    </button>
-                                </li>
-                            </ul>
-                            <p v-else class="muted">{{ foodQuery.trim() ? $t('nutrition.noFood') : $t('nutrition.noFoods') }}</p>
-                            <template v-if="foodQuery.trim().length >= 2 && !foodForm">
-                                <button type="button" class="btn-add" :disabled="offSearching" @click="searchOff()">🔎 {{ offSearching ? $t('nutrition.off.searching') : $t('nutrition.off.search') }}</button>
-                                <p v-if="offSearched && !offResults.length" class="muted">{{ $t('nutrition.off.none') }}</p>
-                                <template v-if="offResults.length">
-                                    <ul class="food-list">
-                                        <li v-for="p in offResults" :key="p.code">
-                                            <button type="button" :disabled="offSaving" @click="pickOff(p)">
-                                                <span class="f-name">{{ p.name }}<em v-if="p.brand" class="f-shared">{{ p.brand }}</em></span>
-                                                <small>{{ p.kcal_100 }} kcal<template v-if="p.protein_100"> · {{ p.protein_100 }} g</template> / 100 {{ p.unit }}</small>
-                                            </button>
-                                        </li>
-                                    </ul>
-                                    <p class="muted">{{ $t('nutrition.off.hint') }}</p>
-                                </template>
-                            </template>
-                            <FoodForm v-if="foodForm && foodForm.where === 'add'" :food="null" :presetName="foodForm.preset" :presetCode="foodForm.code ?? ''" @saved="onFoodSaved" @cancel="foodForm = null" />
-                            <button v-else type="button" class="btn-add" @click="openFoodForm(null, foodQuery, 'add')">+ {{ foodQuery.trim() ? $t('nutrition.createFood', { name: foodQuery.trim() }) : $t('nutrition.newFood') }}</button>
-                        </div>
                         <div v-for="(r, i) in rows" :key="i" class="form-row">
                             <div v-if="r.food" class="food-line">
                                 <strong>{{ r.food.name }}</strong>
@@ -141,10 +118,8 @@
                             <div class="row">
                                 <label><span>kcal</span><input type="number" inputmode="numeric" min="0" max="5000" step="1" v-model="r.kcal" /></label>
                                 <label><span>{{ $t('nutrition.proteinG') }}</span><input type="number" inputmode="decimal" min="0" max="500" step="0.1" v-model="r.protein" /></label>
-                                <button v-if="!editingId && (rows.length > 1 || r.food)" type="button" class="row-del" @click="removeRow(i)" :aria-label="$t('nutrition.delete')">✕</button>
                             </div>
                         </div>
-                        <button v-if="!editingId" type="button" class="btn-add" @click="addRow()">+ {{ $t('nutrition.addRow') }}</button>
                         <p v-if="saveHint" class="muted save-hint">{{ saveHint }}</p>
                         <div class="form-actions">
                             <button type="button" class="btn-link" @click="adding = null">{{ $t('nutrition.cancel') }}</button>
