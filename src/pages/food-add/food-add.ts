@@ -62,7 +62,7 @@ class FoodAddPage extends Vue {
     offSaving = false;
     scanning = false;
 
-    foodForm: { preset: string; code: string } | null = null;
+    foodForm: { food: any | null; preset: string; code: string } | null = null;
 
     // Amount sheet of a food
     sheet: { food: any; amount: number | string } | null = null;
@@ -292,7 +292,7 @@ class FoodAddPage extends Vue {
                 if (result === 'none') {
                     App.notification(translate.get('nutrition.scan.notFound')).show();
                     this.query = '';
-                    this.foodForm = { preset: '', code: res.code };
+                    this.foodForm = { food: null, preset: '', code: res.code };
                 }
             }
         } catch {
@@ -303,10 +303,31 @@ class FoodAddPage extends Vue {
     }
 
     openFoodForm() {
-        this.foodForm = { preset: this.query.trim(), code: '' };
+        this.foodForm = { food: null, preset: this.query.trim(), code: '' };
+    }
+
+    // A food of the user: edit it in the same sheet, or remove it from the catalog (entries already in the diary keep their figures)
+    editFood(f: any) {
+        this.foodForm = { food: f, preset: '', code: '' };
+    }
+
+    removeFood(f: any) {
+        App.confirm(translate.get('nutrition.foods.confirmDelete', { name: f.name }))
+        .then((ok: boolean) => {
+            if (!ok) return;
+            http.delete(`/foods/${f.id}`)
+            .then(() => this.reload())
+            .catch(() => App.notification(translate.get('nutrition.errors.foodDelete')).setType('error').show());
+        });
     }
 
     onFoodSaved(food: any, eaten: number | null = null) {
+        // Editing only changes the list; a new food goes straight to the amount sheet
+        if (this.foodForm?.food) {
+            this.foodForm = null;
+            this.reload();
+            return;
+        }
         this.foodForm = null;
         this.query = '';
         this.reload();

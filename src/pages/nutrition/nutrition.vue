@@ -160,34 +160,6 @@
                     <button type="button" class="btn-add" @click="to('/measurements')">+ {{ $t('nutrition.weightCard.log') }}</button>
                 </details>
 
-                <details class="card foods-card fold">
-                    <summary>{{ $t('nutrition.foods.title') }}</summary>
-                    <p class="muted">{{ $t('nutrition.foods.sub') }}</p>
-                    <input type="search" class="food-search" v-if="myTotal > foodPageSize || myQuery" v-model="myQuery" @input="onMyQuery()" :placeholder="$t('nutrition.searchFood')" />
-                    <ul class="foods-list" v-if="myFoods.length">
-                        <li v-for="f in myFoods" :key="f.id">
-                            <template v-if="foodForm && foodForm.where === 'card' && foodForm.food?.id === f.id">
-                                <FoodForm :food="f" @saved="onFoodSaved" @cancel="foodForm = null" />
-                            </template>
-                            <template v-else>
-                                <span class="f-main">
-                                    <span class="f-name">{{ f.name }}</span>
-                                    <small>{{ f.kcal_100 }} kcal<template v-if="f.protein_100"> · {{ f.protein_100 }} g {{ $t('nutrition.proteinShort') }}</template> {{ perLabel(f) }}<template v-if="f.unit_g"> · {{ f.unit_g }} g</template></small>
-                                </span>
-                                <button type="button" class="f-btn" @click="openFoodForm(f, '', 'card')">{{ $t('nutrition.foods.edit') }}</button>
-                                <button type="button" class="entry-del" @click="removeFood(f)" :aria-label="$t('nutrition.delete')">✕</button>
-                            </template>
-                        </li>
-                    </ul>
-                    <p v-else-if="myQuery" class="muted">{{ $t('nutrition.noFood') }}</p>
-                    <div class="f-pager" v-if="myTotal > foodPageSize">
-                        <button type="button" :disabled="myPage <= 1" @click="shiftMyPage(-1)">‹</button>
-                        <span>{{ $t('nutrition.foods.page', { page: myPage, pages: myPages }) }}</span>
-                        <button type="button" :disabled="myPage >= myPages" @click="shiftMyPage(1)">›</button>
-                    </div>
-                    <FoodForm v-if="foodForm && foodForm.where === 'card' && !foodForm.food" :food="null" @saved="onFoodSaved" @cancel="foodForm = null" />
-                    <button v-else-if="!foodForm" type="button" class="btn-add" @click="openFoodForm(null, '', 'card')">+ {{ $t('nutrition.newFood') }}</button>
-                </details>
             </template>
 
             <div v-if="infoModal" class="modal-backdrop" @click.self="infoModal = null">
