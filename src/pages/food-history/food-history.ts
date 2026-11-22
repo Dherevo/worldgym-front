@@ -3,6 +3,9 @@ import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
 import userStore from "@/modules/userStore";
 import { proteinRange } from "@/modules/calories";
+import { loadEnergyDay } from "@/modules/energyDay";
+
+interface Row { date: string; label: string; eaten: number; burned: number | null; protein: number; balance: number | null; today: boolean }
 
 interface Cell { date: string; day: number; kcal: number; state: 'ok' | 'over' | 'low' | 'none'; today: boolean; future: boolean }
 
@@ -50,7 +53,11 @@ class FoodHistoryPage extends Vue {
         this.request += 1;
         const id = this.request;
         this.loading = true;
-        http.get('/nutrition/history').data({ from, to })
+        // Today's burned calories are saved when the day is calculated: do it first, so today is in the list too
+        const now = new Date();
+        const current = y === now.getFullYear() && m === now.getMonth();
+        (current ? loadEnergyDay().catch(() => {}) : Promise.resolve())
+        .then(() => http.get('/nutrition/history').data({ from, to }))
         .then((res: any) => { if (id === this.request) this.items = res.items ?? []; })
         .catch(() => App.notification(translate.get('nutrition.errors.load')).setType('error').show())
         .finally(() => { if (id === this.request) this.loading = false; });
@@ -78,6 +85,29 @@ class FoodHistoryPage extends Vue {
             out.push({ date, day: d, kcal: h?.kcal ?? 0, state: this.stateOf(h), today: date === today, future: date > today });
         }
         return out;
+    }
+
+    // The days of the month with something logged or burned, newest first: eaten, burned, protein and the balance
+    get rows(): Row[] {
+        const today = localDate();
+        return this.items
+            .filter((h: any) => h.kcal > 0 || h.energy)
+            .map((h: any): Row => {
+                const date = String(h.date).slice(0, 10);
+                const [y, mo, d] = date.split('-').map(Number);
+                const burned = h.energy ? Number(h.energy.burned) : null;
+                return {
+                    date,
+                    label: new Date(y, mo - 1, d).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }),
+                    eaten: h.kcal ?? 0,
+                    burned,
+                    protein: Math.round(h.protein_g ?? 0),
+                    // A day with nothing logged is not a deficit: it is not counted
+                    balance: burned !== null && h.kcal > 0 ? h.kcal - burned : null,
+                    today: date === today,
+                };
+            })
+            .sort((a: Row, b: Row) => b.date.localeCompare(a.date));
     }
 
     // Days with food logged, the averages over them, and the days that reached the minimum protein (null without the data for the goal)

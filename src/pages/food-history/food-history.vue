@@ -35,6 +35,17 @@
             <li><i class="none"></i>{{ $t('nutrition.cal.state.none') }}</li>
         </ul>
         <p class="fh-hint">{{ $t('nutrition.cal.hint') }}</p>
+
+        <div class="fh-list" v-if="rows.length">
+            <h2>{{ $t('nutrition.cal.listTitle') }}</h2>
+            <button v-for="r in rows" :key="r.date" type="button" class="fh-row" :class="{ today: r.today }" @click="openDay(r.date)">
+                <span class="fh-rdate">{{ r.label }}</span>
+                <span class="fh-rnum"><b>{{ r.eaten || '—' }}</b><small>{{ $t('nutrition.eatenShort') }}</small></span>
+                <span class="fh-rnum"><b>{{ r.burned ?? '—' }}</b><small>{{ $t('nutrition.burnedShort') }}</small></span>
+                <span class="fh-rnum"><b>{{ r.protein || '—' }}</b><small>{{ $t('nutrition.proteinShort') }}</small></span>
+                <span class="fh-rbal" :class="{ minus: r.balance !== null && r.balance < 0, plus: r.balance !== null && r.balance > 0 }">{{ r.balance === null ? '' : (r.balance > 0 ? '+' : '') + r.balance }}</span>
+            </button>
+        </div>
     </div>
 </template>
 
