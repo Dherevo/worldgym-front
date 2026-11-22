@@ -1,0 +1,36 @@
+.water-card {
+    .wc-card { display: flex; flex-direction: column; gap: 0.5rem; }
+    .wc-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; h2 { margin: 0; font-size: 1.05rem; } }
+    .wc-open { background: var(--tint-blue-bg, var(--surface-3)); color: var(--primary-color); border: none; border-radius: 999px; padding: 0.4rem 0.9rem; font-weight: 600; cursor: pointer; }
+    .wc-big { margin: 0; font-size: 0.95rem; b { font-size: 1.7rem; } }
+    .wc-muted { color: var(--text-secondary); margin: 0; font-size: 0.9rem; }
+    .wc-track { height: 0.55rem; border-radius: 999px; background: var(--surface-3, var(--surface-color)); overflow: hidden; }
+    .wc-fill { height: 100%; background: var(--primary-color); transition: width 0.4s ease; &.done { background: var(--kcal-ok, #16a34a); } }
+
+    // Above the bottom tab bar of the app (z-index 100)
+    .wc-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); display: flex; align-items: flex-end; justify-content: center; z-index: 120; }
+    .wc-sheet {
+        width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 0.8rem;
+        background: var(--surface-2); border-top-left-radius: 18px; border-top-right-radius: 18px; padding: 1rem 1rem calc(1.4rem + env(safe-area-inset-bottom)); border: 1px solid var(--border-color);
+        h2 { margin: 0; text-align: center; font-size: 1.15rem; }
+        input[type="number"] { width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid var(--border-color); background: var(--surface-color); color: inherit; font-size: 1rem; }
+    }
+    .wc-sheet-head { display: flex; justify-content: space-between; }
+    .wc-icon { background: none; border: none; color: inherit; font-size: 1.3rem; cursor: pointer; padding: 0.2rem 0.5rem; &:disabled { opacity: 0.4; } }
+    .wc-goal-form { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.7rem; border-radius: 12px; background: var(--surface-3, var(--surface-color)); label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--text-secondary); } }
+    .wc-row { display: flex; justify-content: flex-end; align-items: center; gap: 0.6rem; }
+    .wc-total { text-align: center; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 14px; display: flex; flex-direction: column; gap: 0.2rem; small { color: var(--text-secondary); } b { font-size: 2rem; } }
+    .wc-goal { text-align: center; }
+    .wc-quick {
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem;
+        > button, .wc-custom { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.8rem; border-radius: 12px; border: 1px solid var(--border-color); background: var(--surface-color); color: inherit; font-size: 1rem; cursor: pointer; }
+        > button span:nth-child(2) { flex: 1; text-align: left; }
+    }
+    .wc-custom { cursor: default; input { flex: 1; min-width: 0; border: none; background: none; padding: 0; } }
+    .wc-glass { font-size: 1.5rem; }
+    .wc-plus { flex: none; width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--primary-color); background: var(--surface-3, var(--surface-2)); border: none; cursor: pointer; &:disabled { opacity: 0.4; } }
+    .wc-btn { background: var(--primary-color); color: #fff; border: none; border-radius: 999px; padding: 0.8rem 1rem; font-weight: 700; font-size: 1rem; cursor: pointer; &:disabled { opacity: 0.5; cursor: default; } }
+    .wc-link { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0.4rem; }
+    .wc-clear { align-self: center; }
+    .wc-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border-color); li { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0; & + li { border-top: 1px solid var(--border-color); } } }
+}

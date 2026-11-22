@@ -61,7 +61,15 @@
 
     .meal { gap: 0.4rem; }
     .meal-title { display: flex; flex-direction: column; gap: 0.15rem; .meal-macros { font-size: 0.78rem; color: var(--text-muted); } }
-    .meal-side { display: flex; align-items: center; gap: 0.4rem; }
+    .meal-side { position: relative; display: flex; align-items: center; gap: 0.4rem; }
+    .menu-backdrop { position: fixed; inset: 0; z-index: 40; }
+    .meal-popup {
+        position: absolute; right: 0; top: 100%; z-index: 41; list-style: none; margin: 0.2rem 0 0; padding: 0.3rem 0; min-width: 12rem;
+        background: var(--surface-2); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+        li + li { border-top: 1px solid var(--border-color); }
+        button { width: 100%; text-align: left; background: none; border: none; color: inherit; font-size: 0.95rem; padding: 0.65rem 0.9rem; cursor: pointer; }
+    }
+    .copy-date { width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid var(--border-color); background: var(--surface-color); color: inherit; font-size: 1rem; }
     .meal-menu { background: none; border: none; color: var(--text-muted); font-size: 1.3rem; line-height: 1; cursor: pointer; padding: 0.15rem 0.5rem; border-radius: 8px; &.active { color: var(--primary-color); font-weight: 700; } &:hover { background: var(--surface-3, var(--surface-color)); } }
     .entry-list {
         list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border-color);
@@ -79,7 +87,7 @@
 
     .fold { display: block; summary { cursor: pointer; font-weight: 700; font-size: 1.05rem; } > :not(summary) { margin-top: 0.6rem; } }
 
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 50; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 120; }
     .modal-box {
         position: relative; background: var(--surface-2); border: 1px solid var(--border-color); border-radius: 14px; padding: 1.2rem 1rem 1rem;
         width: 100%; max-width: 520px; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.7rem;
