@@ -113,6 +113,10 @@ const routes : IRoutes = {
             component: NutritionPage
         },
         {
+            path: '/nutrition/history',
+            component: ProgressPage
+        },
+        {
             path: '/nutrition/add',
             component: FoodAddPage
         },

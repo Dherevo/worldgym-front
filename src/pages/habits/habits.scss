@@ -13,17 +13,7 @@
         gap: 1rem;
         margin-bottom: 0.75rem;
         h1 { margin: 0; }
-        .sub { margin: 0.25rem 0 0; color: var(--text-secondary); }
-        .btn-back {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            white-space: nowrap;
-            &:hover { background: var(--surface-2); }
-        }
+        .sub { margin: 0.25rem 0 0; color: var(--text-secondary); }
     }
 
     .loading-text { color: var(--text-secondary); }

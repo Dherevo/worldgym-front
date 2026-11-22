@@ -29,7 +29,8 @@ function diffDays(a: string, b: string): number {
     return Math.round((parse(a).getTime() - parse(b).getTime()) / DAY_MS);
 }
 
-@Component({})
+import SwipeRow from "@/components/swipe-row/swipe-row.vue";
+@Component({ components: { SwipeRow } })
 class CyclePage extends Vue {
 
     periods: any[] = [];

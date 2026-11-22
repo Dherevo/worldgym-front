@@ -34,7 +34,7 @@ export default {
             loading: 'Carregant...',
             empty: 'Encara no has fet cap entrenament.',
             noNotes: 'Sense notes',
-            more: "Veure'n més →",
+            more: "Veure'n més",
         },
         dayPicker: {
             title: 'Tria el dia',
@@ -89,7 +89,7 @@ export default {
             loading: 'Cargando...',
             empty: 'Todavía no has hecho ningún entrenamiento.',
             noNotes: 'Sin notas',
-            more: 'Ver más →',
+            more: 'Ver más',
         },
         dayPicker: {
             title: 'Elige el día',
@@ -144,7 +144,7 @@ export default {
             loading: 'Loading...',
             empty: "You haven't done any workouts yet.",
             noNotes: 'No notes',
-            more: 'See more →',
+            more: 'See more',
         },
         dayPicker: {
             title: 'Choose the day',

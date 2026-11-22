@@ -3,7 +3,9 @@ import { http, App, translate } from "lib";
 import { primaryMuscleNames } from "@/modules/muscles";
 import { bodyWeight, kcalFromSeconds, kcalLabel, MET_PLANNED, plannedSeconds } from "@/modules/calories";
 
-@Component({})
+import BackButton from "@/components/back-button/back-button.vue";
+import SearchInput from "@/components/search-input/search-input.vue";
+@Component({ components: { BackButton, SearchInput } })
 class RoutineDetailPage extends Vue {
 
     routine: any = null;

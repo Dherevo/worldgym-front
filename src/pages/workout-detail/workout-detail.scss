@@ -4,17 +4,7 @@
     margin: 0 auto;
 
     .page-header {
-        margin-bottom: 2rem;
-        .btn-back {
-            background: transparent;
-            border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-            font-size: 0.95rem;
-            padding: 0;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
+        margin-bottom: 2rem;
         .header-info {
             display: flex;
             align-items: flex-start;

@@ -8,9 +8,7 @@
 
             <div class="library-header">
                 <div class="search-wrap">
-                    <span class="search-icon"><svg-icon name="radix/magnifying-glass"/></span>
-                    <input class="search-input" v-model="search" @input="onSearchInput" placeholder="Search games…" />
-                    <button v-if="search" class="search-clear" @click="clearSearch">×</button>
+                    <SearchInput v-model="search" @input="onSearchInput" placeholder="Search games…" />
                 </div>
                 <div class="totals">
                     <div v-for="t in totals" :key="t.status"

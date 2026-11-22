@@ -105,29 +105,7 @@
                 text-transform: none;
             }
             .workout-notes { color: var(--text-secondary); font-size: 0.85rem; margin-top: 3px; }
-            .btn-edit {
-                background: transparent;
-                border: none;
-                color: var(--text-muted);
-                font-size: 1.1rem;
-                cursor: pointer;
-                padding: 0.25rem 0.5rem;
-                border-radius: 6px;
-                line-height: 1;
-                &:hover { background: var(--tint-blue-bg); color: var(--tint-blue-text); }
-            }
-            .btn-delete {
-                background: transparent;
-                border: none;
-                color: var(--text-muted);
-                font-size: 1rem;
-                cursor: pointer;
-                padding: 0.25rem 0.5rem;
-                border-radius: 6px;
-                line-height: 1;
-                &:hover { background: var(--tint-red-bg); color: var(--tint-red-text); }
-            }
-            .workout-arrow { font-size: 1.5rem; color: var(--text-muted); }
+            .workout-arrow { flex: none; width: 20px; height: 20px; color: var(--text-muted); }
         }
     }
 

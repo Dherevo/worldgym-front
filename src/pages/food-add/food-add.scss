@@ -11,17 +11,15 @@
     h3 { margin: 0.3rem 0 0; font-size: 0.95rem; }
     .muted { color: var(--text-secondary); margin: 0; }
 
-    input[type="search"], input[type="text"], input[type="number"], select {
+    input[type="text"], input[type="number"], select {
         width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid var(--border-color);
         background: var(--surface-color); color: inherit; font-size: 1rem;
     }
-    .fa-search { border-radius: 999px; border-color: var(--primary-color); }
 
     .btn { background: var(--primary-color); color: #fff; border: none; border-radius: 10px; padding: 0.55rem 1rem; font-weight: 600; cursor: pointer; &:disabled { opacity: 0.5; cursor: default; } }
     .btn-link { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0.5rem; }
 
     .fa-head { display: flex; align-items: center; gap: 0.6rem; }
-    .fa-back { background: none; border: none; color: inherit; font-size: 1.5rem; cursor: pointer; padding: 0.2rem 0.5rem; }
     .fa-meal {
         flex: 1; display: flex; flex-direction: column; align-items: center;
         select { width: auto; border: none; background: none; color: var(--primary-color); font-size: 1.15rem; font-weight: 700; text-align: center; text-align-last: center; padding: 0.2rem; }
@@ -66,27 +64,7 @@
     .fa-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .fa-check { margin-left: 0.4rem; font-style: normal; color: var(--kcal-ok, #16a34a); font-weight: 700; }
     .fa-plus { flex: none; width: 2.2rem; height: 2.2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--primary-color); background: var(--surface-3, var(--surface-color)); }
-    // Own foods: slide the row to the left to see share / edit / delete (plain horizontal scroll with snap)
-    .fa-swipe {
-        overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 0; border-radius: 12px;
-        &::-webkit-scrollbar { display: none; }
-        .fa-row { flex: 0 0 100%; scroll-snap-align: start; }
-        .fa-rev { flex: none; display: flex; scroll-snap-align: end; }
-        .fa-rev-btn {
-            flex: none; width: 4.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; border: none; color: #fff; font-size: 0.72rem; cursor: pointer;
-            span { font-size: 1.2rem; line-height: 1; }
-            &.share { background: #16a34a; }
-            &.edit { background: #2563eb; }
-            &.del { background: #dc2626; border-radius: 0 12px 12px 0; }
-        }
-        // With a mouse there is nothing to slide: small icon buttons next to the row
-        @media (hover: hover) and (pointer: fine) {
-            overflow: visible; scroll-snap-type: none; gap: 0.4rem;
-            .fa-row { flex: 1; }
-            .fa-rev { gap: 0.3rem; }
-            .fa-rev-btn { width: 2.3rem; height: 2.3rem; align-self: center; border-radius: 8px !important; font-size: 0; }
-        }
-    }
+    .fa-list li > .swipe-row { flex: 1; min-width: 0; }
     .fa-edit { flex: none; background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 0 0.6rem; }
     .fa-more {
         align-self: stretch; text-align: center; background: var(--tint-blue-bg, var(--surface-3)); color: var(--primary-color); border: none; border-radius: 999px; padding: 0.6rem 1rem; font-weight: 600; cursor: pointer;

@@ -3,7 +3,7 @@
         <div class="routine-detail-page">
 
             <div class="page-header">
-                <button class="btn-back" @click="to('/routines')">{{ $t('routineDetail.back') }}</button>
+                <BackButton class="btn-back" :label="$t('routineDetail.back')" @click="to('/routines')" />
                 <h1 v-if="routine">{{ routine.name }}</h1>
                 <div class="header-actions" v-if="routine && canEdit">
                     <button class="btn-secondary" @click="openAddDay()">{{ $t('routineDetail.addDay') }}</button>
@@ -115,7 +115,7 @@
                             <button type="button" @click="clearSelectedExercise()">{{ $t('routineDetail.exerciseForm.change') }}</button>
                         </div>
                         <div v-else class="exercise-search">
-                            <input type="text" v-model="exerciseQuery" autofocus
+                            <SearchInput v-model="exerciseQuery" autofocus
                                    :placeholder="$t('routineDetail.exerciseForm.searchPlaceholder')" />
                             <div class="exercise-results">
                                 <template v-for="g in groupedExercises" :key="g.name">

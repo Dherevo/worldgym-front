@@ -3,15 +3,6 @@
         <div class="nutrition-page">
             <h1><svg-icon name="awesome-solid/utensils" class="title-icon"/> {{ $t('nutrition.title') }}</h1>
 
-            <div class="quick-links">
-                <button v-if="history.length" type="button" class="history-link" @click="goHistory">
-                    {{ $t('nutrition.historyLink') }} ↓
-                </button>
-                <button v-if="!isToday" type="button" class="history-link today-link" @click="selectDay(localToday)">
-                    ↩ {{ $t('nutrition.toToday') }}
-                </button>
-            </div>
-
             <div v-if="noPlantsAlert" class="weigh-banner plants-banner">
                 <span>{{ $t('nutrition.noPlants') }}</span>
             </div>
@@ -21,18 +12,15 @@
                 <button type="button" class="btn" @click="to('/profile')">{{ $t('nutrition.weighNow') }}</button>
             </div>
 
-            <div class="day-nav">
-                <button type="button" class="nav-btn" @click="shiftDay(-1)" :aria-label="$t('nutrition.prevDay')">‹</button>
-                <span class="day-label">{{ dateLabel }}</span>
-                <button type="button" class="nav-btn" @click="shiftDay(1)" :disabled="isToday" :aria-label="$t('nutrition.nextDay')">›</button>
-            </div>
-
             <div class="week-strip">
                 <button v-for="d in weekDays" :key="d.date" type="button" class="wk-day" :class="{ selected: d.selected, logged: d.logged }" :disabled="d.future" @click="selectDay(d.date)">
                     <span class="wk-letter">{{ d.letter }}</span>
-                    <span class="wk-dot">{{ d.logged ? '✓' : '' }}</span>
+                    <span class="wk-dot"><svg-icon v-if="d.logged" name="heroicons-outline/check" /></span>
                 </button>
             </div>
+            <button v-if="!isToday" type="button" class="today-link" @click="selectDay(localToday)">
+                <svg-icon name="heroicons-outline/arrow-uturn-left" /> {{ $t('nutrition.toToday') }}
+            </button>
 
             <p v-if="loading && !day" class="muted">{{ $t('nutrition.loading') }}</p>
 
@@ -74,23 +62,22 @@
                     <small class="muted">{{ $t('nutrition.macros.how') }}</small>
                 </details>
 
-                <WaterCard :date="date" />
-
                 <div v-for="meal in meals" :key="meal" class="card meal">
                     <div class="meal-head">
+                        <span class="meal-ico" :class="meal"><svg-icon :name="mealIcon(meal)" /></span>
                         <div class="meal-title">
                             <h2>{{ $t('nutrition.meals.' + meal) }}</h2>
                             <small v-if="entriesOf(meal).length" class="meal-macros">{{ subtotal(meal) }} kcal<template v-if="proteinOf(meal)"> / {{ proteinOf(meal) }} g P</template></small>
                         </div>
                         <div class="meal-side">
-                            <button type="button" class="meal-menu" :class="{ active: editMeal === meal || menuMeal === meal }" :title="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.menu.title')" :aria-label="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.menu.title')" @click="onMealMenu(meal)">{{ editMeal === meal ? '✓' : '⋯' }}</button>
+                            <button type="button" class="meal-menu" :class="{ active: editMeal === meal || menuMeal === meal }" :title="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.menu.title')" :aria-label="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.menu.title')" @click="onMealMenu(meal)"><svg-icon :name="editMeal === meal ? 'heroicons-outline/check' : 'heroicons-outline/ellipsis-horizontal'" /></button>
                             <template v-if="menuMeal === meal">
                                 <div class="menu-backdrop" @click="menuMeal = null"></div>
                                 <ul class="meal-popup" role="menu">
-                                    <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="menuEdit(meal)">✎ {{ $t('nutrition.menu.edit') }}</button></li>
-                                    <li><button type="button" role="menuitem" @click="openCopy(meal, 'from')">⎘ {{ $t('nutrition.menu.copyFrom') }}</button></li>
-                                    <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="openCopy(meal, 'to')">⎘ {{ $t('nutrition.menu.copyTo') }}</button></li>
-                                    <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="menuSave(meal)">⭐ {{ $t('foodAdd.saveMeal.action') }}</button></li>
+                                    <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="menuEdit(meal)"><svg-icon name="heroicons-outline/pencil-square" /><span>{{ $t('nutrition.menu.edit') }}</span></button></li>
+                                    <li><button type="button" role="menuitem" @click="openCopy(meal, 'from')"><svg-icon name="heroicons-outline/arrow-down-tray" /><span>{{ $t('nutrition.menu.copyFrom') }}</span></button></li>
+                                    <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="openCopy(meal, 'to')"><svg-icon name="heroicons-outline/arrow-up-tray" /><span>{{ $t('nutrition.menu.copyTo') }}</span></button></li>
+                                    <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="menuSave(meal)"><svg-icon name="heroicons-outline/bookmark" /><span>{{ $t('foodAdd.saveMeal.action') }}</span></button></li>
                                 </ul>
                             </template>
                         </div>
@@ -104,8 +91,8 @@
                             </div>
                             <span class="e-kcal">{{ e.kcal }}</span>
                             <span class="e-actions" v-if="editMeal === meal">
-                                <button type="button" class="btn-edit" @click="openEdit(e)" :title="$t('nutrition.edit')">✎</button>
-                                <button type="button" class="btn-delete" @click="remove(e)" :title="$t('nutrition.delete')">✕</button>
+                                <button type="button" class="btn-edit" @click="openEdit(e)" :title="$t('nutrition.edit')" :aria-label="$t('nutrition.edit')"><svg-icon name="heroicons-outline/pencil-square" /></button>
+                                <button type="button" class="btn-delete" @click="remove(e)" :title="$t('nutrition.delete')" :aria-label="$t('nutrition.delete')"><svg-icon name="heroicons-outline/trash" /></button>
                             </span>
                         </li>
                     </ul>
@@ -138,23 +125,8 @@
                     </form>
                     <template v-else>
                         <button type="button" class="btn-pill" @click="openAdd(meal)">+ {{ $t('nutrition.addTo', { meal: $t('nutrition.meals.' + meal).toLowerCase() }) }}</button>
-                        <button v-if="!entriesOf(meal).length" type="button" class="btn-add" :disabled="copying" @click="copyPrevious(meal)">⎘ {{ $t('nutrition.copyPrev') }}</button>
+                        <button v-if="!entriesOf(meal).length" type="button" class="btn-secondary" :disabled="copying" @click="copyPrevious(meal)"><svg-icon name="heroicons-outline/document-duplicate" /> {{ $t('nutrition.copyPrev') }}</button>
                     </template>
-                </div>
-
-                <div class="card" id="history-card" v-if="history.length">
-                    <h2>{{ $t('nutrition.history') }}</h2>
-                    <p class="muted">{{ $t('nutrition.historyHint') }}</p>
-                    <p class="muted history-protein" v-if="proteinSummary">{{ $t('nutrition.proteinSummary', { reached: proteinSummary.reached, days: proteinSummary.days, avg: proteinSummary.avg, min: proteinGoal?.min }) }}</p>
-                    <ul class="history">
-                        <li v-for="h in history" :key="h.date" :class="{ active: h.date === date }" role="button" tabindex="0" @click="openDay(h.date)" @keyup.enter="openDay(h.date)">
-                            <span class="h-date">{{ historyLabel(h.date) }}</span>
-                            <span>{{ h.kcal }} <small>{{ $t('nutrition.eatenShort') }}</small></span>
-                            <span>{{ h.energy ? h.energy.burned : '—' }} <small>{{ $t('nutrition.burnedShort') }}</small></span>
-                            <span class="h-protein" :class="{ ok: proteinOk(h) === true, short: proteinOk(h) === false }">{{ h.kcal ? Math.round(h.protein_g || 0) : '—' }} <small>{{ $t('nutrition.proteinShort') }}</small></span>
-                            <span class="h-balance" :class="historyState(h)" :title="$t('nutrition.state.' + historyState(h))">{{ balanceLabel(h) }}</span>
-                        </li>
-                    </ul>
                 </div>
 
                 <details class="card weight-card fold">
@@ -169,6 +141,8 @@
                     <p v-else class="muted">{{ $t('nutrition.weightCard.empty') }}</p>
                     <button type="button" class="btn-add" @click="to('/measurements')">+ {{ $t('nutrition.weightCard.log') }}</button>
                 </details>
+
+                <WaterCard :date="date" />
 
             </template>
 
@@ -212,6 +186,11 @@
                     <li v-for="n in 6" :key="n">{{ $t('nutrition.calc.tip' + n) }}</li>
                 </ul>
             </details>
+
+            <button type="button" class="history-btn" @click="to('/nutrition/history')">
+                <svg-icon name="heroicons-outline/calendar-days" /> {{ $t('nutrition.historyBtn') }}
+                <svg-icon class="hb-go" name="heroicons-outline/chevron-right" />
+            </button>
         </div>
     </AppPage>
 </template>

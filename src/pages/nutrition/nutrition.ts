@@ -25,6 +25,11 @@ interface FoodRow {
 class NutritionPage extends Vue {
 
     readonly meals = MEALS;
+    // An icon for each meal (the icons are SVG, not characters)
+    readonly mealIcons: Record<string, string> = {
+        breakfast: 'awesome-solid/mug-saucer', lunch: 'awesome-solid/utensils', snack: 'awesome-solid/apple-whole',
+        dinner: 'awesome-solid/moon', other: 'awesome-solid/bowl-food',
+    };
     date = localDate();
     day: EnergyDay | null = null;
     loading = false;
@@ -52,6 +57,9 @@ class NutritionPage extends Vue {
     copying = false;
 
     created() {
+        // Coming from the calendar of Progrés: /nutrition?date=Y-m-d opens that day
+        const wanted = String(this.$route?.query?.date ?? '');
+        if (/^\d{4}-\d{2}-\d{2}$/.test(wanted) && wanted <= localDate()) this.date = wanted;
         this.load();
         this.checkWeight();
     }
@@ -118,11 +126,6 @@ class NutritionPage extends Vue {
         return logged.every((h: any) => !h.plant);
     }
 
-    // Scroll to the history of the last days
-    goHistory() {
-        document.getElementById('history-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
     // ---- Redesign: calories bar, macro columns, week strip ----
 
     get kcalState(): 'low' | 'ok' | 'over' {
@@ -140,6 +143,10 @@ class NutritionPage extends Vue {
     get kcalMinPct(): number {
         const d = this.day;
         return d && d.max > 0 ? Math.round((d.min / d.max) * 100) : 0;
+    }
+
+    mealIcon(meal: string): string {
+        return this.mealIcons[meal] ?? this.mealIcons.other;
     }
 
     toggleEdit(meal: string) {
@@ -177,31 +184,6 @@ class NutritionPage extends Vue {
 
     get isToday(): boolean {
         return this.date === localDate();
-    }
-
-    get dateLabel(): string {
-        if (this.isToday) return translate.get('nutrition.today');
-        return new Date(this.date + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
-    }
-
-    shiftDay(n: number) {
-        const d = new Date(this.date + 'T00:00:00');
-        d.setDate(d.getDate() + n);
-        const next = localDate(d);
-        if (next > localDate()) return;
-        this.date = next;
-        this.adding = null;
-        this.editMeal = null;
-        this.load();
-    }
-
-    // Jump to a day of the history to see (or fix) what was eaten
-    openDay(date: string) {
-        if (date === this.date) return;
-        this.date = date;
-        this.adding = null;
-        this.load();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     load() {
@@ -522,36 +504,5 @@ class NutritionPage extends Vue {
         return h.energy && h.kcal > 0 ? h.kcal - h.energy.burned : null;
     }
 
-    // Did the day end inside the eating goal saved for it? (days with nothing eaten are not judged)
-    historyState(h: any): string {
-        const e = h.energy;
-        if (!e || e.goal_min == null || !h.kcal) return 'none';
-        if (h.kcal > e.goal_max) return 'over';
-        return h.kcal >= e.goal_min ? 'ok' : 'low';
-    }
-
-    // Did the day reach the minimum protein? null for days without food apuntat (not judged) or without a goal
-    proteinOk(h: any): boolean | null {
-        const g = this.proteinGoal;
-        if (!g || !h.kcal) return null;
-        return (h.protein_g ?? 0) >= g.min;
-    }
-
-    // Protein of the finished, logged days of the history (today is left out: it can still grow)
-    get proteinSummary(): { reached: number; days: number; avg: number } | null {
-        const today = localDate();
-        const g = this.proteinGoal;
-        if (!g) return null;
-        const days = this.history.filter(h => h.date < today && h.kcal > 0);
-        if (days.length < 3) return null;
-        const reached = days.filter(h => (h.protein_g ?? 0) >= g.min).length;
-        const avg = Math.round(days.reduce((s, h) => s + (h.protein_g ?? 0), 0) / days.length);
-        return { reached, days: days.length, avg };
-    }
-
-    balanceLabel(h: any): string {
-        const b = this.balance(h);
-        return b === null ? '' : (b > 0 ? '+' : '') + b;
-    }
 }
 export default toNative(NutritionPage);

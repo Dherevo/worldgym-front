@@ -27,7 +27,8 @@ interface StatusTotal {
     total: number;
 }
 
-@Component({ components: { GameDetailPopup } })
+import SearchInput from "@/components/search-input/search-input.vue";
+@Component({ components: { GameDetailPopup, SearchInput } })
 class LibraryPage extends Vue {
 
     selectedGame: Game | null = null;

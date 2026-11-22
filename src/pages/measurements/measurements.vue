@@ -66,8 +66,8 @@
                                 <td>{{ m.waist_cm ?? '—' }}</td>
                                 <td>{{ m.bmi ?? '—' }}</td>
                                 <td class="actions">
-                                    <button class="btn-edit" @click="openEdit(m)" :title="$t('measurements.edit')">✎</button>
-                                    <button class="btn-delete" @click="remove(m)" :title="$t('measurements.delete')">✕</button>
+                                    <button class="btn-edit" @click="openEdit(m)" :title="$t('measurements.edit')" :aria-label="$t('measurements.edit')"><svg-icon name="heroicons-outline/pencil-square" /></button>
+                                    <button class="btn-delete" @click="remove(m)" :title="$t('measurements.delete')" :aria-label="$t('measurements.delete')"><svg-icon name="heroicons-outline/trash" /></button>
                                 </td>
                             </tr>
                         </tbody>

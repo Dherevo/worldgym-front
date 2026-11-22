@@ -26,12 +26,14 @@ import splash from './pages/splash';
 import push from './pages/push';
 import weekly from './pages/weekly';
 import foodAdd from './pages/foodAdd';
+import common from './pages/common';
 
 const es = {
     layout: layout.es,
     push: push.es,
     weekly: weekly.es,
     foodAdd: foodAdd.es,
+    common: common.es,
     home: home.es,
     login: login.es,
     exercises: exercises.es,

@@ -1,0 +1,25 @@
+.back-button {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    min-width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+
+    svg.icon { width: 24px; height: 24px; stroke-width: 2; }
+
+    &:hover { background: var(--surface-3, rgba(127, 127, 127, 0.14)); color: var(--primary-color); }
+    &:active { transform: scale(0.94); }
+    &:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+
+    &.labeled { padding: 0 0.9rem 0 0.4rem; .bb-label { font-size: 0.95rem; font-weight: 600; } }
+}
