@@ -4,17 +4,32 @@ import auth from "@/modules/auth";
 import userStore from "@/modules/userStore";
 import MeasurementsPage from "@/pages/measurements/measurements.vue";
 import AccountSettings from "@/components/account-settings/account-settings.vue";
+import GoalCard from "@/components/goal-card/goal-card.vue";
 import EnergyCard from "@/components/energy-card/energy-card.vue";
 import UserAvatar from "@/components/user-avatar/user-avatar.vue";
 import { isApp } from "@/modules/platform";
 import AppPreferences from "@/components/app-preferences/app-preferences.vue";
+import BackButton from "@/components/back-button/back-button.vue";
 import PushSettings from "@/components/push-settings/push-settings.vue";
 
-@Component({ components: { MeasurementsPage, AccountSettings, EnergyCard, UserAvatar, AppPreferences, PushSettings } })
+@Component({ components: { MeasurementsPage, AccountSettings, EnergyCard, GoalCard, UserAvatar, AppPreferences, PushSettings, BackButton } })
 class ProfilePage extends Vue {
 
     readonly isApp = isApp;
     readonly genders = ['female', 'male', 'other'];
+
+    // The profile is a menu of sub pages (/profile/:section). Reminders and app preferences only exist in the app
+    get menu(): { key: string }[] {
+        const all = ['personal', 'goals', 'body', 'reminders', 'account', 'app'];
+        return all.filter(k => isApp || (k !== 'reminders' && k !== 'app')).map(key => ({ key }));
+    }
+
+    // '' = the menu. /measurements (an old link) opens the body section
+    get section(): string {
+        if ((this as any).$route.path.startsWith('/measurements')) return 'body';
+        const s = this.param('section');
+        return this.menu.some(m => m.key === s) ? s : '';
+    }
 
     height = '';
     weight = '';

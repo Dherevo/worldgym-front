@@ -58,6 +58,9 @@ class MeasurementsPage extends Vue {
         // The profile weight follows the latest measurement
         if (userStore.data && this.items.length) {
             userStore.data.weight_kg = this.items[this.items.length - 1].weight_kg;
+            // The latest waist: with the height it tells muscle from fat when suggesting a goal
+            const withWaist = [...this.items].reverse().find((m: any) => m.waist_cm);
+            userStore.data.waist_cm = withWaist ? withWaist.waist_cm : null;
         }
 
         // Canvases only exist once the v-if blocks render
