@@ -7,86 +7,72 @@
                     <h1>{{ $t('habits.page.title') }}</h1>
                     <p class="sub">{{ $t('habits.page.sub') }}</p>
                 </div>
-                <BackButton class="btn-back" :label="$t('habits.page.back')" @click="to('/')" />
+                <BackButton class="btn-back" :label="$t('habits.page.back')" @click="back()" />
             </div>
 
             <div v-if="loading && !habits.length" class="loading-text">{{ $t('habits.card.loading') }}</div>
 
-            <div v-for="(h, i) in habits" :key="h.id" class="habit-block"
-                :class="{ dragging: dragFromIdx === i, 'in-workout': h.key === 'warmup' || h.key === 'stretch' || h.key === 'abs' }"
-                @dragover.prevent @drop="dropOn(i)">
-            <div class="habit-row" :class="{ inactive: !h.is_active }">
-                <div class="drag-handle" draggable="true" :title="$t('habits.page.dragToReorder')"
-                    @dragstart="dragStart(i)" @dragend="dragEnd()">⠿</div>
-                <div class="habit-name">{{ habitName(h) }}<small class="last-done" :class="{ never: !h.last_done }">{{ lastDone(h) }}</small></div>
-
-                <div class="habit-fields">
-                    <label v-if="h.kind === 'steps'" class="field">
-                        <span>{{ $t('habits.page.stepsGoal') }}</span>
-                        <input type="number" min="1000" max="100000" step="500" :value="h.target_value"
-                            @change="onNumber(h, 'target_value', $event)" />
-                    </label>
-                    <template v-else-if="h.kind === 'sets'">
-                        <label class="field">
-                            <span>{{ $t('habits.page.sets') }}</span>
-                            <input type="number" min="1" max="20" :value="h.target_sets" @change="onNumber(h, 'target_sets', $event)" />
-                        </label>
-                        <label class="field">
-                            <span>{{ $t('habits.page.reps') }}</span>
-                            <input type="number" min="1" max="500" :value="h.target_reps" @change="onNumber(h, 'target_reps', $event)" />
-                        </label>
-                    </template>
+            <div class="hp-list" v-if="listed.length">
+                <div class="hp-row hp-head">
+                    <span></span>
+                    <span>{{ $t('habits.page.cols.habit') }}</span>
+                    <span>{{ $t('habits.page.active') }}</span>
                 </div>
 
-                <label class="active-toggle">
-                    <input type="checkbox" :checked="h.is_active" @change="onActive(h, $event)" />
-                    {{ $t('habits.page.active') }}
-                </label>
-                <button class="btn-history" :class="{ open: historyId === h.id }" @click="toggleHistory(h)">
-                    {{ historyId === h.id ? $t('habits.page.history.hide') : $t('habits.page.history.show') }}
-                </button>
-                <button v-if="h.key === null" class="btn-delete" @click="remove(h)" :title="$t('habits.page.delete')">✕</button>
-            </div>
+                <div v-for="(h, i) in listed" :key="h.id" class="hp-block" :class="{ dragging: dragFromIdx === i, open: openId === h.id }"
+                    @dragover.prevent @drop="dropOn(i)">
+                    <SwipeRow :enabled="h.key === null" :actions="['delete']" class="hp-swipe" @delete="remove(h)">
+                        <div class="hp-row" :class="{ inactive: !h.is_active }">
+                            <span class="drag-handle" draggable="true" :title="$t('habits.page.dragToReorder')"
+                                @dragstart="dragStart(i)" @dragend="dragEnd()">⠿</span>
+                            <button type="button" class="hp-main" @click="toggleOpen(h)">
+                                <span class="hp-name">{{ habitName(h) }}<i v-if="h.auto" class="hp-auto">{{ $t('habits.page.auto') }}</i></span>
+                                <small class="hp-summary">{{ summary(h) }}</small>
+                            </button>
+                            <ion-toggle class="hp-toggle" mode="md" :checked="h.is_active" @ionChange="onActive(h, $event)" />
+                        </div>
+                    </SwipeRow>
 
-            <div v-if="h.key === null" class="schedule-line">
-                <label class="field">
-                    <span>{{ $t('habits.page.schedule.label') }}</span>
-                    <select :value="h.schedule_type" @change="onScheduleType(h, $event)">
-                        <option value="daily">{{ $t('habits.page.schedule.daily') }}</option>
-                        <option value="weekdays">{{ $t('habits.page.schedule.weekdays') }}</option>
-                        <option value="interval">{{ $t('habits.page.schedule.interval') }}</option>
-                    </select>
-                </label>
-                <div v-if="h.schedule_type === 'weekdays'" class="day-chips">
-                    <button v-for="d in 7" :key="d" type="button" class="chip" :class="{ on: h.schedule_days.includes(d) }"
-                        @click="toggleDay(h, d)">{{ $t('habits.page.days.' + d) }}</button>
+                    <div v-if="openId === h.id" class="hp-edit">
+                        <div class="habit-fields" v-if="h.kind === 'steps'">
+                            <label class="field">
+                                <span>{{ $t('habits.page.stepsGoal') }}</span>
+                                <input type="number" min="1000" max="100000" step="500" :value="h.target_value" @change="onNumber(h, 'target_value', $event)" />
+                            </label>
+                        </div>
+                        <div class="habit-fields" v-else-if="h.kind === 'sets'">
+                            <label class="field">
+                                <span>{{ $t('habits.page.sets') }}</span>
+                                <input type="number" min="1" max="20" :value="h.target_sets" @change="onNumber(h, 'target_sets', $event)" />
+                            </label>
+                            <label class="field">
+                                <span>{{ $t('habits.page.reps') }}</span>
+                                <input type="number" min="1" max="500" :value="h.target_reps" @change="onNumber(h, 'target_reps', $event)" />
+                            </label>
+                        </div>
+
+                        <div v-if="h.key === null" class="schedule-line">
+                            <label class="field">
+                                <span>{{ $t('habits.page.schedule.label') }}</span>
+                                <select :value="h.schedule_type" @change="onScheduleType(h, $event)">
+                                    <option value="daily">{{ $t('habits.page.schedule.daily') }}</option>
+                                    <option value="weekdays">{{ $t('habits.page.schedule.weekdays') }}</option>
+                                    <option value="interval">{{ $t('habits.page.schedule.interval') }}</option>
+                                </select>
+                            </label>
+                            <div v-if="h.schedule_type === 'weekdays'" class="day-chips">
+                                <button v-for="d in 7" :key="d" type="button" class="chip" :class="{ on: h.schedule_days.includes(d) }"
+                                    @click="toggleDay(h, d)">{{ $t('habits.page.days.' + d) }}</button>
+                            </div>
+                            <label v-else-if="h.schedule_type === 'interval'" class="field every">
+                                <span>{{ $t('habits.page.schedule.every') }}</span>
+                                <input type="number" min="2" max="30" :value="h.schedule_every" @change="onEvery(h, $event)" />
+                                <span>{{ $t('habits.page.schedule.days') }}</span>
+                            </label>
+                        </div>
+                        <p class="hp-auto-note" v-if="h.auto === 'protein'">{{ $t('habits.page.autoProtein') }}</p>
+                    </div>
                 </div>
-                <label v-else-if="h.schedule_type === 'interval'" class="field every">
-                    <span>{{ $t('habits.page.schedule.every') }}</span>
-                    <input type="number" min="2" max="30" :value="h.schedule_every" @change="onEvery(h, $event)" />
-                    <span>{{ $t('habits.page.schedule.days') }}</span>
-                </label>
-            </div>
-
-            <div v-if="historyId === h.id" class="history-panel">
-                <div v-if="historyLoading" class="loading-text">{{ $t('habits.page.history.loading') }}</div>
-                <template v-else-if="history">
-                    <div class="history-stats">
-                        <div class="stat"><strong>{{ history.current_streak }}</strong><span>{{ $t('habits.page.history.currentStreak') }}</span></div>
-                        <div class="stat"><strong>{{ history.best_streak }}</strong><span>{{ $t('habits.page.history.bestStreak') }}</span></div>
-                        <div class="stat"><strong>{{ history.completed_days }}</strong><span>{{ $t('habits.page.history.completedDays') }}</span></div>
-                    </div>
-                    <div class="history-title">{{ $t('habits.page.history.last30') }}</div>
-                    <div class="history-grid">
-                        <div v-for="c in historyCells" :key="c.date" class="cell" :class="c.state" :title="c.date">{{ c.day }}</div>
-                    </div>
-                    <div class="history-legend">
-                        <span><i class="cell done"></i>{{ $t('habits.page.history.done') }}</span>
-                        <span><i class="cell missed"></i>{{ $t('habits.page.history.missed') }}</span>
-                        <span><i class="cell off"></i>{{ $t('habits.page.history.off') }}</span>
-                    </div>
-                </template>
-            </div>
             </div>
 
             <div class="catalog-card" v-if="catalog.length">

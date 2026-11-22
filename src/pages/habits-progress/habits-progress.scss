@@ -1,0 +1,35 @@
+.habits-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .hp-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        h1 { margin: 0; font-size: 1.4rem; }
+        .sub { margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.9rem; }
+    }
+
+    .hp-config {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.5rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid var(--border-color);
+        background: var(--surface-color);
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        svg.icon { width: 18px; height: 18px; }
+        &:hover { border-color: var(--primary-color); color: var(--primary-color); }
+    }
+
+    @media (max-width: 520px) {
+        .hp-top { flex-direction: column; }
+    }
+}

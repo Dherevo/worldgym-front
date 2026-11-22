@@ -21,10 +21,19 @@
 
         <div class="hs-title">{{ $t('habits.streak.perHabit') }}</div>
         <ul class="hs-list">
-            <li v-for="r in rows" :key="r.id">
-                <span class="hs-name">{{ r.name ?? $t('habits.names.' + r.key) }}</span>
-                <span>🔥 {{ r.current }}</span>
-                <span class="hs-best">{{ $t('habits.streak.bestShort', { n: r.best }) }}</span>
+            <li v-for="r in rows" :key="r.id" :class="{ open: openId === r.id }">
+                <button type="button" class="hs-row" @click="toggleRow(r.id)">
+                    <span class="hs-name">{{ r.name ?? $t('habits.names.' + r.key) }}</span>
+                    <span>🔥 {{ r.current }}</span>
+                    <span class="hs-best">{{ $t('habits.streak.bestShort', { n: r.best }) }}</span>
+                    <svg-icon class="hs-arrow" name="heroicons-outline/chevron-right" />
+                </button>
+                <div class="hs-detail" v-if="openId === r.id">
+                    <div class="hs-detail-stats">{{ $t('habits.streak.doneShort', { n: r.done }) }}</div>
+                    <div class="hs-grid">
+                        <div v-for="c in r.cells" :key="c.date" class="cell" :class="c.state" :title="c.date">{{ c.day }}</div>
+                    </div>
+                </div>
             </li>
         </ul>
     </div>

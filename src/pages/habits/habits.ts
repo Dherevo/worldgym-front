@@ -1,10 +1,13 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
-import { lastDoneLabel } from "@/modules/lastDone";
+import { IonToggle } from "@ionic/vue";
 
 import BackButton from "@/components/back-button/back-button.vue";
-@Component({ components: { BackButton } })
+import SwipeRow from "@/components/swipe-row/swipe-row.vue";
+
+// Habit settings: a compact list (name, goal and schedule, active switch); a tap unfolds the fields, a slide deletes a custom one
+@Component({ components: { BackButton, SwipeRow, IonToggle } })
 class HabitsPage extends Vue {
 
     habits: any[] = [];
@@ -18,10 +21,8 @@ class HabitsPage extends Vue {
     // Drag & drop reorder
     dragFromIdx: number | null = null;
 
-    // History panel: one habit open at a time
-    historyId: number | null = null;
-    historyLoading = false;
-    history: any = null;
+    // The habit whose fields are unfolded
+    openId: number | null = null;
 
     newName = '';
     newKind: 'sets' | 'check' = 'sets';
@@ -79,8 +80,24 @@ class HabitsPage extends Vue {
         return translate.get('habits.page.schedule.daily');
     }
 
-    lastDone(h: any): string {
-        return lastDoneLabel(h.last_done);
+    // Warm up and stretch live inside the workout: they are not listed here
+    get listed(): any[] {
+        return this.habits.filter((h: any) => h.key !== 'warmup' && h.key !== 'stretch');
+    }
+
+    toggleOpen(h: any) {
+        this.openId = this.openId === h.id ? null : h.id;
+    }
+
+    // "3 × 15 · Every day"
+    summary(h: any): string {
+        return `${this.catalogGoal(h)} · ${this.catalogSchedule(h)}`;
+    }
+
+    // Back to where the user came from (the habits tab of Progress or the profile)
+    back() {
+        if (window.history.state?.back) (this as any).$router.back();
+        else this.to('/profile/goals');
     }
 
     habitName(h: any): string {
@@ -134,8 +151,10 @@ class HabitsPage extends Vue {
         this.update(h, { [field]: Number(value) });
     }
 
-    onActive(h: any, event: Event) {
-        this.update(h, { is_active: (event.target as HTMLInputElement).checked });
+    // The Ionic switch also fires when the list is refreshed: only a real change is saved
+    onActive(h: any, event: CustomEvent) {
+        const checked = !!event.detail?.checked;
+        if (checked !== !!h.is_active) this.update(h, { is_active: checked });
     }
 
     remove(h: any) {
@@ -157,8 +176,11 @@ class HabitsPage extends Vue {
 
     dropOn(idx: number) {
         if (this.dragFromIdx === null || this.dragFromIdx === idx) return;
-        const moved = this.habits.splice(this.dragFromIdx, 1)[0];
-        this.habits.splice(idx, 0, moved);
+        // The indexes are of the listed habits; the order is saved over all of them
+        const from = this.habits.indexOf(this.listed[this.dragFromIdx]);
+        const to = this.habits.indexOf(this.listed[idx]);
+        const moved = this.habits.splice(from, 1)[0];
+        this.habits.splice(to, 0, moved);
         this.dragFromIdx = null;
 
         const order = this.habits.map((h: any, i: number) => ({ id: h.id, order_index: i + 1 }));
@@ -171,46 +193,6 @@ class HabitsPage extends Vue {
 
     dragEnd() {
         this.dragFromIdx = null;
-    }
-
-    toggleHistory(h: any) {
-        if (this.historyId === h.id) {
-            this.historyId = null;
-            this.history = null;
-            return;
-        }
-
-        this.historyId = h.id;
-        this.history = null;
-        this.historyLoading = true;
-        http.get(`/habits/${h.id}/history`).data({ to: localDate() })
-        .then((res: any) => { if (this.historyId === h.id) this.history = res; })
-        .catch(() => {
-            this.historyId = null;
-            App.notification(translate.get('habits.page.errors.history')).setType('error').show();
-        })
-        .finally(() => { this.historyLoading = false; });
-    }
-
-    // Last 30 days oldest first: done / missed (due and not completed, today excluded) / pending today / off (not scheduled)
-    get historyCells(): any[] {
-        if (!this.history) return [];
-        const byDate: Record<string, any> = {};
-        for (const d of this.history.days ?? []) byDate[d.date] = d;
-        const due = new Set<string>(this.history.due_dates ?? []);
-
-        const [y, m, d] = (this.history.to as string).split('-').map(Number);
-        const cells = [];
-        for (let i = 29; i >= 0; i--) {
-            const day = new Date(y, m - 1, d - i);
-            const key = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
-            const log = byDate[key];
-            let state = 'off';
-            if (log?.completed) state = 'done';
-            else if (log || due.has(key)) state = key < this.history.to ? 'missed' : 'empty';
-            cells.push({ date: key, day: day.getDate(), state });
-        }
-        return cells;
     }
 
     get canAdd(): boolean {

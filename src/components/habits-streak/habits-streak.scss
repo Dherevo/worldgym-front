@@ -35,6 +35,7 @@
         &.partial { background: var(--tint-yellow-bg); color: var(--tint-yellow-text); }
         &.none { background: var(--tint-red-bg); color: var(--tint-red-text); }
         &.off { background: transparent; border: 1px dashed var(--border-color); }
+        &.missed { background: var(--tint-red-bg); color: var(--tint-red-text); }
     }
     .hs-legend {
         display: flex;
@@ -48,7 +49,15 @@
 
     .hs-list {
         list-style: none; margin: 0; padding: 0;
-        li { display: grid; grid-template-columns: 1fr auto auto; gap: 0.75rem; padding: 0.4rem 0; border-top: 1px solid var(--border-color); font-size: 0.9rem; &:first-child { border-top: none; } }
+        li { border-top: 1px solid var(--border-color); &:first-child { border-top: none; } }
+        .hs-row {
+            width: 100%; display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 0.75rem;
+            padding: 0.55rem 0; background: none; border: none; color: inherit; font: inherit; font-size: 0.9rem; text-align: left; cursor: pointer;
+        }
+        .hs-arrow { width: 16px; height: 16px; color: var(--text-muted); transition: transform 0.15s; }
+        li.open .hs-arrow { transform: rotate(90deg); }
+        .hs-detail { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.2rem 0 0.8rem; }
+        .hs-detail-stats { font-size: 0.8rem; color: var(--text-secondary); }
         .hs-best { color: var(--text-muted); }
     }
 }

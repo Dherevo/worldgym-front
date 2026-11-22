@@ -1,5 +1,6 @@
 export default {
     ca: {
+        progress: { title: "Hàbits", sub: "La ratxa dels obligatoris i l'historial de cada hàbit.", configure: "Configurar hàbits" },
         streak: {
             title: "Ratxa d'hàbits obligatoris",
             sub: 'Dies seguits amb tots els hàbits fets. Tots els dies compten, també els de descans.',
@@ -11,6 +12,7 @@ export default {
             legendPartial: 'Alguns',
             legendNone: 'Cap',
             perHabit: 'Per hàbit',
+            doneShort: "{{n}} dies fets",
             bestShort: 'millor {{n}}',
         },
         lastDone: { never: 'Encara no fet', today: 'Últim cop: avui', yesterday: 'Últim cop: ahir', days: 'Últim cop: fa {{n}} dies' },
@@ -23,6 +25,7 @@ export default {
             dayToday: 'Avui',
             dayYesterday: 'Ahir',
             configure: 'Configurar i historial',
+            history: 'Historial',
             profileTitle: 'Hàbits obligatoris',
             profileText: 'Tria quins hàbits fas cada dia, la teva meta i quins dies toquen, i consulta el teu historial.',
             profileBtn: 'Configurar hàbits i veure historial',
@@ -53,6 +56,9 @@ export default {
             general4: 'Una passejada de 20 minuts són uns 2.000 passos. Quants en portes avui?',
         },
         page: {
+            cols: { habit: "Hàbit" },
+            auto: "automàtic",
+            autoProtein: "Es marca sol quan el dia arriba al mínim de proteïna.",
             title: 'Hàbits diaris',
             sub: 'Els obligats de cada dia, independents de la rutina.',
             back: 'Tornar',
@@ -98,6 +104,7 @@ export default {
         },
     },
     es: {
+        progress: { title: "Hábitos", sub: "La racha de los obligatorios y el historial de cada hábito.", configure: "Configurar hábitos" },
         streak: {
             title: 'Racha de hábitos obligatorios',
             sub: 'Días seguidos con todos los hábitos hechos. Todos los días cuentan, también los de descanso.',
@@ -109,6 +116,7 @@ export default {
             legendPartial: 'Algunos',
             legendNone: 'Ninguno',
             perHabit: 'Por hábito',
+            doneShort: "{{n}} días hechos",
             bestShort: 'mejor {{n}}',
         },
         lastDone: { never: 'Aún sin hacer', today: 'Última vez: hoy', yesterday: 'Última vez: ayer', days: 'Última vez: hace {{n}} días' },
@@ -121,6 +129,7 @@ export default {
             dayToday: 'Hoy',
             dayYesterday: 'Ayer',
             configure: 'Configurar e historial',
+            history: 'Historial',
             profileTitle: 'Hábitos obligatorios',
             profileText: 'Elige qué hábitos haces cada día, tu meta y qué días tocan, y consulta tu historial.',
             profileBtn: 'Configurar hábitos y ver historial',
@@ -151,6 +160,9 @@ export default {
             general4: 'Un paseo de 20 minutos son unos 2.000 pasos. ¿Cuántos llevas hoy?',
         },
         page: {
+            cols: { habit: "Hábito" },
+            auto: "automático",
+            autoProtein: "Se marca solo cuando el día llega al mínimo de proteína.",
             title: 'Hábitos diarios',
             sub: 'Los obligatorios de cada día, independientes de la rutina.',
             back: 'Volver',
@@ -196,6 +208,7 @@ export default {
         },
     },
     en: {
+        progress: { title: "Habits", sub: "The streak of the must-dos and the history of each habit.", configure: "Configure habits" },
         streak: {
             title: 'Daily must-dos streak',
             sub: 'Days in a row with every habit done. Every day counts, rest days too.',
@@ -207,6 +220,7 @@ export default {
             legendPartial: 'Some',
             legendNone: 'None',
             perHabit: 'Per habit',
+            doneShort: "{{n}} days done",
             bestShort: 'best {{n}}',
         },
         lastDone: { never: 'Not done yet', today: 'Last done: today', yesterday: 'Last done: yesterday', days: 'Last done: {{n}} days ago' },
@@ -219,6 +233,7 @@ export default {
             dayToday: 'Today',
             dayYesterday: 'Yesterday',
             configure: 'Configure & history',
+            history: 'History',
             profileTitle: 'Daily must-dos',
             profileText: 'Choose which habits you do every day, your goal and which days they apply, and see your history.',
             profileBtn: 'Configure habits and see history',
@@ -249,6 +264,9 @@ export default {
             general4: 'A 20-minute walk is about 2,000 steps. How many do you have today?',
         },
         page: {
+            cols: { habit: "Habit" },
+            auto: "automatic",
+            autoProtein: "It ticks itself when the day reaches the protein minimum.",
             title: 'Daily habits',
             sub: 'The must-dos of every day, independent of your routine.',
             back: 'Back',

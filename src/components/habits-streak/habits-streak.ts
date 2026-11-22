@@ -16,7 +16,9 @@ type DayState = 'done' | 'partial' | 'none' | 'off';
 class HabitsStreak extends Vue {
 
     loading = false;
-    rows: { id: number; key: string | null; name: string | null; current: number; best: number }[] = [];
+    rows: { id: number; key: string | null; name: string | null; current: number; best: number; done: number; cells: { date: string; day: number; state: string }[] }[] = [];
+    // The habit whose last 30 days are shown
+    openId: number | null = null;
     days: { date: string; day: number; state: DayState }[] = [];
     current = 0;
     best = 0;
@@ -42,8 +44,34 @@ class HabitsStreak extends Vue {
         .finally(() => { this.loading = false; });
     }
 
+    toggleRow(id: number) {
+        this.openId = this.openId === id ? null : id;
+    }
+
+    // Last 30 days of one habit, oldest first: done / missed (due and not completed, today excluded) / pending today / off (not scheduled)
+    habitCells(hist: any, today: string): { date: string; day: number; state: string }[] {
+        const byDate: Record<string, any> = {};
+        for (const d of hist.days ?? []) byDate[d.date] = d;
+        const due = new Set<string>(hist.due_dates ?? []);
+        const [y, m, d] = today.split('-').map(Number);
+        const cells = [];
+        for (let i = GRID_DAYS - 1; i >= 0; i--) {
+            const dt = new Date(y, m - 1, d - i);
+            const key = localDate(dt);
+            const log = byDate[key];
+            let state = 'off';
+            if (log?.completed) state = 'done';
+            else if (log || due.has(key)) state = key < today ? 'missed' : 'empty';
+            cells.push({ date: key, day: dt.getDate(), state });
+        }
+        return cells;
+    }
+
     build(items: { h: any; hist: any }[], from: string, today: string) {
-        this.rows = items.map(({ h, hist }) => ({ id: h.id, key: h.key, name: h.name, current: hist.current_streak ?? 0, best: hist.best_streak ?? 0 }));
+        this.rows = items.map(({ h, hist }) => ({
+            id: h.id, key: h.key, name: h.name, current: hist.current_streak ?? 0, best: hist.best_streak ?? 0,
+            done: hist.completed_days ?? 0, cells: this.habitCells(hist, today),
+        }));
         if (!items.length) return;
 
         const due = items.map(({ hist }) => new Set<string>(hist.due_dates ?? []));
