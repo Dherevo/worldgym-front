@@ -14,7 +14,7 @@
             <div v-if="loading && !habits.length" class="dh-loading">{{ $t('habits.card.loading') }}</div>
 
             <div v-for="h in habits" :key="h.id" class="habit" :class="{ done: h.log?.completed }">
-                <button class="check" :disabled="savingId === h.id || h.in_workout"
+                <button class="check" :disabled="savingId === h.id || h.in_workout || h.auto === 'protein'"
                     :title="h.log?.completed ? $t('habits.card.markUndone') : $t('habits.card.markDone')"
                     @click="toggle(h)">✓</button>
 
@@ -40,6 +40,8 @@
                     <div class="habit-note" v-else-if="h.in_workout">
                         {{ h.log?.completed ? $t('habits.card.inWorkoutDone') : $t('habits.card.inWorkoutHint') }}
                     </div>
+
+                    <div class="habit-note" v-else-if="h.auto === 'protein'">{{ proteinNote(h) }}</div>
 
                     <div class="habit-inputs" v-else-if="h.kind === 'sets'">
                         <input type="number" inputmode="numeric" min="0" max="50"

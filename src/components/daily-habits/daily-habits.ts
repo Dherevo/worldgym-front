@@ -135,6 +135,11 @@ class DailyHabits extends Vue {
         return h.name ?? translate.get(`habits.names.${h.key}`);
     }
 
+    // Protein ticks itself from the food diary: how much is eaten against the minimum of the day
+    proteinNote(h: any): string {
+        return translate.get('habits.card.proteinAuto', { n: h.log?.value ?? 0, goal: h.auto_target ?? '—' });
+    }
+
     format(n: number): string {
         return n.toLocaleString(({ ca: 'ca-ES', es: 'es-ES', en: 'en-GB' } as any)[translate.currentLanguage] ?? 'ca-ES');
     }
