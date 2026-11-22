@@ -3,7 +3,9 @@ import { http, App, translate } from "lib";
 import { primaryMuscleNames } from "@/modules/muscles";
 import { kcalFromSets, kcalLabel, setsSeconds } from "@/modules/calories";
 
-@Component({})
+import BackButton from "@/components/back-button/back-button.vue";
+import SearchInput from "@/components/search-input/search-input.vue";
+@Component({ components: { BackButton, SearchInput } })
 class WorkoutDetailPage extends Vue {
 
     workout: any = null;

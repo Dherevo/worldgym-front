@@ -33,7 +33,9 @@ interface Builder {
 
 // Screen to add food to a meal of a day: the foods by tab (mine, all, my meals, my recipes, categories),
 // the barcode scanner and the form of a new food. Every food asks for its amount before it goes to the diary.
-@Component({ components: { FoodForm } })
+import BackButton from "@/components/back-button/back-button.vue";
+import SearchInput from "@/components/search-input/search-input.vue";
+@Component({ components: { FoodForm, BackButton, SearchInput } })
 class FoodAddPage extends Vue {
 
     readonly meals = MEALS;

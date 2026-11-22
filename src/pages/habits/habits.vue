@@ -7,7 +7,7 @@
                     <h1>{{ $t('habits.page.title') }}</h1>
                     <p class="sub">{{ $t('habits.page.sub') }}</p>
                 </div>
-                <button class="btn-back" @click="to('/')">{{ $t('habits.page.back') }}</button>
+                <BackButton class="btn-back" :label="$t('habits.page.back')" @click="to('/')" />
             </div>
 
             <div v-if="loading && !habits.length" class="loading-text">{{ $t('habits.card.loading') }}</div>

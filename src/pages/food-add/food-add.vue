@@ -2,7 +2,7 @@
     <AppPage name="food-add-page" layout="backoffice">
         <div class="food-add-page">
             <header class="fa-head">
-                <button type="button" class="fa-back" :aria-label="$t('foodAdd.back')" @click="back()">←</button>
+                <BackButton class="fa-back" :label="''" @click="back()" />
                 <div class="fa-meal">
                     <select v-model="meal" :aria-label="$t('foodAdd.meal')">
                         <option v-for="m in meals" :key="m" :value="m">{{ $t('nutrition.meals.' + m) }}</option>
@@ -11,7 +11,7 @@
                 </div>
             </header>
 
-            <input type="search" class="fa-search" v-model="query" @input="onQuery()" :placeholder="$t('foodAdd.search')" />
+            <SearchInput class="fa-search" v-model="query" @input="onQuery()" :placeholder="$t('foodAdd.search')" />
 
             <nav class="fa-tabs" role="tablist">
                 <button type="button" role="tab" :class="{ on: tab === 'mine' }" @click="selectTab('mine')">{{ $t('foodAdd.tabs.mine') }}</button>
@@ -234,7 +234,7 @@
                     </ul>
                     <p v-else class="muted">{{ $t('foodAdd.tpl.noItems') }}</p>
 
-                    <input type="search" v-model="bQuery" @input="onBuilderQuery()" :placeholder="$t('foodAdd.tpl.searchFood')" />
+                    <SearchInput v-model="bQuery" @input="onBuilderQuery()" :placeholder="$t('foodAdd.tpl.searchFood')" />
                     <ul v-if="bResults.length && !bPick" class="fa-list fa-mini">
                         <li v-for="f in bResults" :key="f.id">
                             <button type="button" class="fa-row" @click="pickBuilderFood(f)">

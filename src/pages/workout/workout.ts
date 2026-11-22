@@ -9,7 +9,8 @@ import SectionTile from "@/components/section-tile/section-tile.vue";
 
 type State = 'loading' | 'pick-exercise' | 'idle' | 'active' | 'logging' | 'resting' | 'choose' | 'abs-offer' | 'done';
 
-@Component({ components: { SectionTile } })
+import SearchInput from "@/components/search-input/search-input.vue";
+@Component({ components: { SectionTile, SearchInput } })
 class WorkoutPage extends Vue {
 
     workout: any = null;

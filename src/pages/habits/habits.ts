@@ -3,7 +3,8 @@ import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
 import { lastDoneLabel } from "@/modules/lastDone";
 
-@Component({})
+import BackButton from "@/components/back-button/back-button.vue";
+@Component({ components: { BackButton } })
 class HabitsPage extends Vue {
 
     habits: any[] = [];

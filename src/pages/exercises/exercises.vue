@@ -17,8 +17,7 @@
 
             <!-- Filters -->
             <div class="filters">
-                <input
-                    type="text"
+                <SearchInput
                     v-model="searchQuery"
                     :placeholder="$t('exercises.filters.searchPlaceholder')"
                     @input="onFilterChange()"

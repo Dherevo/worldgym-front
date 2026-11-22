@@ -3,7 +3,7 @@
         <div class="workout-detail-page">
 
             <div class="page-header">
-                <button class="btn-back" @click="to('/workouts')">&larr; {{ $t('workoutDetail.back') }}</button>
+                <BackButton class="btn-back" :label="$t('workoutDetail.back')" @click="to('/workouts')" />
                 <div v-if="workout" class="header-info">
                     <div>
                         <h1 class="capitalize">
@@ -136,8 +136,7 @@
                 <div class="modal">
                     <h3>{{ changingWe ? $t('workoutDetail.modal.changeTitle', { name: changingWe.exercise?.name }) : $t('workoutDetail.modal.title') }}</h3>
                     <div class="search-wrapper">
-                        <input
-                            type="text"
+                        <SearchInput
                             v-model="exerciseQuery"
                             :placeholder="$t('workoutDetail.modal.searchPlaceholder')"
                             @input="filterExercises()"

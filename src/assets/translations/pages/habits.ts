@@ -54,7 +54,7 @@ export default {
         page: {
             title: 'Hàbits diaris',
             sub: 'Els obligats de cada dia, independents de la rutina.',
-            back: '← Tornar',
+            back: 'Tornar',
             stepsGoal: 'Meta de passos',
             sets: 'Sèries',
             reps: 'Repeticions',
@@ -151,7 +151,7 @@ export default {
         page: {
             title: 'Hábitos diarios',
             sub: 'Los obligatorios de cada día, independientes de la rutina.',
-            back: '← Volver',
+            back: 'Volver',
             stepsGoal: 'Meta de pasos',
             sets: 'Series',
             reps: 'Repeticiones',
@@ -248,7 +248,7 @@ export default {
         page: {
             title: 'Daily habits',
             sub: 'The must-dos of every day, independent of your routine.',
-            back: '← Back',
+            back: 'Back',
             stepsGoal: 'Steps goal',
             sets: 'Sets',
             reps: 'Reps',

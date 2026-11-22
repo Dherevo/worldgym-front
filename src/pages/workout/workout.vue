@@ -92,8 +92,7 @@
                 <div v-if="state === 'pick-exercise'" class="action-block pick-exercise-block">
                     <p class="action-label">{{ $t('workout.pick.question') }}</p>
                     <div class="exercise-search-wrap">
-                        <input
-                            type="text"
+                        <SearchInput
                             v-model="exerciseQuery"
                             :placeholder="$t('workout.pick.searchPlaceholder')"
                             @input="filterExercises()"
@@ -476,7 +475,7 @@
                         <p class="action-label">{{ $t('workout.add.title') }}</p>
 
                         <div class="exercise-search-wrap">
-                            <input type="text" v-model="exerciseQuery"
+                            <SearchInput v-model="exerciseQuery"
                                 :placeholder="$t('workout.pick.searchPlaceholder')" @input="filterExercises()" />
                             <div class="exercise-dropdown" v-if="exerciseResults.length">
                                 <div v-for="ex in exerciseResults" :key="ex.id" class="exercise-dropdown-item"

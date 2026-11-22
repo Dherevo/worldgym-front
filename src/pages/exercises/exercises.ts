@@ -1,7 +1,8 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 
-@Component({})
+import SearchInput from "@/components/search-input/search-input.vue";
+@Component({ components: { SearchInput } })
 class ExercisesPage extends Vue {
 
     exercises: any[] = [];

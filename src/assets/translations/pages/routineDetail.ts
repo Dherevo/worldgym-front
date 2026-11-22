@@ -1,6 +1,6 @@
 export default {
     ca: {
-        back: '← Rutines',
+        back: 'Rutines',
         addDay: '+ Afegir dia',
         loading: 'Carregant...',
         noDays: 'No hi ha dies configurats. Afegeix-ne un!',
@@ -60,7 +60,7 @@ export default {
         confirmDelete: 'Eliminar "{{name}}"?',
     },
     es: {
-        back: '← Rutinas',
+        back: 'Rutinas',
         addDay: '+ Añadir día',
         loading: 'Cargando...',
         noDays: 'No hay días configurados. ¡Añade uno!',
@@ -120,7 +120,7 @@ export default {
         confirmDelete: '¿Eliminar "{{name}}"?',
     },
     en: {
-        back: '← Routines',
+        back: 'Routines',
         addDay: '+ Add day',
         loading: 'Loading...',
         noDays: 'No days set up yet. Add one!',
