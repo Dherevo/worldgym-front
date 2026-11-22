@@ -5,6 +5,7 @@ import WaterCard from "@/components/water-card/water-card.vue";
 import localDate from "@/modules/localDate";
 import { loadEnergyDay, recalcPastDay } from "@/modules/energyDay";
 import userStore from "@/modules/userStore";
+import SwipeRow from "@/components/swipe-row/swipe-row.vue";
 import { proteinRange } from "@/modules/calories";
 import { macroTargets } from "@/modules/macros";
 import type { EnergyDay } from "@/modules/energyDay";
@@ -21,7 +22,7 @@ interface FoodRow {
 }
 
 // Food diary of a day next to what was burned, plus the follow-up of the last days
-@Component({ components: { EnergyBar, WaterCard } })
+@Component({ components: { EnergyBar, WaterCard, SwipeRow } })
 class NutritionPage extends Vue {
 
     readonly meals = MEALS;
@@ -40,7 +41,6 @@ class NutritionPage extends Vue {
     // Form to add (or edit) food in a meal
     adding: string | null = null;
     // The meal whose rows show the edit and delete buttons, and the info modal that is open
-    editMeal: string | null = null;
     infoModal: 'energy' | null = null;
     // Today as a date, to jump back to it from another day
     get localToday(): string { return localDate(); }
@@ -149,10 +149,6 @@ class NutritionPage extends Vue {
         return this.mealIcons[meal] ?? this.mealIcons.other;
     }
 
-    toggleEdit(meal: string) {
-        this.editMeal = this.editMeal === meal ? null : meal;
-    }
-
     // The days of the week of the selected day (Monday first), with the ones that have food logged
     get weekDays(): { date: string; letter: string; logged: boolean; selected: boolean; future: boolean }[] {
         const sel = new Date(this.date + 'T00:00:00');
@@ -173,7 +169,6 @@ class NutritionPage extends Vue {
         if (date > localDate() || date === this.date) return;
         this.date = date;
         this.adding = null;
-        this.editMeal = null;
         this.load();
     }
 
@@ -412,18 +407,9 @@ class NutritionPage extends Vue {
         .finally(() => { this.copying = false; this.refresh(); });
     }
 
-    // The three dots: with the meal in edit mode they finish the edit, else they open the menu
+    // The three dots open the menu of the meal
     onMealMenu(meal: string) {
-        if (this.editMeal === meal) {
-            this.editMeal = null;
-            return;
-        }
         this.menuMeal = this.menuMeal === meal ? null : meal;
-    }
-
-    menuEdit(meal: string) {
-        this.menuMeal = null;
-        this.editMeal = meal;
     }
 
     menuSave(meal: string) {

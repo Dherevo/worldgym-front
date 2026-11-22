@@ -2,6 +2,7 @@ import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import { Chart, registerables } from 'chart.js';
 import userStore from "@/modules/userStore";
+import SwipeRow from "@/components/swipe-row/swipe-row.vue";
 
 Chart.register(...registerables);
 
@@ -11,7 +12,7 @@ function today(): string {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-@Component({})
+@Component({ components: { SwipeRow } })
 class MeasurementsPage extends Vue {
 
     items: any[] = [];

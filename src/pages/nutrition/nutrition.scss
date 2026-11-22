@@ -93,15 +93,12 @@
     }
     .entry-list {
         list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border-color);
-        li { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0; & + li { border-top: 1px solid var(--border-color); } }
+        li { & + li { border-top: 1px solid var(--border-color); } }
+        .e-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0; background: var(--surface-color); }
         .e-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
         .e-name { word-break: break-word; }
         .e-sub { color: var(--text-muted); font-size: 0.78rem; }
         .e-kcal { font-weight: 600; white-space: nowrap; }
-        .e-actions { display: flex; gap: 0.1rem; }
-        .btn-edit, .btn-delete { display: flex; background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 0.35rem; border-radius: 8px; line-height: 1; svg.icon { width: 18px; height: 18px; } }
-        .btn-edit:hover { background: var(--tint-blue-bg); color: var(--tint-blue-text); }
-        .btn-delete:hover { background: var(--tint-red-bg); color: var(--tint-red-text); }
     }
     .btn-secondary {
         align-self: stretch; display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: transparent; color: var(--text-secondary);
