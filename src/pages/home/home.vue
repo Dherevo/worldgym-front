@@ -120,9 +120,9 @@
                             <div class="workout-date">{{ formatDate(w.date) }}</div>
                             <div class="workout-notes">{{ w.notes || $t('home.recent.noNotes') }}</div>
                         </div>
-                        <span>&rsaquo;</span>
+                        <svg-icon class="wk-go" name="heroicons-outline/chevron-right" />
                     </div>
-                    <button class="btn-more" @click="to('/workouts')">{{ $t('home.recent.more') }}</button>
+                    <button class="btn-more" @click="to('/workouts')">{{ $t('home.recent.more') }} <svg-icon name="heroicons-outline/chevron-right" /></button>
                 </div>
             </div>
 

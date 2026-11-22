@@ -264,14 +264,25 @@
 
         .btn-more {
             align-self: flex-start;
-            background: none;
-            border: none;
-            color: var(--highlight-text);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            min-height: 40px;
+            padding: 0 0.9rem 0 1.1rem;
+            background: transparent;
+            border: 1.5px solid var(--primary-color);
+            border-radius: 999px;
+            color: var(--primary-color);
             font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            padding: 0.25rem 0;
+            transition: background-color 0.15s ease, transform 0.15s ease;
+            svg.icon { width: 16px; height: 16px; stroke-width: 2.5; transition: transform 0.15s ease; }
+            &:hover { background: var(--tint-blue-bg, rgba(127, 127, 127, 0.12)); svg.icon { transform: translateX(2px); } }
+            &:active { transform: scale(0.97); }
+            &:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
         }
+        .wk-go { width: 18px; height: 18px; color: var(--text-muted); flex: none; }
     }
 
     .loading-text, .empty-text { color: var(--text-secondary); font-size: 0.9rem; }
