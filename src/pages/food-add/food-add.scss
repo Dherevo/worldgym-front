@@ -75,10 +75,10 @@
 
     .fa-foodform { background: var(--surface-2); }
 
-    .fa-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); display: flex; align-items: flex-end; justify-content: center; z-index: 60; }
+    .fa-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); display: flex; align-items: flex-end; justify-content: center; z-index: 120; }
     .fa-sheet {
         width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 0.7rem;
-        background: var(--surface-2); border-top-left-radius: 18px; border-top-right-radius: 18px; padding: 1.2rem 1rem 1.4rem; border: 1px solid var(--border-color);
+        background: var(--surface-2); border-top-left-radius: 18px; border-top-right-radius: 18px; padding: 1.2rem 1rem calc(1.4rem + env(safe-area-inset-bottom)); border: 1px solid var(--border-color);
         p { margin: 0; }
     }
     .fa-field { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--text-secondary); }

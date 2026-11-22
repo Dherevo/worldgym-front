@@ -157,7 +157,7 @@ class FoodAddPage extends Vue {
         if (reset) this.offset = 0;
         this.loading = true;
 
-        const data: any = { scope: this.tab === 'mine' ? 'mine' : 'all', pageSize: PAGE, offset: reset ? 0 : this.offset };
+        const data: any = { scope: this.tab === 'mine' ? 'mine' : this.tab === 'all' ? 'shared' : 'all', pageSize: PAGE, offset: reset ? 0 : this.offset };
         if (this.query.trim()) data.q = this.query.trim();
         if (this.catId !== null) data.category = this.sub ?? this.catId;
 
