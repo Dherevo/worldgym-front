@@ -9,7 +9,7 @@
                     :disabled="saving" @click="setActivity(a)">{{ $t('energy.activities.' + a) }}</button>
             </div>
             <p class="hint">{{ $t('energy.activityHints.' + activity) }}</p>
-            <p class="hint">{{ $t('energy.stepsNote') }}</p>
+            <p class="hint">{{ $t('energy.stepsNote', { n: stepsBaselineLabel }) }}</p>
 
             <h3>{{ $t('energy.goalTitle') }}</h3>
             <div class="goal-options">
