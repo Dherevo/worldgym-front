@@ -1,0 +1,59 @@
+.food-history-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 640px;
+
+    .fh-head h1 { margin: 0; font-size: 1.4rem; }
+
+    .fh-nav { display: flex; align-items: center; justify-content: space-between; }
+    .fh-month { font-weight: 700; font-size: 1.1rem; text-transform: capitalize; }
+    .fh-arrow {
+        width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--border-color);
+        background: var(--surface-2); color: inherit; cursor: pointer; svg.icon { width: 20px; height: 20px; }
+        &:disabled { opacity: 0.3; cursor: default; }
+        &:hover:not(:disabled) { border-color: var(--primary-color); color: var(--primary-color); }
+    }
+
+    .fh-summary {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; padding: 0.8rem; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--border-color);
+        div { display: flex; flex-direction: column; align-items: center; gap: 0.1rem; text-align: center; }
+        b { font-size: 1.3rem; }
+        small { color: var(--text-muted); font-size: 0.72rem; line-height: 1.2; }
+    }
+
+    .fh-cal {
+        display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.35rem; transition: opacity 0.15s ease;
+        &.loading { opacity: 0.5; }
+        .fh-wd { text-align: center; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; padding-bottom: 0.2rem; }
+        .fh-empty { aspect-ratio: 1; }
+    }
+    .fh-day {
+        --st: var(--border-color);
+        aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.1rem; padding: 0;
+        border-radius: 12px; border: 2px solid var(--st); background: color-mix(in srgb, var(--st) 12%, var(--surface-2)); color: inherit; cursor: pointer;
+        transition: transform 0.12s ease, border-color 0.15s ease;
+        .fh-num { font-weight: 700; font-size: 0.95rem; }
+        .fh-kcal { font-size: 0.62rem; color: var(--text-secondary); min-height: 0.8em; }
+        &.ok { --st: #16a34a; }
+        &.over { --st: #d97706; }
+        &.low { --st: #2563eb; }
+        &.none { border-style: dashed; background: transparent; }
+        &.today { box-shadow: 0 0 0 2px var(--primary-color); }
+        &.future { opacity: 0.35; cursor: default; }
+        &:active:not(:disabled) { transform: scale(0.94); }
+    }
+
+    .fh-legend {
+        list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; font-size: 0.8rem; color: var(--text-secondary);
+        li { display: flex; align-items: center; gap: 0.4rem; }
+        i {
+            width: 12px; height: 12px; border-radius: 4px; border: 2px solid var(--border-color); display: inline-block;
+            &.ok { border-color: #16a34a; background: color-mix(in srgb, #16a34a 25%, transparent); }
+            &.over { border-color: #d97706; background: color-mix(in srgb, #d97706 25%, transparent); }
+            &.low { border-color: #2563eb; background: color-mix(in srgb, #2563eb 25%, transparent); }
+            &.none { border-style: dashed; }
+        }
+    }
+    .fh-hint { margin: 0; color: var(--text-muted); font-size: 0.8rem; }
+}

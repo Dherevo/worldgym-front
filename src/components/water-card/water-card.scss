@@ -1,6 +1,10 @@
 .water-card {
-    .wc-card { display: flex; flex-direction: column; gap: 0.5rem; }
-    .wc-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; h2 { margin: 0; font-size: 1.05rem; } }
+    .wc-card {
+        summary { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+        .wc-title { display: inline-flex; align-items: center; gap: 0.5rem; svg.icon { width: 18px; height: 18px; color: #38bdf8; } }
+        .wc-sum { font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); }
+    }
+    .wc-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
     .wc-open { background: var(--tint-blue-bg, var(--surface-3)); color: var(--primary-color); border: none; border-radius: 999px; padding: 0.4rem 0.9rem; font-weight: 600; cursor: pointer; }
     .wc-big { margin: 0; font-size: 0.95rem; b { font-size: 1.7rem; } }
     .wc-muted { color: var(--text-secondary); margin: 0; font-size: 0.9rem; }
@@ -16,7 +20,7 @@
         input[type="number"] { width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid var(--border-color); background: var(--surface-color); color: inherit; font-size: 1rem; }
     }
     .wc-sheet-head { display: flex; justify-content: space-between; }
-    .wc-icon { background: none; border: none; color: inherit; font-size: 1.3rem; cursor: pointer; padding: 0.2rem 0.5rem; &:disabled { opacity: 0.4; } }
+    .wc-icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: none; border: none; color: inherit; cursor: pointer; svg.icon { width: 22px; height: 22px; } &:hover { background: var(--surface-3, rgba(127, 127, 127, 0.14)); } &:disabled { opacity: 0.4; } }
     .wc-goal-form { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.7rem; border-radius: 12px; background: var(--surface-3, var(--surface-color)); label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--text-secondary); } }
     .wc-row { display: flex; justify-content: flex-end; align-items: center; gap: 0.6rem; }
     .wc-total { text-align: center; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 14px; display: flex; flex-direction: column; gap: 0.2rem; small { color: var(--text-secondary); } b { font-size: 2rem; } }

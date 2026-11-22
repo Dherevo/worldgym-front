@@ -1,22 +1,23 @@
 <template>
     <div class="water-card">
-        <section class="card wc-card">
+        <details class="card wc-card fold">
+            <summary>
+                <span class="wc-title"><svg-icon name="awesome-solid/droplet" /> {{ $t('nutrition.water.title') }}</span>
+                <span v-if="day" class="wc-sum">{{ day.total_ml }} / {{ day.goal_ml }} ml</span>
+            </summary>
             <div class="wc-head">
-                <h2>💧 {{ $t('nutrition.water.title') }}</h2>
+                <p v-if="day" class="wc-big"><b>{{ day.total_ml }}</b> <span class="wc-muted">/ {{ day.goal_ml }} ml · {{ pct }}%</span></p>
+                <p v-else class="wc-muted">{{ $t('nutrition.loading') }}</p>
                 <button type="button" class="wc-open" @click="openSheet()">+ {{ $t('nutrition.water.log') }}</button>
             </div>
-            <template v-if="day">
-                <p class="wc-big"><b>{{ day.total_ml }}</b> <span class="wc-muted">/ {{ day.goal_ml }} ml · {{ pct }}%</span></p>
-                <div class="wc-track"><div class="wc-fill" :class="{ done: day.total_ml >= day.goal_ml }" :style="{ width: Math.min(100, pct) + '%' }"></div></div>
-            </template>
-            <p v-else class="wc-muted">{{ $t('nutrition.loading') }}</p>
-        </section>
+            <div v-if="day" class="wc-track"><div class="wc-fill" :class="{ done: day.total_ml >= day.goal_ml }" :style="{ width: Math.min(100, pct) + '%' }"></div></div>
+        </details>
 
         <div v-if="open" class="wc-backdrop" @click.self="closeSheet()">
             <div class="wc-sheet" role="dialog" aria-modal="true">
                 <div class="wc-sheet-head">
-                    <button type="button" class="wc-icon" :aria-label="$t('nutrition.close')" @click="closeSheet()">✕</button>
-                    <button type="button" class="wc-icon" :aria-label="$t('nutrition.water.goalEdit')" @click="toggleGoal()">⚙</button>
+                    <button type="button" class="wc-icon" :aria-label="$t('nutrition.close')" @click="closeSheet()"><svg-icon name="heroicons-outline/x-mark" /></button>
+                    <button type="button" class="wc-icon" :aria-label="$t('nutrition.water.goalEdit')" @click="toggleGoal()"><svg-icon name="heroicons-outline/cog-6-tooth" /></button>
                 </div>
                 <h2>{{ $t('nutrition.water.sheetTitle') }}</h2>
 
