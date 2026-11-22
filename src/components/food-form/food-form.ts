@@ -1,5 +1,7 @@
 import { Component, Vue, Prop, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
+import { loadFoodCategories, categoryName, topCategories, childrenOf } from "@/modules/foodCategories";
+import type { FoodCategory } from "@/modules/foodCategories";
 
 // Form to create or edit a food of the catalog: its values per 100 g (or 100 ml). With a barcode, Open Food Facts
 // can fill the name, the values, the brand, the fiber, the saturated fat, the carbohydrates and the sodium; fruit and the like have no barcode.
@@ -20,6 +22,8 @@ class FoodForm extends Vue {
     name = '';
     brand = '';
     offCode = '';
+    // Vegetable or fruit: '' = decided by the name, 'yes' or 'no'
+    plant: '' | 'yes' | 'no' = '';
     unit: 'g' | 'ml' | 'u' = 'g';
     kcal: number | string = '';
     protein: number | string = '';
@@ -31,6 +35,9 @@ class FoodForm extends Vue {
     // Sodium in mg
     sodium: number | string = '';
     unitG: number | string = '';
+    // Categories of the catalog: the food can have several (the first one is the main)
+    categories: FoodCategory[] = [];
+    categoryIds: number[] = [];
     // Amount the kcal and protein typed are for (empty = per 100); saved always per 100
     refAmount: number | string = '';
     saving = false;
@@ -38,10 +45,13 @@ class FoodForm extends Vue {
     filled = false;
 
     created() {
+        loadFoodCategories().then(list => { this.categories = list; });
         if (this.food) {
+            this.categoryIds = [...(this.food.category_ids ?? [])];
             this.name = this.food.name;
             this.brand = this.food.brand ?? '';
             this.offCode = this.food.off_code ?? '';
+            this.plant = this.food.plant === true ? 'yes' : this.food.plant === false ? 'no' : '';
             this.unit = this.food.unit;
             this.kcal = this.food.kcal_100;
             this.protein = this.food.protein_100 || '';
@@ -55,6 +65,24 @@ class FoodForm extends Vue {
             this.name = this.presetName;
             this.offCode = this.presetCode;
         }
+    }
+
+    get topCategories(): FoodCategory[] {
+        return topCategories(this.categories);
+    }
+
+    childrenOf(c: FoodCategory): FoodCategory[] {
+        return childrenOf(this.categories, c.id);
+    }
+
+    catName(c: FoodCategory): string {
+        return categoryName(c);
+    }
+
+    toggleCategory(id: number) {
+        const i = this.categoryIds.indexOf(id);
+        if (i >= 0) this.categoryIds.splice(i, 1);
+        else this.categoryIds.push(id);
     }
 
     // What the values are for: per unit, or per 100 g / 100 ml
@@ -114,6 +142,9 @@ class FoodForm extends Vue {
             this.carbs = p.carbs_100 ?? '';
             this.fat = p.fat_100 ?? '';
             this.sodium = p.sodium_100 ?? '';
+            // The category Open Food Facts suggests is added to the ones chosen
+            const suggested = this.categories.find(c => c.slug === p.category);
+            if (suggested && !this.categoryIds.includes(suggested.id)) this.categoryIds.push(suggested.id);
             this.filled = true;
         })
         .catch((e: any) => {
@@ -138,8 +169,10 @@ class FoodForm extends Vue {
             fat_100: optional(this.fat),
             sodium_100: optional(this.sodium),
             brand: this.brand.trim(),
+            plant: this.plant === '' ? null : this.plant === 'yes',
             off_code: this.offCode.trim(),
             unit_g: this.unit === 'u' && this.unitG !== '' ? Number(this.unitG) : null,
+            category_ids: this.categoryIds,
         };
         const req = this.food ? http.put(`/foods/${this.food.id}`).data(body) : http.post('/foods').data(body);
         // The amount typed is also what was eaten: it goes with the saved food so the meal row can start with it

@@ -15,6 +15,14 @@
         input, select { width: 100%; box-sizing: border-box; }
     }
     .ff-code { display: flex; gap: 0.5rem; align-items: center; input { flex: 1; min-width: 0; } .btn-link { white-space: nowrap; &:disabled { opacity: 0.5; } } }
+    .ff-plant { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.8rem; color: var(--text-secondary); select { width: 100%; box-sizing: border-box; } }
+    .ff-cats { display: flex; flex-direction: column; gap: 0.35rem; .ff-cats-title { font-size: 0.8rem; color: var(--text-secondary); } }
+    .ff-cat-group { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .ff-chip {
+        border: 1px solid var(--border-color); background: var(--surface-color); color: inherit; border-radius: 999px; padding: 0.25rem 0.7rem; font-size: 0.8rem; cursor: pointer;
+        &.sub { font-size: 0.75rem; opacity: 0.85; }
+        &.on { background: var(--primary-color); border-color: var(--primary-color); color: #fff; opacity: 1; }
+    }
     .ff-hint { margin: 0; font-size: 0.8rem; color: var(--text-secondary); }
     .ff-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.75rem; }
 }

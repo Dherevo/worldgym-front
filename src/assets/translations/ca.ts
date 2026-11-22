@@ -25,11 +25,13 @@ import notFound from './pages/notFound';
 import splash from './pages/splash';
 import push from './pages/push';
 import weekly from './pages/weekly';
+import foodAdd from './pages/foodAdd';
 
 const ca = {
     layout: layout.ca,
     push: push.ca,
     weekly: weekly.ca,
+    foodAdd: foodAdd.ca,
     home: home.ca,
     login: login.ca,
     exercises: exercises.ca,

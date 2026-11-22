@@ -3,8 +3,6 @@ import { http, App, translate } from "lib";
 import EnergyBar from "@/components/energy-bar/energy-bar.vue";
 import FoodForm from "@/components/food-form/food-form.vue";
 import localDate from "@/modules/localDate";
-import { isApp } from "@/modules/platform";
-import { scanBarcode } from "@/modules/barcode";
 import { loadEnergyDay, recalcPastDay } from "@/modules/energyDay";
 import userStore from "@/modules/userStore";
 import { proteinRange } from "@/modules/calories";
@@ -27,8 +25,6 @@ interface FoodRow {
 class NutritionPage extends Vue {
 
     readonly meals = MEALS;
-    readonly isApp = isApp;
-    scanning = false;
     date = localDate();
     day: EnergyDay | null = null;
     loading = false;
@@ -36,23 +32,14 @@ class NutritionPage extends Vue {
     weighDue = false;
     weights: any[] = [];
 
-    // Personal catalog of foods (values per 100 g / 100 ml) and its form (create/edit, from a meal or the catalog card)
-    // Search in the add form (own and shared foods, looked up on the server) and the paged list of the own ones
+    // Personal catalog of foods (values per 100 g / 100 ml), edited from the card below. Adding food to a meal is the screen /nutrition/add
     readonly foodPageSize = 10;
-    foodResults: any[] = [];
-    foodQuery = '';
-    foodTimer: any = null;
     myFoods: any[] = [];
-    // Open Food Facts search from the add form: by name or by barcode. Picking one saves it in the catalog
-    offResults: any[] = [];
-    offSearching = false;
-    offSearched = false;
-    offSaving = false;
     myQuery = '';
     myOffset = 0;
     myTotal = 0;
     myTimer: any = null;
-    foodForm: { food: any | null; preset: string; where: 'add' | 'card'; code?: string } | null = null;
+    foodForm: { food: any | null; preset: string; where: 'card'; code?: string } | null = null;
 
     // Form to add (or edit) food in a meal
     adding: string | null = null;
@@ -63,6 +50,10 @@ class NutritionPage extends Vue {
     get localToday(): string { return localDate(); }
     editingId: number | null = null;
     rows: FoodRow[] = [{ name: '', kcal: '', protein: '' }];
+    // "Save as a meal": the meal whose name is being typed
+    saveMealFor: string | null = null;
+    saveMealName = '';
+    saveMealBusy = false;
     saving = false;
     copying = false;
 
@@ -254,122 +245,6 @@ class NutritionPage extends Vue {
         }
     }
 
-    // Foods that match the text of the add form
-    searchFoods() {
-        const q = this.foodQuery.trim();
-        http.get('/foods').data({ q, pageSize: this.foodPageSize })
-        .then((res: any) => { if (q === this.foodQuery.trim()) this.foodResults = res.items ?? []; })
-        .catch(() => {});
-    }
-
-    // Scans a barcode with the camera: the food saved in the catalog with it is used straight away; if there is
-    // none, Open Food Facts is searched and its product is shown to pick
-    async scanFood() {
-        if (this.scanning) return;
-        this.scanning = true;
-        try {
-            const res = await scanBarcode();
-            if (res.status === 'installing') {
-                App.notification(translate.get('nutrition.scan.installing')).show();
-                return;
-            }
-            if (res.status === 'error') {
-                App.notification(translate.get('nutrition.scan.error')).setType('error').show();
-                return;
-            }
-            if (res.status !== 'ok') return;
-
-            this.foodQuery = res.code;
-            this.offResults = [];
-            this.offSearched = false;
-            const list: any = await http.get('/foods').data({ q: res.code, pageSize: this.foodPageSize });
-            this.foodResults = list.items ?? [];
-
-            const own = this.foodResults.find((f: any) => f.off_code === res.code);
-            if (own) this.useFood(own);
-            else if (!this.foodResults.length) {
-                // Not in the catalog: Open Food Facts; if it does not have it either, create the food with this barcode
-                const found = await this.searchOff();
-                if (found === 'none') {
-                    App.notification(translate.get('nutrition.scan.notFound')).show();
-                    this.openFoodForm(null, '', 'add', res.code);
-                }
-            }
-        } catch {
-            App.notification(translate.get('nutrition.scan.error')).setType('error').show();
-        } finally {
-            this.scanning = false;
-        }
-    }
-
-    // Open Food Facts: a barcode is looked up directly, anything else is a search by name
-    // Returns 'found', 'none' (OFF answered but has nothing) or 'error' (OFF not available)
-    searchOff(): Promise<'found' | 'none' | 'error'> {
-        const q = this.foodQuery.trim();
-        if (q.length < 2 || this.offSearching) return Promise.resolve('error');
-        this.offSearching = true;
-        this.offSearched = false;
-
-        const isCode = /^\d{6,14}$/.test(q);
-        const req = isCode ? http.get(`/foods/off/${q}`) : http.get('/foods/off').data({ q });
-        return req.then((res: any) => {
-            this.offResults = isCode ? [res] : (res.items ?? []);
-            return this.offResults.length ? 'found' : 'none';
-        })
-        .catch((e: any) => {
-            this.offResults = [];
-            // A barcode OFF does not have is an empty result, not a failure
-            if (isCode && e?.data?.error !== 'off.unavailable') return 'none';
-            App.notification(translate.get('nutrition.off.unavailable')).setType('error').show();
-            return 'error';
-        })
-        .finally(() => { this.offSearching = false; this.offSearched = true; }) as Promise<'found' | 'none' | 'error'>;
-    }
-
-    // Save the product in the user's catalog (with its barcode, brand, fiber, saturated fat, carbohydrates and sodium) and use it
-    pickOff(p: any) {
-        if (this.offSaving) return;
-        this.offSaving = true;
-
-        // OFF data has mistakes (more than 100 g of something in 100 g): the API refuses them, so a figure out of range is left empty
-        const ok = (v: any, max: number) => (typeof v === 'number' && v >= 0 && v <= max ? v : null);
-        const save = (name: string) => http.post('/foods').data({
-            name, unit: p.unit, kcal_100: p.kcal_100, protein_100: ok(p.protein_100, 100) ?? 0,
-            fiber_100: ok(p.fiber_100, 100), saturates_100: ok(p.saturates_100, 100), carbs_100: ok(p.carbs_100, 100),
-            fat_100: ok(p.fat_100, 100), sodium_100: ok(p.sodium_100, 40000), brand: p.brand ?? '', off_code: p.code,
-        });
-
-        // The name is unique per user: if it is taken, try with the brand and then with the barcode
-        const taken = (e: any) => e?.data?.error === 'name.taken';
-        save(p.name)
-        .catch((e: any) => {
-            if (!taken(e)) throw e;
-            return p.brand ? save(`${p.name} ${p.brand}`.slice(0, 150)) : Promise.reject(e);
-        })
-        .catch((e: any) => {
-            if (!taken(e)) throw e;
-            return save(`${p.name} ${p.code}`.slice(0, 150));
-        })
-        .then((food: any) => {
-            this.offResults = [];
-            this.offSearched = false;
-            this.loadMyFoods();
-            this.useFood(food);
-        })
-        .catch((e: any) => {
-            const code = e?.data?.error;
-            App.notification(translate.get('nutrition.off.saveError') + (code ? ` (${code})` : '')).setType('error').show();
-        })
-        .finally(() => { this.offSaving = false; });
-    }
-
-    onFoodQuery() {
-        this.offResults = [];
-        this.offSearched = false;
-        clearTimeout(this.foodTimer);
-        this.foodTimer = setTimeout(() => this.searchFoods(), 250);
-    }
-
     // The user's own foods, a page at a time
     loadMyFoods() {
         http.get('/foods').data({ scope: 'mine', q: this.myQuery.trim(), offset: this.myOffset, pageSize: this.foodPageSize })
@@ -407,23 +282,17 @@ class NutritionPage extends Vue {
     }
 
     beforeUnmount() {
-        clearTimeout(this.foodTimer);
         clearTimeout(this.myTimer);
     }
 
-    openFoodForm(food: any | null, preset: string, where: 'add' | 'card', code = '') {
+    openFoodForm(food: any | null, preset: string, where: 'card', code = '') {
         this.foodForm = { food, preset, where, code };
     }
 
-    // After creating (from the add form) the food is picked right away; after editing only the list changes
-    onFoodSaved(food: any, eaten: number | null = null) {
-        const form = this.foodForm;
+    // The list of the card changes after creating or editing a food
+    onFoodSaved() {
         this.foodForm = null;
         this.loadMyFoods();
-        if (form?.where === 'add' && !form.food) {
-            this.foodQuery = '';
-            this.useFood(food, eaten);
-        }
     }
 
     removeFood(f: any) {
@@ -431,7 +300,7 @@ class NutritionPage extends Vue {
         .then((ok: boolean) => {
             if (!ok) return;
             http.delete(`/foods/${f.id}`)
-            .then(() => { this.loadMyFoods(); this.searchFoods(); })
+            .then(() => this.loadMyFoods())
             .catch(() => App.notification(translate.get('nutrition.errors.foodDelete')).setType('error').show());
         });
     }
@@ -499,16 +368,9 @@ class NutritionPage extends Vue {
         return Math.round(this.entriesOf(meal).reduce((sum, e) => sum + (Number(e.protein_g) || 0), 0));
     }
 
-    blankRow() {
-        return { name: '', kcal: '' as number | string, protein: '' as number | string };
-    }
-
+    // Adding food to a meal is its own screen
     openAdd(meal: string) {
-        this.adding = meal;
-        this.editingId = null;
-        this.rows = [this.blankRow()];
-        this.foodQuery = '';
-        this.searchFoods();
+        this.$router.push({ path: '/nutrition/add', query: { meal, date: this.date } });
     }
 
     openEdit(e: any) {
@@ -526,27 +388,6 @@ class NutritionPage extends Vue {
         } else {
             this.rows = [{ name: e.name, kcal: e.kcal, protein: e.protein_g ?? '' }];
         }
-    }
-
-    addRow() {
-        this.rows.push(this.blankRow());
-    }
-
-    removeRow(i: number) {
-        this.rows.splice(i, 1);
-        if (!this.rows.length) this.rows.push(this.blankRow());
-    }
-
-    // Pick a food of the catalog: the row asks for the amount and works out the calories and protein
-    useFood(f: any, eaten: number | null = null) {
-        const row: FoodRow = { name: f.name, kcal: '', protein: '', food: f, amount: eaten ?? '' };
-        const last = this.rows[this.rows.length - 1];
-        if (this.isBlank(last)) this.rows.splice(this.rows.length - 1, 1, row);
-        else this.rows.push(row);
-        // Work out kcal and protein on the reactive row, not on the plain object
-        if (eaten) this.onAmount(this.rows[this.rows.indexOf(row)] ?? this.rows[this.rows.length - 1]);
-        this.foodQuery = '';
-        this.searchFoods();
     }
 
     // kcal and protein of the amount typed: from the values per 100 g / 100 ml, or per unit
@@ -658,6 +499,32 @@ class NutritionPage extends Vue {
 
     refresh() {
         this.load();
+    }
+
+    openSaveMeal(meal: string) {
+        this.saveMealFor = meal;
+        this.saveMealName = '';
+    }
+
+    // The foods of a meal of the day become a saved meal ("mis comidas") to add again with one tap
+    saveAsMeal(meal: string) {
+        const name = this.saveMealName.trim();
+        const entries = this.entriesOf(meal);
+        if (!name || !entries.length || this.saveMealBusy) return;
+        this.saveMealBusy = true;
+        http.post('/meal-templates').data({
+            name, kind: 'meal', servings: 1,
+            items: entries.map((e: any) => ({ food_id: e.food_id ?? null, name: e.name, amount: e.amount ?? null, kcal: e.kcal, protein_g: e.protein_g ?? null })),
+        })
+        .then(() => {
+            this.saveMealFor = null;
+            App.notification(translate.get('foodAdd.saveMeal.done')).show();
+        })
+        .catch((e: any) => {
+            const key = e?.data?.error === 'name.taken' ? 'taken' : 'error';
+            App.notification(translate.get(`foodAdd.saveMeal.${key}`)).setType('error').show();
+        })
+        .finally(() => { this.saveMealBusy = false; });
     }
 
     historyLabel(date: string): string {

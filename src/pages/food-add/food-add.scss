@@ -1,0 +1,96 @@
+.food-add-page {
+    padding: 1rem;
+    padding-bottom: 5rem;
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+
+    h2 { margin: 0; font-size: 1.05rem; }
+    h3 { margin: 0.3rem 0 0; font-size: 0.95rem; }
+    .muted { color: var(--text-secondary); margin: 0; }
+
+    input[type="search"], input[type="text"], input[type="number"], select {
+        width: 100%; box-sizing: border-box; padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid var(--border-color);
+        background: var(--surface-color); color: inherit; font-size: 1rem;
+    }
+    .fa-search { border-radius: 999px; border-color: var(--primary-color); }
+
+    .btn { background: var(--primary-color); color: #fff; border: none; border-radius: 10px; padding: 0.55rem 1rem; font-weight: 600; cursor: pointer; &:disabled { opacity: 0.5; cursor: default; } }
+    .btn-link { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0.5rem; }
+
+    .fa-head { display: flex; align-items: center; gap: 0.6rem; }
+    .fa-back { background: none; border: none; color: inherit; font-size: 1.5rem; cursor: pointer; padding: 0.2rem 0.5rem; }
+    .fa-meal {
+        flex: 1; display: flex; flex-direction: column; align-items: center;
+        select { width: auto; border: none; background: none; color: var(--primary-color); font-size: 1.15rem; font-weight: 700; text-align: center; text-align-last: center; padding: 0.2rem; }
+    }
+
+    .fa-tabs, .fa-subs {
+        display: flex; gap: 0.4rem; overflow-x: auto; scrollbar-width: none; margin: 0 -1rem; padding: 0 1rem;
+        &::-webkit-scrollbar { display: none; }
+    }
+    .fa-tabs {
+        border-bottom: 1px solid var(--border-color);
+        button { flex: none; background: none; border: none; border-bottom: 3px solid transparent; color: var(--text-secondary); padding: 0.6rem 0.7rem; font-size: 0.95rem; cursor: pointer; white-space: nowrap; &.on { color: var(--primary-color); border-bottom-color: var(--primary-color); font-weight: 700; } }
+    }
+    .fa-subs button {
+        flex: none; border: 1px solid var(--border-color); background: var(--surface-2); color: inherit; border-radius: 999px; padding: 0.3rem 0.8rem; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
+        &.on { background: var(--primary-color); border-color: var(--primary-color); color: #fff; }
+    }
+
+    .fa-actions {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.7rem; padding: 0.8rem; border-radius: 14px; background: var(--surface-3, var(--surface-2));
+    }
+    .fa-big {
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; min-height: 5.5rem; padding: 0.7rem;
+        background: var(--surface-2); border: 1px solid var(--border-color); border-radius: 12px; color: var(--primary-color); font-weight: 600; text-align: center; cursor: pointer;
+        &:disabled { opacity: 0.5; }
+        .fa-icon { font-size: 1.8rem; line-height: 1; }
+    }
+
+    .fa-list {
+        list-style: none; margin: 0.4rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;
+        li { display: flex; align-items: stretch; gap: 0.4rem; }
+    }
+    .fa-row {
+        flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; text-align: left;
+        background: var(--surface-2); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.7rem 0.9rem; color: inherit; cursor: pointer;
+        &:disabled { opacity: 0.6; }
+    }
+    .fa-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; small { color: var(--text-muted); } }
+    .fa-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fa-check { margin-left: 0.4rem; font-style: normal; color: var(--kcal-ok, #16a34a); font-weight: 700; }
+    .fa-plus { flex: none; width: 2.2rem; height: 2.2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--primary-color); background: var(--surface-3, var(--surface-color)); }
+    .fa-edit { flex: none; background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 0 0.6rem; }
+    .fa-more {
+        align-self: stretch; text-align: center; background: var(--tint-blue-bg, var(--surface-3)); color: var(--primary-color); border: none; border-radius: 999px; padding: 0.6rem 1rem; font-weight: 600; cursor: pointer;
+        &:disabled { opacity: 0.5; }
+    }
+    .fa-off { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .fa-foodform { background: var(--surface-2); }
+
+    .fa-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); display: flex; align-items: flex-end; justify-content: center; z-index: 60; }
+    .fa-sheet {
+        width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 0.7rem;
+        background: var(--surface-2); border-top-left-radius: 18px; border-top-right-radius: 18px; padding: 1.2rem 1rem 1.4rem; border: 1px solid var(--border-color);
+        p { margin: 0; }
+    }
+    .fa-field { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--text-secondary); }
+    .fa-two { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .fa-macros {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center; padding: 0.7rem 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+        b { display: block; font-size: 1.2rem; } small { color: var(--text-muted); font-size: 0.75rem; }
+    }
+    .fa-sheet-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.6rem; }
+    .fa-danger { color: var(--danger, #d9534f); margin-right: auto; }
+    .fa-items {
+        list-style: none; margin: 0; padding: 0;
+        li { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0; border-top: 1px solid var(--border-color); &:first-child { border-top: none; } .fa-name { flex: 1; } small { color: var(--text-muted); } }
+    }
+    .fa-mini { max-height: 12rem; overflow-y: auto; }
+    .fa-pick { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.6rem; border: 1px dashed var(--border-color); border-radius: 10px; }
+    .fa-import { align-self: flex-start; }
+}
