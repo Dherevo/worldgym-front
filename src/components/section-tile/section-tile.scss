@@ -33,6 +33,21 @@
     }
 }
 
+// Accordion: the content unfolds under the row, attached to it
+.section-tile.accordion {
+    .st-arrow { transition: transform 0.15s; }
+    &.open .st-head { border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-color: var(--border-color); }
+    &.open .st-arrow { transform: rotate(90deg); }
+    .st-accordion-body {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-top: none;
+        border-radius: 0 0 14px 14px;
+        padding: 0.9rem 1.25rem 1.1rem;
+        .daily-habits { background: none; border: none; padding: 0; }
+    }
+}
+
 // Teleported to <body> (see section-tile.vue), so it is no longer inside .section-tile
 .st-overlay {
     position: fixed;

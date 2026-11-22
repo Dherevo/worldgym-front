@@ -1,5 +1,13 @@
 <template>
     <slot v-if="inline" />
+    <div v-else-if="accordion" class="section-tile accordion" :class="{ open }">
+        <button type="button" class="st-head" :aria-expanded="open" @click="$emit('update:open', !open)">
+            <span class="st-title">{{ title }}</span>
+            <span class="st-status" :class="tone" v-if="status">{{ status }}</span>
+            <span class="st-arrow">&rsaquo;</span>
+        </button>
+        <div v-if="open" class="st-accordion-body"><slot /></div>
+    </div>
     <div v-else class="section-tile">
         <button type="button" class="st-head" @click="$emit('update:open', true)">
             <span class="st-title">{{ title }}</span>

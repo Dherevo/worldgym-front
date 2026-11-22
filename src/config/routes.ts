@@ -69,6 +69,10 @@ const routes : IRoutes = {
             component: ProgressPage
         },
         {
+            path: '/habit-progress',
+            component: ProgressPage
+        },
+        {
             path: '/workouts/:id',
             component: WorkoutDetailPage
         },

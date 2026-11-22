@@ -6,6 +6,7 @@
                 <WorkoutsPage v-if="tab === 'workouts'" />
                 <StatsPage v-else-if="tab === 'stats'" />
                 <FoodHistoryPage v-else-if="tab === 'food'" />
+                <HabitsProgressPage v-else-if="tab === 'habits'" />
                 <RoutinesPage v-else-if="tab === 'routines'" />
                 <ExercisesPage v-else />
             </div>
