@@ -3,6 +3,7 @@ import { http, App, translate } from "lib";
 import FoodForm from "@/components/food-form/food-form.vue";
 import localDate from "@/modules/localDate";
 import { isApp } from "@/modules/platform";
+import userStore from "@/modules/userStore";
 import { scanBarcode } from "@/modules/barcode";
 import { loadFoodCategories, categoryName, topCategories, childrenOf } from "@/modules/foodCategories";
 import type { FoodCategory } from "@/modules/foodCategories";
@@ -309,6 +310,21 @@ class FoodAddPage extends Vue {
     // A food of the user: edit it in the same sheet, or remove it from the catalog (entries already in the diary keep their figures)
     editFood(f: any) {
         this.foodForm = { food: f, preset: '', code: '' };
+    }
+
+    // Only administrators can share a food with every user (the API refuses anyone else)
+    get isAdmin(): boolean {
+        return userStore.data?.isAdmin === true;
+    }
+
+    shareFood(f: any) {
+        App.confirm(translate.get('foodAdd.share.confirm', { name: f.name }))
+        .then((ok: boolean) => {
+            if (!ok) return;
+            http.put(`/foods/${f.id}/share`)
+            .then(() => { App.notification(translate.get('foodAdd.share.done')).show(); this.reload(); })
+            .catch(() => App.notification(translate.get('foodAdd.share.error')).setType('error').show());
+        });
     }
 
     removeFood(f: any) {
