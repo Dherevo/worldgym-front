@@ -66,6 +66,20 @@
     .fa-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .fa-check { margin-left: 0.4rem; font-style: normal; color: var(--kcal-ok, #16a34a); font-weight: 700; }
     .fa-plus { flex: none; width: 2.2rem; height: 2.2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--primary-color); background: var(--surface-3, var(--surface-color)); }
+    // Own foods: slide the row to the left to see share / edit / delete (plain horizontal scroll with snap)
+    .fa-swipe {
+        overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; gap: 0; border-radius: 12px;
+        &::-webkit-scrollbar { display: none; }
+        .fa-row { flex: 0 0 100%; scroll-snap-align: start; }
+        .fa-rev { flex: none; display: flex; scroll-snap-align: end; }
+        .fa-rev-btn {
+            flex: none; width: 4.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.15rem; border: none; color: #fff; font-size: 0.72rem; cursor: pointer;
+            span { font-size: 1.2rem; line-height: 1; }
+            &.share { background: #16a34a; }
+            &.edit { background: #2563eb; }
+            &.del { background: #dc2626; border-radius: 0 12px 12px 0; }
+        }
+    }
     .fa-edit { flex: none; background: none; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 0 0.6rem; }
     .fa-more {
         align-self: stretch; text-align: center; background: var(--tint-blue-bg, var(--surface-3)); color: var(--primary-color); border: none; border-radius: 999px; padding: 0.6rem 1rem; font-weight: 600; cursor: pointer;

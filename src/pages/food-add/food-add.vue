@@ -48,7 +48,7 @@
                 <section v-if="suggested.length">
                     <h2>{{ $t('foodAdd.suggestions') }}</h2>
                     <ul class="fa-list">
-                        <li v-for="f in suggested" :key="'s' + f.id">
+                        <li v-for="f in suggested" :key="'s' + f.id" :class="{ 'fa-swipe': tab === 'mine' }">
                             <button type="button" class="fa-row" @click="openSheet(f)">
                                 <img v-if="f.image_url" class="fa-thumb" :src="f.image_url" alt="" loading="lazy" />
                                 <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
@@ -58,9 +58,11 @@
                                 </span>
                                 <span class="fa-plus">+</span>
                             </button>
-                            <button v-if="tab === 'mine' && isAdmin" type="button" class="fa-edit" :title="$t('foodAdd.share.button')" :aria-label="$t('foodAdd.share.button')" @click="shareFood(f)">⇪</button>
-                            <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.foods.edit')" @click="editFood(f)">✎</button>
-                            <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.delete')" @click="removeFood(f)">✕</button>
+                            <span v-if="tab === 'mine'" class="fa-rev">
+                                <button v-if="isAdmin" type="button" class="fa-rev-btn share" :aria-label="$t('foodAdd.share.button')" @click="shareFood(f)"><span>⇪</span>{{ $t('foodAdd.share.short') }}</button>
+                                <button type="button" class="fa-rev-btn edit" :aria-label="$t('nutrition.foods.edit')" @click="editFood(f)"><span>✎</span>{{ $t('nutrition.foods.edit') }}</button>
+                                <button type="button" class="fa-rev-btn del" :aria-label="$t('nutrition.delete')" @click="removeFood(f)"><span>✕</span>{{ $t('nutrition.delete') }}</button>
+                            </span>
                         </li>
                     </ul>
                 </section>
@@ -68,7 +70,7 @@
                 <section v-if="listed.length">
                     <h2 v-if="suggested.length">{{ $t('foodAdd.foods') }}</h2>
                     <ul class="fa-list">
-                        <li v-for="f in listed" :key="f.id">
+                        <li v-for="f in listed" :key="f.id" :class="{ 'fa-swipe': tab === 'mine' }">
                             <button type="button" class="fa-row" @click="openSheet(f)">
                                 <img v-if="f.image_url" class="fa-thumb" :src="f.image_url" alt="" loading="lazy" />
                                 <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
@@ -78,9 +80,11 @@
                                 </span>
                                 <span class="fa-plus">+</span>
                             </button>
-                            <button v-if="tab === 'mine' && isAdmin" type="button" class="fa-edit" :title="$t('foodAdd.share.button')" :aria-label="$t('foodAdd.share.button')" @click="shareFood(f)">⇪</button>
-                            <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.foods.edit')" @click="editFood(f)">✎</button>
-                            <button v-if="tab === 'mine'" type="button" class="fa-edit" :aria-label="$t('nutrition.delete')" @click="removeFood(f)">✕</button>
+                            <span v-if="tab === 'mine'" class="fa-rev">
+                                <button v-if="isAdmin" type="button" class="fa-rev-btn share" :aria-label="$t('foodAdd.share.button')" @click="shareFood(f)"><span>⇪</span>{{ $t('foodAdd.share.short') }}</button>
+                                <button type="button" class="fa-rev-btn edit" :aria-label="$t('nutrition.foods.edit')" @click="editFood(f)"><span>✎</span>{{ $t('nutrition.foods.edit') }}</button>
+                                <button type="button" class="fa-rev-btn del" :aria-label="$t('nutrition.delete')" @click="removeFood(f)"><span>✕</span>{{ $t('nutrition.delete') }}</button>
+                            </span>
                         </li>
                     </ul>
                 </section>
