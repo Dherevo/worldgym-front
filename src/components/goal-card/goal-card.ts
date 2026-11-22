@@ -1,7 +1,7 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import userStore from "@/modules/userStore";
-import { activityLevel, baseExpenditure, basalMetabolicRate, bmi, effectiveGoal, goalRange, proteinRange, waistRatio } from "@/modules/calories";
+import { activityLevel, baseExpenditure, basalMetabolicRate, bmi, effectiveGoal, goalRange, proteinRange, stepsBaseline, waistRatio } from "@/modules/calories";
 import type { Activity, Goal } from "@/modules/calories";
 
 // Lifestyle (activity) and goal of the user, and the calories and protein to eat for them. The goal is suggested from the BMI
@@ -45,6 +45,11 @@ class GoalCard extends Vue {
     // Chosen by the user, or suggested by the BMI while they have not chosen
     get isAuto(): boolean {
         return !this.user?.goal;
+    }
+
+    // Steps a day that the base of the chosen lifestyle already counts (only the ones above add calories)
+    get stepsBaselineLabel(): string {
+        return stepsBaseline(this.user).toLocaleString(({ ca: 'ca-ES', es: 'es-ES', en: 'en-GB' } as any)[translate.currentLanguage] ?? 'ca-ES');
     }
 
     // A high BMI with a lean waist: the suggestion is not to lose weight
