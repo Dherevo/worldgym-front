@@ -5,6 +5,9 @@ import localDate from "@/modules/localDate";
 import { isApp } from "@/modules/platform";
 import userStore from "@/modules/userStore";
 import { scanBarcode } from "@/modules/barcode";
+import { loadEnergyDay } from "@/modules/energyDay";
+import { proteinRange } from "@/modules/calories";
+import { macroTargets } from "@/modules/macros";
 import { loadFoodCategories, categoryName, topCategories, childrenOf } from "@/modules/foodCategories";
 import type { FoodCategory } from "@/modules/foodCategories";
 
@@ -64,6 +67,10 @@ class FoodAddPage extends Vue {
     scanning = false;
 
     foodForm: { food: any | null; preset: string; code: string } | null = null;
+
+    // Targets of the day and what is already eaten, for the percentages of the amount sheet (null: the profile is incomplete)
+    goals: { kcal: { goal: number; eaten: number }; carbs: { goal: number; eaten: number }; fat: { goal: number; eaten: number }; protein: { goal: number; eaten: number } } | null = null;
+    goalsLoaded = false;
 
     // Amount sheet of a food
     sheet: { food: any; amount: number | string } | null = null;
@@ -358,6 +365,75 @@ class FoodAddPage extends Vue {
 
     openSheet(food: any, amount?: number) {
         this.sheet = { food, amount: amount ?? (food.unit === 'u' ? 1 : 100) };
+        this.ensureGoals();
+    }
+
+    // The same targets as the Food screen: the calories up to the top of the range, the protein up to its maximum
+    ensureGoals() {
+        if (this.goalsLoaded) return;
+        this.goalsLoaded = true;
+        loadEnergyDay(this.date)
+        .then(day => {
+            const t = day.ready ? macroTargets(userStore.data, day.goal, day.min, day.max) : null;
+            const p = day.ready ? proteinRange(userStore.data, day.goal) : null;
+            if (!t || !p) {
+                this.goals = null;
+                return;
+            }
+            const sum = (key: string) => Math.round(day.entries.reduce((s: number, e: any) => s + (Number(e[key]) || 0), 0) * 10) / 10;
+            this.goals = {
+                kcal: { goal: day.max, eaten: day.eaten },
+                carbs: { goal: t.carbs, eaten: sum('carbs_g') },
+                fat: { goal: t.fat.max, eaten: sum('fat_g') },
+                protein: { goal: p.max, eaten: day.protein },
+            };
+        })
+        .catch(() => { this.goalsLoaded = false; });
+    }
+
+    // Share of the calories of the food that comes from each macro (4 / 9 / 4 kcal per gram)
+    get macroSplit(): { key: string; grams: number | null; pct: number }[] {
+        const m = this.sheetMacros;
+        const parts = [
+            { key: 'carbs', grams: m.carbs, kcal: (m.carbs ?? 0) * 4 },
+            { key: 'fat', grams: m.fat, kcal: (m.fat ?? 0) * 9 },
+            { key: 'protein', grams: m.protein, kcal: m.protein * 4 },
+        ];
+        const total = parts.reduce((s, p) => s + p.kcal, 0);
+        return parts.map(p => ({ key: p.key, grams: p.grams, pct: total > 0 ? Math.round((p.kcal / total) * 100) : 0 }));
+    }
+
+    // The ring around the calories: one arc per macro, in the order of the split
+    get ringSegs(): { key: string; dash: string; offset: number }[] {
+        const C = 2 * Math.PI * 26;
+        const split = this.macroSplit;
+        const total = split.reduce((s, p) => s + p.pct, 0);
+        if (total <= 0) return [];
+        let start = 0;
+        return split.filter(p => p.pct > 0).map(p => {
+            const len = (p.pct / total) * C;
+            const seg = { key: p.key, dash: `${len} ${C - len}`, offset: -start };
+            start += len;
+            return seg;
+        });
+    }
+
+    // Bars against the daily targets: what was eaten (solid) and what this food adds (soft)
+    get goalBars(): { key: string; value: number; goal: number; unit: string; pctEaten: number; pctAdd: number; total: number; over: boolean }[] {
+        const g = this.goals;
+        if (!g || this.factor <= 0) return [];
+        const m = this.sheetMacros;
+        const rows: [string, { goal: number; eaten: number }, number, string][] = [
+            ['kcal', g.kcal, m.kcal, 'kcal'], ['carbs', g.carbs, m.carbs ?? 0, 'g'], ['fat', g.fat, m.fat ?? 0, 'g'], ['protein', g.protein, m.protein, 'g'],
+        ];
+        return rows.filter(([, x]) => x.goal > 0).map(([key, x, add, unit]) => {
+            const value = Math.round((x.eaten + add) * 10) / 10;
+            const pctEaten = Math.min(100, (x.eaten / x.goal) * 100);
+            return {
+                key, value, goal: Math.round(x.goal), unit, pctEaten, pctAdd: Math.max(0, Math.min(100 - pctEaten, (add / x.goal) * 100)),
+                total: Math.round((value / x.goal) * 100), over: value > x.goal,
+            };
+        });
     }
 
     get factor(): number {
@@ -391,6 +467,8 @@ class FoodAddPage extends Vue {
         })
         .then(() => {
             if (!this.addedFoods.includes(s.food.id)) this.addedFoods.push(s.food.id);
+            // What was just added counts as eaten for the next percentages
+            this.goalsLoaded = false;
             App.notification(translate.get('foodAdd.addedTo', { name: s.food.name, meal: translate.get('nutrition.meals.' + this.meal).toLowerCase() })).show();
             this.sheet = null;
         })

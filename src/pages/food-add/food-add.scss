@@ -83,9 +83,34 @@
     }
     .fa-field { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--text-secondary); }
     .fa-two { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
-    .fa-macros {
-        display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center; padding: 0.7rem 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
-        b { display: block; font-size: 1.2rem; } small { color: var(--text-muted); font-size: 0.75rem; }
+    .fa-ringrow {
+        position: relative; display: grid; grid-template-columns: 5.5rem 1fr; align-items: center; gap: 0.6rem; padding: 0.7rem 0; border-top: 1px solid var(--border-color);
+    }
+    .fa-ring {
+        width: 5.5rem; height: 5.5rem;
+        circle { fill: none; stroke-width: 6; }
+        .bg { stroke: var(--surface-3, var(--border-color)); }
+        .carbs { stroke: var(--macro-carbs); } .fat { stroke: var(--macro-fat); } .protein { stroke: var(--macro-protein); }
+    }
+    .fa-ringkcal { position: absolute; left: 0; top: 0.7rem; width: 5.5rem; height: 5.5rem; display: flex; flex-direction: column; align-items: center; justify-content: center; b { font-size: 1.3rem; line-height: 1.1; } small { color: var(--text-muted); font-size: 0.7rem; } }
+    .fa-split {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; text-align: center;
+        b { display: block; font-size: 1.05rem; } small { color: var(--text-muted); font-size: 0.72rem; display: block; }
+        .fa-pct { font-weight: 700; font-size: 0.8rem; }
+        .carbs .fa-pct { color: var(--macro-carbs); } .fat .fa-pct { color: var(--macro-fat); } .protein .fa-pct { color: var(--macro-protein); }
+    }
+    .fa-goals {
+        display: flex; flex-direction: column; gap: 0.55rem; padding: 0.7rem 0 0.2rem; border-top: 1px solid var(--border-color);
+        h3 { margin: 0; font-size: 0.9rem; }
+    }
+    .fa-goal {
+        --fa-color: var(--primary-color);
+        &.carbs { --fa-color: var(--macro-carbs); } &.fat { --fa-color: var(--macro-fat); } &.protein { --fa-color: var(--macro-protein); }
+        &.over { --fa-color: var(--kcal-over, #d9534f); .fa-goal-text span:last-child { color: var(--kcal-over, #d9534f); font-weight: 700; } }
+        .fa-goal-text { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.2rem; }
+        .fa-goal-track { display: flex; height: 0.5rem; border-radius: 999px; background: var(--surface-3, var(--surface-color)); overflow: hidden; }
+        .eaten { background: var(--fa-color); transition: width 0.3s ease; }
+        .add { background: var(--fa-color); opacity: 0.45; transition: width 0.3s ease; }
     }
     .fa-sheet-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.6rem; }
     .fa-danger { color: var(--danger, #d9534f); margin-right: auto; }

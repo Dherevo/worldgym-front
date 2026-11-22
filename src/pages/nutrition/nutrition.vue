@@ -74,6 +74,8 @@
                     <small class="muted">{{ $t('nutrition.macros.how') }}</small>
                 </details>
 
+                <WaterCard :date="date" />
+
                 <div v-for="meal in meals" :key="meal" class="card meal">
                     <div class="meal-head">
                         <div class="meal-title">
@@ -81,7 +83,16 @@
                             <small v-if="entriesOf(meal).length" class="meal-macros">{{ subtotal(meal) }} kcal<template v-if="proteinOf(meal)"> / {{ proteinOf(meal) }} g P</template></small>
                         </div>
                         <div class="meal-side">
-                            <button v-if="entriesOf(meal).length" type="button" class="meal-menu" :class="{ active: editMeal === meal }" :title="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.editMeal')" :aria-label="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.editMeal')" @click="toggleEdit(meal)">{{ editMeal === meal ? '✓' : '⋯' }}</button>
+                            <button type="button" class="meal-menu" :class="{ active: editMeal === meal || menuMeal === meal }" :title="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.menu.title')" :aria-label="editMeal === meal ? $t('nutrition.doneEditing') : $t('nutrition.menu.title')" @click="onMealMenu(meal)">{{ editMeal === meal ? '✓' : '⋯' }}</button>
+                            <template v-if="menuMeal === meal">
+                                <div class="menu-backdrop" @click="menuMeal = null"></div>
+                                <ul class="meal-popup" role="menu">
+                                    <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="menuEdit(meal)">✎ {{ $t('nutrition.menu.edit') }}</button></li>
+                                    <li><button type="button" role="menuitem" @click="openCopy(meal, 'from')">⎘ {{ $t('nutrition.menu.copyFrom') }}</button></li>
+                                    <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="openCopy(meal, 'to')">⎘ {{ $t('nutrition.menu.copyTo') }}</button></li>
+                                    <li v-if="entriesOf(meal).length"><button type="button" role="menuitem" @click="menuSave(meal)">⭐ {{ $t('foodAdd.saveMeal.action') }}</button></li>
+                                </ul>
+                            </template>
                         </div>
                     </div>
 
@@ -99,13 +110,12 @@
                         </li>
                     </ul>
 
-                    <div v-if="editMeal === meal && entriesOf(meal).length" class="save-meal">
+                    <div v-if="saveMealFor === meal && entriesOf(meal).length" class="save-meal">
                         <form v-if="saveMealFor === meal" class="save-meal-form" @submit.prevent="saveAsMeal(meal)">
                             <input type="text" v-model="saveMealName" maxlength="150" :placeholder="$t('foodAdd.saveMeal.placeholder')" />
                             <button type="submit" class="btn" :disabled="!saveMealName.trim() || saveMealBusy">{{ $t('foodAdd.saveMeal.save') }}</button>
                             <button type="button" class="btn-link" @click="saveMealFor = null">{{ $t('nutrition.cancel') }}</button>
                         </form>
-                        <button v-else type="button" class="btn-add" @click="openSaveMeal(meal)">⭐ {{ $t('foodAdd.saveMeal.action') }}</button>
                     </div>
 
                     <form v-if="adding === meal" class="add-form" @submit.prevent="save()">
@@ -161,6 +171,17 @@
                 </details>
 
             </template>
+
+            <div v-if="copyDlg" class="modal-backdrop" @click.self="copyDlg = null">
+                <div class="modal-box" role="dialog" aria-modal="true">
+                    <h3>{{ $t(copyDlg.mode === 'from' ? 'nutrition.menu.copyFromTitle' : 'nutrition.menu.copyToTitle', { meal: $t('nutrition.meals.' + copyDlg.meal).toLowerCase() }) }}</h3>
+                    <input type="date" class="copy-date" v-model="copyDlg.date" :max="localToday" />
+                    <div class="form-actions">
+                        <button type="button" class="btn-link" @click="copyDlg = null">{{ $t('nutrition.cancel') }}</button>
+                        <button type="button" class="btn" :disabled="copying || !copyDlg.date || copyDlg.date > localToday || copyDlg.date === date" @click="confirmCopy()">{{ $t('nutrition.menu.copy') }}</button>
+                    </div>
+                </div>
+            </div>
 
             <div v-if="infoModal" class="modal-backdrop" @click.self="infoModal = null">
                 <div class="modal-box" role="dialog" aria-modal="true">

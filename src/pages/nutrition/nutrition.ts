@@ -1,6 +1,7 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import EnergyBar from "@/components/energy-bar/energy-bar.vue";
+import WaterCard from "@/components/water-card/water-card.vue";
 import localDate from "@/modules/localDate";
 import { loadEnergyDay, recalcPastDay } from "@/modules/energyDay";
 import userStore from "@/modules/userStore";
@@ -20,7 +21,7 @@ interface FoodRow {
 }
 
 // Food diary of a day next to what was burned, plus the follow-up of the last days
-@Component({ components: { EnergyBar } })
+@Component({ components: { EnergyBar, WaterCard } })
 class NutritionPage extends Vue {
 
     readonly meals = MEALS;
@@ -41,6 +42,9 @@ class NutritionPage extends Vue {
     editingId: number | null = null;
     rows: FoodRow[] = [{ name: '', kcal: '', protein: '' }];
     // "Save as a meal": the meal whose name is being typed
+    // The menu of a meal (the three dots) and the dialog to copy it from / to another day
+    menuMeal: string | null = null;
+    copyDlg: { meal: string; mode: 'from' | 'to'; date: string } | null = null;
     saveMealFor: string | null = null;
     saveMealName = '';
     saveMealBusy = false;
@@ -399,7 +403,15 @@ class NutritionPage extends Vue {
         });
     }
 
-    // Same breakfast as the day before: copy what the previous day has in this meal (the catalog link and amount go with it)
+    // The entries of a meal added to a meal of a day (the catalog link and amount go with them)
+    copyEntries(entries: any[], meal: string, date: string) {
+        return Promise.all(entries.map((e: any) => http.post('/nutrition/entries').data({
+            date, meal, name: e.name, kcal: e.kcal, protein_g: e.protein_g,
+            ...(e.food_id ? { food_id: e.food_id, amount: e.amount } : {}),
+        })));
+    }
+
+    // Same breakfast as the day before: copy what the previous day has in this meal
     copyPrevious(meal: string) {
         if (this.copying) return;
         const d = new Date(this.date + 'T00:00:00');
@@ -412,10 +424,59 @@ class NutritionPage extends Vue {
                 App.notification(translate.get('nutrition.copyPrevEmpty')).show();
                 return null;
             }
-            return Promise.all(prev.map((e: any) => http.post('/nutrition/entries').data({
-                date: this.date, meal, name: e.name, kcal: e.kcal, protein_g: e.protein_g,
-                ...(e.food_id ? { food_id: e.food_id, amount: e.amount } : {}),
-            })));
+            return this.copyEntries(prev, meal, this.date);
+        })
+        .catch(() => App.notification(translate.get('nutrition.errors.copy')).setType('error').show())
+        .finally(() => { this.copying = false; this.refresh(); });
+    }
+
+    // The three dots: with the meal in edit mode they finish the edit, else they open the menu
+    onMealMenu(meal: string) {
+        if (this.editMeal === meal) {
+            this.editMeal = null;
+            return;
+        }
+        this.menuMeal = this.menuMeal === meal ? null : meal;
+    }
+
+    menuEdit(meal: string) {
+        this.menuMeal = null;
+        this.editMeal = meal;
+    }
+
+    menuSave(meal: string) {
+        this.menuMeal = null;
+        this.openSaveMeal(meal);
+    }
+
+    // The day to copy from starts as the day before, the day to copy to as today
+    openCopy(meal: string, mode: 'from' | 'to') {
+        this.menuMeal = null;
+        const d = new Date(this.date + 'T00:00:00');
+        d.setDate(d.getDate() - 1);
+        this.copyDlg = { meal, mode, date: mode === 'from' ? localDate(d) : localDate() };
+    }
+
+    confirmCopy() {
+        const dlg = this.copyDlg;
+        if (!dlg || this.copying || !dlg.date || dlg.date > localDate() || dlg.date === this.date) return;
+        this.copying = true;
+        const done = dlg.mode === 'from'
+            // From another day: what that day has in this meal comes to the day on screen
+            ? http.get('/nutrition/day').data({ date: dlg.date }).then((res: any) => {
+                const src = (res.entries ?? []).filter((e: any) => e.meal === dlg.meal);
+                if (!src.length) return 'empty';
+                return this.copyEntries(src, dlg.meal, this.date).then(() => 'ok');
+            })
+            // To another day: what the meal has on screen goes to that day
+            : (() => {
+                const src = this.entriesOf(dlg.meal);
+                return src.length ? this.copyEntries(src, dlg.meal, dlg.date).then(() => 'ok') : Promise.resolve('empty');
+            })();
+
+        done.then((r: any) => {
+            this.copyDlg = null;
+            App.notification(translate.get(r === 'ok' ? 'nutrition.menu.copied' : `nutrition.menu.empty${dlg.mode === 'from' ? 'From' : 'To'}`)).show();
         })
         .catch(() => App.notification(translate.get('nutrition.errors.copy')).setType('error').show())
         .finally(() => { this.copying = false; this.refresh(); });
