@@ -3,3 +3,7 @@
 @import 'worldgym';
 @import 'ocean';
 @import 'violet';
+
+// Background behind the exercise animations (Lottie): a light tint of the theme's accent color. Their colors are fixed
+// (dark grey, black, skin), so it must stay light in dark mode too
+:root { --lottie-bg: #f3e3cc; --lottie-bg: color-mix(in srgb, var(--primary-color) 24%, #ffffff); }

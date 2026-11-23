@@ -205,7 +205,7 @@
                 height: auto;
                 border-radius: 12px;
                 object-fit: contain;
-                background: #ffffff;
+                background: var(--lottie-bg, #ffffff);
             }
             .exercise-name { font-size: 1.6rem; font-weight: 700; color: var(--text-color); margin: 0; }
             .exercise-eq { color: var(--text-secondary); font-size: 0.9rem; margin: 0; }
