@@ -20,6 +20,8 @@ interface QueuedChange {
 
 const KEY = 'wg_offline_queue';
 const LIMIT = 300;
+// Snapshots that overwrite themselves: only the last one waiting matters
+const REPLACEABLE = ['/steps/sync'];
 
 // What the app shows: a notice while there is no connection or something waits to be sent
 export const offlineState = reactive({ offline: false, pending: 0, syncing: false, syncedAt: 0, dropped: 0 });
@@ -76,6 +78,7 @@ const OfflineQueue = {
             change.tmpId = `tmp_${Date.now().toString(36)}_${counter}`;
             answer = { ...answer, id: change.tmpId };
         }
+        if (REPLACEABLE.some(u => change.url.endsWith(u))) queue = queue.filter(c => !(c.method === change.method && c.url === change.url));
         queue.push(change);
         persist();
         offlineState.offline = true;

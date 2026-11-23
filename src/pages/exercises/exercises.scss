@@ -118,7 +118,7 @@
                 flex-shrink: 0;
                 border-radius: 8px;
                 object-fit: cover;
-                background: #ffffff;
+                background: var(--lottie-bg, #ffffff);
             }
             .exercise-name { font-weight: 600; }
             .exercise-meta { font-size: 0.85rem; color: var(--text-secondary); margin-top: 3px; }
@@ -247,7 +247,7 @@
                     width: 180px;
                     height: 180px;
                     border-radius: 10px;
-                    background: #ffffff;
+                    background: var(--lottie-bg, #ffffff);
                     margin: 0 auto 0.4rem;
                 }
                 .detail-credit {
@@ -311,7 +311,7 @@
                     height: 90px;
                     object-fit: cover;
                     border-radius: 8px;
-                    background: #ffffff;
+                    background: var(--lottie-bg, #ffffff);
                 }
                 .gif-buttons { display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
                 .btn-file, .btn-cancel {

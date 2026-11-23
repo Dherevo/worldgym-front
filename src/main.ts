@@ -14,6 +14,7 @@ import locales from './assets/translations/locales';
 import packageJSON from '../package.json';
 import initScrollReveal from './modules/scrollReveal';
 import { autoSyncSteps } from './modules/healthSteps';
+import { autoPrefetch } from './modules/prefetch';
 import { initBackButton } from './modules/backButton';
 //import baseComponent from './modules/baseComponent';
 
@@ -48,4 +49,5 @@ http();                         // HTTP Client configuration
 app.mount('#app');
 initScrollReveal();
 autoSyncSteps();
+autoPrefetch();
 initBackButton(app.config.globalProperties.$router);
