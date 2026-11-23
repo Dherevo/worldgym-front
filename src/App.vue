@@ -1,5 +1,6 @@
 <template>
   <AppSplash />
+  <OfflineBanner />
   <router-view />
 </template>
 
@@ -9,10 +10,11 @@ import { usePrimeVue } from "primevue/config";
 import locales from './assets/translations/locales';
 import { defineComponent } from 'vue';
 import AppSplash from '@/components/app-splash/app-splash.vue';
+import OfflineBanner from '@/components/offline-banner/offline-banner.vue';
 
 export default defineComponent({
 
-  components: { AppSplash },
+  components: { AppSplash, OfflineBanner },
 
   created() {
     const primevue = usePrimeVue();

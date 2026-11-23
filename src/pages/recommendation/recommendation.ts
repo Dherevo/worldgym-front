@@ -2,8 +2,9 @@ import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import CheckIn from "@/components/check-in/check-in.vue";
 import localDate from "@/modules/localDate";
+import ExerciseAnimation from "@/components/exercise-animation/exercise-animation.vue";
 
-@Component({ components: { CheckIn } })
+@Component({ components: { ExerciseAnimation, CheckIn } })
 class RecommendationPage extends Vue {
 
     readonly minuteOptions = [30, 45, 60, 75, 90];

@@ -3,11 +3,15 @@ import HttpRequestAttempt from "./attempt";
 import HttpError from "./error";
 import HttpRequest from "./request";
 import ApiToken from "./token";
+import HttpCache from "./cache";
+import OfflineQueue from "./queue";
 import { HTTPMethod, RequestInterceptor, ResponseInterceptor } from "./types";
 
 export default class http {
 
     public static baseURL: string = '';
+    // On: GET answers are kept (and served when there is no connection) and changes made offline wait in a queue
+    public static offlineMode: boolean = false;
     private static nextRequestIsRefresh: boolean = false;
     public static token: ApiToken = new ApiToken();
 
@@ -29,7 +33,7 @@ export default class http {
     private static retryPendingRequests() {
         for (const req of this.pendingRequests) {
             if (!req.promiseCallbacks) continue;
-            this.exec(req)
+            this.execNetwork(req)
                 .then(req.promiseCallbacks.resolve)
                 .catch(req.promiseCallbacks.reject);
         }
@@ -147,7 +151,65 @@ export default class http {
         })
     }
 
-    public static exec(request: HttpRequest) {
+    // A GET that can be kept: its key, or null when it must always go to the API
+    private static cacheKey(request: HttpRequest): string | null {
+        if (request.method !== 'GET' || request.noCache || request.fakeResponse || request.fullResponse || request.hasConverter) return null;
+        if (request.responseType !== 'json' || request.url.startsWith('/auth/')) return null;
+        return this.baseURL + request.generateUrl();
+    }
+
+    private static queueable(request: HttpRequest): boolean {
+        return request.method !== 'GET' && !request.noQueue && !request.fakeResponse && request.dataFormat === 'json'
+            && !request.url.startsWith('/auth/');
+    }
+
+    // What the app calls: the cache and the queue of changes in front of the real request
+    public static exec(request: HttpRequest): Promise<any> {
+        // Cache and offline queue are for the installed app only (the web always asks the API)
+        if (!this.offlineMode) return this.execNetwork(request) as Promise<any>;
+
+        return new Promise((resolve, reject) => {
+            const key = this.cacheKey(request);
+
+            (async () => {
+                if (key) {
+                    await HttpCache.ready;
+                    const hit = HttpCache.get(key);
+                    // With changes waiting to be sent, what is kept may not include them: ask the API
+                    if (hit?.fresh && !OfflineQueue.hasPending()) return resolve(hit.data);
+                }
+
+                // A change never overtakes the ones already waiting
+                if (this.queueable(request) && OfflineQueue.hasPending()) return resolve(OfflineQueue.enqueue(request));
+
+                this.execNetwork(request)
+                .then((res: any) => {
+                    if (key) HttpCache.set(key, res);
+                    else if (request.method !== 'GET' && !request.url.startsWith('/auth/')) HttpCache.clear();
+                    resolve(res);
+                })
+                .catch((err: any) => {
+                    if (OfflineQueue.isNetworkFailure(err?.status ?? -1, err?.data)) {
+                        // No connection: the last answer that was kept, or the change is saved to be sent later
+                        const old = key ? HttpCache.get(key) : null;
+                        if (old) return resolve(old.data);
+                        if (this.queueable(request)) return resolve(OfflineQueue.enqueue(request));
+                    }
+                    reject(err);
+                });
+            })();
+        });
+    }
+
+    // What the queue uses to send the waiting changes
+    public static run(request: HttpRequest): Promise<any> {
+        return (this.execNetwork(request) as Promise<any>).then(res => {
+            HttpCache.clear();
+            return res;
+        });
+    }
+
+    private static execNetwork(request: HttpRequest) {
         return new Promise((resolve, reject) => {
 
             // Check if this is a refresh request
@@ -404,3 +466,5 @@ export default class http {
     }
 
 }
+
+OfflineQueue.init(req => http.run(req));

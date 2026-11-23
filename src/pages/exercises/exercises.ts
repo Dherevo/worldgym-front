@@ -2,7 +2,9 @@ import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 
 import SearchInput from "@/components/search-input/search-input.vue";
-@Component({ components: { SearchInput } })
+import ExerciseAnimation from "@/components/exercise-animation/exercise-animation.vue";
+import { hasMedia, lottieUrl } from "@/modules/exerciseMedia";
+@Component({ components: { ExerciseAnimation, SearchInput } })
 class ExercisesPage extends Vue {
 
     exercises: any[] = [];
@@ -275,6 +277,9 @@ class ExercisesPage extends Vue {
             .catch(() => App.notification(translate.get('exercises.errors.delete')).setType('error').show());
         });
     }
+
+    hasMedia(ex: any) { return hasMedia(ex); }
+    lottieOf(ex: any) { return lottieUrl(ex); }
 
     primaryMuscles(ex: any) {
         return ex.muscles?.filter((m: any) => m.pivot?.is_primary).map((m: any) => m.name).join(', ') || '—';

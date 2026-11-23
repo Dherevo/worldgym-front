@@ -23,6 +23,7 @@ import checkin from './pages/checkin';
 import recommendation from './pages/recommendation';
 import notFound from './pages/notFound';
 import splash from './pages/splash';
+import offline from './pages/offline';
 import push from './pages/push';
 import weekly from './pages/weekly';
 import foodAdd from './pages/foodAdd';
@@ -58,6 +59,7 @@ const ca = {
     recommendation: recommendation.ca,
     notFound: notFound.ca,
     splash: splash.ca,
+    offline: offline.ca,
 };
 
 export default ca;

@@ -23,6 +23,7 @@ import checkin from './pages/checkin';
 import recommendation from './pages/recommendation';
 import notFound from './pages/notFound';
 import splash from './pages/splash';
+import offline from './pages/offline';
 import push from './pages/push';
 import weekly from './pages/weekly';
 import foodAdd from './pages/foodAdd';
@@ -58,6 +59,7 @@ const en = {
     recommendation: recommendation.en,
     notFound: notFound.en,
     splash: splash.en,
+    offline: offline.en,
 };
 
 export default en;

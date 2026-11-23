@@ -47,7 +47,7 @@
                     </div>
 
                     <div class="exercise" v-for="e in proposal.exercises" :key="e.exercise.id">
-                        <img v-if="e.exercise.gif_url" class="gif" :src="e.exercise.gif_url" :alt="e.exercise.name" width="56" height="56" />
+                        <exercise-animation class="gif" width="56" height="56" :exercise="e.exercise" />
                         <div class="exercise-body">
                             <div class="exercise-name">{{ e.exercise.name }}</div>
                             <div class="exercise-meta">

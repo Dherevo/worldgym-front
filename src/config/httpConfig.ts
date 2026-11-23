@@ -1,8 +1,11 @@
 import { http, Config, HttpError, translate } from "lib";
+import { isApp } from "@/modules/platform";
 
 export default () => {
 
     http.baseURL = Config.get('api.url');
+    // Kept answers and changes made without connection: only in the installed app
+    http.offlineMode = isApp;
 
     http.setGlobalHeaders(() => Promise.resolve({
         'Accept-Language': translate.currentLanguage

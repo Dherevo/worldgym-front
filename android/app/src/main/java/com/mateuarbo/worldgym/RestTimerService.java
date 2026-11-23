@@ -1,5 +1,6 @@
 package com.mateuarbo.worldgym;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -38,6 +39,8 @@ public class RestTimerService extends Service {
     static final String ACTION_SUB = "com.mateuarbo.worldgym.REST_SUB";
     static final String ACTION_START_SET = "com.mateuarbo.worldgym.REST_START_SET";
     static final String ACTION_STOP = "com.mateuarbo.worldgym.REST_STOP";
+    // Sent by the system alarm at the end of the rest (the Handler can be paused by Doze or the battery saver)
+    static final String ACTION_FINISH = "com.mateuarbo.worldgym.REST_FINISH";
     static final String ACTION_ACTIVE = "com.mateuarbo.worldgym.SET_ACTIVE";
     static final String ACTION_LOGGING = "com.mateuarbo.worldgym.SET_LOGGING";
     static final String ACTION_READY = "com.mateuarbo.worldgym.SET_READY";
@@ -79,6 +82,8 @@ public class RestTimerService extends Service {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable finishTask = this::finishRest;
     private PowerManager.WakeLock wakeLock;
+    // true from the start of a rest until it ends or another step takes over
+    private boolean resting = false;
 
     private long endsAt;
     private String title = "";
@@ -125,7 +130,18 @@ public class RestTimerService extends Service {
             createChannels();
             NotificationManagerCompat.from(this).cancel(ID_DONE);
             goForeground(buildTimerNotification());
+            resting = true;
             schedule();
+        } else if (ACTION_FINISH.equals(action)) {
+            // The system alarm: if the Handler did not finish the rest, it is done now. The service may have been recreated
+            // (nothing in memory), so the texts come with the alarm
+            long alarmEnds = intent.getLongExtra(EXTRA_ENDS_AT, 0);
+            if (endsAt == 0) {
+                restoreFromAlarm(intent);
+                resting = true;
+            }
+            // A rest that was extended or replaced has another end: its old alarm does nothing
+            if (resting && alarmEnds == endsAt) finishRest();
         } else if (ACTION_ADD.equals(action) || ACTION_SUB.equals(action)) {
             // A rest that already finished has no service left, so this only runs while counting down.
             // Taking time off past the end just finishes the rest right away
@@ -219,8 +235,55 @@ public class RestTimerService extends Service {
         }
     }
 
+    private void restoreFromAlarm(Intent intent) {
+        if (endsAt == 0) {
+            endsAt = intent.getLongExtra(EXTRA_ENDS_AT, 0);
+            doneTitle = intent.getStringExtra(EXTRA_DONE_TITLE);
+            doneText = intent.getStringExtra(EXTRA_DONE_TEXT);
+            startLabel = intent.getStringExtra(EXTRA_START_LABEL);
+            extraLabel = intent.getStringExtra(EXTRA_EXTRA_LABEL);
+            nextLabel = intent.getStringExtra(EXTRA_NEXT_LABEL);
+            choose = intent.getBooleanExtra(EXTRA_CHOOSE, false);
+            createChannels();
+        }
+    }
+
+    private PendingIntent finishAlarmIntent() {
+        Intent intent = new Intent(this, RestTimerService.class).setAction(ACTION_FINISH)
+            .putExtra(EXTRA_ENDS_AT, endsAt)
+            .putExtra(EXTRA_DONE_TITLE, doneTitle)
+            .putExtra(EXTRA_DONE_TEXT, doneText)
+            .putExtra(EXTRA_START_LABEL, startLabel)
+            .putExtra(EXTRA_EXTRA_LABEL, extraLabel)
+            .putExtra(EXTRA_NEXT_LABEL, nextLabel)
+            .putExtra(EXTRA_CHOOSE, choose);
+        return PendingIntent.getService(this, 9, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    }
+
+    // The system alarm works in Doze, where the Handler and the wake lock below may be paused. Exact when the user allowed
+    // "alarms and reminders" (needed from Android 14), otherwise as close as the system lets it
+    private void scheduleAlarm() {
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        if (am == null) return;
+        try {
+            if (Build.VERSION.SDK_INT < 31 || am.canScheduleExactAlarms()) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, endsAt, finishAlarmIntent());
+            } else {
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, endsAt, finishAlarmIntent());
+            }
+        } catch (SecurityException ignored) {
+            // no permission for alarms: the Handler is all there is
+        }
+    }
+
+    private void cancelAlarm() {
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        if (am != null) am.cancel(finishAlarmIntent());
+    }
+
     // Wakes the phone up (CPU only) at the end time, even with the screen off
     private void schedule() {
+        scheduleAlarm();
         handler.removeCallbacks(finishTask);
         long wait = Math.max(0, endsAt - System.currentTimeMillis());
         handler.postDelayed(finishTask, wait);
@@ -237,6 +300,8 @@ public class RestTimerService extends Service {
     }
 
     private void cancelAll() {
+        resting = false;
+        cancelAlarm();
         handler.removeCallbacks(finishTask);
         releaseWakeLock();
         stopForeground(STOP_FOREGROUND_REMOVE);
@@ -246,6 +311,11 @@ public class RestTimerService extends Service {
     }
 
     private void finishRest() {
+        // Handler and alarm can both arrive: the second one finds nothing to finish
+        if (!resting) return;
+        resting = false;
+        cancelAlarm();
+        handler.removeCallbacks(finishTask);
         stopForeground(STOP_FOREGROUND_REMOVE);
         NotificationManagerCompat.from(this).cancel(ID_TIMER);
 
@@ -313,6 +383,8 @@ public class RestTimerService extends Service {
 
     // A step that is not the rest takes over: the end-of-rest timer must not fire
     private void pauseCountdown() {
+        resting = false;
+        cancelAlarm();
         handler.removeCallbacks(finishTask);
         releaseWakeLock();
     }
