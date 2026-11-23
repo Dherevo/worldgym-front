@@ -97,7 +97,7 @@
         .swipe-row, .swipe-row .sr-btn.del { border-radius: 0; }
         .e-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.65rem 0.9rem; background: var(--surface-color); }
         .e-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-        .e-name { word-break: break-word; }
+        .e-name { word-break: break-word; font-weight: 500; }
         .e-sub { color: var(--text-muted); font-size: 0.78rem; }
         .e-kcal { font-weight: 600; white-space: nowrap; }
     }

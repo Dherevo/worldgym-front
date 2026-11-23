@@ -13,6 +13,10 @@ p, h1, h2, h3, h4, h5, h6, b, strong, i, em, span, ul, li, ol, label, input, tex
     color: var(--text-color);
 }
 
+// The one typeface of the app (the themes only change colors)
+html { --ion-font-family: var(--font-body); }
+*, button, input, select, textarea { font-family: var(--font-body); }
+
 // Touch screens: comfortable tap targets, no zoom when focusing a field, readable base text
 @media (max-width: 768px) {
     html { -webkit-text-size-adjust: 100%; }
