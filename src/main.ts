@@ -17,6 +17,11 @@ import { autoSyncSteps } from './modules/healthSteps';
 import '@fontsource-variable/inter';
 import { autoPrefetch } from './modules/prefetch';
 import { initBackButton } from './modules/backButton';
+import { initTapHaptics } from './modules/haptics';
+import grow from './directives/grow';
+import AnimatedNumber from './components/animated-number/animated-number.vue';
+import SkeletonBlock from './components/skeleton-block/skeleton-block.vue';
+import CheckBadge from './components/check-badge/check-badge.vue';
 //import baseComponent from './modules/baseComponent';
 
 const savedLanguage = Storage.get('language');
@@ -31,6 +36,10 @@ const app = createApp(AppMain);
 // Initialize Phyrus
 App.init(packageJSON.version, app, config, routes, locales);
 app.component('AppPage', AppPage);
+app.component('AnimatedNumber', AnimatedNumber);
+app.component('SkeletonBlock', SkeletonBlock);
+app.component('CheckBadge', CheckBadge);
+app.directive('grow', grow);
 // Ionic components (their CSS is loaded where they are used, so the current pages are not restyled)
 app.use(IonicVue);
 
@@ -51,4 +60,5 @@ app.mount('#app');
 initScrollReveal();
 autoSyncSteps();
 autoPrefetch();
+initTapHaptics();
 initBackButton(app.config.globalProperties.$router);

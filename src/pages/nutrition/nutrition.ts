@@ -1,4 +1,4 @@
-import { Component, Vue, toNative } from "vue-facing-decorator";
+import { Component, Vue, Watch, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import EnergyBar from "@/components/energy-bar/energy-bar.vue";
 import WaterCard from "@/components/water-card/water-card.vue";
@@ -9,6 +9,7 @@ import SwipeRow from "@/components/swipe-row/swipe-row.vue";
 import { proteinRange } from "@/modules/calories";
 import { macroTargets } from "@/modules/macros";
 import type { EnergyDay } from "@/modules/energyDay";
+import { celebrate } from "@/modules/confetti";
 
 const MEALS = ['breakfast', 'lunch', 'snack', 'dinner', 'other'];
 
@@ -179,6 +180,20 @@ class NutritionPage extends Vue {
 
     get isToday(): boolean {
         return this.date === localDate();
+    }
+
+    // Reaching the minimum protein of the day while on the screen is celebrated (once a day)
+    @Watch('day')
+    onDayChange(now: EnergyDay | null, before: EnergyDay | null) {
+        const min = this.proteinGoal?.min;
+        if (!now || !before || !min || now.date !== before.date || now.date !== localDate()) return;
+        if (before.protein >= min || now.protein < min) return;
+        const key = `wg_cel_protein_${now.date}`;
+        try {
+            if (window.localStorage.getItem(key)) return;
+            window.localStorage.setItem(key, '1');
+        } catch { /* it just may repeat */ }
+        celebrate();
     }
 
     load() {

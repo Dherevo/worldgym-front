@@ -22,7 +22,10 @@
                 <svg-icon name="heroicons-outline/arrow-uturn-left" /> {{ $t('nutrition.toToday') }}
             </button>
 
-            <p v-if="loading && !day" class="muted">{{ $t('nutrition.loading') }}</p>
+            <template v-if="loading && !day">
+                <div class="card"><skeleton-block :rows="3" height="1.3rem" /></div>
+                <div class="card"><skeleton-block :rows="4" height="1.1rem" /></div>
+            </template>
 
             <template v-if="day">
                 <div class="card kcal-card">
@@ -31,15 +34,15 @@
                         <button type="button" class="info-btn" :aria-label="$t('nutrition.info')" @click="infoModal = 'energy'">ⓘ</button>
                     </div>
                     <template v-if="day.ready">
-                        <p class="big"><b>{{ day.eaten }}</b> <span class="muted">/ {{ day.min }} - {{ day.max }} kcal</span></p>
-                        <div class="slim-track kcal-track"><div class="slim-fill" :class="kcalState" :style="{ width: kcalPct + '%' }"></div><div class="slim-mark" :style="{ left: kcalMinPct + '%' }"></div></div>
+                        <p class="big"><b><animated-number :value="day.eaten" /></b> <span class="muted">/ {{ day.min }} - {{ day.max }} kcal</span></p>
+                        <div class="slim-track kcal-track"><div class="slim-fill" :class="kcalState" v-grow="kcalPct"></div><div class="slim-mark" :style="{ left: kcalMinPct + '%' }"></div></div>
                         <p class="kcal-left" :class="kcalState">{{ day.max - day.eaten >= 0 ? $t('nutrition.left', { n: day.max - day.eaten }) : $t('nutrition.over', { n: day.eaten - day.max }) }}</p>
                         <div class="protein-bar" v-if="proteinGoal">
                             <div class="protein-text">
                                 <span>{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }}</span>
                                 <span class="muted">{{ $t('nutrition.proteinGoal', { min: proteinGoal.min, max: proteinGoal.max }) }}</span>
                             </div>
-                            <div class="protein-track"><div class="protein-fill" :class="{ reached: day.protein >= proteinGoal.min }" :style="{ width: proteinPct + '%' }"></div></div>
+                            <div class="protein-track"><div class="protein-fill" :class="{ reached: day.protein >= proteinGoal.min }" v-grow="proteinPct"></div></div>
                         </div>
                         <p class="protein" v-else-if="day.protein > 0">{{ $t('nutrition.protein', { n: Math.round(day.protein) }) }}</p>
                     </template>
@@ -54,7 +57,7 @@
                                 <span>{{ $t('nutrition.macros.' + b.key) }}: {{ b.noData ? '—' : b.value + ' ' + b.unit }}</span>
                                 <span class="muted">{{ $t(b.ceiling ? 'nutrition.macros.max' : (b.range ? 'nutrition.macros.range' : 'nutrition.macros.goal'), { n: b.target, range: b.range, unit: b.unit }) }}</span>
                             </div>
-                            <div class="protein-track"><div class="protein-fill macro-fill" :class="[b.key, { over: b.over }]" :style="{ width: b.pct + '%' }"></div></div>
+                            <div class="protein-track"><div class="protein-fill macro-fill" :class="[b.key, { over: b.over }]" v-grow="b.pct"></div></div>
                         </div>
                     </div>
                     <p v-else class="extras">{{ $t('nutrition.extras', { carbs: dayExtras.carbs, fiber: dayExtras.fiber, saturates: dayExtras.saturates, sodium: dayExtras.sodium }) }}</p>
@@ -82,7 +85,7 @@
                         </div>
                     </div>
 
-                    <ul class="entry-list" v-if="entriesOf(meal).length">
+                    <TransitionGroup tag="ul" name="row" class="entry-list" v-if="entriesOf(meal).length">
                         <li v-for="e in entriesOf(meal)" :key="e.id">
                             <SwipeRow @edit="openEdit(e)" @delete="remove(e)">
                                 <div class="e-row">
@@ -94,7 +97,7 @@
                                 </div>
                             </SwipeRow>
                         </li>
-                    </ul>
+                    </TransitionGroup>
 
                     <div v-if="saveMealFor === meal && entriesOf(meal).length" class="save-meal">
                         <form v-if="saveMealFor === meal" class="save-meal-form" @submit.prevent="saveAsMeal(meal)">

@@ -103,7 +103,7 @@
     }
     .fa-ring {
         width: 5.5rem; height: 5.5rem;
-        circle { fill: none; stroke-width: 6; }
+        circle { fill: none; stroke-width: 6; transition: stroke-dasharray 0.6s cubic-bezier(0.22, 0.8, 0.3, 1), stroke-dashoffset 0.6s cubic-bezier(0.22, 0.8, 0.3, 1); }
         .bg { stroke: var(--surface-3, var(--border-color)); }
         .carbs { stroke: var(--macro-carbs); } .fat { stroke: var(--macro-fat); } .protein { stroke: var(--macro-protein); }
     }
@@ -123,6 +123,7 @@
         &.carbs { --fa-color: var(--macro-carbs); } &.fat { --fa-color: var(--macro-fat); } &.protein { --fa-color: var(--macro-protein); }
         &.over { --fa-color: var(--kcal-over, #d9534f); .fa-goal-text span:last-child { color: var(--kcal-over, #d9534f); font-weight: 700; } }
         .fa-goal-text { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.2rem; }
+        .eaten, .add { transition: width 0.6s cubic-bezier(0.22, 0.8, 0.3, 1); }
         .fa-goal-track { display: flex; height: 0.5rem; border-radius: 999px; background: var(--surface-3, var(--surface-color)); overflow: hidden; }
         .eaten { background: var(--fa-color); transition: width 0.3s ease; }
         .add { background: var(--fa-color); opacity: 0.45; transition: width 0.3s ease; }
