@@ -7,3 +7,6 @@
 // Background behind the exercise animations (Lottie): a light tint of the theme's accent color. Their colors are fixed
 // (dark grey, black, skin), so it must stay light in dark mode too
 :root { --lottie-bg: #f3e3cc; --lottie-bg: color-mix(in srgb, var(--primary-color) 24%, #ffffff); }
+
+// One typeface for the whole app, whatever the color theme (themes only change colors)
+:root { --font-heading: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; --font-body: var(--font-heading); }

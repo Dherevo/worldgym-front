@@ -73,27 +73,25 @@
 
             <!-- Foods -->
             <template v-if="!isTemplateTab">
-                <section v-if="suggested.length">
-                    <h2>{{ $t('foodAdd.suggestions') }}</h2>
+                <section v-if="showSuggestions">
+                    <h2>{{ $t('foodAdd.suggestionsOf', { meal: $t('nutrition.meals.' + meal).toLowerCase() }) }}</h2>
                     <ul class="fa-list">
-                        <li v-for="f in suggested" :key="'s' + f.id">
-                            <SwipeRow :enabled="tab === 'mine'" :actions="isAdmin ? ['share', 'edit', 'delete'] : ['edit', 'delete']" @share="shareFood(f)" @edit="editFood(f)" @delete="removeFood(f)">
-                                <button type="button" class="fa-row" @click="openSheet(f)">
-                                    <img v-if="f.image_url" class="fa-thumb" :src="f.image_url" alt="" loading="lazy" />
-                                    <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
-                                    <span class="fa-main">
-                                        <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
-                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="isNatural(f)" class="fa-natural"> · ✓ {{ $t('foodAdd.natural') }}</em></small>
-                                    </span>
-                                    <span class="fa-plus">+</span>
-                                </button>
-                            </SwipeRow>
+                        <li v-for="s in suggestions" :key="'s' + s.food.id">
+                            <button type="button" class="fa-row" :disabled="saving" @click="quickAdd(s)">
+                                <img v-if="s.food.image_url" class="fa-thumb" :src="s.food.image_url" alt="" loading="lazy" />
+                                <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
+                                <span class="fa-main">
+                                    <span class="fa-name">{{ s.food.name }}<em v-if="addedFoods.includes(s.food.id)" class="fa-check">✓</em></span>
+                                    <small>{{ s.amount }} {{ unitLabel(s.food) }} · {{ suggestionKcal(s) }} kcal</small>
+                                </span>
+                                <span class="fa-plus">+</span>
+                            </button>
                         </li>
                     </ul>
                 </section>
 
                 <section v-if="listed.length">
-                    <h2 v-if="suggested.length">{{ $t('foodAdd.foods') }}</h2>
+                    <h2 v-if="showSuggestions">{{ $t('foodAdd.foods') }}</h2>
                     <ul class="fa-list">
                         <li v-for="f in listed" :key="f.id">
                             <SwipeRow :enabled="tab === 'mine'" :actions="isAdmin ? ['share', 'edit', 'delete'] : ['edit', 'delete']" @share="shareFood(f)" @edit="editFood(f)" @delete="removeFood(f)">

@@ -55,8 +55,8 @@ class FoodAddPage extends Vue {
     total = 0;
     offset = 0;
     loading = false;
-    // Names of what was eaten lately (without the amount), to suggest those foods first
-    recents: string[] = [];
+    // What the user ate most in this meal lately, with the amount of the last time (one tap adds it)
+    suggestions: { food: any; amount: number; count: number }[] = [];
     // What was added in this visit: it shows a check
     addedFoods: number[] = [];
     addedTemplates: number[] = [];
@@ -106,9 +106,7 @@ class FoodAddPage extends Vue {
         if (/^\d{4}-\d{2}-\d{2}$/.test(q.date ?? '') && q.date <= localDate()) this.date = q.date;
 
         loadFoodCategories().then(list => { this.categories = list; });
-        http.get('/nutrition/recent')
-        .then((res: any) => { this.recents = (res.items ?? []).map((i: any) => this.plainName(i.name)); })
-        .catch(() => {});
+        this.loadSuggestions();
         this.reload();
     }
 
@@ -291,17 +289,48 @@ class FoodAddPage extends Vue {
         return String(name ?? '').replace(/\s*\([\d.,]+\s*(?:g|ml|u\.)\)$/, '').trim().toLowerCase();
     }
 
-    // Foods eaten lately come first when nothing is typed (only on the lists of foods that are not a category)
+    // The foods of this meal come first when nothing is typed, on "all foods"
     get showSuggestions(): boolean {
-        return !this.query.trim() && this.catId === null && !this.isTemplateTab;
+        return this.tab === 'all' && !this.query.trim() && !this.filtersActive && this.suggestions.length > 0;
     }
 
-    get suggested(): any[] {
-        return this.showSuggestions ? this.foods.filter(f => this.recents.includes(this.plainName(f.name))) : [];
+    loadSuggestions() {
+        http.get('/nutrition/suggestions').data({ meal: this.meal })
+        .then((res: any) => { this.suggestions = res.items ?? []; })
+        .catch(() => { this.suggestions = []; });
+    }
+
+    @Watch('meal')
+    onMealChange() {
+        this.loadSuggestions();
+    }
+
+    suggestionKcal(s: { food: any; amount: number }): number {
+        return Math.round((s.food.kcal_100 ?? 0) * (s.food.unit === 'u' ? s.amount : s.amount / 100));
+    }
+
+    // One tap adds the food with the amount of the last time
+    quickAdd(s: { food: any; amount: number }) {
+        if (this.saving) return;
+        this.saving = true;
+        const k = s.food.unit === 'u' ? s.amount : s.amount / 100;
+        const protein = Math.round((s.food.protein_100 ?? 0) * k * 10) / 10;
+        http.post('/nutrition/entries').data({
+            meal: this.meal, date: this.date,
+            name: `${String(s.food.name).slice(0, 120)} (${s.amount} ${this.unitLabel(s.food)})`,
+            kcal: this.suggestionKcal(s), protein_g: protein || null, food_id: s.food.id, amount: s.amount,
+        })
+        .then(() => {
+            if (!this.addedFoods.includes(s.food.id)) this.addedFoods.push(s.food.id);
+            this.goalsLoaded = false;
+            App.notification(translate.get('foodAdd.addedTo', { name: s.food.name, meal: translate.get('nutrition.meals.' + this.meal).toLowerCase() })).show();
+        })
+        .catch(() => App.notification(translate.get('foodAdd.errors.add')).setType('error').show())
+        .finally(() => { this.saving = false; });
     }
 
     get listed(): any[] {
-        return this.showSuggestions ? this.foods.filter(f => !this.recents.includes(this.plainName(f.name))) : this.foods;
+        return this.foods;
     }
 
     perLabel(f: any): string {
