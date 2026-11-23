@@ -13,10 +13,29 @@
 
             <SearchInput class="fa-search" v-model="query" @input="onQuery()" :placeholder="$t('foodAdd.search')" />
 
-            <div class="fa-seg" role="tablist">
-                <button type="button" role="tab" :class="{ on: tab === 'all' }" @click="selectTab('all')">{{ $t('foodAdd.tabs.all') }}</button>
-                <button type="button" role="tab" :class="{ on: tab === 'mine' }" @click="selectTab('mine')">{{ $t('foodAdd.tabs.mine') }}</button>
+            <div class="fa-segrow">
+                <div class="fa-seg" role="tablist">
+                    <button type="button" role="tab" :class="{ on: tab === 'all' }" @click="selectTab('all')">{{ $t('foodAdd.tabs.all') }}</button>
+                    <button type="button" role="tab" :class="{ on: tab === 'mine' }" @click="selectTab('mine')">{{ $t('foodAdd.tabs.mine') }}</button>
+                </div>
+                <button v-if="tab === 'all'" type="button" class="fa-filter-btn" :class="{ on: showFilters || filtersActive }" :aria-label="$t('foodAdd.filters.title')" @click="showFilters = !showFilters">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>
+                    <i v-if="filtersActive" class="fa-dot"></i>
+                </button>
             </div>
+
+            <form v-if="showFilters && tab === 'all'" class="fa-filters" @submit.prevent="applyFilters()">
+                <p class="muted">{{ $t('foodAdd.filters.hint') }}</p>
+                <label class="fa-f-wide"><span>{{ $t('foodAdd.filters.brand') }}</span><input v-model="filters.brand" type="text" maxlength="60" placeholder="Hacendado" /></label>
+                <label><span>{{ $t('foodAdd.filters.proteinMin') }}</span><input v-model="filters.protein_min" type="number" min="0" inputmode="decimal" /></label>
+                <label><span>{{ $t('foodAdd.filters.kcalMax') }}</span><input v-model="filters.kcal_max" type="number" min="0" inputmode="decimal" /></label>
+                <label><span>{{ $t('foodAdd.filters.carbsMax') }}</span><input v-model="filters.carbs_max" type="number" min="0" inputmode="decimal" /></label>
+                <label><span>{{ $t('foodAdd.filters.fatMax') }}</span><input v-model="filters.fat_max" type="number" min="0" inputmode="decimal" /></label>
+                <div class="fa-f-actions fa-f-wide">
+                    <button type="button" class="fa-f-clear" @click="clearFilters()">{{ $t('foodAdd.filters.clear') }}</button>
+                    <button type="submit" class="fa-f-apply">{{ $t('foodAdd.filters.apply') }}</button>
+                </div>
+            </form>
 
             <nav class="fa-tabs" role="tablist">
                 <button type="button" role="tab" :class="{ on: tab === 'meals' }" @click="selectTab('meals')">{{ $t('foodAdd.tabs.meals') }}</button>
@@ -58,7 +77,7 @@
                                     <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                     <span class="fa-main">
                                         <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
-                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="f.off_code" class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em></small>
+                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="f.off_code" class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em><em v-else-if="isNatural(f)" class="fa-natural"> · ✓ {{ $t('foodAdd.natural') }}</em></small>
                                     </span>
                                     <span class="fa-plus">+</span>
                                 </button>
@@ -77,7 +96,7 @@
                                     <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                     <span class="fa-main">
                                         <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
-                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="f.off_code" class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em></small>
+                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="f.off_code" class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em><em v-else-if="isNatural(f)" class="fa-natural"> · ✓ {{ $t('foodAdd.natural') }}</em></small>
                                     </span>
                                     <span class="fa-plus">+</span>
                                 </button>
@@ -86,23 +105,29 @@
                     </ul>
                 </section>
 
-                <p v-if="!loading && !foods.length && !(tab === 'all' && query.trim().length >= 2)" class="muted">{{ tab === 'mine' && !query.trim() ? $t('foodAdd.emptyMine') : $t('foodAdd.empty') }}</p>
+                <p v-if="!loading && !foods.length && !(tab === 'all' && (query.trim().length >= 2 || filtersActive))" class="muted">{{ tab === 'mine' && !query.trim() ? $t('foodAdd.emptyMine') : $t('foodAdd.empty') }}</p>
                 <button v-if="hasMore" type="button" class="fa-more" :disabled="loading" @click="loadFoods(false)">{{ $t('foodAdd.more') }}</button>
 
-                <section v-if="query.trim().length >= 2 && !loading && (tab === 'all' || foods.length < 4)" class="fa-off">
+                <section v-if="(query.trim().length >= 2 || (tab === 'all' && filtersActive)) && !loading && (tab === 'all' ? !hasMore : foods.length < 4)" class="fa-off">
                     <button v-if="tab !== 'all'" type="button" class="fa-more" :disabled="offSearching" @click="searchOff()">🔎 {{ offSearching ? $t('foodAdd.searching') : $t('foodAdd.searchOff') }}</button>
-                    <p v-else-if="offSearching" class="muted">🔎 {{ $t('foodAdd.searching') }}</p>
+                    <template v-else>
+                        <h2 v-if="offShown.length || offSearching">{{ $t('foodAdd.offHeading') }}</h2>
+                        <p v-if="offSearching" class="muted fa-loading"><span class="fa-spin"></span>{{ $t('foodAdd.searching') }}</p>
+                        <div ref="offEnd" class="fa-end"></div>
+                    </template>
                     <p v-if="offSearched && !offResults.length && !offSearching && !foods.length" class="muted">{{ $t('foodAdd.offNone') }}</p>
                     <ul v-if="offShown.length" class="fa-list">
                         <li v-for="p in offShown" :key="p.code">
-                            <button type="button" class="fa-row" :disabled="offSaving" @click="pickOff(p)">
+                            <button type="button" class="fa-row" :class="{ 'fa-busy': offPicking === p.code }" :disabled="offSaving" @click="pickOff(p)">
                                 <img v-if="p.image" class="fa-thumb" :src="p.image" alt="" loading="lazy" />
                                 <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                 <span class="fa-main">
                                     <span class="fa-name">{{ p.name }}</span>
-                                    <small>{{ p.kcal_100 }} kcal · {{ $t('foodAdd.per100', { unit: p.unit }) }}<template v-if="p.brand"> · {{ p.brand }}</template><em class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em></small>
+                                    <small v-if="offPicking === p.code">{{ $t('foodAdd.loadingFood') }}</small>
+                                    <small v-else>{{ p.kcal_100 }} kcal · {{ $t('foodAdd.per100', { unit: p.unit }) }}<template v-if="p.brand"> · {{ p.brand }}</template><em class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em></small>
                                 </span>
-                                <span class="fa-plus">+</span>
+                                <span v-if="offPicking === p.code" class="fa-spin"></span>
+                                <span v-else class="fa-plus">+</span>
                             </button>
                         </li>
                     </ul>

@@ -34,6 +34,15 @@
         button { border: none; background: none; color: var(--text-secondary); padding: 0.55rem 0.5rem; border-radius: 9px; font-size: 0.95rem; cursor: pointer; &.on { background: var(--primary-color); color: #fff; font-weight: 700; } }
     }
     .fa-off-tag { font-style: normal; opacity: 0.75; }
+    .fa-segrow { display: flex; gap: 0.5rem; align-items: stretch; .fa-seg { flex: 1; } }
+    .fa-filter-btn { position: relative; flex: none; width: 2.8rem; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid var(--border-color); background: var(--surface-2); color: var(--text-secondary); cursor: pointer; &.on { color: var(--primary-color); border-color: var(--primary-color); } .fa-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--primary-color); } }
+    .fa-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; padding: 0.8rem; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border-color); p { grid-column: 1 / -1; margin: 0; font-size: 0.85rem; } label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.8rem; color: var(--text-secondary); } input { width: 100%; box-sizing: border-box; padding: 0.5rem 0.6rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color); font-size: 1rem; } .fa-f-wide { grid-column: 1 / -1; } .fa-f-actions { display: flex; gap: 0.5rem; justify-content: flex-end; button { border-radius: 999px; padding: 0.5rem 1.1rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: none; color: var(--text-secondary); } .fa-f-apply { background: var(--primary-color); border-color: var(--primary-color); color: #fff; } } }
+    .fa-natural { font-style: normal; color: #16a34a; font-weight: 600; }
+    .fa-end { height: 1px; }
+    .fa-loading { display: flex; align-items: center; gap: 0.5rem; }
+    .fa-busy { opacity: 0.75; }
+    .fa-spin { flex: none; width: 1.1rem; height: 1.1rem; border-radius: 50%; border: 2px solid var(--border-color); border-top-color: var(--primary-color); animation: fa-rotate 0.7s linear infinite; }
+    @keyframes fa-rotate { to { transform: rotate(360deg); } }
     .fa-tabs {
         border-bottom: 1px solid var(--border-color);
         button { flex: none; background: none; border: none; border-bottom: 3px solid transparent; color: var(--text-secondary); padding: 0.6rem 0.7rem; font-size: 0.95rem; cursor: pointer; white-space: nowrap; &.on { color: var(--primary-color); border-bottom-color: var(--primary-color); font-weight: 700; } }

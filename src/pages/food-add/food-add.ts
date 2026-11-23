@@ -66,6 +66,12 @@ class FoodAddPage extends Vue {
     offResults: any[] = [];
     offSearching = false;
     offToken = 0;
+    // Code of the Open Food Facts product that is being saved (shows a spinner on its row)
+    offPicking = '';
+    // Filters of the Open Food Facts search (the panel opens with the funnel button)
+    showFilters = false;
+    filters = { brand: '', protein_min: '', kcal_max: '', carbs_max: '', fat_max: '' };
+    endObserver: IntersectionObserver | null = null;
     offSearched = false;
     offSaving = false;
     scanning = false;
@@ -104,6 +110,7 @@ class FoodAddPage extends Vue {
     beforeUnmount() {
         clearTimeout(this.timer);
         clearTimeout(this.bTimer);
+        this.endObserver?.disconnect();
     }
 
     // ---- Tabs ----
@@ -150,6 +157,7 @@ class FoodAddPage extends Vue {
     }
 
     reload() {
+        if (this.tab === 'all' && this.filtersActive && !this.query.trim() && !this.isTemplateTab) { this.foods = []; this.total = 0; this.$nextTick(() => this.watchEnd()); return; }
         if (this.isTemplateTab) this.loadTemplates();
         else this.loadFoods(true);
     }
@@ -182,8 +190,7 @@ class FoodAddPage extends Vue {
             this.foods = reset ? items : [...this.foods, ...items];
             this.total = res.total ?? 0;
             this.offset = this.foods.length;
-            // On "all foods" the search also looks in Open Food Facts, without asking
-            if (reset && this.tab === 'all' && this.query.trim().length >= 2) this.searchOff(true);
+            this.$nextTick(() => this.watchEnd());
         })
         .catch(() => { if (id === this.request) App.notification(translate.get('foodAdd.errors.load')).setType('error').show(); })
         .finally(() => { if (id === this.request) this.loading = false; });
@@ -193,6 +200,62 @@ class FoodAddPage extends Vue {
     get offShown(): any[] {
         const codes = new Set(this.foods.map(f => f.off_code).filter(Boolean));
         return this.offResults.filter(p => !codes.has(p.code));
+    }
+
+    // On "all foods" Open Food Facts is searched when the user reaches the end of the own results
+    get offWanted(): boolean {
+        return this.tab === 'all' && (this.query.trim().length >= 2 || this.filtersActive) && !this.loading && !this.hasMore;
+    }
+
+    // The filters that have a value, as they go to the API
+    get activeFilters(): Record<string, string> {
+        const out: Record<string, string> = {};
+        for (const [k, v] of Object.entries(this.filters)) if (String(v).trim() !== '') out[k] = String(v).trim();
+        return out;
+    }
+
+    get filtersActive(): boolean {
+        return Object.keys(this.activeFilters).length > 0;
+    }
+
+    applyFilters() {
+        this.offResults = [];
+        this.offSearched = false;
+        this.offToken += 1;
+        this.offSearching = false;
+        // With filters and no text the own foods are not listed (it would be the whole catalog)
+        if (this.filtersActive && !this.query.trim()) { this.foods = []; this.total = 0; this.searchOff(true); }
+        else this.reload();
+    }
+
+    clearFilters() {
+        this.filters = { brand: '', protein_min: '', kcal_max: '', carbs_max: '', fat_max: '' };
+        this.applyFilters();
+    }
+
+    watchEnd() {
+        this.endObserver?.disconnect();
+        this.endObserver = null;
+        const el = this.$refs.offEnd as HTMLElement | undefined;
+        if (!el || !this.offWanted || this.offSearched || this.offSearching) return;
+        this.endObserver = new IntersectionObserver(entries => {
+            if (!entries.some(e => e.isIntersecting)) return;
+            this.endObserver?.disconnect();
+            this.endObserver = null;
+            this.searchOff(true);
+        }, { rootMargin: '120px' });
+        this.endObserver.observe(el);
+    }
+
+    // A food of the shared catalog or the user's own, from a natural category and without brand (eggs, vegetables, pulses...)
+    get naturalIds(): Set<number> {
+        const slugs = ['fruita', 'verdura', 'ous', 'llegums', 'fruits-secs', 'peix', 'peix-blanc', 'peix-blau', 'peix-marisc', 'carn-pollastre', 'carn-vedella', 'carn-porc'];
+        return new Set(this.categories.filter(c => slugs.includes(c.slug)).map(c => c.id));
+    }
+
+    isNatural(f: any): boolean {
+        if (f.brand || f.off_code) return false;
+        return (f.category_ids ?? []).some((id: number) => this.naturalIds.has(id));
     }
 
     get hasMore(): boolean {
@@ -226,14 +289,14 @@ class FoodAddPage extends Vue {
     // Returns 'found', 'none' (OFF answered but has nothing) or 'error' (OFF not available)
     searchOff(silent = false): Promise<'found' | 'none' | 'error'> {
         const q = this.query.trim();
-        if (q.length < 2) return Promise.resolve('error');
+        if (q.length < 2 && !this.filtersActive) return Promise.resolve('error');
         this.offToken += 1;
         const token = this.offToken;
         this.offSearching = true;
         this.offSearched = false;
 
         const isCode = /^\d{6,14}$/.test(q);
-        const req = isCode ? http.get(`/foods/off/${q}`) : http.get('/foods/off').data({ q });
+        const req = isCode ? http.get(`/foods/off/${q}`) : http.get('/foods/off').data({ q, ...this.activeFilters });
         return req.then((res: any) => {
             if (token !== this.offToken) return 'none';
             this.offResults = isCode ? [res] : (res.items ?? []);
@@ -254,6 +317,7 @@ class FoodAddPage extends Vue {
     pickOff(p: any) {
         if (this.offSaving) return;
         this.offSaving = true;
+        this.offPicking = p.code;
 
         const ok = (v: any, max: number) => (typeof v === 'number' && v >= 0 && v <= max ? v : null);
         const category = this.categories.find(c => c.slug === p.category);
@@ -284,7 +348,7 @@ class FoodAddPage extends Vue {
             const code = e?.data?.error;
             App.notification(translate.get('nutrition.off.saveError') + (code ? ` (${code})` : '')).setType('error').show();
         })
-        .finally(() => { this.offSaving = false; });
+        .finally(() => { this.offSaving = false; this.offPicking = ''; });
     }
 
     // Scans a barcode: the food of the catalog with it opens straight away; if there is none, Open Food Facts is
