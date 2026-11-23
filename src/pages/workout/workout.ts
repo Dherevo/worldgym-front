@@ -1,4 +1,5 @@
 import { Component, Vue, Watch, toNative } from "vue-facing-decorator";
+import { celebrate } from "@/modules/confetti";
 import { http, App, translate } from "lib";
 import { primaryMuscleNames } from "@/modules/muscles";
 import localDate from "@/modules/localDate";
@@ -374,6 +375,7 @@ class WorkoutPage extends Vue {
         .catch(() => {});
         this.clearProgress();
         this.state = 'done';
+        celebrate();
     }
 
     reconstructProgress() {

@@ -81,7 +81,7 @@
                                 <img v-if="s.food.image_url" class="fa-thumb" :src="s.food.image_url" alt="" loading="lazy" />
                                 <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                 <span class="fa-main">
-                                    <span class="fa-name">{{ s.food.name }}<em v-if="addedFoods.includes(s.food.id)" class="fa-check">✓</em></span>
+                                    <span class="fa-name">{{ s.food.name }}<check-badge v-if="addedFoods.includes(s.food.id)" /></span>
                                     <small>{{ s.amount }} {{ unitLabel(s.food) }} · {{ suggestionKcal(s) }} kcal</small>
                                 </span>
                                 <span class="fa-plus">+</span>
@@ -99,8 +99,8 @@
                                     <img v-if="f.image_url" class="fa-thumb" :src="f.image_url" alt="" loading="lazy" />
                                     <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                     <span class="fa-main">
-                                        <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
-                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="isNatural(f)" class="fa-natural"> · ✓ {{ $t('foodAdd.natural') }}</em></small>
+                                        <span class="fa-name">{{ f.name }}<check-badge v-if="addedFoods.includes(f.id)" /></span>
+                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="isNatural(f)" class="fa-natural"> · {{ $t('foodAdd.natural') }}</em></small>
                                     </span>
                                     <span class="fa-plus">+</span>
                                 </button>
@@ -109,6 +109,7 @@
                     </ul>
                 </section>
 
+                <skeleton-block v-if="loading && !foods.length" :rows="5" height="3.4rem" />
                 <p v-if="!loading && !foods.length && !(tab === 'all' && (query.trim().length >= 2 || filtersActive))" class="muted">{{ tab === 'mine' && !query.trim() ? $t('foodAdd.emptyMine') : $t('foodAdd.empty') }}</p>
                 <button v-if="hasMore" type="button" class="fa-more" :disabled="loading" @click="loadFoods(false)">{{ $t('foodAdd.more') }}</button>
 
@@ -143,7 +144,7 @@
                     <li v-for="t in templates" :key="t.id" class="fa-tpl">
                         <button type="button" class="fa-row" @click="openTplSheet(t)">
                             <span class="fa-main">
-                                <span class="fa-name">{{ t.name }}<em v-if="addedTemplates.includes(t.id)" class="fa-check">✓</em></span>
+                                <span class="fa-name">{{ t.name }}<check-badge v-if="addedTemplates.includes(t.id)" /></span>
                                 <small>{{ t.kcal }} kcal<template v-if="t.kind === 'recipe'"> {{ $t('foodAdd.tpl.perServing') }}</template> · {{ $t('foodAdd.tpl.items', { n: t.items.length }) }}</small>
                             </span>
                             <span class="fa-plus">+</span>
@@ -205,7 +206,7 @@
                             <circle class="bg" cx="32" cy="32" r="26" />
                             <circle v-for="seg in ringSegs" :key="seg.key" :class="seg.key" cx="32" cy="32" r="26" :stroke-dasharray="seg.dash" :stroke-dashoffset="seg.offset" transform="rotate(-90 32 32)" />
                         </svg>
-                        <div class="fa-ringkcal"><b>{{ sheetMacros.kcal }}</b><small>{{ $t('foodAdd.sheet.kcal') }}</small></div>
+                        <div class="fa-ringkcal"><b><animated-number :value="sheetMacros.kcal" :duration="350" /></b><small>{{ $t('foodAdd.sheet.kcal') }}</small></div>
                         <div class="fa-split">
                             <div v-for="s in macroSplit" :key="s.key" :class="s.key">
                                 <small class="fa-pct">{{ s.pct }}%</small>
@@ -218,7 +219,7 @@
                         <h3>{{ $t('foodAdd.sheet.goalsTitle') }}</h3>
                         <div v-for="b in goalBars" :key="b.key" class="fa-goal" :class="[b.key, { over: b.over }]">
                             <div class="fa-goal-text"><span>{{ $t('foodAdd.sheet.' + b.key) }}</span><span>{{ b.value }} / {{ b.goal }} {{ b.unit }} · {{ b.total }}%</span></div>
-                            <div class="fa-goal-track"><div class="eaten" :style="{ width: b.pctEaten + '%' }"></div><div class="add" :style="{ width: b.pctAdd + '%' }"></div></div>
+                            <div class="fa-goal-track"><div class="eaten" v-grow="b.pctEaten"></div><div class="add" v-grow="b.pctAdd"></div></div>
                         </div>
                     </div>
                     <div class="fa-sheet-actions">

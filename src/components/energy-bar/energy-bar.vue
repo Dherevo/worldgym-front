@@ -1,13 +1,13 @@
 <template>
     <div class="energy-bar">
         <div class="numbers">
-            <div><b>{{ day.eaten }}</b> <small>{{ $t('nutrition.eaten') }}</small></div>
-            <div class="right"><b>{{ day.burned }}</b> <small>{{ $t('nutrition.burned') }}</small></div>
+            <div><b><animated-number :value="day.eaten" /></b> <small>{{ $t('nutrition.eaten') }}</small></div>
+            <div class="right"><b><animated-number :value="day.burned" /></b> <small>{{ $t('nutrition.burned') }}</small></div>
         </div>
 
         <div class="track" role="img" :aria-label="$t('nutrition.barLabel', { eaten: day.eaten, burned: day.burned })">
             <div class="goal-zone" :style="{ left: pct(day.min) + '%', width: (pct(day.max) - pct(day.min)) + '%' }"></div>
-            <div class="fill" :class="state" :style="{ width: pct(day.eaten) + '%' }"></div>
+            <div class="fill" :class="state" v-grow="pct(day.eaten)"></div>
         </div>
 
         <div class="legend">

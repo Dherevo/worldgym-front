@@ -2,6 +2,7 @@ import { Component, Vue, Prop, Watch, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
 import { lastDoneLabel } from "@/modules/lastDone";
+import { celebrate } from "@/modules/confetti";
 import SectionTile from "@/components/section-tile/section-tile.vue";
 import { isApp } from "@/modules/platform";
 import { healthState, connectHealth, syncSteps } from "@/modules/healthSteps";
@@ -76,6 +77,18 @@ class DailyHabits extends Vue {
         })
         .catch(() => { if (!silent) App.notification(translate.get('habits.card.syncError')).setType('error').show(); })
         .finally(() => { this.syncing = false; });
+    }
+
+    // Finishing every habit of today is celebrated (once a day)
+    @Watch('doneCount')
+    onDoneCount(now: number, before: number) {
+        if (this.day !== 'today' || !this.habits.length || now !== this.habits.length || now <= before) return;
+        const key = `wg_cel_habits_${localDate()}`;
+        try {
+            if (window.localStorage.getItem(key)) return;
+            window.localStorage.setItem(key, '1');
+        } catch { /* it just may repeat */ }
+        celebrate();
     }
 
     @Watch('open')
