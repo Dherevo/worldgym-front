@@ -1,4 +1,4 @@
-import { http } from "lib"
+import { http, OfflineQueue } from "lib"
 import userStore from "./userStore";
 
 export default {
@@ -37,6 +37,8 @@ export default {
 
     logout: () => {
         http.token.remove();
+        // Changes still waiting to be sent belong to this user
+        OfflineQueue.clear();
         userStore.data = null;
     }
 

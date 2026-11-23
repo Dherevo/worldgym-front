@@ -1,5 +1,6 @@
 import { Storage } from "../storage";
 import HttpError from "./error";
+import HttpCache from "./cache";
 
 export default class ApiToken {
 
@@ -16,6 +17,8 @@ export default class ApiToken {
         this.refreshToken = '';
         Storage.remove('token');
         Storage.remove('refreshToken');
+        // What was kept belongs to the user who leaves
+        HttpCache.clear();
     }
 
     public set(token: string, refreshToken?: string) {

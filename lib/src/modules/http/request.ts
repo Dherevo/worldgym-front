@@ -21,6 +21,10 @@ export default class HttpRequest {
         resolve: (response: any) => void,
         reject: (error: any) => void
     }
+    // Cache of GETs and queue of changes made without connection (see cache.ts and queue.ts)
+    noCache: boolean = false;
+    noQueue: boolean = false;
+    hasConverter: boolean = false;
     fakeResponse?: (resolve: (response: any) => void, reject: (error?: any) => void) => void
 
     useFake(faker:
@@ -40,6 +44,19 @@ export default class HttpRequest {
 
     transform(converter: (response: any) => any) {
         this.converter = converter;
+        this.hasConverter = true;
+        return this;
+    }
+
+    // Always asks the API (the answer is still kept for offline use)
+    fresh(): HttpRequest {
+        this.noCache = true;
+        return this;
+    }
+
+    // The change must reach the API now: if there is no connection it fails instead of waiting in the queue
+    immediate(): HttpRequest {
+        this.noQueue = true;
         return this;
     }
 

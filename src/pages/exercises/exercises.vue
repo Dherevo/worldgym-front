@@ -46,7 +46,7 @@
             <div v-else class="exercise-list">
                 <div v-for="ex in exercises" :key="ex.id" class="exercise-card">
                     <div class="exercise-main" @click="openDetail(ex)">
-                        <img v-if="ex.gif_url" class="exercise-thumb" :src="ex.gif_url" :alt="ex.name" loading="lazy" />
+                        <exercise-animation v-if="hasMedia(ex)" class="exercise-thumb" :exercise="ex" />
                         <div class="exercise-info">
                             <div class="exercise-name">{{ ex.name }}</div>
                             <div class="exercise-meta">
@@ -81,9 +81,9 @@
                         <span v-else-if="detailExercise.equipment">{{ detailExercise.equipment.name }}</span>
                         <span v-if="detailExercise.muscles?.length"> · {{ primaryMuscles(detailExercise) }}</span>
                     </div>
-                    <template v-if="detailExercise.gif_url">
-                        <img class="detail-gif" :src="detailExercise.gif_url" :alt="detailExercise.name" width="180" height="180" />
-                        <div class="detail-credit">
+                    <template v-if="hasMedia(detailExercise)">
+                        <exercise-animation class="detail-gif" width="180" height="180" :exercise="detailExercise" />
+                        <div class="detail-credit" v-if="!lottieOf(detailExercise)">
                             {{ $t('exercises.detail.gifCredit') }}
                             <a href="https://gymvisual.com/" target="_blank" rel="noopener">Gym visual</a>
                         </div>
@@ -92,7 +92,7 @@
                         <h3>{{ $t('exercises.detail.instructions') }}</h3>
                         <p>{{ detailExercise.description }}</p>
                     </div>
-                    <div v-else-if="!detailExercise.gif_url" class="empty-text">{{ $t('exercises.detail.noInfo') }}</div>
+                    <div v-else-if="!hasMedia(detailExercise)" class="empty-text">{{ $t('exercises.detail.noInfo') }}</div>
                     <div class="form-actions">
                         <button class="btn-cancel" @click="detailExercise = null">{{ $t('exercises.detail.close') }}</button>
                     </div>

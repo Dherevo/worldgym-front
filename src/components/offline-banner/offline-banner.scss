@@ -1,0 +1,22 @@
+.offline-banner {
+    position: fixed;
+    top: env(safe-area-inset-top, 0);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9000;
+    max-width: 92vw;
+    padding: 0.3rem 0.9rem;
+    border-radius: 0 0 12px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: center;
+    background: var(--header-bg, #424530);
+    color: var(--header-text, #fff);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+
+    &.warn { background: #b45309; color: #fff; }
+}
+
+.ob-slide-enter-active, .ob-slide-leave-active { transition: transform 0.25s ease, opacity 0.25s ease; }
+.ob-slide-enter-from, .ob-slide-leave-to { transform: translate(-50%, -100%); opacity: 0; }

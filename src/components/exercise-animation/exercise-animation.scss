@@ -1,0 +1,6 @@
+.ex-lottie {
+    overflow: hidden;
+    background: #ffffff;
+    // The pages size the old <img> by class (56px thumbs, 80% in the workout): the same here, the ratio comes from the file
+    svg { display: block; width: 100%; height: 100%; }
+}

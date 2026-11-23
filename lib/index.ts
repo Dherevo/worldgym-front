@@ -1,6 +1,7 @@
 import http from './src/modules/http/http';
 import HttpRequest from './src/modules/http/request';
 import HttpError from './src/modules/http/error';
+import OfflineQueue, { offlineState } from './src/modules/http/queue';
 import translate from './src/modules/translator';
 import Utils from './src/modules/utils';
 import Config from './src/modules/config';
@@ -63,6 +64,8 @@ export {
     translate,
     $t,
     http,
+    OfflineQueue,
+    offlineState,
     Config,
     App,
     Storage,

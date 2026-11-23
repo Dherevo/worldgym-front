@@ -1,4 +1,4 @@
-import { Component, Vue, toNative } from "vue-facing-decorator";
+import { Component, Vue, Watch, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import { primaryMuscleNames } from "@/modules/muscles";
 import localDate from "@/modules/localDate";
@@ -10,7 +10,8 @@ import SectionTile from "@/components/section-tile/section-tile.vue";
 type State = 'loading' | 'pick-exercise' | 'idle' | 'active' | 'logging' | 'resting' | 'choose' | 'abs-offer' | 'done';
 
 import SearchInput from "@/components/search-input/search-input.vue";
-@Component({ components: { SectionTile, SearchInput } })
+import ExerciseAnimation from "@/components/exercise-animation/exercise-animation.vue";
+@Component({ components: { ExerciseAnimation, SectionTile, SearchInput } })
 class WorkoutPage extends Vue {
 
     workout: any = null;
@@ -26,6 +27,11 @@ class WorkoutPage extends Vue {
     // Timer exercici (compta amunt)
     exerciseSeconds = 0;
     exerciseInterval: any = null;
+    // Absolute start of the running set (epoch ms): the stopwatch is computed from it, so it stays right in the background
+    setStartedAt = 0;
+    visHandler: (() => void) | null = null;
+    // Notification buttons pressed while the workout is still loading: they run when it is ready
+    queuedEvents: (() => void)[] = [];
 
     // Timer descans (compta avall)
     restSeconds = 0;
@@ -152,32 +158,36 @@ class WorkoutPage extends Vue {
         this.fetchPending();
 
         // Buttons of the lock screen notification (only in the app)
+        this.visHandler = () => { if (!document.hidden) this.syncTimers(); };
+        document.addEventListener('visibilitychange', this.visHandler);
+
         listenRestNotification({
-            onStartSet: () => {
+            onStartSet: () => this.whenReady(() => {
                 // The service already removed its own notification: no need to stop it (it would race with the next one)
                 if (this.state === 'resting') this.skipRest(false);
                 if (this.state === 'idle') this.startSet();
-            },
-            onStopSet: () => { if (this.state === 'active') this.stopSet(); },
-            onLogSet: (set: LoggedSet) => this.logFromNotification(set),
-            onExtraSet: () => {
+            }),
+            onStopSet: () => this.whenReady(() => { if (this.state === 'active') this.stopSet(); }),
+            onLogSet: (set: LoggedSet) => this.whenReady(() => this.logFromNotification(set)),
+            onExtraSet: () => this.whenReady(() => {
                 // From the countdown: the rest is cut short (the service already removed its notification)
                 if (this.state === 'resting') this.skipRest(false);
                 if (this.state !== 'choose') return;
                 this.continueSet();
                 this.startSet();
-            },
-            onNextExercise: () => {
+            }),
+            onNextExercise: () => this.whenReady(() => {
                 if (this.state === 'resting') this.skipRest(false);
                 if (this.state !== 'choose') return;
                 this.nextExercise();
                 // Waiting to start the first set of the next exercise (otherwise the screen of the app asks what to do)
                 if (this.state === 'idle') this.notifyReady();
-            },
+            }),
             onChanged: (endsAt: number) => {
                 if (this.state !== 'resting') return;
                 this.restEndsAt = endsAt;
                 this.restSeconds = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+                this.persistTimer();
             },
         }).then(remove => { this.removeRestListeners = remove; });
     }
@@ -185,7 +195,9 @@ class WorkoutPage extends Vue {
     unmounted() {
         if (this.exerciseInterval) clearInterval(this.exerciseInterval);
         if (this.restInterval) clearInterval(this.restInterval);
-        stopRestNotification();
+        if (this.visHandler) document.removeEventListener('visibilitychange', this.visHandler);
+        // A set or a rest in progress goes on (its notification too): coming back to the workout picks it up again
+        if (!['active', 'resting', 'logging'].includes(this.state)) stopRestNotification();
         if (this.removeRestListeners) this.removeRestListeners();
         this.releaseWakeLock();
         this.saveProgress();
@@ -222,8 +234,12 @@ class WorkoutPage extends Vue {
             // (una sèrie és "feta" si té reps !== null)
             this.reconstructProgress();
             this.state = 'idle';
+            this.restoreTimer();
             this.loadExerciseHistory();
             this.loadAbsOptions();
+            const queued = this.queuedEvents;
+            this.queuedEvents = [];
+            queued.forEach(fn => fn());
         })
         .catch(() => {});
     }
@@ -750,15 +766,41 @@ class WorkoutPage extends Vue {
     startSet() {
         this.captureRest();
         this.exerciseSeconds = 0;
+        this.setStartedAt = Date.now();
         this.state = 'active';
-        this.exerciseInterval = setInterval(() => { this.exerciseSeconds++; }, 1000);
+        this.runSetInterval();
         this.acquireWakeLock();
         this.notifyActive();
+    }
+
+    runSetInterval() {
+        if (this.exerciseInterval) clearInterval(this.exerciseInterval);
+        this.exerciseInterval = setInterval(() => this.syncTimers(), 1000);
+    }
+
+    // The timers are computed from absolute times, so after the phone was locked, or the page left, they are right again
+    syncTimers() {
+        if (this.state === 'active' && this.setStartedAt) {
+            this.exerciseSeconds = Math.max(0, Math.floor((Date.now() - this.setStartedAt) / 1000));
+        } else if (this.state === 'resting') {
+            this.tickRest();
+        }
+    }
+
+    // Notification buttons can arrive while the workout loads (coming back to the page): they wait
+    whenReady(fn: () => void) {
+        if (this.state === 'loading') this.queuedEvents.push(fn);
+        else fn();
     }
 
     stopSet() {
         clearInterval(this.exerciseInterval);
         this.exerciseInterval = null;
+        if (this.setStartedAt) this.exerciseSeconds = Math.max(0, Math.floor((Date.now() - this.setStartedAt) / 1000));
+        this.enterLogging();
+    }
+
+    enterLogging() {
 
         const lastLogged = this.loggedSets.length > 0 ? this.loggedSets[this.loggedSets.length - 1] : null;
         const lastSessionWeight = this.exerciseHistory.length > 0 ? (parseFloat(this.exerciseHistory[0]?.max_weight) || 0) : 0;
@@ -839,17 +881,80 @@ class WorkoutPage extends Vue {
         this.state = 'resting';
         this.acquireWakeLock();
         this.notifyRest();
-        this.restInterval = setInterval(() => {
-            this.restSeconds = Math.max(0, Math.ceil((this.restEndsAt - Date.now()) / 1000));
-            if (this.restSeconds <= 0) {
-                clearInterval(this.restInterval);
-                this.restInterval = null;
-                this.releaseWakeLock();
-                // In the app the notification already makes the sound and vibrates
-                if (!isApp) this.vibrate();
+        this.runRestInterval();
+    }
+
+    runRestInterval() {
+        if (this.restInterval) clearInterval(this.restInterval);
+        this.restInterval = setInterval(() => this.tickRest(), 1000);
+    }
+
+    tickRest() {
+        if (this.state !== 'resting') return;
+        this.restSeconds = Math.max(0, Math.ceil((this.restEndsAt - Date.now()) / 1000));
+        if (this.restSeconds <= 0) {
+            if (this.restInterval) clearInterval(this.restInterval);
+            this.restInterval = null;
+            this.releaseWakeLock();
+            // In the app the notification already makes the sound and vibrates
+            if (!isApp) this.vibrate();
+            this.afterRest();
+        }
+    }
+
+    // --- Timer in progress, kept so leaving the page (or the app being closed) does not lose it ---
+
+    @Watch('state')
+    onStateChange() {
+        this.persistTimer();
+    }
+
+    timerKey() { return `wg_workout_timer_${this.workoutId}`; }
+
+    persistTimer() {
+        if (!this.workoutId || this.state === 'loading') return;
+        const base = { idx: this.currentExerciseIdx, done: this.doneCount };
+        let timer: any = null;
+        if (this.state === 'active') timer = { ...base, kind: 'active', startedAt: this.setStartedAt };
+        else if (this.state === 'logging') timer = { ...base, kind: 'logging', seconds: this.exerciseSeconds, startedAt: this.setStartedAt };
+        else if (this.state === 'resting') timer = { ...base, kind: 'rest', endsAt: this.restEndsAt, restStartedAt: this.restStartedAt };
+        try {
+            if (timer) localStorage.setItem(this.timerKey(), JSON.stringify(timer));
+            else localStorage.removeItem(this.timerKey());
+        } catch { /* ignorat */ }
+    }
+
+    // Picks up a set or a rest that was running when the page was left. It only counts if it is the same position
+    restoreTimer() {
+        let t: any = null;
+        try { t = JSON.parse(localStorage.getItem(this.timerKey()) ?? 'null'); } catch { /* ignorat */ }
+        if (!t || t.idx !== this.currentExerciseIdx || t.done !== this.doneCount) return;
+
+        if (t.kind === 'active' && t.startedAt) {
+            this.setStartedAt = t.startedAt;
+            this.exerciseSeconds = Math.max(0, Math.floor((Date.now() - t.startedAt) / 1000));
+            this.state = 'active';
+            this.runSetInterval();
+            this.acquireWakeLock();
+            this.notifyActive();
+        } else if (t.kind === 'logging') {
+            this.setStartedAt = t.startedAt ?? 0;
+            this.exerciseSeconds = t.seconds ?? 0;
+            this.enterLogging();
+        } else if (t.kind === 'rest' && t.endsAt) {
+            this.restEndsAt = t.endsAt;
+            this.restStartedAt = t.restStartedAt ?? 0;
+            this.restSeconds = Math.max(0, Math.ceil((t.endsAt - Date.now()) / 1000));
+            if (this.restSeconds > 0) {
+                this.state = 'resting';
+                this.runRestInterval();
+                this.acquireWakeLock();
+                this.notifyRest();
+            } else {
+                // It ended while away (the notification already told the user)
                 this.afterRest();
             }
-        }, 1000);
+        }
     }
 
     // Lock screen notification with the countdown (only in the app)
@@ -929,6 +1034,7 @@ class WorkoutPage extends Vue {
     adjustRest(delta: number) {
         this.restEndsAt += delta * 1000;
         this.restSeconds = Math.max(0, Math.ceil((this.restEndsAt - Date.now()) / 1000));
+        this.persistTimer();
         this.notifyRest();
     }
 
@@ -1049,7 +1155,10 @@ class WorkoutPage extends Vue {
     }
 
     clearProgress() {
-        try { localStorage.removeItem(`wg_workout_${this.workoutId}`); } catch { /* ignorat */ }
+        try {
+            localStorage.removeItem(`wg_workout_${this.workoutId}`);
+            localStorage.removeItem(this.timerKey());
+        } catch { /* ignorat */ }
     }
 }
 export default toNative(WorkoutPage);
