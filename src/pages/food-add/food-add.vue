@@ -13,9 +13,12 @@
 
             <SearchInput class="fa-search" v-model="query" @input="onQuery()" :placeholder="$t('foodAdd.search')" />
 
-            <nav class="fa-tabs" role="tablist">
-                <button type="button" role="tab" :class="{ on: tab === 'mine' }" @click="selectTab('mine')">{{ $t('foodAdd.tabs.mine') }}</button>
+            <div class="fa-seg" role="tablist">
                 <button type="button" role="tab" :class="{ on: tab === 'all' }" @click="selectTab('all')">{{ $t('foodAdd.tabs.all') }}</button>
+                <button type="button" role="tab" :class="{ on: tab === 'mine' }" @click="selectTab('mine')">{{ $t('foodAdd.tabs.mine') }}</button>
+            </div>
+
+            <nav class="fa-tabs" role="tablist">
                 <button type="button" role="tab" :class="{ on: tab === 'meals' }" @click="selectTab('meals')">{{ $t('foodAdd.tabs.meals') }}</button>
                 <button type="button" role="tab" :class="{ on: tab === 'recipes' }" @click="selectTab('recipes')">{{ $t('foodAdd.tabs.recipes') }}</button>
                 <button v-for="c in topCats" :key="c.id" type="button" role="tab" :class="{ on: tab === 'cat:' + c.id }" @click="selectTab('cat:' + c.id)">{{ catName(c) }}</button>
@@ -55,7 +58,7 @@
                                     <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                     <span class="fa-main">
                                         <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
-                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template></small>
+                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="f.off_code" class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em></small>
                                     </span>
                                     <span class="fa-plus">+</span>
                                 </button>
@@ -74,7 +77,7 @@
                                     <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                     <span class="fa-main">
                                         <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
-                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template></small>
+                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="f.off_code" class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em></small>
                                     </span>
                                     <span class="fa-plus">+</span>
                                 </button>
@@ -83,20 +86,21 @@
                     </ul>
                 </section>
 
-                <p v-if="!loading && !foods.length" class="muted">{{ tab === 'mine' && !query.trim() ? $t('foodAdd.emptyMine') : $t('foodAdd.empty') }}</p>
+                <p v-if="!loading && !foods.length && !(tab === 'all' && query.trim().length >= 2)" class="muted">{{ tab === 'mine' && !query.trim() ? $t('foodAdd.emptyMine') : $t('foodAdd.empty') }}</p>
                 <button v-if="hasMore" type="button" class="fa-more" :disabled="loading" @click="loadFoods(false)">{{ $t('foodAdd.more') }}</button>
 
-                <section v-if="query.trim().length >= 2 && !loading && foods.length < 4" class="fa-off">
-                    <button type="button" class="fa-more" :disabled="offSearching" @click="searchOff()">🔎 {{ offSearching ? $t('foodAdd.searching') : $t('foodAdd.searchOff') }}</button>
-                    <p v-if="offSearched && !offResults.length" class="muted">{{ $t('foodAdd.offNone') }}</p>
-                    <ul v-if="offResults.length" class="fa-list">
-                        <li v-for="p in offResults" :key="p.code">
+                <section v-if="query.trim().length >= 2 && !loading && (tab === 'all' || foods.length < 4)" class="fa-off">
+                    <button v-if="tab !== 'all'" type="button" class="fa-more" :disabled="offSearching" @click="searchOff()">🔎 {{ offSearching ? $t('foodAdd.searching') : $t('foodAdd.searchOff') }}</button>
+                    <p v-else-if="offSearching" class="muted">🔎 {{ $t('foodAdd.searching') }}</p>
+                    <p v-if="offSearched && !offResults.length && !offSearching && !foods.length" class="muted">{{ $t('foodAdd.offNone') }}</p>
+                    <ul v-if="offShown.length" class="fa-list">
+                        <li v-for="p in offShown" :key="p.code">
                             <button type="button" class="fa-row" :disabled="offSaving" @click="pickOff(p)">
                                 <img v-if="p.image" class="fa-thumb" :src="p.image" alt="" loading="lazy" />
                                 <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                 <span class="fa-main">
                                     <span class="fa-name">{{ p.name }}</span>
-                                    <small>{{ p.kcal_100 }} kcal · {{ $t('foodAdd.per100', { unit: p.unit }) }}<template v-if="p.brand"> · {{ p.brand }}</template></small>
+                                    <small>{{ p.kcal_100 }} kcal · {{ $t('foodAdd.per100', { unit: p.unit }) }}<template v-if="p.brand"> · {{ p.brand }}</template><em class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em></small>
                                 </span>
                                 <span class="fa-plus">+</span>
                             </button>
