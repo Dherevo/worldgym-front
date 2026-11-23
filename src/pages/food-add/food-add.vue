@@ -77,7 +77,7 @@
                                     <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                     <span class="fa-main">
                                         <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
-                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="f.off_code" class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em><em v-else-if="isNatural(f)" class="fa-natural"> · ✓ {{ $t('foodAdd.natural') }}</em></small>
+                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="isNatural(f)" class="fa-natural"> · ✓ {{ $t('foodAdd.natural') }}</em></small>
                                     </span>
                                     <span class="fa-plus">+</span>
                                 </button>
@@ -96,7 +96,7 @@
                                     <span v-else class="fa-thumb fa-thumb-empty">🍽</span>
                                     <span class="fa-main">
                                         <span class="fa-name">{{ f.name }}<em v-if="addedFoods.includes(f.id)" class="fa-check">✓</em></span>
-                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="f.off_code" class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em><em v-else-if="isNatural(f)" class="fa-natural"> · ✓ {{ $t('foodAdd.natural') }}</em></small>
+                                        <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template><em v-if="isNatural(f)" class="fa-natural"> · ✓ {{ $t('foodAdd.natural') }}</em></small>
                                     </span>
                                     <span class="fa-plus">+</span>
                                 </button>
@@ -108,13 +108,10 @@
                 <p v-if="!loading && !foods.length && !(tab === 'all' && (query.trim().length >= 2 || filtersActive))" class="muted">{{ tab === 'mine' && !query.trim() ? $t('foodAdd.emptyMine') : $t('foodAdd.empty') }}</p>
                 <button v-if="hasMore" type="button" class="fa-more" :disabled="loading" @click="loadFoods(false)">{{ $t('foodAdd.more') }}</button>
 
-                <section v-if="(query.trim().length >= 2 || (tab === 'all' && filtersActive)) && !loading && (tab === 'all' ? !hasMore : foods.length < 4)" class="fa-off">
-                    <button v-if="tab !== 'all'" type="button" class="fa-more" :disabled="offSearching" @click="searchOff()">🔎 {{ offSearching ? $t('foodAdd.searching') : $t('foodAdd.searchOff') }}</button>
-                    <template v-else>
-                        <h2 v-if="offShown.length || offSearching">{{ $t('foodAdd.offHeading') }}</h2>
-                        <p v-if="offSearching" class="muted fa-loading"><span class="fa-spin"></span>{{ $t('foodAdd.searching') }}</p>
-                        <div ref="offEnd" class="fa-end"></div>
-                    </template>
+                <section v-if="tab === 'all' && (query.trim().length >= 2 || filtersActive) && !loading && !hasMore" class="fa-off">
+                    <h2 v-if="offShown.length || offSearching">{{ $t('foodAdd.offHeading') }}</h2>
+                    <p v-if="offSearching" class="muted fa-loading"><span class="fa-spin"></span>{{ $t('foodAdd.searching') }}</p>
+                    <div ref="offEnd" class="fa-end"></div>
                     <p v-if="offSearched && !offResults.length && !offSearching && !foods.length" class="muted">{{ $t('foodAdd.offNone') }}</p>
                     <ul v-if="offShown.length" class="fa-list">
                         <li v-for="p in offShown" :key="p.code">
@@ -124,7 +121,7 @@
                                 <span class="fa-main">
                                     <span class="fa-name">{{ p.name }}</span>
                                     <small v-if="offPicking === p.code">{{ $t('foodAdd.loadingFood') }}</small>
-                                    <small v-else>{{ p.kcal_100 }} kcal · {{ $t('foodAdd.per100', { unit: p.unit }) }}<template v-if="p.brand"> · {{ p.brand }}</template><em class="fa-off-tag"> · {{ $t('foodAdd.fromOff') }}</em></small>
+                                    <small v-else>{{ p.kcal_100 }} kcal · {{ $t('foodAdd.per100', { unit: p.unit }) }}<template v-if="p.brand"> · {{ p.brand }}</template></small>
                                 </span>
                                 <span v-if="offPicking === p.code" class="fa-spin"></span>
                                 <span v-else class="fa-plus">+</span>
