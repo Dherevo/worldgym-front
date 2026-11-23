@@ -69,6 +69,10 @@ class FoodAddPage extends Vue {
     offFailed = false;
     // Code of the Open Food Facts product that is being saved (shows a spinner on its row)
     offPicking = '';
+    // Scanned barcode that is not in the catalog: it can be linked to a food the user already has
+    scannedCode = '';
+    link: { query: string; items: any[]; busy: boolean } | null = null;
+    linkTimer: any = null;
     // Filters of the Open Food Facts search (the panel opens with the funnel button)
     showFilters = false;
     filters = { category: '', brand: '', protein_min: '', kcal_max: '', carbs_max: '', fat_max: '' };
@@ -111,6 +115,7 @@ class FoodAddPage extends Vue {
     beforeUnmount() {
         clearTimeout(this.timer);
         clearTimeout(this.bTimer);
+        clearTimeout(this.linkTimer);
         this.endObserver?.disconnect();
     }
 
@@ -149,6 +154,7 @@ class FoodAddPage extends Vue {
     }
 
     onQuery() {
+        this.scannedCode = '';
         this.offToken += 1;
         this.offSearching = false;
         this.offResults = [];
@@ -371,6 +377,45 @@ class FoodAddPage extends Vue {
         .finally(() => { this.offSaving = false; this.offPicking = ''; });
     }
 
+    // ---- Link a scanned barcode to one of the user's own foods ----
+
+    openLink() {
+        this.link = { query: '', items: [], busy: false };
+        this.searchLink();
+    }
+
+    onLinkQuery() {
+        clearTimeout(this.linkTimer);
+        this.linkTimer = setTimeout(() => this.searchLink(), 250);
+    }
+
+    searchLink() {
+        if (!this.link) return;
+        const data: any = { scope: 'mine', pageSize: 15 };
+        if (this.link.query.trim()) data.q = this.link.query.trim();
+        http.get('/foods').data(data).then((res: any) => { if (this.link) this.link.items = res.items ?? []; }).catch(() => {});
+    }
+
+    pickLink(f: any) {
+        if (!this.link || this.link.busy) return;
+        this.link.busy = true;
+        http.put(`/foods/${f.id}/barcode`).data({ off_code: this.scannedCode })
+        .then((food: any) => {
+            App.notification(translate.get('foodAdd.link.done', { name: food.name })).show();
+            this.link = null;
+            this.scannedCode = '';
+            this.offResults = [];
+            this.offSearched = false;
+            this.query = '';
+            this.reload();
+            this.openSheet(food);
+        })
+        .catch(() => {
+            if (this.link) this.link.busy = false;
+            App.notification(translate.get('foodAdd.link.error')).setType('error').show();
+        });
+    }
+
     // Scans a barcode: the food of the catalog with it opens straight away; if there is none, Open Food Facts is
     // searched, and if it has nothing either, the new food form opens with the code
     async scanFood() {
@@ -389,6 +434,7 @@ class FoodAddPage extends Vue {
             if (res.status !== 'ok') return;
 
             this.query = res.code;
+            this.scannedCode = '';
             this.offResults = [];
             this.offSearched = false;
             const list: any = await http.get('/foods').data({ q: res.code, pageSize: PAGE, scope: 'all' });
@@ -399,6 +445,7 @@ class FoodAddPage extends Vue {
             const own = found.find((f: any) => f.off_code === res.code);
             if (own) this.openSheet(own);
             else if (!found.length) {
+                this.scannedCode = res.code;
                 const result = await this.searchOff();
                 if (result === 'none') {
                     App.notification(translate.get('nutrition.scan.notFound')).show();

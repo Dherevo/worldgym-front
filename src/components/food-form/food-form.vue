@@ -8,6 +8,7 @@
         <p class="ff-hint" v-else>{{ $t('nutrition.foods.barcodeHint') }}</p>
         <input type="text" v-model="name" maxlength="150" :placeholder="$t('nutrition.foods.name')" />
         <input type="text" v-model="brand" maxlength="100" :placeholder="$t('nutrition.foods.brand')" />
+        <input type="text" v-model="aliases" maxlength="255" :placeholder="$t('nutrition.foods.aliases')" />
         <div class="ff-row">
             <label>
                 <span>{{ $t('nutrition.foods.unit') }}</span>

@@ -120,6 +120,7 @@
                     <div ref="offEnd" class="fa-end"></div>
                     <p v-if="offFailed && !offSearching" class="muted">{{ $t('nutrition.off.unavailable') }}</p>
                     <p v-if="offSearched && !offResults.length && !offSearching && !foods.length" class="muted">{{ $t('foodAdd.offNone') }}</p>
+                    <button v-if="scannedCode" type="button" class="fa-link-btn" @click="openLink()">{{ $t('foodAdd.link.button') }}</button>
                     <ul v-if="offShown.length" class="fa-list">
                         <li v-for="p in offShown" :key="p.code">
                             <button type="button" class="fa-row" :class="{ 'fa-busy': offPicking === p.code }" :disabled="offSaving" @click="pickOff(p)">
@@ -154,6 +155,28 @@
                 </ul>
                 <p v-else-if="!loading" class="muted">{{ tab === 'recipes' ? $t('foodAdd.tpl.emptyRecipes') : $t('foodAdd.tpl.emptyMeals') }}</p>
             </template>
+
+            <!-- Link a scanned barcode to a food the user already has -->
+            <div v-if="link" class="fa-backdrop" @click.self="link = null">
+                <div class="fa-sheet" role="dialog" aria-modal="true">
+                    <h2>{{ $t('foodAdd.link.title') }}</h2>
+                    <p class="muted">{{ $t('foodAdd.link.hint', { code: scannedCode }) }}</p>
+                    <input v-model="link.query" type="search" class="fa-link-input" :placeholder="$t('foodAdd.search')" @input="onLinkQuery()" />
+                    <ul class="fa-list">
+                        <li v-for="f in link.items" :key="f.id">
+                            <button type="button" class="fa-row" :disabled="link.busy" @click="pickLink(f)">
+                                <span class="fa-main">
+                                    <span class="fa-name">{{ f.name }}</span>
+                                    <small>{{ f.kcal_100 }} kcal · {{ perLabel(f) }}<template v-if="f.brand"> · {{ f.brand }}</template></small>
+                                </span>
+                                <span class="fa-plus">+</span>
+                            </button>
+                        </li>
+                    </ul>
+                    <p v-if="!link.items.length" class="muted">{{ $t('foodAdd.empty') }}</p>
+                    <button type="button" class="fa-more" @click="link = null">{{ $t('foodAdd.link.cancel') }}</button>
+                </div>
+            </div>
 
             <!-- New food: a sheet, so it opens in sight whatever the length of the list -->
             <div v-if="foodForm" class="fa-backdrop" @click.self="foodForm = null">
