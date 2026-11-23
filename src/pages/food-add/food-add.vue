@@ -26,6 +26,12 @@
 
             <form v-if="showFilters && tab === 'all'" class="fa-filters" @submit.prevent="applyFilters()">
                 <p class="muted">{{ $t('foodAdd.filters.hint') }}</p>
+                <label class="fa-f-wide"><span>{{ $t('foodAdd.filters.category') }}</span>
+                    <select v-model="filters.category">
+                        <option value="">{{ $t('foodAdd.filters.anyCategory') }}</option>
+                        <option v-for="c in filterCats" :key="c.id" :value="String(c.id)">{{ c.label }}</option>
+                    </select>
+                </label>
                 <label class="fa-f-wide"><span>{{ $t('foodAdd.filters.brand') }}</span><input v-model="filters.brand" type="text" maxlength="60" placeholder="Hacendado" /></label>
                 <label><span>{{ $t('foodAdd.filters.proteinMin') }}</span><input v-model="filters.protein_min" type="number" min="0" inputmode="decimal" /></label>
                 <label><span>{{ $t('foodAdd.filters.kcalMax') }}</span><input v-model="filters.kcal_max" type="number" min="0" inputmode="decimal" /></label>
@@ -108,10 +114,11 @@
                 <p v-if="!loading && !foods.length && !(tab === 'all' && (query.trim().length >= 2 || filtersActive))" class="muted">{{ tab === 'mine' && !query.trim() ? $t('foodAdd.emptyMine') : $t('foodAdd.empty') }}</p>
                 <button v-if="hasMore" type="button" class="fa-more" :disabled="loading" @click="loadFoods(false)">{{ $t('foodAdd.more') }}</button>
 
-                <section v-if="tab === 'all' && (query.trim().length >= 2 || filtersActive) && !loading && !hasMore" class="fa-off">
+                <section v-if="tab === 'all' && (query.trim().length >= 2 || filtersActive) && !loading" class="fa-off">
                     <h2 v-if="offShown.length || offSearching">{{ $t('foodAdd.offHeading') }}</h2>
                     <p v-if="offSearching" class="muted fa-loading"><span class="fa-spin"></span>{{ $t('foodAdd.searching') }}</p>
                     <div ref="offEnd" class="fa-end"></div>
+                    <p v-if="offFailed && !offSearching" class="muted">{{ $t('nutrition.off.unavailable') }}</p>
                     <p v-if="offSearched && !offResults.length && !offSearching && !foods.length" class="muted">{{ $t('foodAdd.offNone') }}</p>
                     <ul v-if="offShown.length" class="fa-list">
                         <li v-for="p in offShown" :key="p.code">

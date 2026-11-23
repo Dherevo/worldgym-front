@@ -1,4 +1,4 @@
-import { Component, Vue, toNative } from "vue-facing-decorator";
+import { Component, Vue, Watch, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import FoodForm from "@/components/food-form/food-form.vue";
 import localDate from "@/modules/localDate";
@@ -66,11 +66,12 @@ class FoodAddPage extends Vue {
     offResults: any[] = [];
     offSearching = false;
     offToken = 0;
+    offFailed = false;
     // Code of the Open Food Facts product that is being saved (shows a spinner on its row)
     offPicking = '';
     // Filters of the Open Food Facts search (the panel opens with the funnel button)
     showFilters = false;
-    filters = { brand: '', protein_min: '', kcal_max: '', carbs_max: '', fat_max: '' };
+    filters = { category: '', brand: '', protein_min: '', kcal_max: '', carbs_max: '', fat_max: '' };
     endObserver: IntersectionObserver | null = null;
     offSearched = false;
     offSaving = false;
@@ -157,7 +158,7 @@ class FoodAddPage extends Vue {
     }
 
     reload() {
-        if (this.tab === 'all' && this.filtersActive && !this.query.trim() && !this.isTemplateTab) { this.foods = []; this.total = 0; this.$nextTick(() => this.watchEnd()); return; }
+        if (this.blankOwn && !this.isTemplateTab) { this.foods = []; this.total = 0; this.$nextTick(() => this.watchEnd()); return; }
         if (this.isTemplateTab) this.loadTemplates();
         else this.loadFoods(true);
     }
@@ -182,6 +183,7 @@ class FoodAddPage extends Vue {
         const data: any = { scope: this.tab === 'mine' ? 'mine' : 'all', pageSize: PAGE, offset: reset ? 0 : this.offset };
         if (this.query.trim()) data.q = this.query.trim();
         if (this.catId !== null) data.category = this.sub ?? this.catId;
+        else if (this.tab === 'all' && this.filters.category) data.category = this.filters.category;
 
         http.get('/foods').data(data)
         .then((res: any) => {
@@ -204,7 +206,13 @@ class FoodAddPage extends Vue {
 
     // On "all foods" Open Food Facts is searched when the user reaches the end of the own results
     get offWanted(): boolean {
-        return this.tab === 'all' && (this.query.trim().length >= 2 || this.filtersActive) && !this.loading && !this.hasMore;
+        return this.tab === 'all' && (this.query.trim().length >= 2 || this.filtersActive) && !this.loading;
+    }
+
+    // The end marker appears when the own results are on screen: from then on it waits for the user to get there
+    @Watch('offWanted')
+    onOffWanted() {
+        this.$nextTick(() => this.watchEnd());
     }
 
     // The filters that have a value, as they go to the API
@@ -212,6 +220,16 @@ class FoodAddPage extends Vue {
         const out: Record<string, string> = {};
         for (const [k, v] of Object.entries(this.filters)) if (String(v).trim() !== '') out[k] = String(v).trim();
         return out;
+    }
+
+    // With brand or nutrient limits and nothing typed, the own foods are not listed (it would be the whole catalog)
+    get blankOwn(): boolean {
+        return this.tab === 'all' && this.filtersActive && !this.query.trim() && !this.filters.category;
+    }
+
+    // The categories for the filter: each main one followed by its subcategories
+    get filterCats(): { id: number; label: string }[] {
+        return this.topCats.flatMap(t => [{ id: t.id, label: this.catName(t) }, ...childrenOf(this.categories, t.id).map(c => ({ id: c.id, label: '\u00A0\u00A0\u21B3 ' + this.catName(c) }))]);
     }
 
     get filtersActive(): boolean {
@@ -224,12 +242,12 @@ class FoodAddPage extends Vue {
         this.offToken += 1;
         this.offSearching = false;
         // With filters and no text the own foods are not listed (it would be the whole catalog)
-        if (this.filtersActive && !this.query.trim()) { this.foods = []; this.total = 0; this.searchOff(true); }
+        if (this.blankOwn) { this.foods = []; this.total = 0; this.searchOff(true); }
         else this.reload();
     }
 
     clearFilters() {
-        this.filters = { brand: '', protein_min: '', kcal_max: '', carbs_max: '', fat_max: '' };
+        this.filters = { category: '', brand: '', protein_min: '', kcal_max: '', carbs_max: '', fat_max: '' };
         this.applyFilters();
     }
 
@@ -294,6 +312,7 @@ class FoodAddPage extends Vue {
         const token = this.offToken;
         this.offSearching = true;
         this.offSearched = false;
+        this.offFailed = false;
 
         const isCode = /^\d{6,14}$/.test(q);
         const req = isCode ? http.get(`/foods/off/${q}`) : http.get('/foods/off').data({ q, ...this.activeFilters });
@@ -306,6 +325,7 @@ class FoodAddPage extends Vue {
             if (token !== this.offToken) return 'none';
             this.offResults = [];
             if (isCode && e?.data?.error !== 'off.unavailable') return 'none';
+            this.offFailed = true;
             if (silent) return 'error';
             App.notification(translate.get('nutrition.off.unavailable')).setType('error').show();
             return 'error';
