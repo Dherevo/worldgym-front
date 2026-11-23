@@ -46,7 +46,7 @@ class FoodAddPage extends Vue {
     date = localDate();
 
     categories: FoodCategory[] = [];
-    tab = 'mine';
+    tab = 'all';
     sub: number | null = null;
 
     query = '';
@@ -65,6 +65,7 @@ class FoodAddPage extends Vue {
     // Open Food Facts search by name or barcode
     offResults: any[] = [];
     offSearching = false;
+    offToken = 0;
     offSearched = false;
     offSaving = false;
     scanning = false;
@@ -140,6 +141,8 @@ class FoodAddPage extends Vue {
     }
 
     onQuery() {
+        this.offToken += 1;
+        this.offSearching = false;
         this.offResults = [];
         this.offSearched = false;
         clearTimeout(this.timer);
@@ -168,7 +171,7 @@ class FoodAddPage extends Vue {
         if (reset) this.offset = 0;
         this.loading = true;
 
-        const data: any = { scope: this.tab === 'mine' ? 'mine' : this.tab === 'all' ? 'shared' : 'all', pageSize: PAGE, offset: reset ? 0 : this.offset };
+        const data: any = { scope: this.tab === 'mine' ? 'mine' : 'all', pageSize: PAGE, offset: reset ? 0 : this.offset };
         if (this.query.trim()) data.q = this.query.trim();
         if (this.catId !== null) data.category = this.sub ?? this.catId;
 
@@ -179,9 +182,17 @@ class FoodAddPage extends Vue {
             this.foods = reset ? items : [...this.foods, ...items];
             this.total = res.total ?? 0;
             this.offset = this.foods.length;
+            // On "all foods" the search also looks in Open Food Facts, without asking
+            if (reset && this.tab === 'all' && this.query.trim().length >= 2) this.searchOff(true);
         })
         .catch(() => { if (id === this.request) App.notification(translate.get('foodAdd.errors.load')).setType('error').show(); })
         .finally(() => { if (id === this.request) this.loading = false; });
+    }
+
+    // The products of Open Food Facts that are not already in the list above (the same barcode)
+    get offShown(): any[] {
+        const codes = new Set(this.foods.map(f => f.off_code).filter(Boolean));
+        return this.offResults.filter(p => !codes.has(p.code));
     }
 
     get hasMore(): boolean {
@@ -213,25 +224,30 @@ class FoodAddPage extends Vue {
     // ---- Open Food Facts and barcode ----
 
     // Returns 'found', 'none' (OFF answered but has nothing) or 'error' (OFF not available)
-    searchOff(): Promise<'found' | 'none' | 'error'> {
+    searchOff(silent = false): Promise<'found' | 'none' | 'error'> {
         const q = this.query.trim();
-        if (q.length < 2 || this.offSearching) return Promise.resolve('error');
+        if (q.length < 2) return Promise.resolve('error');
+        this.offToken += 1;
+        const token = this.offToken;
         this.offSearching = true;
         this.offSearched = false;
 
         const isCode = /^\d{6,14}$/.test(q);
         const req = isCode ? http.get(`/foods/off/${q}`) : http.get('/foods/off').data({ q });
         return req.then((res: any) => {
+            if (token !== this.offToken) return 'none';
             this.offResults = isCode ? [res] : (res.items ?? []);
             return this.offResults.length ? 'found' : 'none';
         })
         .catch((e: any) => {
+            if (token !== this.offToken) return 'none';
             this.offResults = [];
             if (isCode && e?.data?.error !== 'off.unavailable') return 'none';
+            if (silent) return 'error';
             App.notification(translate.get('nutrition.off.unavailable')).setType('error').show();
             return 'error';
         })
-        .finally(() => { this.offSearching = false; this.offSearched = true; }) as Promise<'found' | 'none' | 'error'>;
+        .finally(() => { if (token === this.offToken) { this.offSearching = false; this.offSearched = true; } }) as Promise<'found' | 'none' | 'error'>;
     }
 
     // The product goes to the catalog (shared with every user, with its barcode and nutrients) and its amount sheet opens

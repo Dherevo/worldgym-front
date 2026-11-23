@@ -29,6 +29,11 @@
         display: flex; gap: 0.4rem; overflow-x: auto; scrollbar-width: none; margin: 0 -1rem; padding: 0 1rem;
         &::-webkit-scrollbar { display: none; }
     }
+    .fa-seg {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem; padding: 0.25rem; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border-color);
+        button { border: none; background: none; color: var(--text-secondary); padding: 0.55rem 0.5rem; border-radius: 9px; font-size: 0.95rem; cursor: pointer; &.on { background: var(--primary-color); color: #fff; font-weight: 700; } }
+    }
+    .fa-off-tag { font-style: normal; opacity: 0.75; }
     .fa-tabs {
         border-bottom: 1px solid var(--border-color);
         button { flex: none; background: none; border: none; border-bottom: 3px solid transparent; color: var(--text-secondary); padding: 0.6rem 0.7rem; font-size: 0.95rem; cursor: pointer; white-space: nowrap; &.on { color: var(--primary-color); border-bottom-color: var(--primary-color); font-weight: 700; } }
