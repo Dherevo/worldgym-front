@@ -37,7 +37,7 @@
                 <div v-if="!(groupStats.bests ?? []).length" class="empty-text">{{ $t('stats.dash2.progress.empty') }}</div>
 
                 <div v-for="ex in (groupStats.bests ?? [])" :key="ex.id" class="ex-item">
-                    <button type="button" class="ex-head" @click="to('/exercise/' + ex.id)">
+                    <button type="button" class="ex-head" @click="openExercise(ex)">
                         <span class="ex-name">{{ ex.name }}</span>
                         <span class="ex-meta">{{ $t('stats.muscleGroup.timesTrained', { n: ex.times_trained }) }}</span>
                         <span class="ex-arrow">&rsaquo;</span>
