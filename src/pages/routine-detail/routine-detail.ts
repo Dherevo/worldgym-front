@@ -5,6 +5,7 @@ import { bodyWeight, kcalFromSeconds, kcalLabel, MET_PLANNED, plannedSeconds } f
 
 import BackButton from "@/components/back-button/back-button.vue";
 import SwipeRow from "@/components/swipe-row/swipe-row.vue";
+import { dragReorder } from "@/modules/dragReorder";
 import SearchInput from "@/components/search-input/search-input.vue";
 @Component({ components: { BackButton, SearchInput, SwipeRow } })
 class RoutineDetailPage extends Vue {
@@ -44,11 +45,6 @@ class RoutineDetailPage extends Vue {
     muscleGroups: any[] = [];
     exerciseQuery = '';
     savingExercise = false;
-
-    // Drag & drop reorder: days or the exercises of one day
-    dragKind: 'day' | 'exercise' | null = null;
-    dragFromIdx: number | null = null;
-    dragDayId: number | null = null;
 
     get routineId() {
         return this.param('id');
@@ -124,25 +120,19 @@ class RoutineDetailPage extends Vue {
         .finally(() => { this.starting = false; });
     }
 
-    dragStart(kind: 'day' | 'exercise', idx: number, dayId: number | null = null) {
-        this.dragKind = kind;
-        this.dragFromIdx = idx;
-        this.dragDayId = dayId;
+    // Reorder by dragging the handle (days, or the exercises of one day): see modules/dragReorder.ts
+    startReorder(e: PointerEvent, kind: 'day' | 'exercise', idx: number, day?: any) {
+        const handle = e.currentTarget as HTMLElement;
+        const items = kind === 'day'
+            ? [...document.querySelectorAll<HTMLElement>('.days-list > .day-card')]
+            : [...(handle.closest('.exercises-table') as HTMLElement).querySelectorAll<HTMLElement>('.swipe-row')];
+        dragReorder(e, items, idx, to => (kind === 'day' ? this.moveDay(idx, to) : this.moveExercise(day, idx, to)));
     }
 
-    dragEnd() {
-        this.dragKind = null;
-        this.dragFromIdx = null;
-        this.dragDayId = null;
-    }
-
-    dropDay(idx: number) {
-        if (this.dragKind !== 'day' || this.dragFromIdx === null || this.dragFromIdx === idx) return this.dragEnd();
-
+    moveDay(from: number, to: number) {
         const days = this.routine.days;
-        days.splice(idx, 0, days.splice(this.dragFromIdx, 1)[0]);
+        days.splice(to, 0, days.splice(from, 1)[0]);
         days.forEach((d: any, i: number) => { d.day_number = i + 1; });
-        this.dragEnd();
 
         http.patch(`/routines/${this.routineId}/days/reorder`)
         .data({ order: days.map((d: any) => d.id) })
@@ -152,14 +142,11 @@ class RoutineDetailPage extends Vue {
         });
     }
 
-    dropExercise(day: any, idx: number) {
-        // Exercises only move inside their own day
-        if (this.dragKind !== 'exercise' || this.dragDayId !== day.id || this.dragFromIdx === null || this.dragFromIdx === idx) return this.dragEnd();
-
+    // Exercises only move inside their own day
+    moveExercise(day: any, from: number, to: number) {
         const exercises = day.exercises;
-        exercises.splice(idx, 0, exercises.splice(this.dragFromIdx, 1)[0]);
+        exercises.splice(to, 0, exercises.splice(from, 1)[0]);
         exercises.forEach((e: any, i: number) => { e.order_index = i + 1; });
-        this.dragEnd();
 
         http.patch(`/routines/${this.routineId}/days/${day.id}/exercises/reorder`)
         .data({ order: exercises.map((e: any) => e.id) })

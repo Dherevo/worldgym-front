@@ -55,7 +55,11 @@
                 color: var(--text-muted);
                 cursor: grab;
                 user-select: none;
-                margin-right: 0.5rem;
+                display: inline-block;   // touch-action does not apply to inline elements
+                touch-action: none;   // the finger drags it instead of scrolling the page
+                font-size: 1.15rem;
+                padding: 0.4rem 0.5rem;
+                margin: -0.4rem 0.15rem -0.4rem -0.5rem;
                 &:hover { color: var(--text-secondary); }
             }
 
@@ -134,13 +138,11 @@
                 .rest-sub { display: none; color: var(--text-muted); font-size: 0.75rem; }
                 .swipe-row, .sr-btn.del { border-radius: 0; }
 
-                // Narrow screens: compact columns so they all fit, the rest under the name,
-                // and no drag handle (there is no drag and drop on touch screens)
+                // Narrow screens: compact columns so they all fit, the rest under the name
                 @media (max-width: 768px) {
                     font-size: 0.82rem;
                     .ex-row { grid-auto-columns: 3.3rem; column-gap: 0.3rem; padding: 0.45rem 0.35rem; }
                     .ex-head { font-size: 0.66rem; letter-spacing: 0.02em; }
-                    .drag-handle { display: none; }
                     .c-rest { display: none; }
                     .rest-sub { display: block; margin-top: 0.1rem; }
                 }

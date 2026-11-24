@@ -18,13 +18,11 @@
                 <div v-if="routine.days?.length === 0" class="empty-text">
                     {{ $t('routineDetail.noDays') }}
                 </div>
-                <div v-for="(day, di) in routine.days" :key="day.id" class="day-card"
-                    :class="{ dragging: dragKind === 'day' && dragFromIdx === di }"
-                    @dragover.prevent @drop="dropDay(di)">
+                <div v-for="(day, di) in routine.days" :key="day.id" class="day-card">
                     <div class="day-header">
                         <div class="day-title">
-                            <span v-if="canEdit" class="drag-handle" draggable="true" :title="$t('routineDetail.dragToReorder')"
-                                @dragstart="dragStart('day', di)" @dragend="dragEnd()">⠿</span>
+                            <span v-if="canEdit" class="drag-handle" :title="$t('routineDetail.dragToReorder')"
+                                @pointerdown="startReorder($event, 'day', di)">⠿</span>
                             <span class="day-name">{{ day.name || $t('routineDetail.dayNumber', { n: day.day_number }) }}</span>
                             <span v-for="g in dayGroups(day)" :key="g.id" class="group-chip">{{ g.name }}</span>
                             <span v-if="day.circuit_minutes" class="group-chip">{{ $t('routineDetail.circuitChip', { n: day.circuit_minutes }) }}</span>
@@ -49,12 +47,10 @@
                         </div>
                         <SwipeRow v-for="(ex, ei) in day.exercises" :key="ex.id" :enabled="canEdit"
                             @edit="openEditExercise(day, ex)" @delete="deleteExercise(day, ex)">
-                            <div class="ex-row"
-                                :class="{ dragging: dragKind === 'exercise' && dragDayId === day.id && dragFromIdx === ei }"
-                                @dragover.prevent @drop.stop="dropExercise(day, ei)">
+                            <div class="ex-row">
                                 <span class="c-name">
-                                    <span v-if="canEdit" class="drag-handle" draggable="true" :title="$t('routineDetail.dragToReorder')"
-                                        @dragstart.stop="dragStart('exercise', ei, day.id)" @dragend="dragEnd()">⠿</span>
+                                    <span v-if="canEdit" class="drag-handle" :title="$t('routineDetail.dragToReorder')"
+                                        @pointerdown="startReorder($event, 'exercise', ei, day)">⠿</span>
                                     <span class="exercise-link" @click="to('/exercise/' + ex.exercise?.id)">{{ ex.exercise?.name }}</span>
                                     <span class="muscle-label" v-if="muscleLabel(ex.exercise)">({{ muscleLabel(ex.exercise) }})</span>
                                     <small class="rest-sub" v-if="!day.circuit_minutes && ex.rest_seconds">⏱ {{ ex.rest_seconds }}s</small>

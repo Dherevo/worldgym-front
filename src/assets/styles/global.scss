@@ -175,3 +175,15 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
     -webkit-tap-highlight-color: transparent;
     &:hover { text-decoration: underline; text-underline-offset: 3px; }
 }
+
+// Reordering a list by dragging a handle (modules/dragReorder.ts)
+.reorder-dragging {
+    position: relative;
+    z-index: 30;
+    opacity: 0.92;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+    transition: none !important;
+}
+.drop-before { box-shadow: 0 -3px 0 0 var(--primary-color); }
+.drop-after { box-shadow: 0 3px 0 0 var(--primary-color); }
+body.reordering { user-select: none; -webkit-user-select: none; }
