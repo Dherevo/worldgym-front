@@ -1,0 +1,21 @@
+.swipe-pager {
+    position: relative;
+
+    &.enabled {
+        overflow-x: clip;
+        touch-action: pan-y;   // vertical scrolling stays with the browser, horizontal moves reach the pager
+    }
+
+    .sp-track.animating { transition: transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+    // The neighbour page waits beside the current one (never in the flow, so the height is the current page's)
+    .sp-panel.side {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        pointer-events: none;
+
+        // Scroll-reveal would keep its content invisible while it is off screen
+        .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+}

@@ -29,7 +29,7 @@
     .tab-bar { margin: 0 2rem; }
 
     // One width and side padding for every tab, whatever the page used before
-    .tab-content > div { max-width: none; padding: 1rem 2rem 2rem; }
+    .tab-content .sp-panel > div { max-width: none; padding: 1rem 2rem 2rem; }
 
     // The tab already names the section
     .tab-content .page-header h1 { display: none; }
@@ -39,6 +39,6 @@
     @media (max-width: 768px) {
         padding-top: 0.5rem;
         .tab-bar { margin: 0 1rem; .tab-bar-item { padding: 0.7rem 1rem; } }
-        .tab-content > div { padding: 1rem 1rem 1.5rem; }
+        .tab-content .sp-panel > div { padding: 1rem 1rem 1.5rem; }
     }
 }

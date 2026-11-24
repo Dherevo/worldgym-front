@@ -18,11 +18,14 @@
                     </button>
                 </nav>
 
+                <!-- One page per tab; in the app the finger drags them side by side -->
+                <SwipePager :index="tabIndex" :count="tabs.length" :enabled="isApp" @change="onPager" @neighbors="ensureChart()">
+                <template #default="{ index }">
                 <!-- Big animation: on the summary and the directions -->
-                <exercise-animation v-if="tab !== 'history'" class="ed-media" :exercise="exercise" />
+                <exercise-animation v-if="tabs[index] !== 'history'" class="ed-media" :exercise="exercise" />
 
                 <!-- SUMMARY -->
-                <div v-if="tab === 'summary'" class="ed-body">
+                <div v-if="tabs[index] === 'summary'" class="ed-body">
                     <h2 class="ed-name">{{ exercise.name }}</h2>
                     <p class="ed-eq" v-if="exercise.equipment">{{ exercise.equipment.name }}</p>
                     <p class="ed-muscles" v-if="muscles.primary">{{ $t('exerciseDetail.primary') }}: {{ muscles.primary }}</p>
@@ -70,7 +73,7 @@
                 </div>
 
                 <!-- HISTORY -->
-                <div v-else-if="tab === 'history'" class="ed-body">
+                <div v-else-if="tabs[index] === 'history'" class="ed-body">
                     <div class="ed-empty" v-if="!sessions.length">{{ $t('exerciseDetail.noHistory') }}</div>
                     <button v-for="(s, i) in visibleSessions" :key="i" type="button" class="ed-session" @click="to('/workouts/' + s.workout_id)">
                         <div class="ed-session-head">
@@ -100,6 +103,8 @@
                     </ol>
                     <div class="ed-empty" v-else>{{ $t('exerciseDetail.noDirections') }}</div>
                 </div>
+                </template>
+                </SwipePager>
             </template>
 
         </div>

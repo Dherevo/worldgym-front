@@ -2,10 +2,10 @@ import { Component, Vue, Watch, toNative } from "vue-facing-decorator";
 import { http, translate } from "lib";
 import { Chart, registerables } from 'chart.js';
 import { isApp } from "@/modules/platform";
-import { swipeTabs, slideIn } from "@/modules/swipeTabs";
 
 import BackButton from "@/components/back-button/back-button.vue";
 import ExerciseAnimation from "@/components/exercise-animation/exercise-animation.vue";
+import SwipePager from "@/components/swipe-pager/swipe-pager.vue";
 
 Chart.register(...registerables);
 
@@ -27,7 +27,7 @@ const ONE_RM_MAX_REPS = 10;
 const oneRmSets = (sets: any[]) => sets.filter(s => s.reps <= ONE_RM_MAX_REPS && s.weight > 0);
 const round = (n: number) => Math.round(n * 100) / 100;
 
-@Component({ components: { BackButton, ExerciseAnimation } })
+@Component({ components: { BackButton, ExerciseAnimation, SwipePager } })
 class ExerciseDetailPage extends Vue {
 
     exercise: any = null;
@@ -44,7 +44,14 @@ class ExerciseDetailPage extends Vue {
     readonly tabs: Tab[] = ['summary', 'history', 'directions'];
     readonly ranges: Range[] = ['month', 'threeMonths', 'year', 'all'];
 
+    readonly isApp = isApp;
+
     get exerciseId() { return this.param('id'); }
+
+    get tabIndex(): number { return this.tabs.indexOf(this.tab); }
+
+    // A page of the pager was turned
+    onPager(i: number) { this.setTab(this.tabs[i]); }
 
     get dateLocale() {
         const l = translate.currentLanguage;
@@ -72,21 +79,7 @@ class ExerciseDetailPage extends Vue {
         });
     }
 
-    private stopSwipe: (() => void) | null = null;
-
-    mounted() {
-        // App: swipe sideways to move between Resumen, Historial and Indicaciones
-        if (!isApp) return;
-        this.stopSwipe = swipeTabs('.exercise-detail-page', dir => {
-            const next = this.tabs[this.tabs.indexOf(this.tab) + dir];
-            if (!next) return;
-            this.setTab(next);
-            this.$nextTick(() => slideIn(document.querySelector<HTMLElement>('.exercise-detail-page .ed-body'), dir));
-        });
-    }
-
     beforeUnmount() {
-        this.stopSwipe?.();
         chart?.destroy();
         chart = null;
     }
@@ -195,10 +188,16 @@ class ExerciseDetailPage extends Vue {
 
     // ---- Chart ----
 
+    // The chart is drawn when its panel appears (also as a neighbour while dragging), once per canvas
+    ensureChart() {
+        const canvas = this.$refs.canvas as HTMLCanvasElement | undefined;
+        if (canvas && (!chart || chart.canvas !== canvas)) this.renderChart();
+    }
+
     setTab(tab: Tab) {
         this.tab = tab;
         this.$router.replace({ query: tab === 'summary' ? {} : { tab } });
-        if (tab === 'summary') this.$nextTick(() => this.renderChart());
+        if (tab === 'summary') this.$nextTick(() => this.ensureChart());
     }
 
     setMetric(m: Metric) { this.metric = m; }
