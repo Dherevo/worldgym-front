@@ -87,7 +87,9 @@ class WorkoutPage extends Vue {
     completedExercises: any[] = [];
 
     // Edit or delete a set already logged in this workout (current or earlier exercise)
-    editing: { weId: number; set: any; exIdx: number; reps: number; weight: number; notes: string; failed: boolean; dropset: boolean } | null = null;
+    editing: { weId: number; set: any; exIdx: number; isNew?: boolean; reps: number; weight: number; notes: string; failed: boolean; dropset: boolean; rest: number | null; duration: number | null } | null = null;
+    // Exercises skipped in this workout, so they can be brought back
+    skippedNow: any[] = [];
     savingEdit = false;
 
     // Daily must-dos done around the workout (warm-up, stretching) and the rating of the session
@@ -254,7 +256,10 @@ class WorkoutPage extends Vue {
     // Skipped exercises of earlier days that are not already in this workout
     get addSuggestions(): any[] {
         const inWorkout = new Set(this.exercises.map((e: any) => e.exercise?.id));
-        return this.pendingItems.filter((p: any) => !inWorkout.has(p.exercise_id));
+        const fromServer = this.pendingItems.filter((p: any) => !inWorkout.has(p.exercise_id));
+        const known = new Set(fromServer.map((p: any) => p.exercise_id));
+        const local = this.skippedNow.filter((p: any) => !inWorkout.has(p.exercise_id) && !known.has(p.exercise_id));
+        return [...local, ...fromServer];
     }
 
     pendingWhen(date: string): string {
@@ -300,6 +305,7 @@ class WorkoutPage extends Vue {
             const we = this.currentExercise;
             http.delete(`/workouts/${this.workoutId}/exercises/${we.id}`)
             .then(() => {
+                if (we.exercise) this.skippedNow.push({ exercise_id: we.exercise.id, exercise: we.exercise, day_name: null, date: localDate() });
                 this.exercises.splice(this.currentExerciseIdx, 1);
                 this.exerciseHistory = [];
                 this.exerciseRecord = null;
@@ -321,6 +327,11 @@ class WorkoutPage extends Vue {
 
     // Keeps the sets already logged, drops the planned ones that were never done, and goes to the next exercise
     finishExerciseEarly() {
+        if (!this.canFinishEarly || !this.currentExercise) return;
+        App.confirm(translate.get('workout.finishEarlyConfirm')).then((ok: boolean) => { if (ok) this.doFinishExerciseEarly(); });
+    }
+
+    doFinishExerciseEarly() {
         const we = this.currentExercise;
         if (!this.canFinishEarly || !we) return;
 
@@ -577,6 +588,31 @@ class WorkoutPage extends Vue {
             weId: we.id, set, exIdx,
             reps: Number(set.reps) || 0, weight: Number(set.weight) || 0, notes: set.notes ?? '',
             failed: !!set.is_failed, dropset: !!set.is_dropset,
+            rest: set.rest_seconds ?? null, duration: set.duration_seconds ?? null,
+        };
+    }
+
+    // Sets already logged of an exercise (earlier ones come from the summary, the current one from the live list)
+    setRows(exIdx: number): any[] {
+        return exIdx === this.currentExerciseIdx ? this.loggedSets : (this.completedExercises[exIdx]?.sets ?? []);
+    }
+
+    // A set can be added to an earlier exercise, or to the current one once its planned sets are done
+    canAddSet(exIdx: number): boolean {
+        if (exIdx < this.currentExerciseIdx) return true;
+        if (exIdx > this.currentExerciseIdx) return false;
+        return (this.state === 'idle' || this.state === 'choose') && (this.totalSets === -1 || this.doneCount >= this.totalSets);
+    }
+
+    openAddSet(exIdx: number) {
+        const we = this.exercises[exIdx];
+        if (!we || !this.canAddSet(exIdx)) return;
+        const list: any[] = exIdx === this.currentExerciseIdx ? this.loggedSets : (this.completedExercises[exIdx]?.sets ?? []);
+        const last = list[list.length - 1];
+        this.editing = {
+            weId: we.id, set: null, exIdx, isNew: true,
+            reps: Number(last?.reps) || 10, weight: Number(last?.weight) || 0, notes: '', failed: false, dropset: false,
+            rest: null, duration: null,
         };
     }
 
@@ -591,8 +627,13 @@ class WorkoutPage extends Vue {
     saveEdit() {
         const e = this.editing;
         if (!e || this.savingEdit) return;
-        const data = { reps: e.reps, weight: this.editingBodyweight ? 0 : e.weight, notes: e.notes, is_failed: e.failed, is_dropset: e.dropset };
+        const num = (v: any) => (v === null || v === undefined || v === '' ? null : Number(v));
+        const data = { reps: e.reps, weight: this.editingBodyweight ? 0 : e.weight, notes: e.notes, is_failed: e.failed, is_dropset: e.dropset, rest_seconds: num(e.rest), duration_seconds: num(e.duration) };
         this.savingEdit = true;
+        if (e.isNew) {
+            this.saveNewSet(e, data);
+            return;
+        }
         http.put(`/workouts/${this.workoutId}/exercises/${e.weId}/sets/${e.set.id}`).data(data)
         .then(() => {
             Object.assign(e.set, data);
@@ -604,15 +645,41 @@ class WorkoutPage extends Vue {
         .finally(() => { this.savingEdit = false; });
     }
 
+    saveNewSet(e: NonNullable<typeof this.editing>, data: any) {
+        const we = this.exercises[e.exIdx];
+        http.post(`/workouts/${this.workoutId}/exercises/${e.weId}/sets`).data(data)
+        .then((res: any) => {
+            const set = { ...res, ...data, set_number: res?.set_number ?? ((we.sets ?? []).length + 1) };
+            we.sets = [...(we.sets ?? []), set];
+            if (e.exIdx === this.currentExerciseIdx) {
+                this.loggedSets.push(set);
+                this.doneCount = this.loggedSets.length;
+            } else if (this.completedExercises[e.exIdx]) {
+                this.completedExercises[e.exIdx].sets.push(set);
+            }
+            this.editing = null;
+            this.saveProgress();
+        })
+        .catch(() => App.notification(translate.get('workout.editSet.error')).setType('error').show())
+        .finally(() => { this.savingEdit = false; });
+    }
+
     deleteEdit() {
         const e = this.editing;
-        if (!e || this.savingEdit) return;
+        if (!e || e.isNew || !e.set) return;
+        this.deleteSet(e.exIdx, e.set);
+    }
+
+    // The trash icon of a row: asks, deletes and closes the editor if it was open on that set
+    deleteSet(exIdx: number, set: any) {
+        if (this.savingEdit || !set?.id) return;
+        const weId = this.exercises[exIdx]?.id;
         App.confirm(translate.get('workout.editSet.deleteConfirm')).then((ok: boolean) => {
             if (!ok) return;
             this.savingEdit = true;
-            http.delete(`/workouts/${this.workoutId}/exercises/${e.weId}/sets/${e.set.id}`)
-            .then(() => this.removeLoggedSet(e.exIdx, e.set.id))
-            .then(() => { this.editing = null; })
+            http.delete(`/workouts/${this.workoutId}/exercises/${weId}/sets/${set.id}`)
+            .then(() => this.removeLoggedSet(exIdx, set.id))
+            .then(() => { if (this.editing?.set?.id === set.id) this.editing = null; })
             .catch(() => App.notification(translate.get('workout.editSet.error')).setType('error').show())
             .finally(() => { this.savingEdit = false; });
         });
