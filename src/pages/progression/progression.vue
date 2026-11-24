@@ -6,39 +6,25 @@
                 <h1>{{ $t('stats.home.progression') }}</h1>
             </div>
 
-        <!-- Range of the totals -->
-        <div class="range-chips">
-            <button v-for="r in ranges" :key="r.key" type="button" class="chip" :class="{ on: range === r.key }"
-                @click="setRange(r.key)">{{ $t('stats.dash.presets.' + r.label) }}</button>
-        </div>
-
-        <!-- Key numbers -->
-        <div class="overview-grid" v-if="overview">
-            <div class="stat-card">
-                <div class="stat-value">{{ overview.total_workouts ?? '—' }}</div>
-                <div class="stat-label">{{ $t('stats.overview.totalWorkouts') }}</div>
-            </div>
-            <div class="stat-card highlight">
-                <div class="stat-value">🔥 {{ overview.week_streak ?? 0 }}</div>
-                <div class="stat-label">{{ $t('stats.dash2.weeksStreak') }} · {{ overview.streak ?? 0 }} {{ $t('stats.dash2.daysShort') }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">{{ overview.workouts_this_week ?? 0 }}</div>
-                <div class="stat-label">{{ $t('stats.dash.thisWeek') }}</div>
-            </div>
-        </div>
-        <div v-else-if="loadingOverview" class="loading-text">{{ $t('stats.overview.loading') }}</div>
-
         <!-- Progression: muscle group -> exercise -> last time, current and record -->
         <div class="section-card progress-card">
-            <h2>{{ $t('stats.dash2.progress.title') }}</h2>
-
             <label class="group-select">
                 <span>{{ $t('stats.dash2.progress.group') }}</span>
                 <select v-model="selectedMuscleGroupId" @change="onGroupChange()">
                     <option v-for="mg in muscleGroups" :key="mg.id" :value="mg.id">{{ mg.name }}</option>
                 </select>
             </label>
+
+            <!-- Period of the chart and of the exercises of the group -->
+            <div class="period-row">
+                <select class="period-select" v-model="period" :aria-label="$t('stats.home.period')" @change="onGroupChange()">
+                    <option v-for="p in periods" :key="p.key" :value="p.key">{{ $t('stats.home.periods.' + p.label) }}</option>
+                </select>
+                <template v-if="period === 'custom'">
+                    <input type="date" class="period-date" v-model="customFrom" :aria-label="$t('stats.filters.from')" @change="onGroupChange()" />
+                    <input type="date" class="period-date" v-model="customTo" :aria-label="$t('stats.filters.to')" @change="onGroupChange()" />
+                </template>
+            </div>
 
             <div v-if="groupStats?.sessions?.length" class="group-chart">
                 <div class="chart-title">{{ $t('stats.dash2.progress.groupEvolution', { group: selectedGroupName }) }}</div>

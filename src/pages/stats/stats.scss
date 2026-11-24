@@ -30,6 +30,13 @@
         }
     }
 
+    .period-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    .period-select, .period-date {
+        background: var(--surface-2); color: var(--text-color); border: 1px solid var(--border-color);
+        border-radius: 10px; padding: 0.5rem 0.7rem; font-size: 0.9rem;
+    }
+    .period-select { color: var(--primary-color); font-weight: 600; }
+    .period-date { flex: 1 1 8rem; min-width: 0; }
     .sub-top { display: flex; align-items: center; gap: 0.5rem; h1 { margin: 0; font-size: 1.3rem; } }
 
     .shortcuts { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
