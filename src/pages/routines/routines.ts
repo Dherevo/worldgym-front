@@ -1,7 +1,9 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
+import { IonToggle } from "@ionic/vue";
+import SwipeRow from "@/components/swipe-row/swipe-row.vue";
 
-@Component({})
+@Component({ components: { SwipeRow, IonToggle } })
 class RoutinesPage extends Vue {
 
     routines: any[] = [];
@@ -76,6 +78,12 @@ class RoutinesPage extends Vue {
         })
         .catch(() => App.notification(translate.get('routines.errors.clone')).setType('error').show())
         .finally(() => { this.cloningId = null; });
+    }
+
+    // The switch changed: only when it differs from what is saved (the component also fires when its value is set by us)
+    onActive(r: any, event: CustomEvent) {
+        const checked = !!event.detail?.checked;
+        if (checked !== !!r.is_default) this.toggleActive(r);
     }
 
     // Several routines can be active at once (e.g. gym + flexibility): this only switches this one

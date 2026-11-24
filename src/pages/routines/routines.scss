@@ -53,29 +53,20 @@
         .routine-card {
             background: var(--surface-color);
             &.is-default { border-left: 3px solid var(--primary-color); }
-            border-radius: 10px;
-            padding: 1.25rem;
+            border-radius: 12px;
+            padding: 1rem 1.1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 0.75rem;
             border: 1px solid var(--border-color);
+            cursor: pointer;
 
             .routine-info {
                 flex: 1;
-                cursor: pointer;
-                &:hover .routine-name { color: var(--primary-color); }
+                min-width: 0;
                 .routine-name { font-weight: 600; font-size: 1.05rem; }
                 .routine-desc { color: var(--text-secondary); font-size: 0.85rem; margin-top: 3px; }
-                .badge.default {
-                    display: inline-block;
-                    background: rgba(237,115,52,0.12);
-                    color: var(--primary-color);
-                    border-radius: 10px;
-                    padding: 1px 8px;
-                    font-size: 0.8rem;
-                    margin-left: 6px;
-                    font-weight: 600;
-                }
                 .badge.global {
                     display: inline-block;
                     background: var(--tint-blue-bg);
@@ -87,20 +78,21 @@
                 }
             }
 
-            .routine-actions {
+            // "Active" as a switch with its label under it
+            .routine-switch {
+                flex: none;
                 display: flex;
-                gap: 0.5rem;
-                button {
-                    border: 1px solid var(--border-color);
-                    background: var(--surface-2);
-                    color: var(--text-color);
-                    border-radius: 5px;
-                    padding: 0.3rem 0.75rem;
-                    cursor: pointer;
-                    font-size: 0.85rem;
-                    &:hover { background: var(--surface-3); }
-                    &.danger { color: var(--primary-color); border-color: var(--primary-color); }
-                }
+                flex-direction: column;
+                align-items: center;
+                gap: 0.15rem;
+                font-size: 0.72rem;
+                color: var(--text-secondary);
+            }
+            .routine-toggle {
+                --track-background: var(--surface-3);
+                --track-background-checked: var(--primary-color);
+                --handle-background: #fff;
+                --handle-background-checked: #fff;
             }
         }
     }
@@ -113,18 +105,6 @@
             align-items: flex-start;
             gap: 0.75rem;
             .btn-primary { width: 100%; }
-        }
-
-        .routine-card {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.75rem;
-
-            .routine-actions {
-                width: 100%;
-                flex-wrap: wrap;
-                button { flex: 1; text-align: center; }
-            }
         }
     }
 
