@@ -7,16 +7,16 @@
     .hs-sub { margin: 0; font-size: 0.85rem; color: var(--text-secondary); }
 
     .hs-stats {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.5rem;
         .stat {
             display: flex;
             flex-direction: column;
             background: var(--surface-2);
             border-radius: 10px;
-            padding: 0.5rem 0.9rem;
-            min-width: 110px;
+            padding: 0.5rem 0.7rem;
+            min-width: 0;
             strong { font-size: 1.4rem; }
             span { font-size: 0.8rem; color: var(--text-secondary); }
         }
