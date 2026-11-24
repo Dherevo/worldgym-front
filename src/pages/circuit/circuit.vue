@@ -8,12 +8,12 @@
 
             <div v-else-if="state === 'unavailable'" class="center-state">
                 <p>{{ $t('circuit.unavailable') }}</p>
-                <button type="button" class="c-link" @click="to(`/routines/${routineId}`)">{{ $t('circuit.back') }}</button>
+                <button type="button" class="c-sec back" @click="to(`/routines/${routineId}`)">{{ $t('circuit.back') }}</button>
             </div>
 
             <!-- Before starting: what will be done -->
             <div v-else-if="state === 'ready'" class="c-card">
-                <button type="button" class="c-link" @click="to(`/routines/${routineId}`)">{{ $t('circuit.back') }}</button>
+                <button type="button" class="c-sec back" @click="to(`/routines/${routineId}`)">{{ $t('circuit.back') }}</button>
                 <h1>{{ day.name }}</h1>
                 <p class="c-big-minutes">{{ $t('circuit.minutes', { n: day.circuit_minutes }) }}</p>
                 <ol class="c-list">
@@ -69,6 +69,7 @@
                 </ul>
                 <p class="c-hint">{{ $t('circuit.time', { t: durationLabel(elapsedSeconds) }) }}</p>
                 <button type="button" class="c-btn" @click="to('/workouts')">{{ $t('circuit.toHistory') }}</button>
+                <button type="button" class="c-sec back" @click="to(`/routines/${routineId}`)">{{ $t('circuit.back') }}</button>
             </div>
 
         </div>
