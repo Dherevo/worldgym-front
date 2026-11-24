@@ -3,7 +3,8 @@ export default {
         title: 'Progressió i estadístiques',
         home: {
             hoursTitle: "Hores d'entreno",
-            periods: { week: 'Aquesta setmana', month: 'Aquest mes', threeMonths: 'Últims 3 mesos', year: 'Aquest any', all: 'Tot' },
+            period: 'Període',
+            periods: { week: 'Aquesta setmana', month: 'Aquest mes', threeMonths: 'Últims 3 mesos', year: 'Aquest any', all: 'Tot', custom: 'Personalitzat' },
             streakCurrent: 'Ratxa actual',
             streakBest: 'Ratxa màxima',
             weeks: 'setmanes',
@@ -110,7 +111,8 @@ export default {
         title: 'Progresión y estadísticas',
         home: {
             hoursTitle: 'Horas de entreno',
-            periods: { week: 'Esta semana', month: 'Este mes', threeMonths: 'Últimos 3 meses', year: 'Este año', all: 'Todo' },
+            period: 'Periodo',
+            periods: { week: 'Esta semana', month: 'Este mes', threeMonths: 'Últimos 3 meses', year: 'Este año', all: 'Todo', custom: 'Personalizado' },
             streakCurrent: 'Racha actual',
             streakBest: 'Racha máxima',
             weeks: 'semanas',
@@ -217,7 +219,8 @@ export default {
         title: 'Progress & statistics',
         home: {
             hoursTitle: 'Training hours',
-            periods: { week: 'This week', month: 'This month', threeMonths: 'Last 3 months', year: 'This year', all: 'All time' },
+            period: 'Period',
+            periods: { week: 'This week', month: 'This month', threeMonths: 'Last 3 months', year: 'This year', all: 'All time', custom: 'Custom' },
             streakCurrent: 'Current streak',
             streakBest: 'Best streak',
             weeks: 'weeks',

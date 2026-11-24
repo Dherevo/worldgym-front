@@ -8,7 +8,7 @@ Chart.register(...registerables);
 // Chart.js instances must not be reactive (Vue would wrap them in proxies)
 const charts: Record<string, Chart | null> = { group: null, weight: null, volume: null, reps: null };
 
-// Progression: totals of a range, then muscle group -> exercise -> last time, current and record
+// Progression: muscle group (in a period) -> exercise -> last time, current and record
 @Component({ components: { BackButton } })
 class ProgressionPage extends Vue {
 
@@ -17,14 +17,17 @@ class ProgressionPage extends Vue {
 
     loadingOverview = false;
 
-    range = 'month';
-
-    readonly ranges = [
+    // Period of the muscle group section (chart and exercises); 'custom' uses the two dates
+    period = '3m';
+    readonly periods = [
         { key: 'month', label: 'month' },
         { key: '3m', label: 'threeMonths' },
         { key: 'year', label: 'year' },
         { key: 'all', label: 'all' },
+        { key: 'custom', label: 'custom' },
     ];
+    customFrom = '';
+    customTo = '';
 
     // Progression: muscle group -> exercise -> previous / current / record
     muscleGroups: any[] = [];
@@ -61,9 +64,16 @@ class ProgressionPage extends Vue {
         return '';
     }
 
-    setRange(key: string) {
-        this.range = key;
-        this.fetchOverview();
+    // from/to of the chosen period ('' = no limit)
+    periodParams(): { from?: string; to?: string } {
+        if (this.period === 'custom') {
+            const p: { from?: string; to?: string } = {};
+            if (this.customFrom) p.from = this.customFrom;
+            if (this.customTo) p.to = this.customTo;
+            return p;
+        }
+        const from = this.rangeFrom(this.period);
+        return from ? { from } : {};
     }
 
     cssVar(name: string, fallback: string): string {
@@ -98,7 +108,7 @@ class ProgressionPage extends Vue {
         charts.group?.destroy();
         charts.group = null;
         this.destroyExerciseCharts();
-        http.get(`/stats/muscle-groups/${this.selectedMuscleGroupId}`)
+        http.get(`/stats/muscle-groups/${this.selectedMuscleGroupId}`).data(this.periodParams())
         .then((res: any) => {
             this.groupStats = res;
             setTimeout(() => { this.renderGroupChart(); }, 0);
@@ -294,17 +304,12 @@ class ProgressionPage extends Vue {
     }
 
     fetchOverview() {
-        this.loadingOverview = true;
-        const params: any = {};
-        const from = this.rangeFrom(this.range);
-        if (from) params.from = from;
-        http.get('/stats/overview').data(params)
+        http.get('/stats/overview')
         .then((res: any) => {
             this.overview = res;
             this.initGroup();
         })
-        .catch(() => {})
-        .finally(() => { this.loadingOverview = false; });
+        .catch(() => {});
     }
 
     goBack() {
