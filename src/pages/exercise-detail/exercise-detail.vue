@@ -34,13 +34,39 @@
                     <div class="ed-empty" v-if="!sessions.length">{{ $t('exerciseDetail.noData') }}</div>
 
                     <template v-else>
+                        <!-- Last time, now and the record -->
+                        <div class="ed-cmp" v-if="comparison">
+                            <div class="ed-cmp-card" v-if="comparison.previous">
+                                <div class="ed-cmp-label">{{ $t('stats.dash2.progress.previous') }}</div>
+                                <div class="ed-cmp-value">{{ comparison.previous.value }}</div>
+                                <div class="ed-cmp-sub">{{ shortDate(comparison.previous.date) }} · {{ comparison.previous.sets }} {{ $t('stats.dash.last.setsShort') }}</div>
+                                <div class="ed-cmp-sub">{{ $t('stats.dash2.progress.avgReps', { n: comparison.previous.avgReps }) }}</div>
+                            </div>
+                            <div class="ed-cmp-card current">
+                                <div class="ed-cmp-label">{{ $t('stats.dash2.progress.current') }}</div>
+                                <div class="ed-cmp-value">{{ comparison.current.value }}</div>
+                                <div class="ed-cmp-sub">{{ shortDate(comparison.current.date) }} · {{ comparison.current.sets }} {{ $t('stats.dash.last.setsShort') }}</div>
+                                <div class="ed-cmp-sub">{{ $t('stats.dash2.progress.avgReps', { n: comparison.current.avgReps }) }}</div>
+                                <div class="ed-cmp-changes" v-if="comparison.previous">
+                                    <span v-for="c in comparison.changes" :key="c.text" class="ed-cmp-delta" :class="c.cls">{{ c.text }}</span>
+                                    <span v-if="!comparison.changes.length" class="ed-cmp-delta flat">{{ $t('stats.dash2.progress.same') }}</span>
+                                </div>
+                            </div>
+                            <div class="ed-cmp-card record" v-if="comparison.record">
+                                <div class="ed-cmp-label">🏆 {{ $t('stats.dash2.progress.record') }}</div>
+                                <div class="ed-cmp-value">{{ comparison.record.value }}</div>
+                                <div class="ed-cmp-sub">{{ comparison.record.reps }} {{ $t('stats.dash2.progress.reps') }} · {{ shortDate(comparison.record.date) }}</div>
+                            </div>
+                        </div>
+
                         <div class="ed-chart-head">
                             <div class="ed-headline">{{ headline }}</div>
                             <select class="ed-range" v-model="range">
                                 <option v-for="r in ranges" :key="r" :value="r">{{ $t('exerciseDetail.range.' + r) }}</option>
+                                <option v-if="range === 'custom'" value="custom">{{ $t('stats.home.periods.custom') }}</option>
                             </select>
                         </div>
-                        <div class="ed-times">{{ $t('exerciseDetail.timesInRange', { n: timesInRange }) }}</div>
+                        <div class="ed-times">{{ $t(timesInRange === 1 ? 'exerciseDetail.timesInRangeOne' : 'exerciseDetail.timesInRange', { n: timesInRange }) }}</div>
                         <div class="ed-chart"><canvas ref="canvas"></canvas></div>
                         <div class="ed-chips">
                             <button v-for="m in metrics" :key="m" type="button" class="ed-chip"

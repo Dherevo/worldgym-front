@@ -15,10 +15,11 @@ let chart: Chart | null = null;
 
 type Tab = 'summary' | 'history' | 'directions';
 type Metric = 'weight' | 'oneRm' | 'volume' | 'reps';
-type Range = 'week' | 'month' | 'threeMonths' | 'year' | 'all';
+type Range = 'week' | 'month' | 'threeMonths' | 'year' | 'all' | 'custom';
 
 const DAY = 86400000;
-const RANGE_DAYS: Record<Range, number> = { week: 7, month: 31, threeMonths: 92, year: 366, all: 0 };
+const RANGE_DAYS: Record<Range, number> = { week: 7, month: 31, threeMonths: 92, year: 366, all: 0, custom: 0 };
+const DEFAULT_RANGE: Range = 'threeMonths';
 
 // Estimated one-rep max (Epley)
 const oneRm = (weight: number, reps: number) => (reps <= 1 ? weight : weight * (1 + reps / 30));
@@ -38,7 +39,9 @@ class ExerciseDetailPage extends Vue {
 
     tab: Tab = 'summary';
     metric: Metric = 'weight';
-    range: Range = 'threeMonths';
+    range: Range = DEFAULT_RANGE;
+    customFrom = '';   // custom period (Y-m-d), inherited from Progresión
+    customTo = '';
     // Sessions shown in the history: the long list is added 20 at a time (a very tall block would never get revealed by the page animation)
     visibleCount = 20;
 
@@ -61,8 +64,17 @@ class ExerciseDetailPage extends Vue {
 
     created() {
         // The tab lives in the URL (?tab=history), so "back" from a workout returns to the same tab
-        const q = String((this as any).$route.query.tab ?? '');
+        const query = (this as any).$route.query;
+        const q = String(query.tab ?? '');
         if (this.tabs.includes(q as Tab)) this.tab = q as Tab;
+
+        // The period comes from the screen that opened this one (?range=..., and ?from= &to= for a custom one)
+        const r = String(query.range ?? '') as Range;
+        if (r in RANGE_DAYS) this.range = r;
+        if (this.range === 'custom') {
+            this.customFrom = String(query.from ?? '');
+            this.customTo = String(query.to ?? '');
+        }
 
         Promise.all([
             http.get(`/exercises/${this.exerciseId}`),
@@ -130,10 +142,24 @@ class ExerciseDetailPage extends Vue {
         return round(sets.reduce((sum, s) => sum + (this.bodyweightOnly ? s.reps : s.weight * s.reps), 0));
     }
 
-    get rangeSessions(): any[] {
+    // The period as timestamps
+    get rangeBounds(): { from: number; to: number } {
+        if (this.range === 'custom') {
+            return {
+                from: this.customFrom ? new Date(this.customFrom + 'T00:00:00').getTime() : 0,
+                to: this.customTo ? new Date(this.customTo + 'T23:59:59').getTime() : Date.now(),
+            };
+        }
         const days = RANGE_DAYS[this.range];
-        const from = days ? Date.now() - days * DAY : 0;
-        return [...this.sessions].reverse().filter(s => new Date(s.date).getTime() >= from);
+        return { from: days ? Date.now() - days * DAY : 0, to: Date.now() };
+    }
+
+    get rangeSessions(): any[] {
+        const { from, to } = this.rangeBounds;
+        return [...this.sessions].reverse().filter(s => {
+            const t = new Date(s.date).getTime();
+            return t >= from && t <= to;
+        });
     }
 
     get unit(): string {
@@ -150,11 +176,12 @@ class ExerciseDetailPage extends Vue {
     get chartBars() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        const days = RANGE_DAYS[this.range];
         const oldest = this.sessions.length ? this.sessions[this.sessions.length - 1].date : null;
-        const from = days ? new Date(today.getTime() - days * DAY) : (oldest ? new Date(oldest + 'T00:00:00') : today);
+        const bounds = this.rangeBounds;
+        const from = bounds.from ? new Date(bounds.from) : (oldest ? new Date(oldest + 'T00:00:00') : today);
+        const to = this.range === 'custom' && this.customTo ? new Date(this.customTo + 'T00:00:00') : today;
         const rows = this.rangeSessions.map(s => ({ date: s.date, value: this.sessionValue(s, this.metric) }));
-        return bucketize(rows, from, today, this.metric === 'volume' ? 'sum' : 'max', this.dateLocale);
+        return bucketize(rows, from > to ? to : from, to, this.metric === 'volume' ? 'sum' : 'max', this.dateLocale);
     }
 
     // Figure written above the chart: the best bar of the period for the chosen metric
@@ -162,6 +189,51 @@ class ExerciseDetailPage extends Vue {
         const values = this.chartBars.map(b => b.value).filter(v => v > 0);
         if (!values.length) return '—';
         return `${Math.max(...values)} ${this.unit}`;
+    }
+
+    // ---- Last time, now and the record ----
+
+    // Heaviest weight (or most reps, with the body weight) of a session, its sets and its average reps
+    sessionFigures(s: any) {
+        const sets: any[] = s.sets;
+        const best = this.bodyweightOnly ? Math.max(0, ...sets.map(x => x.reps)) : Math.max(0, ...sets.map(x => x.weight));
+        const avgReps = sets.reduce((sum, x) => sum + x.reps, 0) / (sets.length || 1);
+        return { date: s.date, best, sets: sets.length, avgReps: avgReps.toFixed(1) };
+    }
+
+    get comparison() {
+        const [cur, prev] = this.sessions;   // newest first
+        if (!cur) return null;
+
+        const now = this.sessionFigures(cur);
+        const before = prev ? this.sessionFigures(prev) : null;
+        const unit = this.bodyweightOnly ? translate.get('exerciseDetail.repsUnit') : 'kg';
+        const label = (n: number) => `${n} ${unit}`;
+
+        // What changed since the previous session: heaviest weight and number of sets
+        const changes: { text: string; cls: string }[] = [];
+        if (before) {
+            const signed = (n: number) => `${n > 0 ? '+' : '−'}${Math.abs(n)}`;
+            const cls = (n: number) => (n > 0 ? 'up' : 'down');
+            const diff = Math.round((now.best - before.best) * 10) / 10;
+            if (diff !== 0) changes.push({ text: `${signed(diff)} ${unit}`, cls: cls(diff) });
+            const sets = now.sets - before.sets;
+            if (sets !== 0) {
+                const word = translate.get(Math.abs(sets) === 1 ? 'stats.dash2.progress.setOne' : 'stats.dash2.progress.setMany');
+                changes.push({ text: `${signed(sets)} ${word}`, cls: cls(sets) });
+            }
+        }
+
+        const rec = this.records;
+        const bestSet = this.sessions.flatMap(s => s.sets.map((x: any) => ({ ...x, date: s.date })))
+            .reduce((a: any, b: any) => ((this.bodyweightOnly ? b.reps > a.reps : (b.weight > a.weight || (b.weight === a.weight && b.reps > a.reps))) ? b : a));
+
+        return {
+            previous: before ? { ...before, value: label(before.best) } : null,
+            current: { ...now, value: label(now.best) },
+            changes,
+            record: rec ? { value: this.bodyweightOnly ? label(bestSet.reps) : label(bestSet.weight), reps: bestSet.reps, date: bestSet.date } : null,
+        };
     }
 
     // ---- Records ----
@@ -213,8 +285,20 @@ class ExerciseDetailPage extends Vue {
 
     setTab(tab: Tab) {
         this.tab = tab;
-        this.$router.replace({ query: tab === 'summary' ? {} : { tab } });
+        this.syncQuery();
         if (tab === 'summary') this.$nextTick(() => this.ensureChart());
+    }
+
+    // The URL keeps the tab and the period: coming back from a workout shows the same view
+    syncQuery() {
+        const query: Record<string, string> = {};
+        if (this.tab !== 'summary') query.tab = this.tab;
+        if (this.range !== DEFAULT_RANGE) query.range = this.range;
+        if (this.range === 'custom') {
+            if (this.customFrom) query.from = this.customFrom;
+            if (this.customTo) query.to = this.customTo;
+        }
+        this.$router.replace({ query });
     }
 
     setMetric(m: Metric) { this.metric = m; }
@@ -224,7 +308,10 @@ class ExerciseDetailPage extends Vue {
     onMetric() { this.renderChart(); }
 
     @Watch('range')
-    onRange() { this.renderChart(); }
+    onRange() {
+        this.renderChart();
+        this.syncQuery();
+    }
 
     cssVar(name: string, fallback: string): string {
         return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;

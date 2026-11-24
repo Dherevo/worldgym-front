@@ -97,6 +97,17 @@ class ProgressionPage extends Vue {
         this.onGroupChange();
     }
 
+    // Opens the exercise page with the same period (and the custom dates, if they are the ones in use)
+    openExercise(ex: any) {
+        const ranges: Record<string, string> = { month: 'month', '3m': 'threeMonths', year: 'year', all: 'all', custom: 'custom' };
+        const query: Record<string, string> = { range: ranges[this.period] ?? 'threeMonths' };
+        if (this.period === 'custom') {
+            if (this.customFrom) query.from = this.customFrom;
+            if (this.customTo) query.to = this.customTo;
+        }
+        this.$router.push({ path: '/exercise/' + ex.id, query });
+    }
+
     savedState(): any {
         try { return JSON.parse(sessionStorage.getItem('wg_progression') || 'null'); } catch { return null; }
     }

@@ -68,6 +68,25 @@
         }
     }
 
+    .ed-cmp {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+        gap: 0.5rem;
+        margin-top: 1.25rem;
+    }
+    .ed-cmp-card {
+        display: flex; flex-direction: column; gap: 0.15rem; min-width: 0;
+        background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.65rem 0.7rem;
+        &.current { border-color: var(--primary-color); }
+        &.record { border-color: #eab308; }
+        .ed-cmp-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); }
+        .ed-cmp-value { font-size: 1.1rem; font-weight: 700; color: var(--text-color); overflow-wrap: anywhere; }
+        .ed-cmp-sub { font-size: 0.72rem; color: var(--text-secondary); }
+        .ed-cmp-changes { display: flex; flex-wrap: wrap; gap: 0.15rem 0.5rem; margin-top: 0.15rem; }
+        .ed-cmp-delta { font-size: 0.78rem; font-weight: 700; &.up { color: var(--primary-color); } &.down { color: #ef4444; } &.flat { color: var(--text-secondary); } }
+    }
+
     .ed-times { margin-top: 0.4rem; color: var(--text-secondary); font-size: 0.9rem; }
 
     .ed-chart { position: relative; height: 220px; margin-top: 0.75rem; }
