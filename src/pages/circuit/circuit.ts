@@ -71,9 +71,9 @@ class CircuitPage extends Vue {
         this.persist();
     }
 
-    setWeight(value: any) {
+    setWeight(event: Event) {
         if (!this.current) return;
-        const v = Number(value);
+        const v = Number((event.target as HTMLInputElement).value);
         this.weights[String(this.current.id)] = Number.isFinite(v) && v >= 0 ? v : 0;
         this.persist();
     }
