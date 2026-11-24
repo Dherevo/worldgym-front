@@ -19,6 +19,17 @@
             <p class="hint" v-if="isAuto">{{ $t(leanWaist ? 'energy.goalAutoWaist' : 'energy.goalAuto', { bmi: bmiLabel, goal: autoGoalLabel }) }}</p>
             <p class="hint">{{ $t('energy.goalHints.' + goal) }}</p>
 
+            <!-- Pace of weight loss: kg a week and the daily deficit it means -->
+            <template v-if="goal === 'lose'">
+                <h3>{{ $t('energy.lossTitle') }}</h3>
+                <div class="goal-options">
+                    <button type="button" class="option" :class="{ selected: loss === null }" :disabled="saving" @click="setLoss(null)">{{ $t('energy.lossAuto') }}</button>
+                    <button v-for="kg in losses" :key="kg" type="button" class="option" :class="{ selected: loss === kg }"
+                        :disabled="saving" @click="setLoss(kg)">{{ $t('energy.lossOption', { kg: String(kg).replace('.', ','), kcal: lossKcal(kg) }) }}</button>
+                </div>
+                <p class="hint">{{ $t(loss === null ? 'energy.lossHintAuto' : 'energy.lossHint', { kg: String(loss ?? '').replace('.', ',') }) }}</p>
+            </template>
+
             <div class="energy-row">
                 <div>
                     <div class="label">{{ $t('energy.restDay') }}</div>

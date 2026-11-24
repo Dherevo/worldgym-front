@@ -8,6 +8,7 @@ interface UserData {
     avatar_url?: string | null;
     goal?: 'lose' | 'maintain' | 'gain' | null;
     activity?: 'sedentary' | 'light' | 'active' | null;
+    weekly_loss?: number | string | null;
     height_cm: number | null;
     weight_kg: number | null;
     gender: 'female' | 'male' | 'other' | null;

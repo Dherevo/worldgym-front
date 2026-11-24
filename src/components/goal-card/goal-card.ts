@@ -1,7 +1,7 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import userStore from "@/modules/userStore";
-import { activityLevel, baseExpenditure, basalMetabolicRate, bmi, effectiveGoal, goalRange, proteinRange, stepsBaseline, waistRatio } from "@/modules/calories";
+import { activityLevel, baseExpenditure, basalMetabolicRate, bmi, effectiveGoal, goalRange, lossDeficit, proteinRange, stepsBaseline, waistRatio, weeklyLoss, WEEKLY_LOSSES } from "@/modules/calories";
 import type { Activity, Goal } from "@/modules/calories";
 
 // Lifestyle (activity) and goal of the user, and the calories and protein to eat for them. The goal is suggested from the BMI
@@ -23,6 +23,26 @@ class GoalCard extends Vue {
 
     get base(): number | null {
         return this.bmr ? baseExpenditure(this.bmr, this.activity) : null;
+    }
+
+    // Pace of weight loss (kg a week): only when the goal is to lose weight; null = automatic
+    readonly losses = WEEKLY_LOSSES;
+
+    get loss(): number | null {
+        return weeklyLoss(this.user);
+    }
+
+    lossKcal(kg: number): number {
+        return lossDeficit(kg);
+    }
+
+    setLoss(loss: number | null) {
+        if (this.saving || this.loss === loss) return;
+        this.saving = true;
+        http.put('/account/weekly-loss').data({ weekly_loss: loss })
+        .then(() => { userStore.data = { ...userStore.data!, weekly_loss: loss }; })
+        .catch(() => App.notification(translate.get('nutrition.errors.save')).setType('error').show())
+        .finally(() => { this.saving = false; });
     }
 
     get activity(): Activity {
@@ -71,7 +91,7 @@ class GoalCard extends Vue {
     // Calories to eat on a day without a workout
     get restRange(): string {
         if (!this.base || !this.bmr) return '';
-        const r = goalRange(this.goal, this.base, this.bmr, { base: this.base, bmi: bmi(this.user) });
+        const r = goalRange(this.goal, this.base, this.bmr, { base: this.base, bmi: bmi(this.user), loss: weeklyLoss(this.user) });
         return `${r.min} - ${r.max}`;
     }
 
