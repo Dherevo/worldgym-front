@@ -105,8 +105,9 @@
                 <svg-icon name="heroicons-outline/chart-bar" />
                 <span>{{ $t('stats.home.progression') }}</span>
             </button>
-            <button type="button" class="shortcut empty" disabled>
-                <span>—</span>
+            <button type="button" class="shortcut" @click="to('/habit-progress')">
+                <svg-icon name="heroicons-outline/check-circle" />
+                <span>{{ $t('layout.menu.habits') }}</span>
             </button>
         </div>
 

@@ -14,6 +14,7 @@ import WorkoutDetailPage from '../pages/workout-detail/workout-detail.vue';
 import ExerciseDetailPage from '../pages/exercise-detail/exercise-detail.vue';
 import CalendarPage from '../pages/calendar/calendar.vue';
 import ProgressionPage from '../pages/progression/progression.vue';
+import HabitProgressPage from '../pages/habit-progress/habit-progress.vue';
 import WorkoutHistoryPage from '../pages/workout-history/workout-history.vue';
 import WorkoutPage from '../pages/workout/workout.vue';
 import CircuitPage from '../pages/circuit/circuit.vue';
@@ -82,7 +83,7 @@ const routes : IRoutes = {
         },
         {
             path: '/habit-progress',
-            component: ProgressPage
+            component: HabitProgressPage
         },
         {
             path: '/workouts/:id',
