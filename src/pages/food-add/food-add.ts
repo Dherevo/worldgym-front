@@ -36,7 +36,8 @@ interface Builder {
 import BackButton from "@/components/back-button/back-button.vue";
 import SearchInput from "@/components/search-input/search-input.vue";
 import SwipeRow from "@/components/swipe-row/swipe-row.vue";
-@Component({ components: { FoodForm, BackButton, SearchInput, SwipeRow } })
+import SwipePager from "@/components/swipe-pager/swipe-pager.vue";
+@Component({ components: { FoodForm, BackButton, SearchInput, SwipeRow, SwipePager } })
 class FoodAddPage extends Vue {
 
     readonly meals = MEALS;
@@ -140,6 +141,30 @@ class FoodAddPage extends Vue {
 
     catName(c: FoodCategory): string {
         return categoryName(c);
+    }
+
+    // Every tab in the order they appear (Todos, Mis alimentos, Mis comidas, Mis recetas, categories): the order of the swipe
+    get tabKeys(): string[] {
+        return ['all', 'mine', 'meals', 'recipes', ...this.topCats.map(c => 'cat:' + c.id)];
+    }
+
+    get tabIndex(): number {
+        return Math.max(0, this.tabKeys.indexOf(this.tab));
+    }
+
+    // A page of the pager was turned
+    onPager(i: number) {
+        const key = this.tabKeys[i];
+        if (key) this.selectTab(key);
+    }
+
+    // The strip of tabs scrolls sideways: keep the chosen one in view (also when it is chosen by swiping)
+    @Watch('tab')
+    onTabChanged() {
+        this.$nextTick(() => {
+            (this.$el as HTMLElement).querySelector<HTMLElement>('.fa-tabs .on')
+                ?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+        });
     }
 
     selectTab(tab: string) {
