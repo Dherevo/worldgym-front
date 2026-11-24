@@ -2,6 +2,12 @@
     min-height: 100%;
     background: var(--background-color);
 
+    .workout-skeleton {
+        max-width: 600px; margin: 0 auto; padding: 1.5rem;
+        display: flex; flex-direction: column; gap: 1rem;
+        .sk-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.1rem; display: flex; flex-direction: column; gap: 0.9rem; }
+    }
+
     .center-state {
         display: flex;
         flex-direction: column;

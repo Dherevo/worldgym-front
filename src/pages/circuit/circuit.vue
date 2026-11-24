@@ -2,8 +2,11 @@
     <AppPage name="circuit-page" layout="backoffice">
         <div class="circuit-page">
 
-            <div v-if="state === 'loading'" class="center-state">
-                <div class="loading-text">{{ $t('circuit.loading') }}</div>
+            <div v-if="state === 'loading'" class="c-card" :aria-label="$t('circuit.loading')">
+                <skeleton-block :rows="1" height="2rem" />
+                <skeleton-block :rows="1" height="1.4rem" />
+                <skeleton-block :rows="4" height="1.1rem" />
+                <skeleton-block :rows="1" height="3.4rem" />
             </div>
 
             <div v-else-if="state === 'unavailable'" class="center-state">

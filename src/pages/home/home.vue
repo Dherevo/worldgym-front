@@ -45,7 +45,9 @@
             <!-- Routine card -->
             <template v-if="!restMode && !activeWorkout">
             <div class="today-card" v-if="loadingRoutine">
-                <div class="loading-text">{{ $t('home.routine.loading') }}</div>
+                <skeleton-block :rows="1" height="1.2rem" />
+                <skeleton-block :rows="2" height="1.6rem" />
+                <skeleton-block :rows="1" height="3rem" />
             </div>
 
             <div class="today-card" v-else-if="activeRoutines.length === 1">
@@ -123,7 +125,7 @@
             <!-- Recent workouts -->
             <div class="section">
                 <h2>{{ $t('home.recent.title') }}</h2>
-                <div v-if="loadingWorkouts" class="loading-text">{{ $t('home.recent.loading') }}</div>
+                <skeleton-block v-if="loadingWorkouts" :rows="3" height="3.2rem" />
                 <div v-else-if="recentWorkouts.length === 0" class="empty-text">{{ $t('home.recent.empty') }}</div>
                 <div v-else class="workout-list">
                     <div v-for="w in recentWorkouts" :key="w.id" class="workout-card" @click="to('/workouts/' + w.id)">

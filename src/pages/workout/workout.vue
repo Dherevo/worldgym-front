@@ -3,8 +3,10 @@
         <div class="workout-page">
 
             <!-- Loading -->
-            <div v-if="state === 'loading'" class="center-state">
-                <div class="loading-text">{{ $t('workout.loading') }}</div>
+            <div v-if="state === 'loading'" class="workout-skeleton" :aria-label="$t('workout.loading')">
+                <skeleton-block :rows="1" height="2.2rem" />
+                <div class="sk-card"><skeleton-block :rows="1" height="9rem" /><skeleton-block :rows="3" height="1.3rem" /><skeleton-block :rows="1" height="3.2rem" /></div>
+                <div class="sk-card"><skeleton-block :rows="4" height="1.1rem" /></div>
             </div>
 
             <!-- Done -->
