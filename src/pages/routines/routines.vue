@@ -13,28 +13,22 @@
                 {{ $t('routines.empty') }}
             </div>
             <div v-else class="routine-list">
-                <div v-for="r in routines" :key="r.id" class="routine-card" :class="{ 'is-default': r.is_default }">
-                    <div class="routine-info" @click="to('/routines/' + r.id)">
-                        <div class="routine-name">
-                            {{ r.name }}
-                            <span class="badge default" v-if="r.is_default">{{ $t('routines.badgeDefault') }}</span>
+                <SwipeRow v-for="r in routines" :key="r.id" :enabled="canEdit(r)" @edit="openEdit(r)" @delete="deleteRoutine(r)">
+                    <div class="routine-card" :class="{ 'is-default': r.is_default }" @click="to('/routines/' + r.id)">
+                        <div class="routine-info">
+                            <div class="routine-name">{{ r.name }}</div>
+                            <div class="routine-desc" v-if="r.description">{{ r.description }}</div>
+                            <span class="badge global" v-if="r.is_global">{{ $t('routines.badgeGlobal') }}</span>
                         </div>
-                        <div class="routine-desc" v-if="r.description">{{ r.description }}</div>
-                        <span class="badge global" v-if="r.is_global">{{ $t('routines.badgeGlobal') }}</span>
-                    </div>
-                    <div class="routine-actions">
-                        <button @click="to('/routines/' + r.id)">{{ $t('routines.view') }}</button>
-                        <button class="use-template" v-if="r.is_global" @click="cloneRoutine(r)" :disabled="cloningId === r.id">
+                        <button v-if="r.is_global" type="button" class="use-template" @click.stop="cloneRoutine(r)" :disabled="cloningId === r.id">
                             {{ cloningId === r.id ? $t('routines.cloning') : $t('routines.useTemplate') }}
                         </button>
-                        <button v-if="canEdit(r)" @click="openEdit(r)">{{ $t('routines.edit') }}</button>
-                        <label v-if="!r.is_global" class="active-switch">
-                            <input type="checkbox" :checked="r.is_default" @change="toggleActive(r)" />
+                        <div v-else class="routine-switch" @click.stop>
+                            <ion-toggle class="routine-toggle" mode="md" :checked="r.is_default" @ionChange="onActive(r, $event)" />
                             <span>{{ $t('routines.activeToggle') }}</span>
-                        </label>
-                        <button v-if="canEdit(r)" class="danger" @click="deleteRoutine(r)">{{ $t('routines.delete') }}</button>
+                        </div>
                     </div>
-                </div>
+                </SwipeRow>
             </div>
 
             <!-- Form Modal -->
