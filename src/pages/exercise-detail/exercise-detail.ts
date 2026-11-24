@@ -32,6 +32,8 @@ class ExerciseDetailPage extends Vue {
     tab: Tab = 'summary';
     metric: Metric = 'weight';
     range: Range = 'threeMonths';
+    // Sessions shown in the history: the long list is added 20 at a time (a very tall block would never get revealed by the page animation)
+    visibleCount = 20;
 
     readonly tabs: Tab[] = ['summary', 'history', 'directions'];
     readonly ranges: Range[] = ['month', 'threeMonths', 'year', 'all'];
@@ -63,6 +65,10 @@ class ExerciseDetailPage extends Vue {
     beforeUnmount() {
         chart?.destroy();
         chart = null;
+    }
+
+    get visibleSessions(): any[] {
+        return this.sessions.slice(0, this.visibleCount);
     }
 
     // ---- Exercise info ----

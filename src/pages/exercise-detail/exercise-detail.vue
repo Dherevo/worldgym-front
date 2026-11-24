@@ -72,7 +72,7 @@
                 <!-- HISTORY -->
                 <div v-else-if="tab === 'history'" class="ed-body">
                     <div class="ed-empty" v-if="!sessions.length">{{ $t('exerciseDetail.noHistory') }}</div>
-                    <button v-for="(s, i) in sessions" :key="i" type="button" class="ed-session" @click="to('/workouts/' + s.workout_id)">
+                    <button v-for="(s, i) in visibleSessions" :key="i" type="button" class="ed-session" @click="to('/workouts/' + s.workout_id)">
                         <div class="ed-session-head">
                             <div>
                                 <div class="ed-session-title">{{ s.title || $t('exerciseDetail.workout') }}</div>
@@ -86,6 +86,9 @@
                             <span class="ed-set-flag" v-if="x.is_failed">✕</span>
                             <span class="ed-set-flag" v-else-if="x.is_dropset">↓</span>
                         </div>
+                    </button>
+                    <button v-if="sessions.length > visibleCount" type="button" class="ed-more" @click="visibleCount += 20">
+                        {{ $t('exerciseDetail.showMore', { n: sessions.length - visibleCount }) }}
                     </button>
                 </div>
 
