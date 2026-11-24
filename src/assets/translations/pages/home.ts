@@ -17,6 +17,7 @@ export default {
         week: {
             label: 'Setmana: {{done}}/{{total}} dies',
             routineLabel: '{{name}}: {{done}}/{{total}}',
+            mini: '{{done}} de {{total}} dies aquesta setmana',
             behind: 'No arribaràs als {{total}} dies aquesta setmana, no passa res: la rotació continua.',
             trained: 'Avui ja has entrenat',
             complete: 'Setmana completada!',
@@ -30,6 +31,7 @@ export default {
             history: 'Historial',
             freeWorkout: 'Entrenament lliure',
         },
+        historyBtn: 'Historial d\'entrenaments',
         recent: {
             title: 'Últims entrenaments',
             loading: 'Carregant...',
@@ -73,6 +75,7 @@ export default {
         week: {
             label: 'Semana: {{done}}/{{total}} días',
             routineLabel: '{{name}}: {{done}}/{{total}}',
+            mini: '{{done}} de {{total}} días esta semana',
             behind: 'No llegarás a los {{total}} días esta semana, no pasa nada: la rotación continúa.',
             trained: 'Hoy ya has entrenado',
             complete: '¡Semana completada!',
@@ -86,6 +89,7 @@ export default {
             history: 'Historial',
             freeWorkout: 'Entrenamiento libre',
         },
+        historyBtn: 'Historial de entrenamientos',
         recent: {
             title: 'Últimos entrenamientos',
             loading: 'Cargando...',
@@ -129,6 +133,7 @@ export default {
         week: {
             label: 'Week: {{done}}/{{total}} days',
             routineLabel: '{{name}}: {{done}}/{{total}}',
+            mini: '{{done}} of {{total}} days this week',
             behind: 'You will not reach {{total}} days this week, no worries: the rotation carries on.',
             trained: 'You already trained today',
             complete: 'Week completed!',
@@ -142,6 +147,7 @@ export default {
             history: 'History',
             freeWorkout: 'Free workout',
         },
+        historyBtn: 'Workout history',
         recent: {
             title: 'Recent workouts',
             loading: 'Loading...',

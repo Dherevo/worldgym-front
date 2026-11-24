@@ -11,28 +11,6 @@
                 <button @click="to(activeWorkout.circuit ? `/circuit/${activeWorkout.circuit.routine_id}/${activeWorkout.circuit.day_id}` : '/workout/' + activeWorkout.id)">{{ $t('home.activeWorkout.resume') }}</button>
             </div>
 
-            <!-- Week progress -->
-            <div class="week-strip" v-if="week && week.routine_days_total">
-                <!-- Several active routines: one bar for each, with its name -->
-                <template v-if="week.routines?.length > 1">
-                    <div class="week-routine" v-for="r in week.routines" :key="r.id">
-                        <div class="week-text">{{ $t('home.week.routineLabel', { name: r.name, done: r.done, total: r.total }) }}</div>
-                        <div class="week-bar">
-                            <span v-for="n in r.total" :key="n" class="seg" :class="{ filled: n <= r.done }" :style="{ transitionDelay: (n * 90) + 'ms' }"></span>
-                        </div>
-                    </div>
-                </template>
-                <template v-else>
-                    <div class="week-text">
-                        {{ $t('home.week.label', { done: week.days_done, total: week.routine_days_total }) }}
-                        <span v-if="weekBehind" class="week-hint">· {{ $t('home.week.behind', { total: week.routine_days_total }) }}</span>
-                    </div>
-                    <div class="week-bar">
-                        <span v-for="n in week.routine_days_total" :key="n" class="seg" :class="{ filled: n <= week.days_done }" :style="{ transitionDelay: (n * 90) + 'ms' }"></span>
-                    </div>
-                </template>
-            </div>
-
             <!-- Rest day -->
             <div class="rest-card" v-if="restMode">
                 <div>
@@ -53,6 +31,12 @@
             <div class="today-card" v-else-if="activeRoutines.length === 1">
                 <div class="today-info">
                     <div class="routine-name">{{ defaultRoutine.name }}</div>
+                    <div class="week-mini" v-if="weekOf(defaultRoutine.id) && weekOf(defaultRoutine.id).total > 1">
+                        <div class="week-text">{{ $t('home.week.mini', { done: weekOf(defaultRoutine.id).done, total: weekOf(defaultRoutine.id).total }) }}</div>
+                        <div class="week-bar">
+                            <span v-for="n in weekOf(defaultRoutine.id).total" :key="n" class="seg" :class="{ filled: n <= weekOf(defaultRoutine.id).done }" :style="{ transitionDelay: (n * 90) + 'ms' }"></span>
+                        </div>
+                    </div>
                     <div class="today-label">{{ $t('home.routine.todayLabel') }}</div>
                     <div class="day-name">{{ nextDay.name }}</div>
                     <div class="exercises-preview" v-if="nextDay.exercises?.length">
@@ -81,6 +65,12 @@
                 <div class="multi-item" v-for="e in activeRoutines" :key="e.routine.id">
                     <div class="today-info">
                         <div class="routine-name">{{ e.routine.name }}</div>
+                        <div class="week-mini" v-if="weekOf(e.routine.id) && weekOf(e.routine.id).total > 1">
+                        <div class="week-text">{{ $t('home.week.mini', { done: weekOf(e.routine.id).done, total: weekOf(e.routine.id).total }) }}</div>
+                        <div class="week-bar">
+                            <span v-for="n in weekOf(e.routine.id).total" :key="n" class="seg" :class="{ filled: n <= weekOf(e.routine.id).done }" :style="{ transitionDelay: (n * 90) + 'ms' }"></span>
+                        </div>
+                    </div>
                         <div class="day-name">{{ e.nextDay?.name }}</div>
                     </div>
                     <div class="start-actions">
@@ -122,22 +112,11 @@
 
             <DailyHabits :restDay="restMode" />
 
-            <!-- Recent workouts -->
-            <div class="section">
-                <h2>{{ $t('home.recent.title') }}</h2>
-                <skeleton-block v-if="loadingWorkouts" :rows="3" height="3.2rem" />
-                <div v-else-if="recentWorkouts.length === 0" class="empty-text">{{ $t('home.recent.empty') }}</div>
-                <div v-else class="workout-list">
-                    <div v-for="w in recentWorkouts" :key="w.id" class="workout-card" @click="to('/workouts/' + w.id)">
-                        <div>
-                            <div class="workout-date">{{ formatDate(w.date) }}</div>
-                            <div class="workout-notes">{{ w.notes || $t('home.recent.noNotes') }}</div>
-                        </div>
-                        <svg-icon class="wk-go" name="heroicons-outline/chevron-right" />
-                    </div>
-                    <button class="btn-more" @click="to('/workouts')">{{ $t('home.recent.more') }} <svg-icon name="heroicons-outline/chevron-right" /></button>
-                </div>
-            </div>
+            <!-- Workout history -->
+            <button type="button" class="history-link" @click="to('/workouts')">
+                {{ $t('home.historyBtn') }}
+                <svg-icon class="hl-go" name="heroicons-outline/chevron-right" />
+            </button>
 
             <!-- Day picker modal (days of the default routine) -->
             <div v-if="dayPickerEntry" class="modal-overlay" @click.self="dayPickerEntry = null">

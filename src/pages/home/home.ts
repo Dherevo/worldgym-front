@@ -33,14 +33,10 @@ class HomePage extends Vue {
     // Calories eaten against the ones burned today
     energy: EnergyDay | null = null;
 
-    recentWorkouts: any[] = [];
-    loadingWorkouts = false;
-
     created() {
         this.fetchActiveWorkout();
         this.fetchWeek();
         this.fetchDefaultRoutine();
-        this.fetchRecentWorkouts();
         loadEnergyDay().then(d => { this.energy = d; }).catch(() => {});
     }
 
@@ -48,6 +44,11 @@ class HomePage extends Vue {
         http.get('/week-status').data({ date: localDate() })
         .then((res: any) => { this.week = res; })
         .catch(() => { this.week = null; });
+    }
+
+    // Progress of one active routine this week (only routines with a weekly goal are in the list)
+    weekOf(routineId: number): any {
+        return (this.week?.routines ?? []).find((r: any) => r.id === routineId) ?? null;
     }
 
     get restMode(): boolean {
@@ -152,27 +153,6 @@ class HomePage extends Vue {
         http.post('/workouts').data({ date: today, notes: null })
         .then((res: any) => { this.to(`/workout/${res.id}`); })
         .catch(() => App.notification(translate.get('home.errors.create')).setType('error').show());
-    }
-
-    fetchRecentWorkouts() {
-        this.loadingWorkouts = true;
-        http.get('/workouts')
-        .then((res: any) => { 
-            // Only the last two days with workouts; the rest is in the history page
-            const days = new Set<string>();
-            this.recentWorkouts = (res.items ?? []).filter((w: any) => {
-                days.add(String(w.date).slice(0, 10));
-                return days.size <= 2;
-            });
-        })
-        .catch(() => {})
-        .finally(() => { this.loadingWorkouts = false; });
-    }
-
-    formatDate(date: string) {
-        const l = translate.currentLanguage;
-        const locale = l === 'es' ? 'es-ES' : l === 'en' ? 'en-GB' : 'ca-ES';
-        return new Date(date).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
     }
 }
 export default toNative(HomePage);
