@@ -50,6 +50,11 @@
                         <textarea v-model="form.description" rows="2" :placeholder="$t('routines.form.descriptionPlaceholder')"></textarea>
                     </div>
 
+                    <label class="goal-check">
+                        <input type="checkbox" v-model="form.no_weekly_goal" />
+                        <span>{{ $t('routines.form.noWeeklyGoal') }}<small>{{ $t('routines.form.noWeeklyGoalHint') }}</small></span>
+                    </label>
+
                     <div class="form-templates" v-if="!editingRoutine && templates.length">
                         <div class="form-templates-title">{{ $t('routines.form.fromTemplate') }}</div>
                         <div v-for="t in templates" :key="t.id" class="form-template">
