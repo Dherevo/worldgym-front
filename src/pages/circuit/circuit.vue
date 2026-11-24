@@ -17,7 +17,7 @@
                 <h1>{{ day.name }}</h1>
                 <p class="c-big-minutes">{{ $t('circuit.minutes', { n: day.circuit_minutes }) }}</p>
                 <ol class="c-list">
-                    <li v-for="ex in exercises" :key="ex.id"><span>{{ ex.exercise?.name }}</span><strong>× {{ ex.reps_target }}</strong></li>
+                    <li v-for="ex in exercises" :key="ex.id"><span>{{ ex.exercise?.name }}<small v-if="ex.weight_target > 0"> · {{ ex.weight_target }} kg</small></span><strong>× {{ ex.reps_target }}</strong></li>
                 </ol>
                 <p class="c-hint">{{ $t('circuit.hint') }}</p>
                 <button type="button" class="c-btn" @click="start()">{{ $t('circuit.start') }}</button>
@@ -31,12 +31,22 @@
                     <div class="c-now-name">{{ current?.exercise?.name }}</div>
                     <div class="c-now-reps">× {{ current?.reps_target }}</div>
                 </div>
+                <!-- Weight of this exercise: change it between rounds and the next ones use it -->
+                <div class="c-weight">
+                    <span class="c-weight-label">{{ $t('circuit.weight') }}</span>
+                    <div class="c-stepper">
+                        <button type="button" @click="changeWeight(-2.5)">−</button>
+                        <input type="number" inputmode="decimal" min="0" step="0.5" :value="currentWeight" @change="setWeight(($event.target as HTMLInputElement).value)" />
+                        <button type="button" @click="changeWeight(2.5)">+</button>
+                    </div>
+                    <span class="c-weight-sub" v-if="currentWeight === 0">{{ $t('circuit.bodyweight') }}</span>
+                </div>
                 <button type="button" class="c-btn done" @click="done()">{{ $t('circuit.done') }}</button>
                 <div class="c-next" v-if="next">{{ $t('circuit.next', { name: next.exercise?.name }) }}</div>
                 <div class="c-stats">{{ $t('circuit.roundsDone', { n: completedRounds }) }}</div>
                 <div class="c-links">
-                    <button type="button" class="c-link" :disabled="!log.length" @click="undo()">{{ $t('circuit.undo') }}</button>
-                    <button type="button" class="c-link" @click="finishEarly()">{{ $t('circuit.finishNow') }}</button>
+                    <button type="button" class="c-sec" :disabled="!log.length" @click="undo()">↶ {{ $t('circuit.undo') }}</button>
+                    <button type="button" class="c-sec danger" @click="finishEarly()">■ {{ $t('circuit.finishNow') }}</button>
                 </div>
             </div>
 
@@ -55,7 +65,7 @@
                 <p class="c-big-minutes">{{ $t('circuit.roundsTotal', { n: completedRounds }) }}</p>
                 <p class="c-hint" v-if="stepInRound > 0">{{ $t('circuit.extra', { n: stepInRound }) }}</p>
                 <ul class="c-list">
-                    <li v-for="t in totals" :key="t.exercise.id"><span>{{ t.exercise.exercise?.name }}</span><strong>{{ t.reps }} {{ $t('circuit.repsShort') }}</strong></li>
+                    <li v-for="t in totals" :key="t.exercise.id"><span>{{ t.exercise.exercise?.name }}<small v-if="t.runs.some(r => r.weight > 0)"> · {{ t.runs.map(r => weightLabel(r.weight)).join(' → ') }}</small></span><strong>{{ t.reps }} {{ $t('circuit.repsShort') }}</strong></li>
                 </ul>
                 <p class="c-hint">{{ $t('circuit.time', { t: durationLabel(elapsedSeconds) }) }}</p>
                 <button type="button" class="c-btn" @click="to('/workouts')">{{ $t('circuit.toHistory') }}</button>

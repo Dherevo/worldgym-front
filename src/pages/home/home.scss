@@ -93,6 +93,7 @@
                 box-shadow: 0 0 10px rgba(74, 222, 128, 0.35);
             }
         }
+        .week-routine { display: flex; flex-direction: column; gap: 0.35rem; }
         .week-text { font-weight: 600; font-size: 0.95rem; }
         .week-hint { font-weight: 400; color: var(--text-secondary); }
     }

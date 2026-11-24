@@ -27,8 +27,27 @@
         &:active { transform: scale(0.98); }
     }
 
+    .c-weight {
+        display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
+        .c-weight-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+        .c-weight-sub { font-size: 0.8rem; color: var(--text-muted); }
+    }
+    .c-stepper {
+        display: flex; align-items: center; border: 2px solid var(--border-color); border-radius: 12px; overflow: hidden;
+        button { background: var(--surface-2); border: none; min-height: 0; padding: 0.55rem 1.1rem; font-size: 1.3rem; font-weight: 700; color: var(--primary-color); cursor: pointer; &:active { background: var(--surface-3); } }
+        input { width: 5rem; border: none; outline: none; text-align: center; font-size: 1.4rem; font-weight: 800; padding: 0.4rem 0; background: var(--surface-color); color: var(--text-color); -moz-appearance: textfield; &::-webkit-outer-spin-button, &::-webkit-inner-spin-button { -webkit-appearance: none; } }
+    }
+
+    .c-sec {
+        flex: 1; min-height: 0; padding: 0.75rem 0.5rem; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer;
+        border: 1.5px solid var(--border-color); background: var(--surface-2); color: var(--text-secondary);
+        &:active { background: var(--surface-3); }
+        &:disabled { opacity: 0.4; cursor: default; }
+        &.danger { color: var(--primary-color); border-color: var(--primary-color); background: transparent; }
+    }
+
     .c-link { background: none; border: none; color: var(--text-muted); text-decoration: underline; cursor: pointer; font-size: 0.9rem; &:disabled { opacity: 0.4; cursor: default; } }
-    .c-links { display: flex; justify-content: center; gap: 1.5rem; }
+    .c-links { display: flex; gap: 0.75rem; margin-top: 0.25rem; }
 
     .running {
         .c-timer { font-size: 4.5rem; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; color: var(--text-color); &.low { color: #d97706; } }

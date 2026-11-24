@@ -35,7 +35,7 @@
                             <span class="c-name">{{ $t('routineDetail.table.exercise') }}</span>
                             <span v-if="!day.circuit_minutes">{{ $t('routineDetail.table.sets') }}</span>
                             <span v-if="day.circuit_minutes || hasValues(day, 'reps_target')">{{ $t('routineDetail.table.reps') }}</span>
-                            <span v-if="!day.circuit_minutes && hasValues(day, 'weight_target')">{{ $t('routineDetail.table.weight') }}</span>
+                            <span v-if="hasValues(day, 'weight_target')">{{ $t('routineDetail.table.weight') }}</span>
                             <span v-if="!day.circuit_minutes" class="c-rest">{{ $t('routineDetail.table.rest') }}</span>
                         </div>
                         <SwipeRow v-for="(ex, ei) in day.exercises" :key="ex.id" :enabled="canEdit"
@@ -50,7 +50,7 @@
                                 </span>
                                 <span v-if="!day.circuit_minutes">{{ ex.sets_target }}</span>
                                 <span v-if="day.circuit_minutes || hasValues(day, 'reps_target')">{{ ex.reps_target }}</span>
-                                <span v-if="!day.circuit_minutes && hasValues(day, 'weight_target')">{{ ex.weight_target }}</span>
+                                <span v-if="hasValues(day, 'weight_target')">{{ ex.weight_target }}</span>
                                 <span v-if="!day.circuit_minutes" class="c-rest">{{ ex.rest_seconds }}s</span>
                             </div>
                         </SwipeRow>
@@ -76,10 +76,6 @@
             <div v-if="showDayForm" class="modal-overlay" @click.self="showDayForm = false">
                 <div class="modal">
                     <h2>{{ editingDay ? $t('routineDetail.dayForm.titleEdit') : $t('routineDetail.dayForm.titleNew') }}</h2>
-                    <div class="form-group">
-                        <label>{{ $t('routineDetail.dayForm.dayNumber') }}</label>
-                        <input type="number" v-model.number="dayForm.day_number" min="1" />
-                    </div>
                     <div class="form-group">
                         <label>{{ $t('routineDetail.dayForm.name') }}</label>
                         <input type="text" v-model="dayForm.name" :placeholder="$t('routineDetail.dayForm.namePlaceholder')" />
@@ -130,7 +126,7 @@
                             <label>{{ $t('routineDetail.exerciseForm.reps') }}</label>
                             <input type="number" v-model.number="exerciseForm.reps_target" min="1" />
                         </div>
-                        <div class="form-group" v-if="!activeDay?.circuit_minutes">
+                        <div class="form-group">
                             <label>{{ $t('routineDetail.exerciseForm.weight') }}</label>
                             <input type="number" v-model.number="exerciseForm.weight_target" min="0" step="0.5" />
                         </div>

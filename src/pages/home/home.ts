@@ -107,6 +107,8 @@ class HomePage extends Vue {
     // Starts any day of an active routine (the suggested one or one picked by the user)
     startDay(day: any, entry: any = this.activeRoutines[0]) {
         if (!day || !entry || this.starting) return;
+        // A circuit day has its own screen (countdown, rounds and weights)
+        if (day.circuit_minutes) { this.to(`/circuit/${entry.routine.id}/${day.id}`); return; }
         const today = new Date().toISOString().split('T')[0];
         this.starting = true;
         http.post(`/routines/${entry.routine.id}/days/${day.id}/start`)
@@ -135,6 +137,7 @@ class HomePage extends Vue {
 
     startPickerRoutine() {
         if (!this.pickerNextDay || this.startingPicker) return;
+        if (this.pickerNextDay.circuit_minutes) { this.to(`/circuit/${this.pickerRoutine.id}/${this.pickerNextDay.id}`); return; }
         const today = new Date().toISOString().split('T')[0];
         this.startingPicker = true;
         http.post(`/routines/${this.pickerRoutine.id}/days/${this.pickerNextDay.id}/start`)
