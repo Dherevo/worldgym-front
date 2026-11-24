@@ -3,6 +3,7 @@ export default {
         title: 'Progressió i estadístiques',
         home: {
             hoursTitle: "Hores d'entreno",
+            metrics: { weight: 'Pes màxim', volume: 'Volum', reps: 'Repeticions' },
             period: 'Període',
             periods: { week: 'Aquesta setmana', month: 'Aquest mes', threeMonths: 'Últims 3 mesos', year: 'Aquest any', all: 'Tot', custom: 'Personalitzat' },
             streakCurrent: 'Ratxa actual',
@@ -111,6 +112,7 @@ export default {
         title: 'Progresión y estadísticas',
         home: {
             hoursTitle: 'Horas de entreno',
+            metrics: { weight: 'Peso máximo', volume: 'Volumen', reps: 'Repeticiones' },
             period: 'Periodo',
             periods: { week: 'Esta semana', month: 'Este mes', threeMonths: 'Últimos 3 meses', year: 'Este año', all: 'Todo', custom: 'Personalizado' },
             streakCurrent: 'Racha actual',
@@ -219,6 +221,7 @@ export default {
         title: 'Progress & statistics',
         home: {
             hoursTitle: 'Training hours',
+            metrics: { weight: 'Max weight', volume: 'Volume', reps: 'Reps' },
             period: 'Period',
             periods: { week: 'This week', month: 'This month', threeMonths: 'Last 3 months', year: 'This year', all: 'All time', custom: 'Custom' },
             streakCurrent: 'Current streak',

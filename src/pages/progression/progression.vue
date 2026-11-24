@@ -78,21 +78,12 @@
                                 </div>
                             </div>
 
-                            <div v-if="exerciseView(ex.id).current && exerciseView(ex.id).sessionCount > 1" class="ex-charts">
-                                <div class="chart-block">
-                                    <div class="chart-title">{{ $t('stats.charts.maxWeightTitle') }}</div>
-                                    <div class="chart-values">{{ chartValues(ex.id, 'weight') }}</div>
-                                    <div class="chart-wrap small"><canvas id="weightCanvas"></canvas></div>
-                                </div>
-                                <div class="chart-block">
-                                    <div class="chart-title">{{ $t('stats.charts.volumeTitle') }}</div>
-                                    <div class="chart-values">{{ chartValues(ex.id, 'volume') }}</div>
-                                    <div class="chart-wrap small"><canvas id="volumeCanvas"></canvas></div>
-                                </div>
-                                <div class="chart-block">
-                                    <div class="chart-title">{{ $t('stats.charts.avgRepsTitle') }}</div>
-                                    <div class="chart-values">{{ chartValues(ex.id, 'reps') }}</div>
-                                    <div class="chart-wrap small"><canvas id="repsCanvas"></canvas></div>
+                            <div v-if="exerciseView(ex.id).current" class="ex-charts">
+                                <div class="chart-values">{{ chartValues(ex.id) }}</div>
+                                <div class="chart-wrap small"><canvas id="exerciseCanvas"></canvas></div>
+                                <div class="ex-chips">
+                                    <button v-for="m in exMetrics" :key="m" type="button" class="ex-chip" :class="{ on: exMetric === m }"
+                                        @click="setExMetric(m)">{{ $t('stats.home.metrics.' + m) }}</button>
                                 </div>
                             </div>
                         </template>

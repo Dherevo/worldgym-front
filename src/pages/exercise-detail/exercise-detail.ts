@@ -2,6 +2,7 @@ import { Component, Vue, Watch, toNative } from "vue-facing-decorator";
 import { http, translate } from "lib";
 import { Chart, registerables } from 'chart.js';
 import { isApp } from "@/modules/platform";
+import { bucketize } from "@/modules/chartBuckets";
 
 import BackButton from "@/components/back-button/back-button.vue";
 import ExerciseAnimation from "@/components/exercise-animation/exercise-animation.vue";
@@ -140,9 +141,20 @@ class ExerciseDetailPage extends Vue {
         return this.bodyweightOnly ? translate.get('exerciseDetail.repsUnit') : 'kg';
     }
 
-    // Figure written above the chart: the best of the period for the chosen metric
+    // Bars of the chart: one per week (per month in long periods), not one per session
+    get chartBars() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const days = RANGE_DAYS[this.range];
+        const oldest = this.sessions.length ? this.sessions[this.sessions.length - 1].date : null;
+        const from = days ? new Date(today.getTime() - days * DAY) : (oldest ? new Date(oldest + 'T00:00:00') : today);
+        const rows = this.rangeSessions.map(s => ({ date: s.date, value: this.sessionValue(s, this.metric) }));
+        return bucketize(rows, from, today, this.metric === 'volume' ? 'sum' : 'max', this.dateLocale);
+    }
+
+    // Figure written above the chart: the best bar of the period for the chosen metric
     get headline(): string {
-        const values = this.rangeSessions.map(s => this.sessionValue(s, this.metric));
+        const values = this.chartBars.map(b => b.value).filter(v => v > 0);
         if (!values.length) return '—';
         return `${Math.max(...values)} ${this.unit}`;
     }
@@ -218,8 +230,8 @@ class ExerciseDetailPage extends Vue {
         chart = null;
 
         const canvas = this.$refs.canvas as HTMLCanvasElement | undefined;
-        const list = this.rangeSessions;
-        if (!canvas || !list.length) return;
+        const bars = this.chartBars;
+        if (!canvas || !bars.some(b => b.value > 0)) return;
 
         const primary = this.cssVar('--primary-color', '#ED7334');
         Chart.defaults.color = this.cssVar('--text-secondary', '#888');
@@ -227,31 +239,26 @@ class ExerciseDetailPage extends Vue {
         const unit = this.unit;
 
         chart = new Chart(canvas, {
-            type: 'line',
+            type: 'bar',
             data: {
-                labels: list.map(s => this.shortDate(s.date)),
+                labels: bars.map(b => b.label),
                 datasets: [{
-                    data: list.map(s => { const v = this.sessionValue(s, this.metric); return this.metric === 'oneRm' && !v ? null : v; }),
-                    spanGaps: true,
-                    borderColor: primary,
+                    data: bars.map(b => b.value),
                     backgroundColor: primary,
-                    borderWidth: 2.5,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.25,
+                    borderRadius: 4,
+                    maxBarThickness: 36,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: { mode: 'nearest', intersect: false },
                 plugins: {
                     legend: { display: false },
                     tooltip: { callbacks: { label: (c: any) => `${c.parsed.y} ${unit}` } },
                 },
                 scales: {
                     y: { beginAtZero: true, grid: { color: grid }, ticks: { callback: (v: any) => `${v}` } },
-                    x: { grid: { display: false }, ticks: { maxTicksLimit: 5, maxRotation: 0 } },
+                    x: { grid: { display: false }, ticks: { maxTicksLimit: 6, maxRotation: 0 } },
                 }
             }
         });
