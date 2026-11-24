@@ -96,8 +96,8 @@
                         <span v-if="c.daily_min">{{ $t('challenges.dailyMin', { n: fmt(c.daily_min) }) }}</span>
                         <span>{{ $t('challenges.participants', { n: c.participants }) }}</span>
                     </div>
-                    <span v-if="c.joined" class="joined-badge">✓ {{ $t('challenges.joined') }}</span>
-                    <button v-else type="button" class="btn" :disabled="joiningId === c.id" @click="join(c)">{{ $t('challenges.join') }}</button>
+                    <span v-if="c.joined" class="joined-badge"><i class="jb-check">✓</i>{{ $t('challenges.joined') }}</span>
+                    <button v-else type="button" class="btn btn-join" :disabled="joiningId === c.id" @click="join(c)">{{ $t('challenges.join') }}</button>
                 </div>
             </template>
         </div>
