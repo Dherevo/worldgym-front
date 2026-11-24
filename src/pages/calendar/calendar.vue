@@ -33,19 +33,23 @@
             </div>
 
             <SectionTile v-model:open="showYear" :title="$t('stats.dash2.viewYear')">
-                <div class="heatmap">
-                    <div v-for="(w, wi) in heatmapWeeks" :key="wi" class="hm-week">
-                        <div class="hm-label">{{ w.label }}</div>
-                        <template v-for="(d, di) in w.days" :key="di">
-                            <div v-if="d" class="hm-cell" :class="'l' + d.level"
-                                :title="$t('stats.dash.heatmap.tooltip', { date: formatHistoryDate(d.date), n: d.count })"></div>
-                            <div v-else class="hm-cell none"></div>
-                        </template>
+                <!-- Last 12 months, the newest first: a small month calendar each -->
+                <div class="year-grid">
+                    <div v-for="m in yearMonths" :key="m.key" class="ym">
+                        <div class="ym-head"><b>{{ m.label }}</b><span>{{ m.trained }}</span></div>
+                        <div class="ym-dow"><i v-for="(w, wi) in weekdayLabels" :key="wi">{{ w }}</i></div>
+                        <div class="ym-days">
+                            <template v-for="(c, ci) in m.cells" :key="ci">
+                                <i v-if="!c" class="ym-empty"></i>
+                                <i v-else class="ym-day" :class="['l' + c.level, { today: c.today, future: c.future }]"
+                                    :title="c.count ? $t('stats.dash.heatmap.tooltip', { date: formatHistoryDate(c.date), n: c.count }) : ''">{{ c.day }}</i>
+                            </template>
+                        </div>
                     </div>
                 </div>
                 <div class="hm-legend">
                     <span>{{ $t('stats.dash.heatmap.less') }}</span>
-                    <i class="hm-cell l0"></i><i class="hm-cell l1"></i><i class="hm-cell l2"></i><i class="hm-cell l3"></i>
+                    <i class="ym-key l0"></i><i class="ym-key l2"></i><i class="ym-key l3"></i>
                     <span>{{ $t('stats.dash.heatmap.more') }}</span>
                 </div>
             </SectionTile>
