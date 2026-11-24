@@ -55,6 +55,12 @@ class WorkoutDetailPage extends Vue {
 
     // Note too long for its table cell: show it whole in a popup
     noteText = '';
+    // The set whose note is shown whole (the others are cut to one line)
+    openNoteId: number | null = null;
+
+    toggleNote(id: number) {
+        this.openNoteId = this.openNoteId === id ? null : id;
+    }
 
     openNote(event: Event, text: string | null) {
         const el = event.currentTarget as HTMLElement;
