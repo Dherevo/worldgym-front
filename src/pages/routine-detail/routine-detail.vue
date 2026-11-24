@@ -2,12 +2,12 @@
     <AppPage name="routine-detail-page" layout="backoffice">
         <div class="routine-detail-page">
 
-            <div class="page-header">
-                <BackButton class="btn-back" :label="$t('routineDetail.back')" @click="to('/routines')" />
+            <div class="rd-top">
+                <BackButton class="btn-back" :aria-label="$t('routineDetail.back')" @click="to('/routines')" />
                 <h1 v-if="routine">{{ routine.name }}</h1>
-                <div class="header-actions" v-if="routine && canEdit">
-                    <button class="btn-secondary" @click="openAddDay()">{{ $t('routineDetail.addDay') }}</button>
-                </div>
+            </div>
+            <div class="rd-actions" v-if="routine && canEdit">
+                <button class="btn-secondary" @click="openAddDay()">{{ $t('routineDetail.addDay') }}</button>
             </div>
 
             <p class="kcal-note" v-if="showKcalNote">{{ $t('energy.short') }}</p>
@@ -40,38 +40,31 @@
                     </div>
 
                     <div class="exercises-table" v-if="day.exercises?.length > 0">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>{{ $t('routineDetail.table.exercise') }}</th>
-                                    <th v-if="!day.circuit_minutes">{{ $t('routineDetail.table.sets') }}</th>
-                                    <th>{{ $t('routineDetail.table.reps') }}</th>
-                                    <th v-if="!day.circuit_minutes">{{ $t('routineDetail.table.weight') }}</th>
-                                    <th v-if="!day.circuit_minutes">{{ $t('routineDetail.table.rest') }}</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(ex, ei) in day.exercises" :key="ex.id"
-                                    :class="{ dragging: dragKind === 'exercise' && dragDayId === day.id && dragFromIdx === ei }"
-                                    @dragover.prevent @drop.stop="dropExercise(day, ei)">
-                                    <td>
-                                        <span v-if="canEdit" class="drag-handle" draggable="true" :title="$t('routineDetail.dragToReorder')"
-                                            @dragstart.stop="dragStart('exercise', ei, day.id)" @dragend="dragEnd()">⠿</span>
-                                        {{ ex.exercise?.name }}
-                                        <span class="muscle-label" v-if="muscleLabel(ex.exercise)">({{ muscleLabel(ex.exercise) }})</span>
-                                    </td>
-                                    <td v-if="!day.circuit_minutes">{{ ex.sets_target }}</td>
-                                    <td>{{ ex.reps_target }}</td>
-                                    <td v-if="!day.circuit_minutes">{{ ex.weight_target }}</td>
-                                    <td v-if="!day.circuit_minutes">{{ ex.rest_seconds }}s</td>
-                                    <td>
-                                        <button v-if="canEdit" @click="openEditExercise(day, ex)">{{ $t('routineDetail.table.editShort') }}</button>
-                                        <button v-if="canEdit" class="danger" @click="deleteExercise(day, ex)">{{ $t('routineDetail.table.deleteShort') }}</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="ex-row ex-head">
+                            <span class="c-name">{{ $t('routineDetail.table.exercise') }}</span>
+                            <span v-if="!day.circuit_minutes">{{ $t('routineDetail.table.sets') }}</span>
+                            <span v-if="day.circuit_minutes || hasValues(day, 'reps_target')">{{ $t('routineDetail.table.reps') }}</span>
+                            <span v-if="!day.circuit_minutes && hasValues(day, 'weight_target')">{{ $t('routineDetail.table.weight') }}</span>
+                            <span v-if="!day.circuit_minutes" class="c-rest">{{ $t('routineDetail.table.rest') }}</span>
+                        </div>
+                        <SwipeRow v-for="(ex, ei) in day.exercises" :key="ex.id" :enabled="canEdit"
+                            @edit="openEditExercise(day, ex)" @delete="deleteExercise(day, ex)">
+                            <div class="ex-row"
+                                :class="{ dragging: dragKind === 'exercise' && dragDayId === day.id && dragFromIdx === ei }"
+                                @dragover.prevent @drop.stop="dropExercise(day, ei)">
+                                <span class="c-name">
+                                    <span v-if="canEdit" class="drag-handle" draggable="true" :title="$t('routineDetail.dragToReorder')"
+                                        @dragstart.stop="dragStart('exercise', ei, day.id)" @dragend="dragEnd()">⠿</span>
+                                    <span class="exercise-link" @click="to('/exercise/' + ex.exercise?.id)">{{ ex.exercise?.name }}</span>
+                                    <span class="muscle-label" v-if="muscleLabel(ex.exercise)">({{ muscleLabel(ex.exercise) }})</span>
+                                    <small class="rest-sub" v-if="!day.circuit_minutes && ex.rest_seconds">⏱ {{ ex.rest_seconds }}s</small>
+                                </span>
+                                <span v-if="!day.circuit_minutes">{{ ex.sets_target }}</span>
+                                <span v-if="day.circuit_minutes || hasValues(day, 'reps_target')">{{ ex.reps_target }}</span>
+                                <span v-if="!day.circuit_minutes && hasValues(day, 'weight_target')">{{ ex.weight_target }}</span>
+                                <span v-if="!day.circuit_minutes" class="c-rest">{{ ex.rest_seconds }}s</span>
+                            </div>
+                        </SwipeRow>
                     </div>
                     <div v-else class="empty-exercises">{{ $t('routineDetail.noExercises') }} <span class="link" v-if="canEdit" @click="openAddExercise(day)">{{ $t('routineDetail.addOne') }}</span></div>
                     <button class="btn-add-exercise" v-if="canEdit" @click="openAddExercise(day)">{{ $t('routineDetail.addExercise') }}</button>

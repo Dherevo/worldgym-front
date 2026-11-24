@@ -74,7 +74,7 @@
                 <div class="lw-list">
                     <div v-for="e in lw.exercises" :key="e.id" class="lw-row">
                         <div class="lw-line">
-                            <span class="lw-name">{{ e.name }}<span v-if="e.is_pr" class="pr-badge">PR</span></span>
+                            <span class="lw-name exercise-link" @click="to('/exercise/' + e.id)">{{ e.name }}<span v-if="e.is_pr" class="pr-badge">PR</span></span>
                             <span class="lw-changes">
                                 <span v-if="e.prev_max_weight === null" class="lw-delta flat">{{ $t('stats.dash.last.first') }}</span>
                                 <template v-else>

@@ -3,14 +3,15 @@
     max-width: 1200px;
     margin: 0 auto;
 
-    .page-header {
+    // Back arrow and title on one row; the "add day" button on its own row
+    .rd-top {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        h1 { margin: 0; flex: 1; }
-
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        h1 { margin: 0; flex: 1; font-size: 1.4rem; line-height: 1.25; }
     }
+    .rd-actions { margin-bottom: 1.25rem; .btn-secondary { width: 100%; } }
 
     .btn-secondary {
         background: transparent;
@@ -104,39 +105,50 @@
                 }
             }
 
+            // The exercises of the day: rows that look like a table, each one with the edit / delete of SwipeRow
             .exercises-table {
-                overflow-x: auto;
-                overflow-y: hidden;
                 margin-bottom: 0.75rem;
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    font-size: 0.9rem;
-                    th {
-                        text-align: left;
-                        padding: 0.4rem 0.75rem;
-                        color: var(--text-secondary);
-                        font-weight: 600;
-                        font-size: 0.8rem;
-                        border-bottom: 1px solid var(--border-color);
-                    }
-                    td {
-                        padding: 0.5rem 0.75rem;
-                        border-bottom: 1px solid var(--border-subtle);
-                        button {
-                            border: 1px solid var(--border-color);
-                            background: var(--surface-2);
-                            color: var(--text-color);
-                            border-radius: 4px;
-                            padding: 0.2rem 0.5rem;
-                            cursor: pointer;
-                            font-size: 0.8rem;
-                            margin-right: 3px;
-                            &:hover { background: var(--surface-3); }
-                            &.danger { color: var(--primary-color); border-color: var(--primary-color); }
-                        }
-                    }
+                font-size: 0.9rem;
+
+                .ex-row {
+                    display: grid;
+                    grid-template-columns: minmax(0, 1fr);
+                    grid-auto-flow: column;
+                    grid-auto-columns: 4.2rem;
+                    column-gap: 0.5rem;
+                    align-items: center;
+                    padding: 0.45rem 0.75rem;
+                    border-bottom: 1px solid var(--border-subtle);
+                    &.dragging { opacity: 0.5; }
                 }
+                .ex-head {
+                    padding-top: 0.3rem;
+                    padding-bottom: 0.3rem;
+                    color: var(--text-muted);
+                    font-weight: 700;
+                    font-size: 0.8rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.04em;
+                    border-bottom: 1px solid var(--border-color);
+                }
+                .rest-sub { display: none; color: var(--text-muted); font-size: 0.75rem; }
+                .swipe-row, .sr-btn.del { border-radius: 0; }
+
+                // Narrow screens: compact columns so they all fit, the rest under the name,
+                // and no drag handle (there is no drag and drop on touch screens)
+                @media (max-width: 768px) {
+                    font-size: 0.82rem;
+                    .ex-row { grid-auto-columns: 3.3rem; column-gap: 0.3rem; padding: 0.45rem 0.35rem; }
+                    .ex-head { font-size: 0.66rem; letter-spacing: 0.02em; }
+                    .drag-handle { display: none; }
+                    .c-rest { display: none; }
+                    .rest-sub { display: block; margin-top: 0.1rem; }
+                }
+
+                .c-name .muscle-label { margin-left: 0.3rem; }
+
+                // The dots of each row take room on the right: the header keeps the same columns
+                @media (hover: none) { .ex-row.ex-head { padding-right: 2.55rem; } }
             }
 
             .empty-exercises {
@@ -165,7 +177,7 @@
         padding: 1rem;
 
         .day-card {
-            padding: 1rem;
+            padding: 0.75rem;
 
             .day-header {
                 flex-wrap: wrap;
