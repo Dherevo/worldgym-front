@@ -1,0 +1,153 @@
+.exercise-detail-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0.75rem 0 2rem;
+
+    .ed-top {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0 1rem 0.5rem;
+
+        .ed-title { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-color); }
+    }
+
+    .ed-state { padding: 2rem 1rem; color: var(--text-secondary); text-align: center; }
+
+    .ed-tabs {
+        display: flex;
+        gap: 0.25rem;
+        overflow-x: auto;
+        border-bottom: 1px solid var(--border-color);
+        padding: 0 0.5rem;
+
+        .ed-tab {
+            flex: none;
+            padding: 0.75rem 1rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+
+            &.active { color: var(--text-color); border-bottom-color: var(--primary-color); }
+        }
+    }
+
+    .ed-media {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        background: var(--lottie-bg, #ffffff);
+    }
+
+    .ed-body { padding: 1rem 1rem 0; }
+
+    .ed-name { margin: 0 0 0.25rem; font-size: 1.5rem; font-weight: 700; color: var(--text-color); }
+    .ed-eq, .ed-muscles { margin: 0.2rem 0; color: var(--text-secondary); font-size: 0.95rem; }
+    .ed-empty { margin-top: 1.5rem; color: var(--text-secondary); text-align: center; }
+
+    .ed-chart-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1.25rem;
+
+        .ed-headline { font-size: 1.4rem; font-weight: 700; color: var(--text-color); }
+        .ed-range {
+            background: var(--surface-color);
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0.4rem 0.6rem;
+            font-weight: 600;
+        }
+    }
+
+    .ed-chart { position: relative; height: 220px; margin-top: 0.75rem; }
+
+    .ed-chips {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        margin-top: 1rem;
+
+        .ed-chip {
+            flex: none;
+            padding: 0.55rem 1.1rem;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            background: var(--surface-color);
+            color: var(--text-color);
+            font-weight: 600;
+            cursor: pointer;
+
+            &.active { background: var(--primary-color); border-color: var(--primary-color); color: #fff; }
+        }
+    }
+
+    .ed-section { margin: 1.75rem 0 0.5rem; font-size: 1.1rem; font-weight: 700; color: var(--text-color); }
+
+    .ed-records .ed-record {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-color);
+
+        b { color: var(--primary-color); font-weight: 600; }
+    }
+
+    .ed-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        th { text-align: left; color: var(--text-secondary); font-weight: 700; padding: 0.5rem 0; }
+        td { padding: 0.75rem 0; border-top: 1px solid var(--border-color); color: var(--text-color); }
+        th:first-child, td:first-child { width: 6rem; }
+    }
+
+    .ed-session {
+        display: block;
+        width: 100%;
+        margin: 0 0 1.5rem;
+        padding: 0;
+        text-align: left;
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+
+        .ed-session-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+        .ed-session-title { font-weight: 700; font-size: 1.05rem; color: var(--text-color); }
+        .ed-session-date { color: var(--text-secondary); font-size: 0.85rem; }
+        .ed-chevron { color: var(--text-secondary); font-size: 1.5rem; }
+
+        .ed-set {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.7rem 0.5rem;
+            border-radius: 6px;
+
+            &.alt { background: var(--surface-color); }
+            .ed-set-n { width: 1.5rem; text-align: center; font-weight: 700; color: var(--text-color); }
+            .ed-set-v { flex: 1; color: var(--text-color); }
+            .ed-set-flag { color: var(--tint-red-text); font-weight: 700; }
+        }
+    }
+
+    .ed-steps {
+        margin: 1rem 0 0;
+        padding-left: 1.5rem;
+        color: var(--text-color);
+        line-height: 1.5;
+
+        li { margin-bottom: 1rem; padding-left: 0.25rem; }
+        li::marker { font-weight: 700; }
+    }
+}

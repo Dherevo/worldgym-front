@@ -6,6 +6,7 @@ import routines from './pages/routines';
 import routineDetail from './pages/routineDetail';
 import workouts from './pages/workouts';
 import workoutDetail from './pages/workoutDetail';
+import exerciseDetail from './pages/exerciseDetail';
 import workout from './pages/workout';
 import circuit from './pages/circuit';
 import stats from './pages/stats';
@@ -42,6 +43,7 @@ const ca = {
     routineDetail: routineDetail.ca,
     workouts: workouts.ca,
     workoutDetail: workoutDetail.ca,
+    exerciseDetail: exerciseDetail.ca,
     workout: workout.ca,
     circuit: circuit.ca,
     stats: stats.ca,

@@ -11,6 +11,7 @@ import PlainLayout from '../layouts/plain/plain.vue';
 import ProgressPage from '../pages/progress/progress.vue';
 import RoutineDetailPage from '../pages/routine-detail/routine-detail.vue';
 import WorkoutDetailPage from '../pages/workout-detail/workout-detail.vue';
+import ExerciseDetailPage from '../pages/exercise-detail/exercise-detail.vue';
 import WorkoutPage from '../pages/workout/workout.vue';
 import CircuitPage from '../pages/circuit/circuit.vue';
 import OnboardingPage from '../pages/onboarding/onboarding.vue';
@@ -75,6 +76,10 @@ const routes : IRoutes = {
         {
             path: '/workouts/:id',
             component: WorkoutDetailPage
+        },
+        {
+            path: '/exercise/:id',
+            component: ExerciseDetailPage
         },
         {
             path: '/workout/:id',

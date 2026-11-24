@@ -6,6 +6,7 @@ import routines from './pages/routines';
 import routineDetail from './pages/routineDetail';
 import workouts from './pages/workouts';
 import workoutDetail from './pages/workoutDetail';
+import exerciseDetail from './pages/exerciseDetail';
 import workout from './pages/workout';
 import circuit from './pages/circuit';
 import stats from './pages/stats';
@@ -42,6 +43,7 @@ const en = {
     routineDetail: routineDetail.en,
     workouts: workouts.en,
     workoutDetail: workoutDetail.en,
+    exerciseDetail: exerciseDetail.en,
     workout: workout.en,
     circuit: circuit.en,
     stats: stats.en,

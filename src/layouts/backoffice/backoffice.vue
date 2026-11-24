@@ -69,7 +69,7 @@
         <slot/>
 
         <!-- App: bottom tab bar -->
-        <nav v-if="isApp" class="app-tabbar" :aria-label="$t('layout.menu.menu')">
+        <nav v-if="isApp" class="app-tabbar" :class="{ hidden: tabbarHidden }" :aria-label="$t('layout.menu.menu')">
             <a v-for="item in menuItems" :key="item.path" class="app-tab" :href="item.path"
                 :class="{ active: isActive(item) }" @click.prevent="to(item.path)">
                 <svg-icon :name="item.icon"/>

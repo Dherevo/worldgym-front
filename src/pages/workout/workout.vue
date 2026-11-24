@@ -122,7 +122,7 @@
 
                     <!-- Info exercici -->
                     <exercise-animation class="exercise-gif" :exercise="currentExercise.exercise" />
-                    <div class="exercise-name">{{ currentExercise.exercise?.name }}</div>
+                    <a class="exercise-name exercise-link" :href="'/exercise/' + currentExercise.exercise?.id" @click.prevent="to('/exercise/' + currentExercise.exercise?.id)">{{ currentExercise.exercise?.name }}</a>
                     <div class="exercise-eq" v-if="currentExercise.exercise?.equipment">
                         {{ currentExercise.exercise.equipment.name }}
                     </div>
@@ -329,7 +329,7 @@
                         }"
                     >
                         <div class="progress-ex-header">
-                            <span class="progress-ex-name">{{ ex.exercise?.name }}<span class="muscle-label" v-if="muscleLabel(ex.exercise)"> ({{ muscleLabel(ex.exercise) }})</span></span>
+                            <span class="progress-ex-name exercise-link" @click="to('/exercise/' + ex.exercise?.id)">{{ ex.exercise?.name }}<span class="muscle-label" v-if="muscleLabel(ex.exercise)"> ({{ muscleLabel(ex.exercise) }})</span></span>
                             <span class="progress-ex-badge done" v-if="exIdx < currentExerciseIdx">✓</span>
                             <span class="progress-ex-badge current" v-else-if="exIdx === currentExerciseIdx">{{ $t('workout.progress.current') }}</span>
                             <button v-else-if="canReshuffle" class="progress-ex-go" @click="startWith(exIdx)">{{ $t('workout.plan.startWith') }}</button>
