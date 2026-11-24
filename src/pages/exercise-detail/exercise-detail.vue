@@ -40,6 +40,7 @@
                                 <option v-for="r in ranges" :key="r" :value="r">{{ $t('exerciseDetail.range.' + r) }}</option>
                             </select>
                         </div>
+                        <div class="ed-times">{{ $t('exerciseDetail.timesInRange', { n: timesInRange }) }}</div>
                         <div class="ed-chart"><canvas ref="canvas"></canvas></div>
                         <div class="ed-chips">
                             <button v-for="m in metrics" :key="m" type="button" class="ed-chip"

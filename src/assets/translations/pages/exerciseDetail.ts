@@ -10,8 +10,9 @@ export default {
         noDirections: "Aquest exercici encara no té indicacions",
         workout: "Entrenament",
         showMore: "Mostrar-ne {{n}} més",
+        timesInRange: "Fet {{n}} vegades en aquest període",
         repsUnit: "reps",
-        range: { month: "Últim mes", threeMonths: "Últims 3 mesos", year: "Últim any", all: "Tot" },
+        range: { week: "Última setmana", month: "Últim mes", threeMonths: "Últims 3 mesos", year: "Últim any", all: "Tot" },
         metric: { weight: "Pes màxim", oneRm: "1RM (estimat)", volume: "Volum", reps: "Reps màx." },
         records: {
             title: "Rècords personals",
@@ -35,8 +36,9 @@ export default {
         noDirections: "Este ejercicio aún no tiene indicaciones",
         workout: "Entrenamiento",
         showMore: "Mostrar {{n}} más",
+        timesInRange: "Hecho {{n}} veces en este periodo",
         repsUnit: "reps",
-        range: { month: "Último mes", threeMonths: "Últimos 3 meses", year: "Último año", all: "Todo" },
+        range: { week: "Última semana", month: "Último mes", threeMonths: "Últimos 3 meses", year: "Último año", all: "Todo" },
         metric: { weight: "Mayor peso", oneRm: "1RM (estimado)", volume: "Volumen", reps: "Reps máx." },
         records: {
             title: "Récords personales",
@@ -60,8 +62,9 @@ export default {
         noDirections: "This exercise has no directions yet",
         workout: "Workout",
         showMore: "Show {{n}} more",
+        timesInRange: "Done {{n}} times in this period",
         repsUnit: "reps",
-        range: { month: "Last month", threeMonths: "Last 3 months", year: "Last year", all: "All time" },
+        range: { week: "Last week", month: "Last month", threeMonths: "Last 3 months", year: "Last year", all: "All time" },
         metric: { weight: "Heaviest weight", oneRm: "1RM (estimated)", volume: "Volume", reps: "Max reps" },
         records: {
             title: "Personal records",
