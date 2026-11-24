@@ -505,7 +505,9 @@ class FoodAddPage extends Vue {
             if (own) this.openSheet(own);
             else if (!found.length) {
                 this.scannedCode = res.code;
-                const result = await this.searchOff();
+                let result = await this.searchOff();
+                // OFF sometimes says "not found" for a product it has: ask once more before giving up
+                if (result === 'none') result = await this.searchOff();
                 if (result === 'none') {
                     App.notification(translate.get('nutrition.scan.notFound')).show();
                     this.query = '';
