@@ -17,8 +17,6 @@ class CalendarPage extends Vue {
 
     showYear = false;
 
-    heatmapWeeks: any[] = [];
-
     get dateLocale() {
         const l = translate.currentLanguage;
         return l === 'es' ? 'es-ES' : l === 'en' ? 'en-GB' : 'ca-ES';
@@ -34,8 +32,17 @@ class CalendarPage extends Vue {
     }
 
     get calendarMonth() {
+        return this.monthData(this.calMonthOffset);
+    }
+
+    // The last 12 months (the newest first), each with its days
+    get yearMonths() {
+        return Array.from({ length: 12 }, (_, i) => ({ ...this.monthData(-i), key: i }));
+    }
+
+    monthData(offset: number) {
         const now = new Date();
-        const first = new Date(now.getFullYear(), now.getMonth() + this.calMonthOffset, 1);
+        const first = new Date(now.getFullYear(), now.getMonth() + offset, 1);
         const y = first.getFullYear();
         const m = first.getMonth();
 
@@ -69,37 +76,6 @@ class CalendarPage extends Vue {
         return target >= new Date(y, m - 1, 1);
     }
 
-    // 53 week columns (Monday first) with the workouts of each day
-    buildHeatmap() {
-        const o = this.overview;
-        if (!o?.calendar_from) { this.heatmapWeeks = []; return; }
-
-        const counts: Record<string, number> = {};
-        for (const c of o.calendar ?? []) counts[c.date] = c.count;
-
-        const [y, m, d] = (o.calendar_from as string).split('-').map(Number);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const weeks: any[] = [];
-        let lastMonth = -1;
-        for (let w = 0; w < 53; w++) {
-            const first = new Date(y, m - 1, d + w * 7);
-            const days: any[] = [];
-            for (let i = 0; i < 7; i++) {
-                const day = new Date(y, m - 1, d + w * 7 + i);
-                if (day > today) { days.push(null); continue; }
-                const key = this.isoDate(day);
-                const n = counts[key] ?? 0;
-                days.push({ date: key, count: n, level: n === 0 ? 0 : Math.min(3, n + 1) });
-            }
-            const label = first.getMonth() !== lastMonth ? first.toLocaleDateString(this.dateLocale, { month: 'short' }) : '';
-            lastMonth = first.getMonth();
-            weeks.push({ label, days });
-        }
-        this.heatmapWeeks = weeks;
-    }
-
     formatHistoryDate(date: string) {
         return new Date(date).toLocaleDateString(this.dateLocale, { day: 'numeric', month: 'short', year: 'numeric' });
     }
@@ -107,7 +83,7 @@ class CalendarPage extends Vue {
     created() {
         this.loading = true;
         http.get('/stats/overview')
-        .then((res: any) => { this.overview = res; this.buildHeatmap(); })
+        .then((res: any) => { this.overview = res; })
         .catch(() => {})
         .finally(() => { this.loading = false; });
     }
