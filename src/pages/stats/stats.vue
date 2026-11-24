@@ -102,6 +102,127 @@
             </button>
         </div>
 
+        <!-- What the page had before the redesign (kept to see what can be reused) -->
+        <h2 class="previous-title">{{ $t('stats.home.previous') }}</h2>
+
+        <!-- Range of the totals -->
+        <div class="range-chips">
+            <button v-for="r in ranges" :key="r.key" type="button" class="chip" :class="{ on: range === r.key }"
+                @click="setRange(r.key)">{{ $t('stats.dash.presets.' + r.label) }}</button>
+        </div>
+
+        <!-- Key numbers -->
+        <div class="overview-grid" v-if="overview">
+            <div class="stat-card">
+                <div class="stat-value">{{ overview.total_workouts ?? '—' }}</div>
+                <div class="stat-label">{{ $t('stats.overview.totalWorkouts') }}</div>
+            </div>
+            <div class="stat-card highlight">
+                <div class="stat-value">🔥 {{ overview.week_streak ?? 0 }}</div>
+                <div class="stat-label">{{ $t('stats.dash2.weeksStreak') }} · {{ overview.streak ?? 0 }} {{ $t('stats.dash2.daysShort') }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ overview.workouts_this_week ?? 0 }}</div>
+                <div class="stat-label">{{ $t('stats.dash.thisWeek') }}</div>
+            </div>
+        </div>
+        <div v-else-if="loadingOverview" class="loading-text">{{ $t('stats.overview.loading') }}</div>
+
+        <!-- Monthly trend (collapsed until opened) -->
+        <div class="section-card collapsible" v-if="overview?.monthly?.length">
+            <button type="button" class="collapse-head" :aria-expanded="monthlyOpen" @click="toggleMonthly()">
+                <h2>{{ $t('stats.dash.monthly.title') }}</h2>
+                <span class="collapse-arrow" :class="{ open: monthlyOpen }">&rsaquo;</span>
+            </button>
+            <div v-if="monthlyOpen" class="chart-wrap"><canvas id="monthlyCanvas"></canvas></div>
+        </div>
+
+        <!-- Progression: muscle group -> exercise -> last time, current and record -->
+        <div class="section-card progress-card">
+            <h2>{{ $t('stats.dash2.progress.title') }}</h2>
+
+            <label class="group-select">
+                <span>{{ $t('stats.dash2.progress.group') }}</span>
+                <select v-model="selectedMuscleGroupId" @change="onGroupChange()">
+                    <option v-for="mg in muscleGroups" :key="mg.id" :value="mg.id">{{ mg.name }}</option>
+                </select>
+            </label>
+
+            <div v-if="groupStats?.sessions?.length" class="group-chart">
+                <div class="chart-title">{{ $t('stats.dash2.progress.groupEvolution', { group: selectedGroupName }) }}</div>
+                <div class="chart-wrap"><canvas id="groupVolumeCanvas"></canvas></div>
+            </div>
+
+            <div v-if="loadingGroup" class="loading-text">{{ $t('stats.muscleGroup.loading') }}</div>
+
+            <div v-else-if="groupStats" class="ex-list">
+                <div v-if="!(groupStats.bests ?? []).length" class="empty-text">{{ $t('stats.dash2.progress.empty') }}</div>
+
+                <div v-for="ex in (groupStats.bests ?? [])" :key="ex.id" class="ex-item" :class="{ open: openExerciseId === ex.id }">
+                    <button type="button" class="ex-head" @click="toggleExercise(ex)">
+                        <span class="ex-name">{{ ex.name }}</span>
+                        <span class="ex-meta">{{ $t('stats.muscleGroup.timesTrained', { n: ex.times_trained }) }}</span>
+                        <span class="ex-arrow">&rsaquo;</span>
+                    </button>
+
+                    <div v-if="openExerciseId === ex.id" class="ex-body">
+                        <div v-if="loadingExerciseId === ex.id" class="loading-text">{{ $t('stats.exercise.loading') }}</div>
+
+                        <template v-else-if="exerciseView(ex.id)">
+                            <div v-if="!exerciseView(ex.id).current" class="empty-text">{{ $t('stats.exercise.noSessions') }}</div>
+
+                            <div v-else class="cmp-grid">
+                                <div class="cmp-card">
+                                    <div class="cmp-label">{{ $t('stats.dash2.progress.previous') }}</div>
+                                    <template v-if="exerciseView(ex.id).previous">
+                                        <div class="cmp-value">{{ exerciseView(ex.id).previous.max_weight }} kg</div>
+                                        <div class="cmp-sub">{{ formatShortDate(exerciseView(ex.id).previous.date) }} · {{ exerciseView(ex.id).previous.total_sets }} {{ $t('stats.dash.last.setsShort') }}</div>
+                                        <div class="cmp-sub">{{ $t('stats.dash2.progress.avgReps', { n: parseFloat(exerciseView(ex.id).previous.avg_reps).toFixed(1) }) }}</div>
+                                    </template>
+                                    <div v-else class="cmp-sub">—</div>
+                                </div>
+
+                                <div class="cmp-card current">
+                                    <div class="cmp-label">{{ $t('stats.dash2.progress.current') }}</div>
+                                    <div class="cmp-value">{{ exerciseView(ex.id).current.max_weight }} kg</div>
+                                    <div class="cmp-sub">{{ formatShortDate(exerciseView(ex.id).current.date) }} · {{ exerciseView(ex.id).current.total_sets }} {{ $t('stats.dash.last.setsShort') }}</div>
+                                    <div class="cmp-sub">{{ $t('stats.dash2.progress.avgReps', { n: parseFloat(exerciseView(ex.id).current.avg_reps).toFixed(1) }) }}</div>
+                                    <div class="cmp-changes" v-if="exerciseView(ex.id).previous">
+                                        <span v-for="c in exerciseView(ex.id).changes" :key="c.text" class="cmp-delta" :class="c.cls">{{ c.text }}</span>
+                                        <span v-if="!exerciseView(ex.id).changes.length" class="cmp-delta flat">{{ $t('stats.dash2.progress.same') }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="cmp-card record" v-if="exerciseView(ex.id).pr?.best_weight">
+                                    <div class="cmp-label">🏆 {{ $t('stats.dash2.progress.record') }}</div>
+                                    <div class="cmp-value">{{ exerciseView(ex.id).pr.best_weight.weight }} kg</div>
+                                    <div class="cmp-sub">{{ exerciseView(ex.id).pr.best_weight.reps }} {{ $t('stats.dash2.progress.reps') }} · {{ formatShortDate(exerciseView(ex.id).pr.best_weight.date) }}</div>
+                                </div>
+                            </div>
+
+                            <div v-if="exerciseView(ex.id).current && exerciseView(ex.id).sessionCount > 1" class="ex-charts">
+                                <div class="chart-block">
+                                    <div class="chart-title">{{ $t('stats.charts.maxWeightTitle') }}</div>
+                                    <div class="chart-values">{{ chartValues(ex.id, 'weight') }}</div>
+                                    <div class="chart-wrap small"><canvas id="weightCanvas"></canvas></div>
+                                </div>
+                                <div class="chart-block">
+                                    <div class="chart-title">{{ $t('stats.charts.volumeTitle') }}</div>
+                                    <div class="chart-values">{{ chartValues(ex.id, 'volume') }}</div>
+                                    <div class="chart-wrap small"><canvas id="volumeCanvas"></canvas></div>
+                                </div>
+                                <div class="chart-block">
+                                    <div class="chart-title">{{ $t('stats.charts.avgRepsTitle') }}</div>
+                                    <div class="chart-values">{{ chartValues(ex.id, 'reps') }}</div>
+                                    <div class="chart-wrap small"><canvas id="repsCanvas"></canvas></div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Calendar of trained days, in a modal -->
         <div v-if="showCalendar" class="modal-overlay" @click.self="showCalendar = false">
             <div class="modal cal-modal">
