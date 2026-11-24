@@ -21,8 +21,10 @@ class CircuitPage extends Vue {
     timer: any = null;
     wakeLock: any = null;
 
-    // Reps done by each completed exercise, in order: the circuit position is its length
-    log: number[] = [];
+    // Each completed exercise, in order (reps and weight used): the circuit position is its length
+    log: { reps: number; weight: number }[] = [];
+    // Weight now chosen for each exercise of the day (day exercise id -> kg); it can be changed between rounds
+    weights: Record<string, number> = {};
 
     get routineId() { return this.param('routineId'); }
     get dayId() { return this.param('dayId'); }
@@ -46,12 +48,38 @@ class CircuitPage extends Vue {
     get current(): any { return this.exercises[this.stepInRound] ?? null; }
     get next(): any { return this.exercises.length > 1 ? this.exercises[(this.stepInRound + 1) % this.exercises.length] : null; }
 
-    // Times each exercise was done and its total reps, for the summary and the saved sets
-    get totals(): { exercise: any; times: number; reps: number }[] {
+    // Times each exercise was done and its total reps, for the summary, plus the runs of the same weight (one saved set each)
+    get totals(): { exercise: any; times: number; reps: number; runs: { weight: number; times: number; reps: number }[] }[] {
+        const n = this.exercises.length;
         return this.exercises.map((ex, i) => {
-            const times = Math.floor(this.doneSteps / this.exercises.length) + (i < this.stepInRound ? 1 : 0);
-            return { exercise: ex, times, reps: times * (ex.reps_target || 0) };
+            const mine = this.log.filter((_, k) => k % n === i);
+            const runs: { weight: number; times: number; reps: number }[] = [];
+            for (const e of mine) {
+                const last = runs[runs.length - 1];
+                if (last && last.weight === e.weight) { last.times++; last.reps += e.reps; }
+                else runs.push({ weight: e.weight, times: 1, reps: e.reps });
+            }
+            return { exercise: ex, times: mine.length, reps: mine.reduce((t, e) => t + e.reps, 0), runs };
         });
+    }
+
+    get currentWeight(): number { return this.current ? (this.weights[String(this.current.id)] ?? 0) : 0; }
+
+    changeWeight(delta: number) {
+        if (!this.current) return;
+        this.weights[String(this.current.id)] = Math.max(0, Math.round((this.currentWeight + delta) * 100) / 100);
+        this.persist();
+    }
+
+    setWeight(value: any) {
+        if (!this.current) return;
+        const v = Number(value);
+        this.weights[String(this.current.id)] = Number.isFinite(v) && v >= 0 ? v : 0;
+        this.persist();
+    }
+
+    weightLabel(w: number): string {
+        return w > 0 ? `${w} kg` : translate.get('circuit.bodyweight');
     }
 
     get elapsedSeconds(): number {
@@ -64,11 +92,18 @@ class CircuitPage extends Vue {
         http.get(`/routines/${this.routineId}/days/${this.dayId}`)
         .then((day: any) => {
             this.day = day;
+            this.initWeights();
             if (!day?.circuit_minutes || !this.exercises.length) { this.state = 'unavailable'; return; }
             this.state = this.restore() ? 'running' : 'ready';
             if (this.state === 'running') this.runTimer();
         })
         .catch(() => { this.state = 'unavailable'; });
+    }
+
+    initWeights() {
+        const w: Record<string, number> = {};
+        for (const ex of this.exercises) w[String(ex.id)] = Number(ex.weight_target) || 0;
+        this.weights = w;
     }
 
     unmounted() {
@@ -118,7 +153,7 @@ class CircuitPage extends Vue {
     // One exercise of the circuit done
     done() {
         if (this.state !== 'running' || !this.current) return;
-        this.log.push(Number(this.current.reps_target) || 0);
+        this.log.push({ reps: Number(this.current.reps_target) || 0, weight: this.currentWeight });
         this.vibrate([60]);
         this.persist();
     }
@@ -147,10 +182,11 @@ class CircuitPage extends Vue {
         const each = Math.round(seconds / Math.max(1, this.exercises.length));
         const rounds = this.completedRounds;
 
+        // One set per run of the same weight of each exercise (a weight change starts a new set)
         const saves = this.totals
             .filter(t => t.times > 0 && this.workoutExercises[String(t.exercise.exercise_id)])
-            .map(t => () => http.post(`/workouts/${this.workoutId}/exercises/${this.workoutExercises[String(t.exercise.exercise_id)]}/sets`)
-                .data({ set_number: 1, reps: t.reps, weight: 0, rest_seconds: 0, duration_seconds: each, notes: translate.get('circuit.setNote', { times: t.times, reps: t.exercise.reps_target }) }));
+            .flatMap(t => t.runs.map((r, i) => () => http.post(`/workouts/${this.workoutId}/exercises/${this.workoutExercises[String(t.exercise.exercise_id)]}/sets`)
+                .data({ set_number: i + 1, reps: r.reps, weight: r.weight, rest_seconds: 0, duration_seconds: Math.round(each * r.times / t.times), notes: translate.get('circuit.setNote', { times: r.times, reps: t.exercise.reps_target }) })));
 
         // In order, so a retry after a failure never repeats the sets that were already saved
         const run = async () => {
@@ -182,7 +218,7 @@ class CircuitPage extends Vue {
 
     persist() {
         try {
-            localStorage.setItem(this.storageKey, JSON.stringify({ workoutId: this.workoutId, workoutExercises: this.workoutExercises, startedAt: this.startedAt, log: this.log }));
+            localStorage.setItem(this.storageKey, JSON.stringify({ workoutId: this.workoutId, workoutExercises: this.workoutExercises, startedAt: this.startedAt, log: this.log, weights: this.weights }));
         } catch { /* storage unavailable */ }
     }
 
@@ -199,7 +235,9 @@ class CircuitPage extends Vue {
             this.workoutId = data.workoutId;
             this.workoutExercises = data.workoutExercises ?? {};
             this.startedAt = data.startedAt;
-            this.log = data.log ?? [];
+            // Older saves only kept the reps of each press
+            this.log = (data.log ?? []).map((e: any) => (typeof e === 'number' ? { reps: e, weight: 0 } : e));
+            if (data.weights) this.weights = { ...this.weights, ...data.weights };
             this.now = Date.now();
             return true;
         } catch { return false; }

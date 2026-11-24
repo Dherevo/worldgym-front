@@ -13,13 +13,24 @@
 
             <!-- Week progress -->
             <div class="week-strip" v-if="week && week.routine_days_total">
-                <div class="week-text">
-                    {{ $t('home.week.label', { done: week.days_done, total: week.routine_days_total }) }}
-                    <span v-if="weekBehind" class="week-hint">· {{ $t('home.week.behind', { total: week.routine_days_total }) }}</span>
-                </div>
-                <div class="week-bar">
-                    <span v-for="n in week.routine_days_total" :key="n" class="seg" :class="{ filled: n <= week.days_done }" :style="{ transitionDelay: (n * 90) + 'ms' }"></span>
-                </div>
+                <!-- Several active routines: one bar for each, with its name -->
+                <template v-if="week.routines?.length > 1">
+                    <div class="week-routine" v-for="r in week.routines" :key="r.id">
+                        <div class="week-text">{{ $t('home.week.routineLabel', { name: r.name, done: r.done, total: r.total }) }}</div>
+                        <div class="week-bar">
+                            <span v-for="n in r.total" :key="n" class="seg" :class="{ filled: n <= r.done }" :style="{ transitionDelay: (n * 90) + 'ms' }"></span>
+                        </div>
+                    </div>
+                </template>
+                <template v-else>
+                    <div class="week-text">
+                        {{ $t('home.week.label', { done: week.days_done, total: week.routine_days_total }) }}
+                        <span v-if="weekBehind" class="week-hint">· {{ $t('home.week.behind', { total: week.routine_days_total }) }}</span>
+                    </div>
+                    <div class="week-bar">
+                        <span v-for="n in week.routine_days_total" :key="n" class="seg" :class="{ filled: n <= week.days_done }" :style="{ transitionDelay: (n * 90) + 'ms' }"></span>
+                    </div>
+                </template>
             </div>
 
             <!-- Rest day -->

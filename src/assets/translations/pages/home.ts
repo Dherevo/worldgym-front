@@ -16,6 +16,7 @@ export default {
         pending: { title: 'Exercicis que et van quedar pendents', sub: 'Els pots afegir a l\'entrenament d\'avui amb "+ Afegir exercici".' },
         week: {
             label: 'Setmana: {{done}}/{{total}} dies',
+            routineLabel: '{{name}}: {{done}}/{{total}}',
             behind: 'No arribaràs als {{total}} dies aquesta setmana, no passa res: la rotació continua.',
             trained: 'Avui ja has entrenat',
             complete: 'Setmana completada!',
@@ -71,6 +72,7 @@ export default {
         pending: { title: 'Ejercicios que te quedaron pendientes', sub: 'Puedes añadirlos al entrenamiento de hoy con "+ Añadir ejercicio".' },
         week: {
             label: 'Semana: {{done}}/{{total}} días',
+            routineLabel: '{{name}}: {{done}}/{{total}}',
             behind: 'No llegarás a los {{total}} días esta semana, no pasa nada: la rotación continúa.',
             trained: 'Hoy ya has entrenado',
             complete: '¡Semana completada!',
@@ -126,6 +128,7 @@ export default {
         pending: { title: 'Exercises you left pending', sub: 'You can add them to today\'s workout with "+ Add exercise".' },
         week: {
             label: 'Week: {{done}}/{{total}} days',
+            routineLabel: '{{name}}: {{done}}/{{total}}',
             behind: 'You will not reach {{total}} days this week, no worries: the rotation carries on.',
             trained: 'You already trained today',
             complete: 'Week completed!',
