@@ -9,6 +9,8 @@ import BackofficeLayout from '../layouts/backoffice/backoffice.vue';
 import PlainLayout from '../layouts/plain/plain.vue';
 // Grouped pages: each one renders several tabs, one route per tab
 import ProgressPage from '../pages/progress/progress.vue';
+import ExerciseCatalogPage from '../pages/exercise-catalog/exercise-catalog.vue';
+import FoodHistoryWrapPage from '../pages/food-history-wrap/food-history-wrap.vue';
 import RoutineDetailPage from '../pages/routine-detail/routine-detail.vue';
 import WorkoutDetailPage from '../pages/workout-detail/workout-detail.vue';
 import ExerciseDetailPage from '../pages/exercise-detail/exercise-detail.vue';
@@ -59,7 +61,7 @@ const routes : IRoutes = {
         },
         {
             path: '/exercises',
-            component: ProgressPage
+            component: ExerciseCatalogPage
         },
         {
             path: '/routines',
@@ -139,7 +141,7 @@ const routes : IRoutes = {
         },
         {
             path: '/nutrition/history',
-            component: ProgressPage
+            component: FoodHistoryWrapPage
         },
         {
             path: '/nutrition/add',
