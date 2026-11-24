@@ -1,6 +1,14 @@
 export default {
     ca: {
         title: 'Progressió i estadístiques',
+        home: {
+            hoursTitle: "Hores d'entreno",
+            periods: { week: 'Aquesta setmana', month: 'Aquest mes', threeMonths: 'Últims 3 mesos', year: 'Aquest any', all: 'Tot' },
+            streakCurrent: 'Ratxa actual',
+            streakBest: 'Ratxa màxima',
+            weeks: 'setmanes',
+            calendar: 'Calendari',
+        },
         filters: { from: 'Des de', to: 'Fins a', clear: 'Netejar filtre' },
         dash2: {
             weeksStreak: 'setmanes seguides',
@@ -98,6 +106,14 @@ export default {
     },
     es: {
         title: 'Progresión y estadísticas',
+        home: {
+            hoursTitle: 'Horas de entreno',
+            periods: { week: 'Esta semana', month: 'Este mes', threeMonths: 'Últimos 3 meses', year: 'Este año', all: 'Todo' },
+            streakCurrent: 'Racha actual',
+            streakBest: 'Racha máxima',
+            weeks: 'semanas',
+            calendar: 'Calendario',
+        },
         filters: { from: 'Desde', to: 'Hasta', clear: 'Limpiar filtro' },
         dash2: {
             weeksStreak: 'semanas seguidas',
@@ -195,6 +211,14 @@ export default {
     },
     en: {
         title: 'Progress & statistics',
+        home: {
+            hoursTitle: 'Training hours',
+            periods: { week: 'This week', month: 'This month', threeMonths: 'Last 3 months', year: 'This year', all: 'All time' },
+            streakCurrent: 'Current streak',
+            streakBest: 'Best streak',
+            weeks: 'weeks',
+            calendar: 'Calendar',
+        },
         filters: { from: 'From', to: 'To', clear: 'Clear filter' },
         dash2: {
             weeksStreak: 'week streak',
