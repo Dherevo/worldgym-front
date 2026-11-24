@@ -354,23 +354,23 @@
                                 <template v-if="exIdx <= currentExerciseIdx">
                                     <template v-for="(s, i) in setRows(exIdx)" :key="'done-' + (s.id ?? i)">
                                     <tr v-if="editing?.set === s" class="set-row-editing">
-                                        <td>{{ s.set_number ?? i + 1 }}</td>
-                                        <td><input type="number" inputmode="numeric" v-model.number="editing.reps" min="1" class="cell-input" /></td>
-                                        <td><input v-if="!editingBodyweight" type="number" inputmode="decimal" v-model.number="editing.weight" min="0" step="0.5" class="cell-input" /><span v-else>{{ $t('workout.log.bodyweightShort') }}</span></td>
-                                        <td>
-                                            <input type="text" v-model="editing.notes" class="cell-input wide" :placeholder="$t('workout.log.notesPlaceholder')" />
-                                            <div class="time-row">
-                                                <label>{{ $t('workout.editSet.rest') }} <input type="number" inputmode="numeric" v-model.number="editing.rest" min="0" class="cell-input" /></label>
-                                                <label>{{ $t('workout.editSet.duration') }} <input type="number" inputmode="numeric" v-model.number="editing.duration" min="0" class="cell-input" /></label>
+                                        <td colspan="5" class="edit-form-cell">
+                                            <div class="edit-form-title">{{ $t('workout.editSet.title', { n: s.set_number ?? i + 1 }) }}</div>
+                                            <div class="edit-grid">
+                                                <label>{{ $t('workout.progress.reps') }}<input type="number" inputmode="numeric" v-model.number="editing.reps" min="1" class="cell-input" /></label>
+                                                <label v-if="!editingBodyweight">{{ $t('workout.progress.weight') }} (kg)<input type="number" inputmode="decimal" v-model.number="editing.weight" min="0" step="0.5" class="cell-input" /></label>
+                                                <label>{{ $t('workout.editSet.rest') }}<input type="number" inputmode="numeric" v-model.number="editing.rest" min="0" class="cell-input" /></label>
+                                                <label>{{ $t('workout.editSet.duration') }}<input type="number" inputmode="numeric" v-model.number="editing.duration" min="0" class="cell-input" /></label>
                                             </div>
+                                            <input type="text" v-model="editing.notes" class="cell-input wide" :placeholder="$t('workout.log.notesPlaceholder')" />
                                             <div class="flag-row">
                                                 <label class="flag-check"><input type="checkbox" v-model="editing.failed" /> {{ $t('workout.log.failed') }}</label>
                                                 <label class="flag-check"><input type="checkbox" v-model="editing.dropset" /> {{ $t('workout.log.dropset') }}</label>
                                             </div>
-                                        </td>
-                                        <td class="edit-cell">
-                                            <button class="set-edit-btn save" :disabled="savingEdit" @click="saveEdit()">✓</button>
-                                            <button class="set-edit-btn" :disabled="savingEdit" @click="closeEdit()">✕</button>
+                                            <div class="edit-actions">
+                                                <button type="button" class="btn-action skip" :disabled="savingEdit" @click="closeEdit()">{{ $t('workout.editSet.cancel') }}</button>
+                                                <button type="button" class="btn-action start" :disabled="savingEdit" @click="saveEdit()">{{ $t('workout.editSet.save') }}</button>
+                                            </div>
                                         </td>
                                     </tr>
                                     <tr v-else class="set-row-done">
@@ -387,23 +387,23 @@
 
                                     <!-- Sèrie nova (afegida a mà) -->
                                     <tr v-if="editing?.isNew && editing.exIdx === exIdx" class="set-row-editing">
-                                        <td>{{ setRows(exIdx).length + 1 }}</td>
-                                        <td><input type="number" inputmode="numeric" v-model.number="editing.reps" min="1" class="cell-input" /></td>
-                                        <td><input v-if="!editingBodyweight" type="number" inputmode="decimal" v-model.number="editing.weight" min="0" step="0.5" class="cell-input" /><span v-else>{{ $t('workout.log.bodyweightShort') }}</span></td>
-                                        <td>
-                                            <input type="text" v-model="editing.notes" class="cell-input wide" :placeholder="$t('workout.log.notesPlaceholder')" />
-                                            <div class="time-row">
-                                                <label>{{ $t('workout.editSet.rest') }} <input type="number" inputmode="numeric" v-model.number="editing.rest" min="0" class="cell-input" /></label>
-                                                <label>{{ $t('workout.editSet.duration') }} <input type="number" inputmode="numeric" v-model.number="editing.duration" min="0" class="cell-input" /></label>
+                                        <td colspan="5" class="edit-form-cell">
+                                            <div class="edit-form-title">{{ $t('workout.editSet.title', { n: setRows(exIdx).length + 1 }) }}</div>
+                                            <div class="edit-grid">
+                                                <label>{{ $t('workout.progress.reps') }}<input type="number" inputmode="numeric" v-model.number="editing.reps" min="1" class="cell-input" /></label>
+                                                <label v-if="!editingBodyweight">{{ $t('workout.progress.weight') }} (kg)<input type="number" inputmode="decimal" v-model.number="editing.weight" min="0" step="0.5" class="cell-input" /></label>
+                                                <label>{{ $t('workout.editSet.rest') }}<input type="number" inputmode="numeric" v-model.number="editing.rest" min="0" class="cell-input" /></label>
+                                                <label>{{ $t('workout.editSet.duration') }}<input type="number" inputmode="numeric" v-model.number="editing.duration" min="0" class="cell-input" /></label>
                                             </div>
+                                            <input type="text" v-model="editing.notes" class="cell-input wide" :placeholder="$t('workout.log.notesPlaceholder')" />
                                             <div class="flag-row">
                                                 <label class="flag-check"><input type="checkbox" v-model="editing.failed" /> {{ $t('workout.log.failed') }}</label>
                                                 <label class="flag-check"><input type="checkbox" v-model="editing.dropset" /> {{ $t('workout.log.dropset') }}</label>
                                             </div>
-                                        </td>
-                                        <td class="edit-cell">
-                                            <button class="set-edit-btn save" :disabled="savingEdit" @click="saveEdit()">✓</button>
-                                            <button class="set-edit-btn" :disabled="savingEdit" @click="closeEdit()">✕</button>
+                                            <div class="edit-actions">
+                                                <button type="button" class="btn-action skip" :disabled="savingEdit" @click="closeEdit()">{{ $t('workout.editSet.cancel') }}</button>
+                                                <button type="button" class="btn-action start" :disabled="savingEdit" @click="saveEdit()">{{ $t('workout.editSet.save') }}</button>
+                                            </div>
                                         </td>
                                     </tr>
 
