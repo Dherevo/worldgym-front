@@ -93,6 +93,9 @@ class FoodAddPage extends Vue {
 
     // Meals and recipes
     templates: any[] = [];
+    // Meals and recipes (own and shared) that match what is typed on "all foods"
+    tplMatches: any[] = [];
+    tplToken = 0;
     tplSheet: { t: any; servings: number | string } | null = null;
     builder: Builder | null = null;
     bQuery = '';
@@ -142,6 +145,8 @@ class FoodAddPage extends Vue {
     selectTab(tab: string) {
         if (tab === this.tab) return;
         this.tab = tab;
+        this.tplMatches = [];
+        if (tab === 'all') this.loadTplMatches();
         this.sub = null;
         this.reload();
     }
@@ -158,7 +163,7 @@ class FoodAddPage extends Vue {
         this.offResults = [];
         this.offSearched = false;
         clearTimeout(this.timer);
-        this.timer = setTimeout(() => this.reload(), 250);
+        this.timer = setTimeout(() => { this.loadTplMatches(); this.reload(); }, 250);
     }
 
     reload() {
@@ -668,6 +673,26 @@ class FoodAddPage extends Vue {
         .then((res: any) => { if (id === this.request) this.templates = res.items ?? []; })
         .catch(() => { if (id === this.request) App.notification(translate.get('foodAdd.errors.tplLoad')).setType('error').show(); })
         .finally(() => { if (id === this.request) this.loading = false; });
+    }
+
+    loadTplMatches() {
+        const q = this.query.trim();
+        this.tplToken += 1;
+        const token = this.tplToken;
+        if (this.tab !== 'all' || q.length < 2) { this.tplMatches = []; return; }
+        http.get('/meal-templates').data({ q })
+        .then((res: any) => { if (token === this.tplToken) this.tplMatches = res.items ?? []; })
+        .catch(() => { if (token === this.tplToken) this.tplMatches = []; });
+    }
+
+    shareTemplate(t: any) {
+        App.confirm(translate.get('foodAdd.tpl.shareConfirm', { name: t.name }))
+        .then((ok: boolean) => {
+            if (!ok) return;
+            http.put(`/meal-templates/${t.id}/share`)
+            .then(() => { App.notification(translate.get('foodAdd.tpl.shareDone')).show(); this.reload(); })
+            .catch(() => App.notification(translate.get('foodAdd.share.error')).setType('error').show());
+        });
     }
 
     openTplSheet(t: any) {

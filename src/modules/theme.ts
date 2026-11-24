@@ -11,6 +11,7 @@ export const PALETTES: Palette[] = [
     { key: 'worldgym', swatch: ['#424530', '#E09132', '#FFEFCD'] },
     { key: 'ocean', swatch: ['#14233D', '#4C9BFF', '#EAF2FB'] },
     { key: 'violet', swatch: ['#2B1B54', '#9A6BFF', '#F3EEFD'] },
+    { key: 'olive', swatch: ['#3A4220', '#A3B34C', '#F1F3E4'] },
 ];
 
 export const DEFAULT_PALETTE = 'worldgym';

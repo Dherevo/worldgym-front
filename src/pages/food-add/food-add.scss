@@ -129,7 +129,7 @@
         .add { background: var(--fa-color); opacity: 0.45; transition: width 0.3s ease; }
     }
     .fa-sheet-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.6rem; }
-    .fa-danger { color: var(--danger, #d9534f); margin-right: auto; }
+    .fa-danger { color: var(--primary-color); margin-right: auto; }
     .fa-items {
         list-style: none; margin: 0; padding: 0;
         li { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0; border-top: 1px solid var(--border-color); &:first-child { border-top: none; } .fa-name { flex: 1; } small { color: var(--text-muted); } }

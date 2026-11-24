@@ -877,7 +877,7 @@
     min-height: 0;
 }
 .workout-progress .set-edit-btn.save { color: var(--tint-green-text); font-weight: 700; }
-.workout-progress .set-edit-btn.danger { color: var(--tint-red-text); }
+.workout-progress .set-edit-btn.danger { color: var(--primary-color); }
 .workout-progress .set-edit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 // Set being edited in place (same idea as the history): inputs inside the row
