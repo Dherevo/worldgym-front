@@ -36,7 +36,7 @@
                     <span class="c-weight-label">{{ $t('circuit.weight') }}</span>
                     <div class="c-stepper">
                         <button type="button" @click="changeWeight(-2.5)">−</button>
-                        <input type="number" inputmode="decimal" min="0" step="0.5" :value="currentWeight" @change="setWeight(($event.target as HTMLInputElement).value)" />
+                        <input type="number" inputmode="decimal" min="0" step="0.5" :value="currentWeight" @change="setWeight($event)" />
                         <button type="button" @click="changeWeight(2.5)">+</button>
                     </div>
                     <span class="c-weight-sub" v-if="currentWeight === 0">{{ $t('circuit.bodyweight') }}</span>
