@@ -5,7 +5,8 @@ import { kcalFromSets, kcalLabel, setsSeconds } from "@/modules/calories";
 
 import BackButton from "@/components/back-button/back-button.vue";
 import SearchInput from "@/components/search-input/search-input.vue";
-@Component({ components: { BackButton, SearchInput } })
+import SwipeRow from "@/components/swipe-row/swipe-row.vue";
+@Component({ components: { BackButton, SearchInput, SwipeRow } })
 class WorkoutDetailPage extends Vue {
 
     workout: any = null;
@@ -239,8 +240,20 @@ class WorkoutDetailPage extends Vue {
         return ({ ca: 'ca-ES', es: 'es-ES', en: 'en-GB' } as any)[translate.currentLanguage] ?? 'ca-ES';
     }
 
+    // "lunes, 23 de noviembre de 2026" with only the first letter in capitals
     formatDate(date: string) {
-        return new Date(date).toLocaleDateString(this.dateLocale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        const text = new Date(date).toLocaleDateString(this.dateLocale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    // Muscle, equipment and calories of the exercise on one line
+    exerciseMeta(we: any): string {
+        return [this.muscleLabel(we.exercise), we.exercise?.equipment?.name, this.exerciseKcal(we)].filter(Boolean).join(' · ');
+    }
+
+    // 250 (not 250.00); the body weight shows a dash
+    weightLabel(w: any): string {
+        return Number(w) > 0 ? String(Number(w)) : '—';
     }
 
     workoutKcal(): string {
