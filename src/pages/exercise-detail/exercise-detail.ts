@@ -1,6 +1,8 @@
 import { Component, Vue, Watch, toNative } from "vue-facing-decorator";
 import { http, translate } from "lib";
 import { Chart, registerables } from 'chart.js';
+import { isApp } from "@/modules/platform";
+import { swipeTabs, slideIn } from "@/modules/swipeTabs";
 
 import BackButton from "@/components/back-button/back-button.vue";
 import ExerciseAnimation from "@/components/exercise-animation/exercise-animation.vue";
@@ -70,7 +72,21 @@ class ExerciseDetailPage extends Vue {
         });
     }
 
+    private stopSwipe: (() => void) | null = null;
+
+    mounted() {
+        // App: swipe sideways to move between Resumen, Historial and Indicaciones
+        if (!isApp) return;
+        this.stopSwipe = swipeTabs('.exercise-detail-page', dir => {
+            const next = this.tabs[this.tabs.indexOf(this.tab) + dir];
+            if (!next) return;
+            this.setTab(next);
+            this.$nextTick(() => slideIn(document.querySelector<HTMLElement>('.exercise-detail-page .ed-body'), dir));
+        });
+    }
+
     beforeUnmount() {
+        this.stopSwipe?.();
         chart?.destroy();
         chart = null;
     }
