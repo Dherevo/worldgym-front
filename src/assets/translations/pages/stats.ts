@@ -8,7 +8,8 @@ export default {
             streakBest: 'Ratxa màxima',
             weeks: 'setmanes',
             calendar: 'Calendari',
-            previous: 'Estadístiques anteriors',
+            history: 'Historial',
+            progression: 'Progressió',
         },
         filters: { from: 'Des de', to: 'Fins a', clear: 'Netejar filtre' },
         dash2: {
@@ -114,7 +115,8 @@ export default {
             streakBest: 'Racha máxima',
             weeks: 'semanas',
             calendar: 'Calendario',
-            previous: 'Estadísticas anteriores',
+            history: 'Historial',
+            progression: 'Progresión',
         },
         filters: { from: 'Desde', to: 'Hasta', clear: 'Limpiar filtro' },
         dash2: {
@@ -220,7 +222,8 @@ export default {
             streakBest: 'Best streak',
             weeks: 'weeks',
             calendar: 'Calendar',
-            previous: 'Previous stats',
+            history: 'History',
+            progression: 'Progression',
         },
         filters: { from: 'From', to: 'To', clear: 'Clear filter' },
         dash2: {

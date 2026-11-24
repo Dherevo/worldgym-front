@@ -30,7 +30,7 @@
         }
     }
 
-    .previous-title { margin: 1.5rem 0 0; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
+    .sub-top { display: flex; align-items: center; gap: 0.5rem; h1 { margin: 0; font-size: 1.3rem; } }
 
     .shortcuts { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
     .shortcut {
