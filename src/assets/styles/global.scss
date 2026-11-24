@@ -166,3 +166,12 @@ button[class*="btn-"]:not([class*="btn-row"]):not(.btn-back):not(.btn-delete):no
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea {
     border-radius: 12px;
 }
+
+// Exercise names that open the exercise detail page
+.exercise-link {
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    &:hover { text-decoration: underline; text-underline-offset: 3px; }
+}

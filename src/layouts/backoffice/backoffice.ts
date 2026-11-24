@@ -8,6 +8,10 @@ import { isApp } from "@/modules/platform";
 import { initPush, setPushRouteHandler } from "@/modules/push";
 import UserAvatar from "@/components/user-avatar/user-avatar.vue";
 
+// Not component data: kept out of Vue's reactivity
+let lastScrollY = new WeakMap<object, number>();
+let scrollHandler: ((e: Event) => void) | null = null;
+
 // App (Capacitor): bottom tab bar + avatar (profile) in the top bar.
 // Web: side menu (slides in below 1100px, permanent on wide screens).
 @Component({
@@ -51,6 +55,8 @@ class Backoffice extends Vue {
     @Watch('$route.path')
     onRouteChange() {
         this.menuOpen = false;
+        this.tabbarHidden = false;
+        lastScrollY = new WeakMap();
     }
 
     onKeydown = (e: KeyboardEvent) => {
@@ -87,15 +93,35 @@ class Backoffice extends Vue {
         else if (dx < 0 && this.menuOpen) this.menuOpen = false;
     };
 
+    // App: the bottom bar slides away while scrolling down and comes back on scrolling up
+    tabbarHidden = false;
+    // Captures the scroll of the window and of any inner container (the page may scroll inside one)
+    handleScroll(e: Event) {
+        const t = e.target as any;
+        const isDoc = t === document || t === document.documentElement || t === document.body;
+        const el = (isDoc ? document.scrollingElement || document.documentElement : t) as HTMLElement;
+        const y = isDoc ? (window.scrollY || el.scrollTop) : el.scrollTop;
+        const dy = y - (lastScrollY.get(t) ?? 0);
+        if (Math.abs(dy) < 8) return;
+        lastScrollY.set(t, y);
+        const nearEnd = y + el.clientHeight >= el.scrollHeight - 40;
+        this.tabbarHidden = dy > 0 && y > 80 && !nearEnd;
+    }
+
     mounted() {
         document.documentElement.classList.toggle('is-app', isApp);
-        if (isApp) return;
+        if (isApp) {
+            scrollHandler = (e: Event) => this.handleScroll(e);
+            document.addEventListener('scroll', scrollHandler, { passive: true, capture: true });
+            return;
+        }
         document.addEventListener('keydown', this.onKeydown);
         document.addEventListener('touchstart', this.onTouchStart, { passive: true });
         document.addEventListener('touchend', this.onTouchEnd, { passive: true });
     }
 
     unmounted() {
+        if (scrollHandler) document.removeEventListener('scroll', scrollHandler, { capture: true });
         document.removeEventListener('keydown', this.onKeydown);
         document.removeEventListener('touchstart', this.onTouchStart);
         document.removeEventListener('touchend', this.onTouchEnd);
