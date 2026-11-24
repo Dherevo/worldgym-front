@@ -71,9 +71,9 @@ class DailyHabits extends Vue {
     private syncPhone(silent: boolean) {
         this.syncing = true;
         syncSteps()
-        .then(() => {
+        .then(({ today }) => {
             this.fetchHabits();
-            if (!silent) App.notification(translate.get('habits.card.synced')).setType('success').show();
+            if (!silent) App.notification(translate.get('habits.card.syncedToday', { n: today })).setType('success').show();
         })
         .catch(() => { if (!silent) App.notification(translate.get('habits.card.syncError')).setType('error').show(); })
         .finally(() => { this.syncing = false; });
