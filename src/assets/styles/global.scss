@@ -175,3 +175,12 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, te
     -webkit-tap-highlight-color: transparent;
     &:hover { text-decoration: underline; text-underline-offset: 3px; }
 }
+
+// Swiping between tabs: the new content slides in from the side (modules/swipeTabs.ts). Transform/opacity only
+@keyframes slide-from-right { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: none; } }
+@keyframes slide-from-left { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: none; } }
+.slide-from-right { animation: slide-from-right 0.28s ease-out backwards; }
+.slide-from-left { animation: slide-from-left 0.28s ease-out backwards; }
+@media (prefers-reduced-motion: reduce) {
+    .slide-from-right, .slide-from-left { animation: none; }
+}

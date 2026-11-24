@@ -1,4 +1,6 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
+import { isApp } from "@/modules/platform";
+import { swipeTabs, slideIn } from "@/modules/swipeTabs";
 import TabBar from "@/components/tab-bar/tab-bar.vue";
 import WorkoutsPage from "@/pages/workouts/workouts.vue";
 import StatsPage from "@/pages/stats/stats.vue";
@@ -19,6 +21,24 @@ class ProgressPage extends Vue {
         { path: '/routines', label: 'layout.menu.routines' },
         { path: '/exercises', label: 'layout.menu.exercises' },
     ];
+
+    private stopSwipe: (() => void) | null = null;
+
+    mounted() {
+        // App: swipe sideways to move between the tabs
+        if (!isApp) return;
+        this.stopSwipe = swipeTabs('.tabbed-page', dir => {
+            const i = this.tabs.findIndex(t => t.path === this.$route.path);
+            const next = this.tabs[(i < 0 ? 3 : i) + dir];   // '/workouts' (history) is the tab when the path is none of the listed ones
+            if (!next) return;
+            slideIn(document.querySelector<HTMLElement>('.tabbed-page .tab-content'), dir);
+            this.to(next.path);
+        });
+    }
+
+    beforeUnmount() {
+        this.stopSwipe?.();
+    }
 
     get tab(): string {
         const path = this.$route.path;
