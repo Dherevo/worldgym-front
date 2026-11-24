@@ -164,8 +164,7 @@ const MAX_DEFICIT = 600;
 // Weight loss per week the user can choose (kg); about 7700 kcal a kg, so the deficit of a day is kg x 1100
 export const WEEKLY_LOSSES = [0.3, 0.5];
 const KCAL_PER_KG_DAY = 1100;
-// Exercise adds this much deficit on top of the chosen one before the eating goal grows; and eating never goes under this
-const EXTRA_DEFICIT = 250;
+// Eating never goes under this
 const MIN_EAT_WOMAN = 1200;
 
 export function weeklyLoss(user: { weekly_loss?: unknown } | null): number | null {
@@ -181,15 +180,11 @@ export function lossDeficit(kgPerWeek: number): number {
 // `base` (expenditure without workouts or extra steps), `bmi` and `loss` (kg a week) are only used to lose weight
 export function goalRange(goal: Goal, tdee: number, bmr: number, opts: { base?: number; bmi?: number | null; loss?: number | null } = {}): { min: number; max: number } {
     if (goal === 'lose' && opts.loss) {
-        // The user chose a pace: eat the base expenditure minus its deficit; the exercise is extra deficit up to EXTRA_DEFICIT
+        // The user chose a pace: eat what the day burns (workouts and steps included) minus that deficit, so the deficit stays
         const deficit = lossDeficit(opts.loss);
-        const ref = opts.base ?? tdee;
         const floor = Math.max(MIN_EAT_WOMAN, round10(bmr * 0.85));
-        let min = Math.max(floor, round10(ref - deficit - 30));
-        let max = Math.max(min, round10(ref - deficit + 30));
-        min = Math.max(min, round10(tdee - deficit - EXTRA_DEFICIT));
-        max = Math.max(max, min);
-        return { min, max };
+        const min = Math.max(floor, round10(tdee - deficit - 30));
+        return { min, max: Math.max(min, round10(tdee - deficit + 30)) };
     }
     if (goal === 'lose') {
         const fixed = opts.base !== undefined && (opts.bmi ?? 0) >= FIXED_GOAL_BMI;
