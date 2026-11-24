@@ -2,14 +2,11 @@
     <AppPage name="progress-page" layout="backoffice">
         <div class="tabbed-page">
             <TabBar :tabs="tabs" />
-            <div class="tab-content">
-                <WorkoutsPage v-if="tab === 'workouts'" />
-                <StatsPage v-else-if="tab === 'stats'" />
-                <FoodHistoryPage v-else-if="tab === 'food'" />
-                <HabitsProgressPage v-else-if="tab === 'habits'" />
-                <RoutinesPage v-else-if="tab === 'routines'" />
-                <ExercisesPage v-else />
-            </div>
+            <SwipePager class="tab-content" :index="tabIndex" :count="tabs.length" :enabled="isApp" @change="onPager">
+                <template #default="{ index }">
+                    <component :is="panels[index]" />
+                </template>
+            </SwipePager>
         </div>
     </AppPage>
 </template>
