@@ -40,7 +40,7 @@ class CheckIn extends Vue {
     }
 
     get statusLabel(): string {
-        return this.answered ? `✓ ${translate.get('checkin.statusDone')}` : translate.get('checkin.statusPending');
+        return this.answered ? translate.get('checkin.statusDone') : translate.get('checkin.statusPending');
     }
 
     get complete(): boolean {

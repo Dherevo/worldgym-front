@@ -6,13 +6,26 @@
 
     .ci-done {
         display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem 1rem;
-        font-size: 0.9rem;
-        color: var(--tint-green-text);
-        .ci-link { color: var(--highlight-text); text-decoration: none; cursor: pointer; }
+        flex-direction: column;
+        gap: 0.85rem;
+        .ci-done-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: var(--tint-green-text); }
+        .ci-tick {
+            display: inline-flex; align-items: center; justify-content: center; width: 1.4rem; height: 1.4rem; border-radius: 50%;
+            background: var(--tint-green-bg); color: var(--tint-green-text); font-style: normal; font-size: 0.85rem; font-weight: 800; line-height: 1;
+        }
+        .ci-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6rem; }
+        .ci-stat {
+            display: flex; flex-direction: column; align-items: center; gap: 0.25rem; text-align: center;
+            padding: 0.7rem 0.4rem; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border-color);
+            .ci-stat-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); line-height: 1.2; }
+            .ci-stat-value { font-size: 1.5rem; line-height: 1; color: var(--text-color); small { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); } }
+            .ci-dots { display: flex; gap: 3px; i { width: 7px; height: 7px; border-radius: 50%; background: var(--surface-3); &.on { background: var(--primary-color); } } }
+        }
+        .ci-change {
+            align-self: stretch; min-height: 0; padding: 0.6rem 1rem; border-radius: 10px; border: 1.5px solid var(--border-color);
+            background: transparent; color: var(--text-secondary); font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            &:active { background: var(--surface-2); }
+        }
     }
 
     .ci-form {

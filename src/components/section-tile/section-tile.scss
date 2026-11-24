@@ -27,7 +27,16 @@
             background: var(--surface-2);
             color: var(--text-secondary);
 
-            &.done { background: var(--tint-green-bg); color: var(--tint-green-text); }
+            &.done {
+                display: inline-flex; align-items: center; gap: 0.35rem;
+                background: var(--tint-green-bg); color: var(--tint-green-text);
+                // The check as a small circle (instead of a loose character in the text)
+                &::before {
+                    content: '✓'; display: inline-flex; align-items: center; justify-content: center;
+                    width: 1.05rem; height: 1.05rem; border-radius: 50%;
+                    background: var(--tint-green-text); color: var(--tint-green-bg); font-size: 0.7rem; font-weight: 800; line-height: 1;
+                }
+            }
             &.pending { background: var(--tint-blue-bg); color: var(--tint-blue-text); }
         }
     }
