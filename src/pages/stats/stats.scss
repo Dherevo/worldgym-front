@@ -423,3 +423,36 @@
         .progress-card .cmp-grid, .progress-card .ex-charts { grid-template-columns: 1fr; }
     }
 }
+
+// The year opens in a modal that is teleported to <body>, outside .stats-page: its styles have to live out here
+.st-modal {
+    .heatmap {
+        display: flex;
+        gap: 3px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 0.5rem;
+        .hm-week { display: grid; grid-template-rows: 16px repeat(7, 13px); gap: 3px; flex: none; }
+        .hm-label { font-size: 0.8rem; color: var(--text-secondary); line-height: 16px; white-space: nowrap; }
+    }
+    .hm-cell {
+        width: 13px;
+        height: 13px;
+        border-radius: 3px;
+        background: var(--surface-2);
+        display: inline-block;
+        &.l1 { background: rgba(237, 115, 52, 0.4); }
+        &.l2 { background: rgba(237, 115, 52, 0.7); }
+        &.l3 { background: rgb(237, 115, 52); }
+        &.none { background: transparent; }
+    }
+    .hm-legend {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        span { margin: 0 0.35rem; }
+    }
+}
