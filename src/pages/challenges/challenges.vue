@@ -77,7 +77,7 @@
                             </li>
                         </ol>
 
-                        <button type="button" class="btn-link" @click="leave(detail)">{{ $t('challenges.leave') }}</button>
+                        <button type="button" class="btn-leave" @click="leave(detail)">{{ $t('challenges.leave') }}</button>
                     </div>
                 </template>
             </template>
