@@ -2,7 +2,7 @@ import { Component, Vue, Watch, toNative } from "vue-facing-decorator";
 import { http, translate } from "lib";
 import { Chart, registerables } from 'chart.js';
 import { isApp } from "@/modules/platform";
-import { bucketize } from "@/modules/chartBuckets";
+import { bucketize, alignedStart } from "@/modules/chartBuckets";
 
 import BackButton from "@/components/back-button/back-button.vue";
 import ExerciseAnimation from "@/components/exercise-animation/exercise-animation.vue";
@@ -151,7 +151,10 @@ class ExerciseDetailPage extends Vue {
             };
         }
         const days = RANGE_DAYS[this.range];
-        return { from: days ? Date.now() - days * DAY : 0, to: Date.now() };
+        if (!days) return { from: 0, to: Date.now() };
+        // Whole weeks (months): "last month" starts on the Monday of the week 31 days ago, so no bar is cut or empty
+        const to = new Date();
+        return { from: alignedStart(new Date(to.getTime() - days * DAY), to).getTime(), to: to.getTime() };
     }
 
     get rangeSessions(): any[] {
