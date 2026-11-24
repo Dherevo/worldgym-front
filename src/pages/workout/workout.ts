@@ -88,7 +88,7 @@ class WorkoutPage extends Vue {
 
     // Edit or delete a set already logged in this workout (current or earlier exercise)
     editing: { weId: number; set: any; exIdx: number; isNew?: boolean; reps: number; weight: number; notes: string; failed: boolean; dropset: boolean; rest: number | null; duration: number | null } | null = null;
-    // Exercises skipped in this workout, so they can be brought back
+    // Exercises skipped in this workout (with their planned sets), shown in the list as discarded so they can be brought back
     skippedNow: any[] = [];
     savingEdit = false;
 
@@ -155,6 +155,7 @@ class WorkoutPage extends Vue {
     }
 
     created() {
+        this.loadSkipped();
         this.fetchWorkout();
         this.fetchExerciseList();
         this.fetchHabits();
@@ -256,10 +257,8 @@ class WorkoutPage extends Vue {
     // Skipped exercises of earlier days that are not already in this workout
     get addSuggestions(): any[] {
         const inWorkout = new Set(this.exercises.map((e: any) => e.exercise?.id));
-        const fromServer = this.pendingItems.filter((p: any) => !inWorkout.has(p.exercise_id));
-        const known = new Set(fromServer.map((p: any) => p.exercise_id));
-        const local = this.skippedNow.filter((p: any) => !inWorkout.has(p.exercise_id) && !known.has(p.exercise_id));
-        return [...local, ...fromServer];
+        const skipped = new Set(this.skippedNow.map((p: any) => p.exercise_id));
+        return this.pendingItems.filter((p: any) => !inWorkout.has(p.exercise_id) && !skipped.has(p.exercise_id));
     }
 
     pendingWhen(date: string): string {
@@ -305,7 +304,15 @@ class WorkoutPage extends Vue {
             const we = this.currentExercise;
             http.delete(`/workouts/${this.workoutId}/exercises/${we.id}`)
             .then(() => {
-                if (we.exercise) this.skippedNow.push({ exercise_id: we.exercise.id, exercise: we.exercise, day_name: null, date: localDate() });
+                if (we.exercise) {
+                    this.skippedNow.push({
+                        exercise_id: we.exercise.id,
+                        exercise: we.exercise,
+                        variant: we.variant ?? null,
+                        sets: (we.sets ?? []).filter((s: any) => s.reps === null).map((s: any) => ({ weight: s.weight, reps_target: s.reps_target ?? null, rest_seconds: s.rest_seconds ?? null })),
+                    });
+                    this.saveSkipped();
+                }
                 this.exercises.splice(this.currentExerciseIdx, 1);
                 this.exerciseHistory = [];
                 this.exerciseRecord = null;
@@ -347,6 +354,41 @@ class WorkoutPage extends Vue {
             we.sets = (we.sets ?? []).slice(0, this.doneCount);
             this.nextExercise();
         });
+    }
+
+    skippedKey() { return `wg_workout_skipped_${this.workoutId}`; }
+
+    saveSkipped() {
+        try { localStorage.setItem(this.skippedKey(), JSON.stringify(this.skippedNow)); } catch { /* ignorat */ }
+    }
+
+    loadSkipped() {
+        try { this.skippedNow = JSON.parse(localStorage.getItem(this.skippedKey()) ?? '[]') ?? []; } catch { this.skippedNow = []; }
+    }
+
+    // Changed his mind and there is time: the exercise comes back right after the current one, with the sets it had planned
+    restoreSkipped(sk: any) {
+        if (this.addingExercise || !this.canAdd) return;
+        this.addingExercise = true;
+        http.post(`/workouts/${this.workoutId}/exercises`).data({ exercise_id: sk.exercise_id })
+        .then((res: any) => {
+            const we = { ...res, sets: res.sets ?? [] };
+            return Promise.all((sk.sets ?? []).map((s: any, i: number) =>
+                http.post(`/workouts/${this.workoutId}/exercises/${we.id}/sets`).data({ set_number: i + 1, weight: s.weight, reps_target: s.reps_target, rest_seconds: s.rest_seconds })
+            )).then((sets: any[]) => {
+                we.sets = sets;
+                return sk.variant ? http.put(`/workouts/${this.workoutId}/exercises/${we.id}`).data({ variant: sk.variant }).then(() => { we.variant = sk.variant; return we; }) : we;
+            });
+        })
+        .then((we: any) => {
+            this.exercises.splice(this.currentExerciseIdx + 1, 0, we);
+            this.persistOrder();
+            this.skippedNow = this.skippedNow.filter((p: any) => p.exercise_id !== sk.exercise_id);
+            this.saveSkipped();
+            this.saveProgress();
+        })
+        .catch(() => App.notification(translate.get('workout.skip.restoreError')).setType('error').show())
+        .finally(() => { this.addingExercise = false; });
     }
 
     openAdd() {
