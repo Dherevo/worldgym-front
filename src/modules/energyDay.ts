@@ -2,7 +2,7 @@ import { http } from "lib";
 import userStore from "@/modules/userStore";
 import auth from "@/modules/auth";
 import localDate from "@/modules/localDate";
-import { activityLevel, baseExpenditure, basalMetabolicRate, effectiveGoal, goalRange, kcalFromSets, stepsKcal } from "@/modules/calories";
+import { activityLevel, baseExpenditure, basalMetabolicRate, bmi, effectiveGoal, goalRange, kcalFromSets, stepsKcal } from "@/modules/calories";
 import type { Goal } from "@/modules/calories";
 
 export interface EnergyDay {
@@ -78,7 +78,7 @@ export async function loadEnergyDay(date: string = localDate()): Promise<EnergyD
         const newStepKcal = stepsKcal(steps, user);
         if (newStepKcal !== stepKcal) {
             stepKcal = newStepKcal;
-            ({ min, max } = goalRange(goal, base + workout + stepKcal, bmr));
+            ({ min, max } = goalRange(goal, base + workout + stepKcal, bmr, { base, bmi: bmi(user) }));
             await new Promise<void>(resolve => {
                 http.put(`/nutrition/days/${date}`)
                     .data({ bmr, base_kcal: base, workout_kcal: workout, steps_kcal: stepKcal, goal, goal_min: min, goal_max: max })
@@ -97,7 +97,7 @@ export async function loadEnergyDay(date: string = localDate()): Promise<EnergyD
         steps = await stepsOf(date);
         stepKcal = stepsKcal(steps, user);
         goal = effectiveGoal(user);
-        ({ min, max } = goalRange(goal, base + workout + stepKcal, bmr));
+        ({ min, max } = goalRange(goal, base + workout + stepKcal, bmr, { base, bmi: bmi(user) }));
         // Wait for the snapshot to be saved, so the history read afterwards already has today's figures
         await new Promise<void>(resolve => {
             http.put(`/nutrition/days/${date}`)

@@ -156,11 +156,25 @@ export function effectiveGoal(user: { goal?: string | null; weight_kg?: number |
 
 const round10 = (n: number) => Math.round(n / 10) * 10;
 
-// Calories to eat in a day with the given expenditure: moderate deficit (never under the BMR), maintenance or small surplus
-export function goalRange(goal: Goal, tdee: number, bmr: number): { min: number; max: number } {
+// With a BMI from this up, losing weight keeps the eating goal fixed (it does not grow with the workouts and the steps),
+// so the exercise adds to the deficit; and the deficit is capped so that it never goes over MAX_DEFICIT kcal a day
+const FIXED_GOAL_BMI = 35;
+const MAX_DEFICIT = 600;
+
+// Calories to eat in a day with the given expenditure: moderate deficit (never under the BMR), maintenance or small surplus.
+// `base` (expenditure without workouts or extra steps) and `bmi` are only used to lose weight with a high BMI
+export function goalRange(goal: Goal, tdee: number, bmr: number, opts: { base?: number; bmi?: number | null } = {}): { min: number; max: number } {
     if (goal === 'lose') {
-        const min = Math.max(bmr, round10(tdee * 0.80));
-        return { min, max: Math.max(min, round10(tdee * 0.85)) };
+        const fixed = opts.base !== undefined && (opts.bmi ?? 0) >= FIXED_GOAL_BMI;
+        const ref = fixed ? (opts.base as number) : tdee;
+        let min = Math.max(bmr, round10(ref * 0.80));
+        let max = Math.max(min, round10(ref * 0.85));
+        if (fixed) {
+            // Exercise is net deficit, until it would pass the cap: then the goal rises to keep the deficit there
+            min = Math.max(min, round10(tdee - MAX_DEFICIT));
+            max = Math.max(max, min);
+        }
+        return { min, max };
     }
     if (goal === 'maintain') return { min: round10(tdee * 0.97), max: round10(tdee * 1.03) };
     return { min: round10(tdee * 1.05), max: round10(tdee * 1.10) };

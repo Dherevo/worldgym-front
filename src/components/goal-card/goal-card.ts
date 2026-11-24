@@ -71,7 +71,7 @@ class GoalCard extends Vue {
     // Calories to eat on a day without a workout
     get restRange(): string {
         if (!this.base || !this.bmr) return '';
-        const r = goalRange(this.goal, this.base, this.bmr);
+        const r = goalRange(this.goal, this.base, this.bmr, { base: this.base, bmi: bmi(this.user) });
         return `${r.min} - ${r.max}`;
     }
 
