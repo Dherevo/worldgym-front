@@ -81,32 +81,6 @@
                     font-size: 0.8rem;
                     font-weight: 600;
                 }
-                .day-actions {
-                    display: flex;
-                    gap: 0.5rem;
-                    .btn-train {
-                        background: var(--primary-color);
-                        color: white;
-                        border: none;
-                        border-radius: 6px;
-                        padding: 0.4rem 0.9rem;
-                        cursor: pointer;
-                        font-weight: 600;
-                        &:hover { background: var(--primary-dark-color); }
-                        &:disabled { opacity: 0.6; cursor: not-allowed; }
-                    }
-                    button {
-                        border: 1px solid var(--border-color);
-                        background: var(--surface-2);
-                        color: var(--text-color);
-                        border-radius: 5px;
-                        padding: 0.3rem 0.7rem;
-                        cursor: pointer;
-                        font-size: 0.85rem;
-                        &:hover { background: var(--surface-3); }
-                        &.danger { color: var(--primary-color); border-color: var(--primary-color); }
-                    }
-                }
             }
 
             // The exercises of the day: rows that look like a table, each one with the edit / delete of SwipeRow
@@ -160,6 +134,46 @@
                 .link { color: var(--primary-color); cursor: pointer; }
             }
 
+            // Actions of the day at the bottom: "Train" and the edit / delete icons
+            .day-footer {
+                display: flex;
+                gap: 0.5rem;
+                margin-top: 0.75rem;
+
+                .btn-train {
+                    flex: 1;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.5rem;
+                    background: var(--primary-color);
+                    color: #fff;
+                    border: none;
+                    font-weight: 600;
+                    cursor: pointer;
+                    svg.icon { width: 20px; height: 20px; }
+                    &:hover:not(:disabled) { background: var(--primary-dark-color); }
+                    &:disabled { opacity: 0.6; cursor: not-allowed; }
+                }
+
+                .icon-action {
+                    flex: none;
+                    width: 44px;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0;
+                    border-radius: 999px;
+                    border: 1px solid var(--border-color);
+                    background: var(--surface-2);
+                    color: var(--text-secondary);
+                    cursor: pointer;
+                    svg.icon { width: 20px; height: 20px; }
+                    &:hover { background: var(--surface-3); color: var(--text-color); }
+                    &.danger { color: var(--primary-color); border-color: var(--primary-color); }
+                }
+            }
+
             .btn-add-exercise {
                 background: transparent;
                 border: 1px dashed var(--border-color);
@@ -185,10 +199,6 @@
                 flex-wrap: wrap;
                 gap: 0.5rem;
 
-                .day-actions {
-                    flex-wrap: wrap;
-                    button { font-size: 0.8rem; }
-                }
             }
         }
 
