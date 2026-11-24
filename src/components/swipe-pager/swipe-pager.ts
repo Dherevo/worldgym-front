@@ -1,7 +1,8 @@
 import { Component, Vue, Prop, Watch, toNative } from "vue-facing-decorator";
 import { belongsToSomethingElse } from "@/modules/swipeGuard";
 
-const LOCK_DISTANCE = 10;       // px before deciding if the gesture is horizontal or vertical
+const BOTTOM_BAR = 64;          // px kept free for the bottom tab bar when the pager fills the screen
+const LOCK_DISTANCE = 8;        // px before deciding if the gesture is horizontal or vertical
 const COMMIT_FRACTION = 0.25;   // of the width: enough to turn the page
 const COMMIT_SPEED = 0.5;       // px/ms: a quick flick turns the page too
 const EDGE_RESISTANCE = 0.3;    // dragging past the first/last page
@@ -27,6 +28,7 @@ class SwipePager extends Vue {
     cur = 0;                    // page shown (set at once on commit; the parent follows with `index`)
     neighborsOn = false;        // neighbours are only mounted while dragging
     offset = 0;
+    fill = 0;                   // min-height so the pager reaches the bottom of the screen (short pages)
     dragging = false;
     animating = false;
 
@@ -43,6 +45,15 @@ class SwipePager extends Vue {
     @Watch('index')
     onIndex(i: number) {
         this.cur = i;
+        this.$nextTick(() => this.fillScreen());
+    }
+
+    // A short page would only take swipes over its own content: stretch the pager down to the bottom bar
+    fillScreen() {
+        const root = this.$refs.root as HTMLElement | undefined;
+        if (!this.enabled || !root) return;
+        const top = root.getBoundingClientRect().top + window.scrollY;
+        this.fill = Math.max(0, Math.round(window.innerHeight - top - BOTTOM_BAR));
     }
 
     created() {
@@ -51,10 +62,15 @@ class SwipePager extends Vue {
 
     mounted() {
         const root = this.$refs.root as HTMLElement;
+        this.fillScreen();
+        // The page above (header, tabs) may finish rendering after this component
+        setTimeout(() => this.fillScreen(), 400);
+        window.addEventListener('resize', handlers.resize);
         handlers.start = (e: TouchEvent) => this.onStart(e);
         handlers.move = (e: TouchEvent) => this.onMove(e);
         handlers.end = (e: TouchEvent) => this.onEnd(e);
         handlers.cancel = () => this.onCancel();
+        handlers.resize = () => this.fillScreen();
         root.addEventListener('touchstart', handlers.start, { passive: true });
         root.addEventListener('touchmove', handlers.move, { passive: true });
         root.addEventListener('touchend', handlers.end, { passive: true });
@@ -69,6 +85,7 @@ class SwipePager extends Vue {
             root.removeEventListener('touchend', handlers.end);
             root.removeEventListener('touchcancel', handlers.cancel);
         }
+        window.removeEventListener('resize', handlers.resize);
         window.clearTimeout(state.fallback);
     }
 
@@ -95,7 +112,7 @@ class SwipePager extends Vue {
 
         if (!t.lock) {
             if (Math.abs(dx) < LOCK_DISTANCE && Math.abs(dy) < LOCK_DISTANCE) return;
-            if (Math.abs(dx) <= Math.abs(dy) * 1.2) { t.lock = 'v'; return; }
+            if (Math.abs(dx) <= Math.abs(dy)) { t.lock = 'v'; return; }
             t.lock = 'h';
             this.neighborsOn = true;
             this.dragging = true;
@@ -158,8 +175,8 @@ class SwipePager extends Vue {
 
 // Gesture state kept out of Vue's reactivity (one pager per screen)
 const state: { touch: Touch1 | null; target: number; fallback: number | undefined } = { touch: null, target: 0, fallback: undefined };
-const handlers: Record<'start' | 'move' | 'end' | 'cancel', (e: TouchEvent) => void> = {
-    start: () => undefined, move: () => undefined, end: () => undefined, cancel: () => undefined,
+const handlers: Record<'start' | 'move' | 'end' | 'cancel' | 'resize', (e: any) => void> = {
+    start: () => undefined, move: () => undefined, end: () => undefined, cancel: () => undefined, resize: () => undefined,
 };
 
 export default toNative(SwipePager);
