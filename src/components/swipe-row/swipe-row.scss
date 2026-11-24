@@ -45,9 +45,9 @@
         font-weight: 600;
         cursor: pointer;
         svg.icon { width: 22px; height: 22px; }
-        &.share { background: #16a34a; }
-        &.edit { background: #2563eb; }
-        &.del { background: #dc2626; border-radius: 0 12px 12px 0; }
+        &.share { background: var(--header-bg); }
+        &.edit { background: var(--primary-color); }
+        &.del { background: var(--primary-dark-color); border-radius: 0 12px 12px 0; }
     }
 
     // With a mouse there is nothing to slide: small icon buttons next to the row

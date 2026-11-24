@@ -90,8 +90,24 @@
                     </ul>
                 </section>
 
+                <section v-if="tplMatches.length">
+                    <h2>{{ $t('foodAdd.tpl.matches') }}</h2>
+                    <ul class="fa-list">
+                        <li v-for="t in tplMatches" :key="'t' + t.id">
+                            <button type="button" class="fa-row" @click="openTplSheet(t)">
+                                <span class="fa-thumb fa-thumb-empty">{{ t.kind === 'recipe' ? '🍲' : '🍽' }}</span>
+                                <span class="fa-main">
+                                    <span class="fa-name">{{ t.name }}<check-badge v-if="addedTemplates.includes(t.id)" /></span>
+                                    <small>{{ t.kind === 'recipe' ? $t('foodAdd.tpl.recipe') : $t('foodAdd.tpl.meal') }} · {{ t.kcal }} kcal<template v-if="t.kind === 'recipe'"> {{ $t('foodAdd.tpl.perServing') }}</template><template v-if="t.shared && !t.own"> · {{ $t('foodAdd.tpl.sharedBy') }}</template></small>
+                                </span>
+                                <span class="fa-plus">+</span>
+                            </button>
+                        </li>
+                    </ul>
+                </section>
+
                 <section v-if="listed.length">
-                    <h2 v-if="showSuggestions">{{ $t('foodAdd.foods') }}</h2>
+                    <h2 v-if="showSuggestions || tplMatches.length">{{ $t('foodAdd.foods') }}</h2>
                     <ul class="fa-list">
                         <li v-for="f in listed" :key="f.id">
                             <SwipeRow :enabled="tab === 'mine'" :actions="isAdmin ? ['share', 'edit', 'delete'] : ['edit', 'delete']" @share="shareFood(f)" @edit="editFood(f)" @delete="removeFood(f)">
@@ -145,11 +161,12 @@
                         <button type="button" class="fa-row" @click="openTplSheet(t)">
                             <span class="fa-main">
                                 <span class="fa-name">{{ t.name }}<check-badge v-if="addedTemplates.includes(t.id)" /></span>
-                                <small>{{ t.kcal }} kcal<template v-if="t.kind === 'recipe'"> {{ $t('foodAdd.tpl.perServing') }}</template> · {{ $t('foodAdd.tpl.items', { n: t.items.length }) }}</small>
+                                <small>{{ t.kcal }} kcal<template v-if="t.kind === 'recipe'"> {{ $t('foodAdd.tpl.perServing') }}</template> · {{ $t('foodAdd.tpl.items', { n: t.items.length }) }}<template v-if="t.shared"> · {{ t.own ? $t('foodAdd.tpl.shared') : $t('foodAdd.tpl.sharedBy') }}</template></small>
                             </span>
                             <span class="fa-plus">+</span>
                         </button>
-                        <button type="button" class="fa-edit" :aria-label="$t('foodAdd.tpl.edit')" @click="openBuilder(t)">✎</button>
+                        <button v-if="isAdmin && t.own && !t.shared" type="button" class="fa-edit" :aria-label="$t('foodAdd.share.short')" @click="shareTemplate(t)">🌐</button>
+                        <button v-if="t.own" type="button" class="fa-edit" :aria-label="$t('foodAdd.tpl.edit')" @click="openBuilder(t)">✎</button>
                     </li>
                 </ul>
                 <p v-else-if="!loading" class="muted">{{ tab === 'recipes' ? $t('foodAdd.tpl.emptyRecipes') : $t('foodAdd.tpl.emptyMeals') }}</p>

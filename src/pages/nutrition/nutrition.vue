@@ -22,6 +22,15 @@
                 <svg-icon name="heroicons-outline/arrow-uturn-left" /> {{ $t('nutrition.toToday') }}
             </button>
 
+            <div v-if="day" class="quick-add">
+                <button type="button" class="btn quick-btn" @click="openAdd(quickMeal)">+ {{ $t('nutrition.addTo', { meal: $t('nutrition.meals.' + quickMeal).toLowerCase() }) }}</button>
+                <div class="quick-meals" role="radiogroup" :aria-label="$t('nutrition.quickMeal')">
+                    <button v-for="m in meals" :key="m" type="button" role="radio" :aria-checked="m === quickMeal" class="quick-chip" :class="{ active: m === quickMeal }" @click="quickPick = m">
+                        <svg-icon :name="mealIcon(m)" /><span>{{ $t('nutrition.meals.' + m) }}</span>
+                    </button>
+                </div>
+            </div>
+
             <template v-if="loading && !day">
                 <div class="card"><skeleton-block :rows="3" height="1.3rem" /></div>
                 <div class="card"><skeleton-block :rows="4" height="1.1rem" /></div>

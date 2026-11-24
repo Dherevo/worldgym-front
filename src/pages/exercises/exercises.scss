@@ -153,7 +153,7 @@
                     cursor: pointer;
                     font-size: 0.85rem;
                     &:hover { background: var(--surface-3); }
-                    &.danger { color: var(--tint-red-text); border-color: var(--tint-red-text); }
+                    &.danger { color: var(--primary-color); border-color: var(--primary-color); }
                 }
             }
         }

@@ -169,6 +169,7 @@ class NutritionPage extends Vue {
     selectDay(date: string) {
         if (date > localDate() || date === this.date) return;
         this.date = date;
+        this.quickPick = null;
         this.adding = null;
         this.load();
     }
@@ -291,6 +292,14 @@ class NutritionPage extends Vue {
 
     proteinOf(meal: string): number {
         return Math.round(this.entriesOf(meal).reduce((sum, e) => sum + (Number(e.protein_g) || 0), 0));
+    }
+
+    // The meal the top button adds to: the one picked, or else the first without food that day (breakfast, lunch...)
+    quickPick: string | null = null;
+
+    get quickMeal(): string {
+        if (this.quickPick) return this.quickPick;
+        return this.meals.find(m => !this.entriesOf(m).length) ?? this.meals[0];
     }
 
     // Adding food to a meal is its own screen
