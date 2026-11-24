@@ -66,6 +66,8 @@ class FoodForm extends Vue {
         } else {
             this.name = this.presetName;
             this.offCode = this.presetCode;
+            // A scanned code: ask Open Food Facts again (the first lookup can fail without the product being missing)
+            if (this.codeValid) this.lookup(true);
         }
     }
 
@@ -126,7 +128,7 @@ class FoodForm extends Vue {
 
     // Fill the form from Open Food Facts by the barcode. It is an explicit action: what is there gets replaced,
     // except the name, which is only filled when empty
-    lookup() {
+    lookup(auto = false) {
         if (!this.codeValid || this.looking) return;
         this.looking = true;
         this.filled = false;
@@ -150,6 +152,7 @@ class FoodForm extends Vue {
             this.filled = true;
         })
         .catch((e: any) => {
+            if (auto) return;
             const key = e?.data?.error === 'off.unavailable' ? 'nutrition.off.unavailable' : 'nutrition.foods.barcodeNotFound';
             App.notification(translate.get(key)).setType('error').show();
         })
