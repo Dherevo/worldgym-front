@@ -21,10 +21,17 @@
         border: 2px solid var(--border-color); background: var(--surface-2); color: var(--text-secondary);
         &.selected { border-color: var(--primary-color); color: var(--primary-color); }
     }
-    .food-link { align-self: flex-start; background: none; border: none; color: var(--primary-color); font-weight: 600; cursor: pointer; padding: 0.2rem 0; }
+    // "Log what you eat": a button of its own, with air around it
+    .food-link {
+        display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+        width: 100%; min-height: 0; margin: 0.9rem 0 0.4rem; padding: 0.8rem 1rem; box-sizing: border-box;
+        border-radius: 12px; border: 1.5px solid var(--primary-color); background: transparent;
+        color: var(--primary-color); font-size: 1rem; font-weight: 700; cursor: pointer;
+        &:active { background: var(--surface-2); }
+    }
 
     .fact {
-        margin: 0;
+        margin: 0.25rem 0 0;
         padding: 0.6rem 0.9rem;
         border-radius: 12px;
         background: var(--surface-2);
