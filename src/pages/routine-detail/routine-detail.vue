@@ -28,13 +28,6 @@
                             <span v-if="day.circuit_minutes" class="group-chip">{{ $t('routineDetail.circuitChip', { n: day.circuit_minutes }) }}</span>
                             <span v-if="dayKcal(day)" class="group-chip kcal-chip">{{ dayKcal(day) }}</span>
                         </div>
-                        <div class="day-actions">
-                            <button class="btn-train" @click="startDay(day)" :disabled="starting">
-                                {{ starting ? '...' : $t('routineDetail.train') }}
-                            </button>
-                            <button v-if="canEdit" @click="openEditDay(day)">{{ $t('routineDetail.edit') }}</button>
-                            <button v-if="canEdit" class="danger" @click="deleteDay(day)">{{ $t('routineDetail.delete') }}</button>
-                        </div>
                     </div>
 
                     <div class="exercises-table" v-if="day.exercises?.length > 0">
@@ -64,6 +57,18 @@
                     </div>
                     <div v-else class="empty-exercises">{{ $t('routineDetail.noExercises') }} <span class="link" v-if="canEdit" @click="openAddExercise(day)">{{ $t('routineDetail.addOne') }}</span></div>
                     <button class="btn-add-exercise" v-if="canEdit" @click="openAddExercise(day)">{{ $t('routineDetail.addExercise') }}</button>
+
+                    <div class="day-footer">
+                        <button type="button" class="btn-train" @click="startDay(day)" :disabled="starting">
+                            <svg-icon name="heroicons-outline/play" /><span>{{ starting ? '...' : $t('routineDetail.train') }}</span>
+                        </button>
+                        <button v-if="canEdit" type="button" class="icon-action" :aria-label="$t('routineDetail.edit')" @click="openEditDay(day)">
+                            <svg-icon name="heroicons-outline/pencil-square" />
+                        </button>
+                        <button v-if="canEdit" type="button" class="icon-action danger" :aria-label="$t('routineDetail.delete')" @click="deleteDay(day)">
+                            <svg-icon name="heroicons-outline/trash" />
+                        </button>
+                    </div>
                 </div>
             </div>
 
