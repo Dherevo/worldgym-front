@@ -4,13 +4,19 @@ import { primaryMuscleNames } from "@/modules/muscles";
 import { bodyWeight, kcalFromSeconds, kcalLabel, MET_PLANNED, plannedSeconds } from "@/modules/calories";
 
 import BackButton from "@/components/back-button/back-button.vue";
+import SwipeRow from "@/components/swipe-row/swipe-row.vue";
 import SearchInput from "@/components/search-input/search-input.vue";
-@Component({ components: { BackButton, SearchInput } })
+@Component({ components: { BackButton, SearchInput, SwipeRow } })
 class RoutineDetailPage extends Vue {
 
     routine: any = null;
 
     // Global routines (templates) are managed from the backoffice
+    // A column with no value in any exercise of the day is not shown (it would only take room)
+    hasValues(day: any, key: string): boolean {
+        return (day.exercises ?? []).some((e: any) => e[key] !== null && e[key] !== undefined && e[key] !== '' && Number(e[key]) !== 0);
+    }
+
     get canEdit(): boolean {
         return !!this.routine && !this.routine.is_global;
     }
