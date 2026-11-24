@@ -76,13 +76,19 @@ export async function readSteps(days = 14): Promise<{ date: string; steps: numbe
     return Object.entries(perDay).map(([date, steps]) => ({ date, steps }));
 }
 
-// Reads the phone's steps and sends them to the account (each day only goes up). Returns the days that changed
-export async function syncSteps(days = 14): Promise<number> {
+// Reads the phone's steps and sends them to the account (each day only goes up). Returns the days that changed and the
+// steps of today that Health Connect had: the band's app (Mi Fitness) hands its steps to Health Connect a little after
+// its own sync, so this figure shows what the phone really had when it was read
+export async function syncSteps(days = 14): Promise<{ updated: number; today: number }> {
     const list = await readSteps(days);
-    if (!list.length) return 0;
+    if (!list.length) return { updated: 0, today: 0 };
+
+    const now = new Date();
+    const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const today = list.find(d => d.date === todayKey)?.steps ?? 0;
 
     const res: any = await http.post('/steps/sync').data({ days: list });
-    return res?.updated ?? 0;
+    return { updated: res?.updated ?? 0, today };
 }
 
 // Syncs the steps every time the app comes back to the foreground (the webview becomes visible again).
