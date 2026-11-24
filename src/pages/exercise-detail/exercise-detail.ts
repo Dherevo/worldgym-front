@@ -15,10 +15,10 @@ let chart: Chart | null = null;
 
 type Tab = 'summary' | 'history' | 'directions';
 type Metric = 'weight' | 'oneRm' | 'volume' | 'reps';
-type Range = 'month' | 'threeMonths' | 'year' | 'all';
+type Range = 'week' | 'month' | 'threeMonths' | 'year' | 'all';
 
 const DAY = 86400000;
-const RANGE_DAYS: Record<Range, number> = { month: 31, threeMonths: 92, year: 366, all: 0 };
+const RANGE_DAYS: Record<Range, number> = { week: 7, month: 31, threeMonths: 92, year: 366, all: 0 };
 
 // Estimated one-rep max (Epley)
 const oneRm = (weight: number, reps: number) => (reps <= 1 ? weight : weight * (1 + reps / 30));
@@ -43,7 +43,7 @@ class ExerciseDetailPage extends Vue {
     visibleCount = 20;
 
     readonly tabs: Tab[] = ['summary', 'history', 'directions'];
-    readonly ranges: Range[] = ['month', 'threeMonths', 'year', 'all'];
+    readonly ranges: Range[] = ['week', 'month', 'threeMonths', 'year', 'all'];
 
     readonly isApp = isApp;
 
@@ -139,6 +139,11 @@ class ExerciseDetailPage extends Vue {
     get unit(): string {
         if (this.metric === 'reps') return translate.get('exerciseDetail.repsUnit');
         return this.bodyweightOnly ? translate.get('exerciseDetail.repsUnit') : 'kg';
+    }
+
+    // Sessions of this exercise inside the chosen period
+    get timesInRange(): number {
+        return this.rangeSessions.length;
     }
 
     // Bars of the chart: one per week (per month in long periods), not one per session

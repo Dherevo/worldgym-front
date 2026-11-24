@@ -2,35 +2,40 @@
 // three leg days in one week make one bar, not three spikes. Weeks with nothing trained are empty bars.
 const DAY = 86400000;
 
-export type BucketUnit = 'week' | 'month';
+export type BucketUnit = 'day' | 'week' | 'month';
 export type BucketAgg = 'sum' | 'max';
 export interface Bucket { key: string; label: string; value: number }
 
-// Up to about 3 months: by week; longer: by month
+// Up to 2 weeks: by day; up to about 3 months: by week; longer: by month
 export function unitFor(from: Date, to: Date): BucketUnit {
-    return (to.getTime() - from.getTime()) / DAY > 100 ? 'month' : 'week';
+    const days = (to.getTime() - from.getTime()) / DAY;
+    return days <= 14 ? 'day' : days > 100 ? 'month' : 'week';
 }
 
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 function startOf(d: Date, unit: BucketUnit): Date {
     if (unit === 'month') return new Date(d.getFullYear(), d.getMonth(), 1);
+    if (unit === 'day') return new Date(d.getFullYear(), d.getMonth(), d.getDate());
     const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
     x.setDate(x.getDate() - ((x.getDay() + 6) % 7));   // Monday
     return x;
 }
 
 function next(d: Date, unit: BucketUnit): Date {
-    return unit === 'month' ? new Date(d.getFullYear(), d.getMonth() + 1, 1) : new Date(d.getFullYear(), d.getMonth(), d.getDate() + 7);
+    if (unit === 'month') return new Date(d.getFullYear(), d.getMonth() + 1, 1);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate() + (unit === 'day' ? 1 : 7));
 }
 
 // rows: dated values; from/to: the period shown (every bucket in between exists, even empty)
 export function bucketize(rows: { date: string; value: number }[], from: Date, to: Date, agg: BucketAgg, locale: string): Bucket[] {
     const unit = unitFor(from, to);
     const longSpan = (to.getTime() - from.getTime()) / DAY > 400;
-    const label = (d: Date) => unit === 'week'
-        ? d.toLocaleDateString(locale, { day: 'numeric', month: 'short' })
-        : d.toLocaleDateString(locale, longSpan ? { month: 'short', year: '2-digit' } : { month: 'short' });
+    const label = (d: Date) => unit === 'day'
+        ? d.toLocaleDateString(locale, { weekday: 'short', day: 'numeric' })
+        : unit === 'week'
+            ? d.toLocaleDateString(locale, { day: 'numeric', month: 'short' })
+            : d.toLocaleDateString(locale, longSpan ? { month: 'short', year: '2-digit' } : { month: 'short' });
 
     const buckets = new Map<string, Bucket>();
     for (let d = startOf(from, unit); d <= to; d = next(d, unit)) {
