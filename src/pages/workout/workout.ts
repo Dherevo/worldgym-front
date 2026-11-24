@@ -211,6 +211,8 @@ class WorkoutPage extends Vue {
         this.state = 'loading';
         http.get(`/workouts/${this.workoutId}`)
         .then((res: any) => {
+            // An open circuit has its own screen (countdown, rounds and weights)
+            if (res.circuit && res.status === 'active') { this.to(`/circuit/${res.circuit.routine_id}/${res.circuit.day_id}`); return; }
             this.workout = res;
             this.workoutStartedAt = res.started_at ?? new Date().toISOString();
             this.exercises = (res.workout_exercises ?? []).map((we: any) => ({

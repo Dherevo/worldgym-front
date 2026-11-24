@@ -31,6 +31,11 @@
                 </SwipeRow>
             </div>
 
+            <button type="button" class="exercises-btn" @click="to('/exercises')">
+                <svg-icon name="heroicons-outline/bolt" /> {{ $t('layout.menu.exercises') }}
+                <svg-icon class="eb-go" name="heroicons-outline/chevron-right" />
+            </button>
+
             <!-- Form Modal -->
             <div v-if="showForm" class="modal-overlay" @click.self="showForm = false">
                 <div class="modal">

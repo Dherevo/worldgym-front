@@ -8,7 +8,7 @@
                     <span class="active-dot"></span>
                     <span>{{ $t('home.activeWorkout.banner') }}</span>
                 </div>
-                <button @click="to('/workout/' + activeWorkout.id)">{{ $t('home.activeWorkout.resume') }}</button>
+                <button @click="to(activeWorkout.circuit ? `/circuit/${activeWorkout.circuit.routine_id}/${activeWorkout.circuit.day_id}` : '/workout/' + activeWorkout.id)">{{ $t('home.activeWorkout.resume') }}</button>
             </div>
 
             <!-- Week progress -->
