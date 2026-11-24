@@ -56,7 +56,7 @@
                         {{ $t('home.routine.otherRoutine') }}
                     </button>
                     <button class="btn-other-routine" @click="to('/recommendation')">{{ $t('recommendation.homeCard.title') }}</button>
-                    <button class="btn-free" @click="startEmptyWorkout()">{{ $t('home.routine.freeWorkout') }}</button>
+                    <div class="free-zone"><button class="btn-free" @click="startEmptyWorkout()">{{ $t('home.routine.freeWorkout') }}</button></div>
                 </div>
             </div>
 
@@ -85,16 +85,16 @@
                 <div class="multi-extra">
                     <button class="btn-other-routine" @click="openRoutinePicker()" v-if="otherRoutines.length">{{ $t('home.routine.otherRoutine') }}</button>
                     <button class="btn-other-routine" @click="to('/recommendation')">{{ $t('recommendation.homeCard.title') }}</button>
-                    <button class="btn-free" @click="startEmptyWorkout()">{{ $t('home.routine.freeWorkout') }}</button>
                 </div>
+                <div class="free-zone"><button class="btn-free" @click="startEmptyWorkout()">{{ $t('home.routine.freeWorkout') }}</button></div>
             </div>
 
             <div class="today-card no-routine" v-else-if="!loadingRoutine">
                 <p>{{ $t('home.routine.noDefault') }}</p>
-                <div class="actions-row">
+                <button class="btn-start wide" @click="startEmptyWorkout()">{{ $t('home.routine.freeWorkout') }}</button>
+                <div class="actions-row two">
                     <button class="btn-secondary" @click="to('/routines')">{{ $t('home.routine.manage') }}</button>
                     <button class="btn-secondary" @click="to('/recommendation')">{{ $t('recommendation.homeCard.title') }}</button>
-                    <button class="btn-start" @click="startEmptyWorkout()">{{ $t('home.routine.freeWorkout') }}</button>
                 </div>
             </div>
 
