@@ -12,7 +12,7 @@ class RoutinesPage extends Vue {
     loading = false;
     showForm = false;
     editingRoutine: any = null;
-    form = { name: '', description: '' };
+    form = { name: '', description: '', no_weekly_goal: false };
     saving = false;
 
     created() {
@@ -34,7 +34,7 @@ class RoutinesPage extends Vue {
 
     openCreate() {
         this.editingRoutine = null;
-        this.form = { name: '', description: '' };
+        this.form = { name: '', description: '', no_weekly_goal: false };
         this.showForm = true;
         http.get('/routines?only_global=true')
         .then((res: any) => { this.templates = res.items ?? []; })
@@ -43,7 +43,7 @@ class RoutinesPage extends Vue {
 
     openEdit(r: any) {
         this.editingRoutine = r;
-        this.form = { name: r.name, description: r.description || '' };
+        this.form = { name: r.name, description: r.description || '', no_weekly_goal: !!r.no_weekly_goal };
         this.showForm = true;
     }
 

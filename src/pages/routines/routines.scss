@@ -163,6 +163,7 @@
     }
 }
 
+.routines-page .goal-check { display: flex; align-items: flex-start; gap: 0.6rem; margin: 0.25rem 0 0.75rem; cursor: pointer; input { margin-top: 0.25rem; } span { display: flex; flex-direction: column; font-weight: 600; } small { font-weight: 400; color: var(--text-muted); font-size: 0.82rem; } }
 .routines-page .form-templates {
     margin-top: 1.25rem;
     padding-top: 1rem;
