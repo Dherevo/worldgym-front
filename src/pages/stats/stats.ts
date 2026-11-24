@@ -64,6 +64,7 @@ class StatsPage extends Vue {
     created() {
         this.fetchOverview();
         this.fetchTime();
+        this.fetchMuscleGroups();
     }
 
     beforeUnmount() {
@@ -92,10 +93,15 @@ class StatsPage extends Vue {
 
     fetchOverview() {
         this.loadingOverview = true;
-        http.get('/stats/overview')
+        const params: any = {};
+        const from = this.rangeFrom(this.range);
+        if (from) params.from = from;
+        http.get('/stats/overview').data(params)
         .then((res: any) => {
             this.overview = res;
             this.buildHeatmap();
+            this.initGroup();
+            if (this.monthlyOpen) setTimeout(() => { this.renderMonthlyChart(); }, 0);
         })
         .catch(() => {})
         .finally(() => { this.loadingOverview = false; });
