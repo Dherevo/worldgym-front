@@ -364,12 +364,12 @@
                                             </div>
                                             <input type="text" v-model="editing.notes" class="cell-input wide" :placeholder="$t('workout.log.notesPlaceholder')" />
                                             <div class="flag-row">
-                                                <label class="flag-check"><input type="checkbox" v-model="editing.failed" /> {{ $t('workout.log.failed') }}</label>
-                                                <label class="flag-check"><input type="checkbox" v-model="editing.dropset" /> {{ $t('workout.log.dropset') }}</label>
+                                                <button type="button" class="flag-chip failed" :class="{ active: editing.failed }" @click="editing.failed = !editing.failed">✕ {{ $t('workout.log.failed') }}</button>
+                                                <button type="button" class="flag-chip dropset" :class="{ active: editing.dropset }" @click="editing.dropset = !editing.dropset">↓ {{ $t('workout.log.dropset') }}</button>
                                             </div>
                                             <div class="edit-actions">
-                                                <button type="button" class="btn-action skip" :disabled="savingEdit" @click="closeEdit()">{{ $t('workout.editSet.cancel') }}</button>
-                                                <button type="button" class="btn-action start" :disabled="savingEdit" @click="saveEdit()">{{ $t('workout.editSet.save') }}</button>
+                                                <button type="button" class="edit-btn" :disabled="savingEdit" @click="closeEdit()">{{ $t('workout.editSet.cancel') }}</button>
+                                                <button type="button" class="edit-btn primary" :disabled="savingEdit" @click="saveEdit()">{{ $t('workout.editSet.save') }}</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -397,12 +397,12 @@
                                             </div>
                                             <input type="text" v-model="editing.notes" class="cell-input wide" :placeholder="$t('workout.log.notesPlaceholder')" />
                                             <div class="flag-row">
-                                                <label class="flag-check"><input type="checkbox" v-model="editing.failed" /> {{ $t('workout.log.failed') }}</label>
-                                                <label class="flag-check"><input type="checkbox" v-model="editing.dropset" /> {{ $t('workout.log.dropset') }}</label>
+                                                <button type="button" class="flag-chip failed" :class="{ active: editing.failed }" @click="editing.failed = !editing.failed">✕ {{ $t('workout.log.failed') }}</button>
+                                                <button type="button" class="flag-chip dropset" :class="{ active: editing.dropset }" @click="editing.dropset = !editing.dropset">↓ {{ $t('workout.log.dropset') }}</button>
                                             </div>
                                             <div class="edit-actions">
-                                                <button type="button" class="btn-action skip" :disabled="savingEdit" @click="closeEdit()">{{ $t('workout.editSet.cancel') }}</button>
-                                                <button type="button" class="btn-action start" :disabled="savingEdit" @click="saveEdit()">{{ $t('workout.editSet.save') }}</button>
+                                                <button type="button" class="edit-btn" :disabled="savingEdit" @click="closeEdit()">{{ $t('workout.editSet.cancel') }}</button>
+                                                <button type="button" class="edit-btn primary" :disabled="savingEdit" @click="saveEdit()">{{ $t('workout.editSet.save') }}</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -462,6 +462,17 @@
 
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- Exercicis descartats avui: continuen a la llista i es poden recuperar -->
+                <div class="workout-progress skipped-list" v-if="skippedNow.length && state !== 'done'">
+                    <div v-for="sk in skippedNow" :key="sk.exercise_id" class="progress-exercise ex-skipped">
+                        <div class="progress-ex-header">
+                            <span class="progress-ex-name">{{ sk.exercise?.name }}<span class="muscle-label" v-if="muscleLabel(sk.exercise)"> ({{ muscleLabel(sk.exercise) }})</span></span>
+                            <button v-if="canAdd" class="progress-ex-go" :disabled="addingExercise" @click="restoreSkipped(sk)">{{ $t('workout.skip.restore') }}</button>
+                            <span v-else class="progress-ex-badge skipped">{{ $t('workout.skip.skipped') }}</span>
+                        </div>
                     </div>
                 </div>
 

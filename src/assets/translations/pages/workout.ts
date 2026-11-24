@@ -16,7 +16,7 @@ export default {
         finishEarly: 'Acabar exercici ({{done}} sèries fetes)',
         finishEarlyConfirm: 'Vols acabar aquest exercici ara? Les sèries planificades que no has fet s\'eliminaran.',
         abs: { question: 'Vols fer abdominals?', sub: 'Opcional: tria un exercici i fes les sèries que vulguis.', skip: 'No, acabar l\'entreno' },
-        skip: { button: 'Saltar exercici', confirm: 'Vols saltar "{{name}}" d\'avui? El veuràs com a pendent els propers dies.' },
+        skip: { skipped: 'Descartat', restore: 'Recuperar', restoreError: 'No s\'ha pogut recuperar l\'exercici', button: 'Saltar exercici', confirm: 'Vols saltar "{{name}}" d\'avui? El veuràs com a pendent els propers dies.' },
         add: { button: '+ Afegir exercici', title: 'Afegir un exercici', cancel: 'Cancel·lar' },
         pending: { title: 'Exercicis pendents', sub: "Toca un exercici per afegir-lo a l'entrenament d'avui, just després de l'actual." },
         pick: {
@@ -130,7 +130,7 @@ export default {
         finishEarly: 'Terminar ejercicio ({{done}} series hechas)',
         finishEarlyConfirm: '¿Quieres terminar este ejercicio ahora? Las series planificadas que no has hecho se eliminarán.',
         abs: { question: '¿Quieres hacer abdominales?', sub: 'Opcional: elige un ejercicio y haz las series que quieras.', skip: 'No, terminar el entreno' },
-        skip: { button: 'Saltar ejercicio', confirm: '¿Quieres saltar "{{name}}" hoy? Lo verás como pendiente los próximos días.' },
+        skip: { skipped: 'Descartado', restore: 'Recuperar', restoreError: 'No se pudo recuperar el ejercicio', button: 'Saltar ejercicio', confirm: '¿Quieres saltar "{{name}}" hoy? Lo verás como pendiente los próximos días.' },
         add: { button: '+ Añadir ejercicio', title: 'Añadir un ejercicio', cancel: 'Cancelar' },
         pending: { title: 'Ejercicios pendientes', sub: 'Toca un ejercicio para añadirlo al entrenamiento de hoy, justo después del actual.' },
         pick: {
@@ -244,7 +244,7 @@ export default {
         finishEarly: 'Finish exercise ({{done}} sets done)',
         finishEarlyConfirm: 'Finish this exercise now? The planned sets you have not done will be removed.',
         abs: { question: 'Do you want to do abs?', sub: 'Optional: pick an exercise and do as many sets as you like.', skip: 'No, finish the workout' },
-        skip: { button: 'Skip exercise', confirm: 'Skip "{{name}}" today? It will show as pending in the next days.' },
+        skip: { skipped: 'Skipped', restore: 'Bring back', restoreError: 'Could not bring the exercise back', button: 'Skip exercise', confirm: 'Skip "{{name}}" today? It will show as pending in the next days.' },
         add: { button: '+ Add exercise', title: 'Add an exercise', cancel: 'Cancel' },
         pending: { title: 'Pending exercises', sub: "Tap an exercise to add it to today's workout, right after the current one." },
         pick: {

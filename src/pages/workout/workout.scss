@@ -516,6 +516,13 @@
                 &.ex-future {
                     .progress-ex-name, table { opacity: 0.45; }
                 }
+                // Skipped today: still in the list, but crossed out until it is brought back
+                &.ex-skipped {
+                    border-style: dashed;
+                    .progress-ex-header { border-bottom: none; }
+                    .progress-ex-name { opacity: 0.5; text-decoration: line-through; }
+                    .progress-ex-badge.skipped { background: var(--surface-2); color: var(--text-muted); }
+                }
 
                 .progress-ex-header {
                     display: flex;
@@ -908,17 +915,62 @@
 // Set being edited in place: a small form that takes the whole row (a 5-column row did not fit on a phone)
 .workout-page .workout-progress .set-row-editing {
     td { background: var(--surface-2); }
-    .edit-form-cell { padding: 0.75rem; white-space: normal; }
-    .edit-form-title { font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-color); }
+    .edit-form-cell { padding: 0.9rem 0.85rem; white-space: normal; }
+    .edit-form-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.65rem; color: var(--text-color); }
     .edit-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+        gap: 0.6rem;
+        margin-bottom: 0.6rem;
+        label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
     }
-    .cell-input { width: 100%; box-sizing: border-box; padding: 0.4rem 0.5rem; font-size: 1rem; text-transform: none; letter-spacing: 0; }
-    .flag-row { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; margin: 0.5rem 0; font-size: 0.9rem; }
-    .flag-check { display: flex; align-items: center; gap: 0.3rem; cursor: pointer; }
-    .edit-actions { display: flex; gap: 0.5rem; .btn-action { flex: 1; margin: 0; padding: 0.55rem 0.5rem; font-size: 0.95rem; } }
+    .cell-input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.55rem 0.7rem;
+        border: 1.5px solid var(--border-color);
+        border-radius: 10px;
+        background: var(--surface-color);
+        color: var(--text-color);
+        font-size: 1.05rem;
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: 0;
+        outline: none;
+        -moz-appearance: textfield;
+        &:focus { border-color: var(--primary-color); }
+        &::placeholder { color: var(--text-muted); font-weight: 400; }
+        &::-webkit-outer-spin-button, &::-webkit-inner-spin-button { -webkit-appearance: none; }
+    }
+    .cell-input.wide { font-size: 0.95rem; font-weight: 400; }
+    .flag-row { display: flex; gap: 0.5rem; margin: 0.65rem 0; }
+    .flag-chip {
+        flex: 1;
+        min-height: 0;
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+        border: 2px solid var(--border-color);
+        background: var(--surface-color);
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        &.failed.active { background: var(--tint-red-bg); border-color: var(--tint-red-text); color: var(--tint-red-text); }
+        &.dropset.active { background: var(--tint-blue-bg); border-color: var(--tint-blue-text); color: var(--tint-blue-text); }
+    }
+    .edit-actions { display: flex; gap: 0.6rem; }
+    .edit-btn {
+        flex: 1;
+        min-height: 0;
+        padding: 0.7rem 0.5rem;
+        border-radius: 12px;
+        border: 1.5px solid var(--border-color);
+        background: var(--surface-color);
+        color: var(--text-secondary);
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        &.primary { background: var(--primary-color); border-color: var(--primary-color); color: #fff; }
+        &:disabled { opacity: 0.6; cursor: not-allowed; }
+    }
 }
