@@ -107,7 +107,20 @@
                     font-size: 0.82rem;
                     color: var(--text-secondary);
                     cursor: default;
-                    .set-note { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+                    margin-top: 0.15rem;
+                    .set-note {
+                        flex: 1 1 100%;
+                        min-width: 0;
+                        color: var(--text-muted);
+                        font-size: 0.78rem;
+                        font-style: italic;
+                        line-height: 1.35;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        cursor: pointer;
+                        &.open { white-space: normal; overflow: visible; }
+                    }
                 }
                 .set-badge {
                     display: inline-block;
