@@ -7,6 +7,10 @@
                 <span>{{ $t('nutrition.noPlants') }}</span>
             </div>
 
+            <div v-if="periodDay" class="weigh-banner plants-banner">
+                <span>{{ $t('nutrition.periodIron') }}</span>
+            </div>
+
             <div v-if="weighDue" class="weigh-banner">
                 <span>{{ $t('nutrition.weighDue') }}</span>
                 <button type="button" class="btn" @click="to('/profile')">{{ $t('nutrition.weighNow') }}</button>

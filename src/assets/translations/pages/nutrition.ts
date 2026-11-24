@@ -133,6 +133,7 @@ export default {
         cal: {
             listTitle: 'Dies del mes', title: 'Alimentació', prevMonth: 'Mes anterior', nextMonth: 'Mes següent', logged: 'Dies registrats', avgKcal: 'Mitjana kcal', avgProtein: 'Mitjana proteïna (g)', proteinDays: 'Dies amb proteïna assolida', state: { ok: 'Dins de l\'objectiu', over: 'Per sobre', low: 'Per sota', none: 'Sense dades' }, hint: 'Toca un dia per veure què vas menjar i corregir-ho.' },
         historyHint: 'Toca un dia per veure què vas menjar i corregir-ho.',
+        periodIron: "Aquests dies de regla va bé menjar aliments rics en ferro: llenties, cigrons, carn vermella, ous o espinacs. Amb vitamina C (taronja, kiwi) s'absorbeix millor.",
         noPlants: 'Fa 7 dies que no apuntes cap verdura ni fruita. Posa\'n una ració a cada àpat principal.',
         proteinShort: 'prot.',
         proteinSummary: 'Proteïna mínima ({{min}} g) assolida {{reached}} de {{days}} dies acabats · mitjana {{avg}} g',
@@ -318,6 +319,7 @@ export default {
         cal: {
             listTitle: 'Días del mes', title: 'Alimentación', prevMonth: 'Mes anterior', nextMonth: 'Mes siguiente', logged: 'Días registrados', avgKcal: 'Media kcal', avgProtein: 'Media proteína (g)', proteinDays: 'Días con proteína alcanzada', state: { ok: 'Dentro del objetivo', over: 'Por encima', low: 'Por debajo', none: 'Sin datos' }, hint: 'Toca un día para ver qué comiste y corregirlo.' },
         historyHint: 'Toca un día para ver qué comiste y corregirlo.',
+        periodIron: "Estos días de regla conviene comer alimentos ricos en hierro: lentejas, garbanzos, carne roja, huevos o espinacas. Con vitamina C (naranja, kiwi) se absorbe mejor.",
         noPlants: 'Hace 7 días que no apuntas ninguna verdura ni fruta. Pon una ración en cada comida principal.',
         proteinShort: 'prot.',
         proteinSummary: 'Proteína mínima ({{min}} g) alcanzada {{reached}} de {{days}} días terminados · media {{avg}} g',
@@ -503,6 +505,7 @@ export default {
         cal: {
             listTitle: 'Days of the month', title: 'Nutrition', prevMonth: 'Previous month', nextMonth: 'Next month', logged: 'Days logged', avgKcal: 'Average kcal', avgProtein: 'Average protein (g)', proteinDays: 'Days protein goal met', state: { ok: 'Within the goal', over: 'Above', low: 'Below', none: 'No data' }, hint: 'Tap a day to see what you ate and fix it.' },
         historyHint: 'Tap a day to see what you ate and fix it.',
+        periodIron: "On your period days it helps to eat iron-rich food: lentils, chickpeas, red meat, eggs or spinach. Vitamin C (orange, kiwi) helps you absorb it better.",
         noPlants: 'It has been 7 days without any vegetable or fruit logged. Add a serving to each main meal.',
         proteinShort: 'prot.',
         proteinSummary: 'Minimum protein ({{min}} g) reached on {{reached}} of {{days}} finished days · average {{avg}} g',
