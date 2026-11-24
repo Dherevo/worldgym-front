@@ -17,7 +17,7 @@ export default {
         lossAuto: 'Automàtic',
         lossOption: '{{kg}} kg/setmana · ~{{kcal}} kcal al dia',
         lossHintAuto: 'El dèficit es calcula sol segons el teu pes i el que cremes.',
-        lossHint: 'Uns {{kg}} kg per setmana (orientatiu: el pes real mana). Menges la despesa base menys aquest dèficit i l\'exercici suma dèficit extra fins a 250 kcal; mai per sota de 1200 kcal.',
+        lossHint: 'Uns {{kg}} kg per setmana (orientatiu: el pes real mana). El que pots menjar és el que crems cada dia menys aquest dèficit: si entrenes o camines, puja perquè el dèficit es mantingui. Mai per sota de 1200 kcal.',
         goalTitle: 'El teu objectiu',
         goalAuto: 'Segons el teu IMC ({{bmi}}) l\'objectiu suggerit és {{goal}}. Pots canviar-lo.',
         goalCardTitle: 'El teu objectiu',
