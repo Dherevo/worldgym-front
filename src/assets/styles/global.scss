@@ -79,21 +79,21 @@ html { --ion-font-family: var(--font-body); }
 
 // Buttons: smooth hover, press feedback
 button,
-[class*="btn-"],
+[class*="btn-"]:not(.btn-content),
 .tab-bar-item {
     transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
 }
 
 @media (hover: hover) {
     button:not(:disabled):hover,
-    [class*="btn-"]:not(:disabled):hover {
+    [class*="btn-"]:not(.btn-content):not(:disabled):hover {
         transform: translateY(-1px);
         box-shadow: var(--shadow-md);
     }
 }
 
 button:not(:disabled):active,
-[class*="btn-"]:not(:disabled):active,
+[class*="btn-"]:not(.btn-content):not(:disabled):active,
 .tab-bar-item:active {
     transform: scale(0.96);
     box-shadow: var(--shadow-sm);
