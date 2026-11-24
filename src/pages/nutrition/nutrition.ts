@@ -63,6 +63,17 @@ class NutritionPage extends Vue {
         if (/^\d{4}-\d{2}-\d{2}$/.test(wanted) && wanted <= localDate()) this.date = wanted;
         this.load();
         this.checkWeight();
+        this.checkPeriod();
+    }
+
+    // Women who track their cycle: on the days of the period the app suggests iron-rich food
+    periodDay = false;
+
+    checkPeriod() {
+        if (userStore.data?.gender !== 'female') return;
+        http.get('/cycle').data({ date: localDate() })
+        .then((res: any) => { this.periodDay = res?.phase?.key === 'menstrual'; })
+        .catch(() => {});
     }
 
     // Protein target for the goal of the day, and how much of it is eaten
