@@ -2,7 +2,6 @@
     <div class="habits-progress">
         <div class="hp-top">
             <div>
-                <h1>{{ $t('habits.progress.title') }}</h1>
                 <p class="sub">{{ $t('habits.progress.sub') }}</p>
             </div>
             <button type="button" class="hp-config" @click="to('/habits')">
