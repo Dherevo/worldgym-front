@@ -19,6 +19,10 @@ const RANGE_DAYS: Record<Range, number> = { month: 31, threeMonths: 92, year: 36
 
 // Estimated one-rep max (Epley)
 const oneRm = (weight: number, reps: number) => (reps <= 1 ? weight : weight * (1 + reps / 30));
+// Epley is only reliable up to about 10 reps: higher-rep sets inflate it (300 kg x 15 would give 450 kg).
+// So only sets of up to 10 reps count; a session with none has no estimate (0)
+const ONE_RM_MAX_REPS = 10;
+const oneRmSets = (sets: any[]) => sets.filter(s => s.reps <= ONE_RM_MAX_REPS && s.weight > 0);
 const round = (n: number) => Math.round(n * 100) / 100;
 
 @Component({ components: { BackButton, ExerciseAnimation } })
@@ -46,6 +50,10 @@ class ExerciseDetailPage extends Vue {
     }
 
     created() {
+        // The tab lives in the URL (?tab=history), so "back" from a workout returns to the same tab
+        const q = String((this as any).$route.query.tab ?? '');
+        if (this.tabs.includes(q as Tab)) this.tab = q as Tab;
+
         Promise.all([
             http.get(`/exercises/${this.exerciseId}`),
             http.get(`/stats/exercises/${this.exerciseId}/history`).catch(() => ({ sessions: [] })),
@@ -106,7 +114,7 @@ class ExerciseDetailPage extends Vue {
     sessionValue(session: any, metric: Metric): number {
         const sets: any[] = session.sets;
         if (metric === 'weight') return Math.max(0, ...sets.map(s => s.weight));
-        if (metric === 'oneRm') return round(Math.max(0, ...sets.map(s => oneRm(s.weight, s.reps))));
+        if (metric === 'oneRm') return round(Math.max(0, ...oneRmSets(sets).map(s => oneRm(s.weight, s.reps))));
         if (metric === 'reps') return Math.max(0, ...sets.map(s => s.reps));
         // volume: kg moved, or total reps with the body weight
         return round(sets.reduce((sum, s) => sum + (this.bodyweightOnly ? s.reps : s.weight * s.reps), 0));
@@ -173,6 +181,7 @@ class ExerciseDetailPage extends Vue {
 
     setTab(tab: Tab) {
         this.tab = tab;
+        this.$router.replace({ query: tab === 'summary' ? {} : { tab } });
         if (tab === 'summary') this.$nextTick(() => this.renderChart());
     }
 
@@ -207,7 +216,8 @@ class ExerciseDetailPage extends Vue {
             data: {
                 labels: list.map(s => this.shortDate(s.date)),
                 datasets: [{
-                    data: list.map(s => this.sessionValue(s, this.metric)),
+                    data: list.map(s => { const v = this.sessionValue(s, this.metric); return this.metric === 'oneRm' && !v ? null : v; }),
+                    spanGaps: true,
                     borderColor: primary,
                     backgroundColor: primary,
                     borderWidth: 2.5,

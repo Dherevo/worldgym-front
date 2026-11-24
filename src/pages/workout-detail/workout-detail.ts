@@ -42,6 +42,12 @@ class WorkoutDetailPage extends Vue {
 
     get workoutId() { return this.param('id'); }
 
+    // Back to wherever the user came from (the exercise history, the workout list...); the list if there is no previous page
+    goBack() {
+        if (window.history.state?.back) this.back();
+        else this.to('/workouts');
+    }
+
     muscleLabel(exercise: any): string {
         return primaryMuscleNames(exercise);
     }

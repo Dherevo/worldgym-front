@@ -51,7 +51,7 @@
                             </template>
                             <template v-else>
                                 <div class="ed-record"><span>{{ $t('exerciseDetail.records.maxWeight') }}</span><b>{{ records.maxWeight }} kg</b></div>
-                                <div class="ed-record"><span>{{ $t('exerciseDetail.records.bestOneRm') }}</span><b>{{ records.bestOneRm }} kg</b></div>
+                                <div class="ed-record"><span>{{ $t('exerciseDetail.records.bestOneRm') }}</span><b>{{ records.bestOneRm ? records.bestOneRm + ' kg' : '—' }}</b></div>
                                 <div class="ed-record"><span>{{ $t('exerciseDetail.records.bestSet') }}</span><b>{{ records.bestSet }}</b></div>
                                 <div class="ed-record"><span>{{ $t('exerciseDetail.records.sessionVolume') }}</span><b>{{ records.sessionVolume }} kg</b></div>
                             </template>

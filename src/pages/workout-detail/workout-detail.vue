@@ -3,7 +3,7 @@
         <div class="workout-detail-page">
 
             <div class="page-header">
-                <BackButton class="btn-back" :label="$t('workoutDetail.back')" @click="to('/workouts')" />
+                <BackButton class="btn-back" :label="$t('workoutDetail.back')" @click="goBack()" />
                 <div v-if="workout" class="header-info">
                     <div>
                         <h1 class="capitalize">
