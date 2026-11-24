@@ -2,7 +2,7 @@ import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, translate } from "lib";
 import { Chart, registerables } from 'chart.js';
 import BackButton from "@/components/back-button/back-button.vue";
-import { bucketize } from "@/modules/chartBuckets";
+import { bucketize, alignedStart } from "@/modules/chartBuckets";
 
 Chart.register(...registerables);
 
@@ -69,7 +69,9 @@ class ProgressionPage extends Vue {
             return p;
         }
         const from = this.rangeFrom(this.period);
-        return from ? { from } : {};
+        if (!from) return {};
+        // Starts at the beginning of the first week (month) of the chart, so its first bar is not cut
+        return { from: this.isoDate(alignedStart(new Date(from + 'T00:00:00'), new Date())) };
     }
 
     cssVar(name: string, fallback: string): string {

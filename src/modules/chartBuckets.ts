@@ -27,6 +27,12 @@ function next(d: Date, unit: BucketUnit): Date {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate() + (unit === 'day' ? 1 : 7));
 }
 
+// A period that starts in the middle of a week would give a first bar with only part of the week (or an empty one):
+// the period starts at the beginning of that week (month, in long periods)
+export function alignedStart(from: Date, to: Date): Date {
+    return startOf(from, unitFor(from, to));
+}
+
 // rows: dated values; from/to: the period shown (every bucket in between exists, even empty)
 export function bucketize(rows: { date: string; value: number }[], from: Date, to: Date, agg: BucketAgg, locale: string): Bucket[] {
     const unit = unitFor(from, to);
