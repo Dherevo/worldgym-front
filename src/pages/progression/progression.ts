@@ -2,11 +2,14 @@ import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, translate } from "lib";
 import { Chart, registerables } from 'chart.js';
 import BackButton from "@/components/back-button/back-button.vue";
+import { bucketize } from "@/modules/chartBuckets";
 
 Chart.register(...registerables);
 
+type ExMetric = 'weight' | 'volume' | 'reps';
+
 // Chart.js instances must not be reactive (Vue would wrap them in proxies)
-const charts: Record<string, Chart | null> = { group: null, weight: null, volume: null, reps: null };
+const charts: Record<string, Chart | null> = { group: null, exercise: null };
 
 // Progression: muscle group (in a period) -> exercise -> last time, current and record
 @Component({ components: { BackButton } })
@@ -28,6 +31,10 @@ class ProgressionPage extends Vue {
     ];
     customFrom = '';
     customTo = '';
+
+    // One chart per opened exercise, with the metric chosen by chips (like the stats of Hevy)
+    exMetric: ExMetric = 'weight';
+    readonly exMetrics: ExMetric[] = ['weight', 'volume', 'reps'];
 
     // Progression: muscle group -> exercise -> previous / current / record
     muscleGroups: any[] = [];
@@ -175,29 +182,57 @@ class ProgressionPage extends Vue {
     }
 
     // "Ara 60 kg · Màxim 65 kg": the figures of a chart written next to it
-    chartValues(id: number, kind: 'weight' | 'volume' | 'reps'): string {
-        const sessions = this.exerciseDetail[id]?.sessions ?? [];
-        if (!sessions.length) return '';
+    // The period shown as dates ('all' starts at the first record)
+    periodRange(firstDate?: string): { from: Date; to: Date } {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const to = this.period === 'custom' && this.customTo ? new Date(this.customTo + 'T00:00:00') : today;
+        const fromStr = this.periodParams().from ?? firstDate;
+        const from = fromStr ? new Date(fromStr + 'T00:00:00') : new Date(today.getFullYear(), today.getMonth() - 2, 1);
+        return { from: from > to ? to : from, to };
+    }
 
-        const pick = (s: any) => parseFloat(kind === 'weight' ? s.max_weight : kind === 'volume' ? s.total_volume : s.avg_reps);
-        const values = sessions.map(pick);
-        const now = values[values.length - 1];
-        const fmt = (n: number) => kind === 'weight' ? `${n} kg` : kind === 'volume' ? this.formatVolume(n) : n.toFixed(1);
+    // Volume of the muscle group by week (by month in long periods)
+    get groupBars() {
+        const sessions: any[] = this.groupStats?.sessions ?? [];
+        if (!sessions.length) return [];
+        const { from, to } = this.periodRange(sessions[0].date);
+        return bucketize(sessions.map(s => ({ date: s.date, value: parseFloat(s.total_volume) })), from, to, 'sum', this.dateLocale);
+    }
 
-        if (kind === 'reps') {
-            const avg = values.reduce((a: number, b: number) => a + b, 0) / values.length;
-            return `${translate.get('stats.dash2.progress.now')} ${fmt(now)} · ${translate.get('stats.dash2.progress.average')} ${fmt(avg)}`;
-        }
-        return `${translate.get('stats.dash2.progress.now')} ${fmt(now)} · ${translate.get('stats.dash2.progress.max')} ${fmt(Math.max(...values))}`;
+    // Bars of an exercise for the chosen metric: heaviest weight of the week, or the volume / reps added up
+    exBars(id: number, kind: ExMetric) {
+        const sessions: any[] = this.exerciseDetail[id]?.sessions ?? [];
+        if (!sessions.length) return [];
+        const { from, to } = this.periodRange(sessions[0].date);
+        const lowest = this.isoDate(from);
+        const highest = this.isoDate(to);
+        const pick = (s: any) => parseFloat(kind === 'weight' ? s.max_weight : kind === 'volume' ? s.total_volume : s.total_reps);
+        const rows = sessions.filter(s => s.date >= lowest && s.date <= highest).map(s => ({ date: s.date, value: pick(s) }));
+        return bucketize(rows, from, to, kind === 'weight' ? 'max' : 'sum', this.dateLocale);
+    }
+
+    formatBar(kind: ExMetric, n: number): string {
+        return kind === 'weight' ? `${n} kg` : kind === 'volume' ? this.formatVolume(n) : String(Math.round(n));
+    }
+
+    // "Now 60 kg · Max 65 kg": the last and the best bar with data
+    chartValues(id: number): string {
+        const bars = this.exBars(id, this.exMetric).filter(b => b.value > 0);
+        if (!bars.length) return '';
+        const now = bars[bars.length - 1].value;
+        const best = Math.max(...bars.map(b => b.value));
+        return `${translate.get('stats.dash2.progress.now')} ${this.formatBar(this.exMetric, now)} · ${translate.get('stats.dash2.progress.max')} ${this.formatBar(this.exMetric, best)}`;
+    }
+
+    setExMetric(kind: ExMetric) {
+        this.exMetric = kind;
+        if (this.openExerciseId !== null) this.$nextTick(() => this.renderExerciseCharts(this.openExerciseId as number));
     }
 
     destroyExerciseCharts() {
-        [charts.weight, charts.volume, charts.reps].forEach(c => c?.destroy());
-        charts.weight = charts.volume = charts.reps = null;
-    }
-
-    dateLabels(rows: any[]): string[] {
-        return rows.map((r: any) => new Date(r.date).toLocaleDateString(this.dateLocale, { month: 'short', year: '2-digit' }));
+        charts.exercise?.destroy();
+        charts.exercise = null;
     }
 
     baseChartOptions(): any {
@@ -206,77 +241,53 @@ class ProgressionPage extends Vue {
         return {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: { mode: 'index', intersect: false },
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: false, grid: { color: grid } },
+                y: { beginAtZero: true, grid: { color: grid } },
                 x: { grid: { display: false }, ticks: { maxTicksLimit: 8, maxRotation: 0 } }
             }
         };
     }
 
-    // Volume of every session of the muscle group over the years
-    renderGroupChart() {
-        charts.group?.destroy();
-        charts.group = null;
-
-        const sessions = this.groupStats?.sessions ?? [];
-        const canvas = document.getElementById('groupVolumeCanvas') as HTMLCanvasElement | null;
-        if (!canvas || !sessions.length) return;
+    barChart(canvas: HTMLCanvasElement, bars: { label: string; value: number }[], color: string, format: (n: number) => string): Chart {
         Chart.getChart(canvas)?.destroy();
-
         const options = this.baseChartOptions();
-        options.scales.y.beginAtZero = true;
-        charts.group = new Chart(canvas, {
-            type: 'line',
+        options.plugins.tooltip = { callbacks: { label: (c: any) => format(c.parsed.y) } };
+        return new Chart(canvas, {
+            type: 'bar',
             data: {
-                labels: this.dateLabels(sessions),
-                datasets: [{
-                    label: translate.get('stats.charts.volumeLabel'),
-                    data: sessions.map((s: any) => parseFloat(s.total_volume)),
-                    borderColor: 'rgb(237, 115, 52)',
-                    backgroundColor: 'rgba(237, 115, 52, 0.12)',
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    pointHoverRadius: 4,
-                    tension: 0.25,
-                    fill: true
-                }]
+                labels: bars.map(b => b.label),
+                datasets: [{ data: bars.map(b => b.value), backgroundColor: color, borderRadius: 4, maxBarThickness: 36 }]
             },
             options
         });
     }
 
-    // Max weight, volume and average reps of the exercise in every session
+    // Volume of the muscle group by week (or month)
+    renderGroupChart() {
+        charts.group?.destroy();
+        charts.group = null;
+
+        const bars = this.groupBars;
+        const canvas = document.getElementById('groupVolumeCanvas') as HTMLCanvasElement | null;
+        if (!canvas || !bars.length) return;
+        charts.group = this.barChart(canvas, bars, this.cssVar('--primary-color', '#ED7334'), n => this.formatVolume(n));
+    }
+
+    // The opened exercise: one chart, the metric chosen by the chips
     renderExerciseCharts(id: number, tries = 8) {
         this.destroyExerciseCharts();
         if (this.openExerciseId !== id) return;
 
-        const sessions = this.exerciseDetail[id]?.sessions ?? [];
-        if (sessions.length < 2) return;
-
-        if (!document.getElementById('weightCanvas')) {
+        const canvas = document.getElementById('exerciseCanvas') as HTMLCanvasElement | null;
+        if (!canvas) {
             if (tries > 0) setTimeout(() => { this.renderExerciseCharts(id, tries - 1); }, 40);
             return;
         }
-
-        const labels = this.dateLabels(sessions);
-        const line = (canvasId: string, label: string, data: number[], color: string, rgba: string, zero = false) => {
-            const canvas = document.getElementById(canvasId) as HTMLCanvasElement | null;
-            if (!canvas) return null;
-            Chart.getChart(canvas)?.destroy();
-            const options = this.baseChartOptions();
-            options.scales.y.beginAtZero = zero;
-            return new Chart(canvas, {
-                type: 'line',
-                data: { labels, datasets: [{ label, data, borderColor: color, backgroundColor: rgba, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, tension: 0.25, fill: true }] },
-                options
-            });
-        };
-
-        charts.weight = line('weightCanvas', translate.get('stats.charts.maxWeightLabel'), sessions.map((h: any) => parseFloat(h.max_weight)), 'rgb(237, 115, 52)', 'rgba(237, 115, 52, 0.12)');
-        charts.volume = line('volumeCanvas', translate.get('stats.charts.volumeLabel'), sessions.map((h: any) => parseFloat(h.total_volume)), 'rgb(34, 197, 94)', 'rgba(34, 197, 94, 0.12)', true);
-        charts.reps = line('repsCanvas', translate.get('stats.charts.avgRepsLabel'), sessions.map((h: any) => parseFloat(h.avg_reps)), 'rgb(59, 130, 246)', 'rgba(59, 130, 246, 0.12)');
+        const kind = this.exMetric;
+        const bars = this.exBars(id, kind);
+        if (!bars.length) return;
+        charts.exercise = this.barChart(canvas, bars, this.cssVar('--primary-color', '#ED7334'), n => this.formatBar(kind, n));
     }
 
     // ---- Formatting ----
@@ -300,7 +311,7 @@ class ProgressionPage extends Vue {
     }
 
     beforeUnmount() {
-        [charts.group, charts.weight, charts.volume, charts.reps].forEach(c => c?.destroy());
+        [charts.group, charts.exercise].forEach(c => c?.destroy());
     }
 
     fetchOverview() {
