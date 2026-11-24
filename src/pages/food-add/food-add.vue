@@ -49,6 +49,10 @@
                 <button v-for="c in topCats" :key="c.id" type="button" role="tab" :class="{ on: tab === 'cat:' + c.id }" @click="selectTab('cat:' + c.id)">{{ catName(c) }}</button>
             </nav>
 
+            <!-- In the app the finger drags the tabs side by side; the neighbour tab is a skeleton until it is chosen -->
+            <SwipePager :index="tabIndex" :count="tabKeys.length" :enabled="isApp" @change="onPager">
+                <template #default="{ index }">
+                    <template v-if="index === tabIndex">
             <div v-if="subCats.length" class="fa-subs">
                 <button type="button" :class="{ on: sub === null }" @click="selectSub(null)">{{ $t('foodAdd.allSubs') }}</button>
                 <button v-for="s in subCats" :key="s.id" type="button" :class="{ on: sub === s.id }" @click="selectSub(s.id)">{{ catName(s) }}</button>
@@ -171,6 +175,10 @@
                 </ul>
                 <p v-else-if="!loading" class="muted">{{ tab === 'recipes' ? $t('foodAdd.tpl.emptyRecipes') : $t('foodAdd.tpl.emptyMeals') }}</p>
             </template>
+                    </template>
+                    <skeleton-block v-else :rows="6" height="3.4rem" />
+                </template>
+            </SwipePager>
 
             <!-- Link a scanned barcode to a food the user already has -->
             <div v-if="link" class="fa-backdrop" @click.self="link = null">
