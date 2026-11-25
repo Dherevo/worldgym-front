@@ -12,9 +12,8 @@
             <div class="controls">
                 <div class="control">
                     <span class="control-label">{{ $t('recommendation.place') }}</span>
-                    <div class="toggle">
-                        <button :class="{ selected: location === 'gym' }" @click="location = 'gym'; onFilterChange()">{{ $t('recommendation.gym') }}</button>
-                        <button :class="{ selected: location === 'home' }" @click="location = 'home'; onFilterChange()">{{ $t('recommendation.home') }}</button>
+                    <div class="toggle toggle-places">
+                        <button v-for="p in places" :key="p" :class="{ selected: place === p }" @click="place = p; onFilterChange()">{{ $t('recommendation.places.' + p) }}</button>
                     </div>
                 </div>
                 <div class="control">
@@ -42,7 +41,7 @@
                     <div class="why" v-if="proposal.reasons.length">
                         <div class="why-title">{{ $t('recommendation.why') }}</div>
                         <ul>
-                            <li v-for="r in proposal.reasons" :key="r">{{ $t('recommendation.reasons.' + r) }}</li>
+                            <li v-for="r in proposal.reasons" :key="r">{{ $t('recommendation.reasons.' + r, { groups: (proposal.rested_groups || []).join(', ') }) }}</li>
                         </ul>
                     </div>
 
@@ -63,6 +62,7 @@
                             {{ starting ? $t('recommendation.starting') : $t('recommendation.start') }}
                         </button>
                         <button class="btn-another" :disabled="loading" @click="anotherProposal()">{{ $t('recommendation.another') }}</button>
+                        <button class="btn-another" :disabled="saving || saved || !proposal.exercises.length" @click="saveAsRoutine()">{{ saved ? $t('recommendation.save.saved') : $t('recommendation.save.button') }}</button>
                     </div>
                 </div>
             </template>
@@ -71,16 +71,20 @@
             <section v-if="proposal?.routines?.length" class="reco-routines">
                 <h2>{{ $t('routineTemplates.routines') }}</h2>
                 <p class="reco-routines-sub">{{ $t('routineTemplates.routinesSub') }}</p>
-                <button v-for="r in proposal.routines" :key="r.id" type="button" class="reco-routine" @click="to('/routine-templates/' + r.id)">
-                    <span class="reco-cover">
-                        <exercise-animation v-if="r.cover" class="reco-anim" :exercise="r.cover" />
-                    </span>
-                    <span class="reco-body">
-                        <b>{{ r.name }}</b>
-                        <small>{{ $t('routineTemplates.days', { n: r.days }) }} · {{ $t('routineTemplates.minutes', { n: r.minutes }) }}</small>
-                        <small class="reco-why">{{ routineWhy(r) }}</small>
-                    </span>
-                </button>
+                <div v-for="r in proposal.routines" :key="r.id" class="reco-routine">
+                    <button type="button" class="reco-open" @click="to('/routine-templates/' + r.id)">
+                        <span class="reco-cover">
+                            <exercise-animation v-if="r.cover" class="reco-anim" :exercise="r.cover" />
+                        </span>
+                        <span class="reco-body">
+                            <b>{{ r.name }}</b>
+                            <span class="reco-day">{{ routineDayLabel(r) }}</span>
+                            <small>{{ $t('routineTemplates.exercises', { n: r.exercises }) }} · {{ $t('routineTemplates.minutes', { n: r.minutes }) }}</small>
+                            <small class="reco-why">{{ routineWhy(r) }}</small>
+                        </span>
+                    </button>
+                    <button type="button" class="reco-start" :disabled="starting" @click="startRoutine(r)">{{ $t('routineTemplates.startDay') }}</button>
+                </div>
                 <button type="button" class="btn-link" @click="to('/routine-templates')">{{ $t('routineTemplates.available') }} →</button>
             </section>
 

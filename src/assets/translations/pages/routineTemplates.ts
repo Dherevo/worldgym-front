@@ -23,7 +23,9 @@ export default {
         view: 'Veure rutina',
         available: 'Rutines disponibles',
         noDays: 'Aquesta rutina no té dies.',
-        why: { home: 'Es pot fer a casa.', gym: 'Per al gimnàs.', gentle: 'Suau per a avui.', intense: 'Per a un dia amb energia.', beginner: 'Pensada per començar.' },
+        whyFresh: 'Aquesta setmana encara no has treballat: {{groups}}.',
+        startDay: 'Començar aquest dia',
+        why: { week_empty: 'Aquesta setmana encara no has entrenat: bon moment per començar.', home: 'Es pot fer a casa.', gym: 'Per al gimnàs.', gentle: 'Suau per a avui.', intense: 'Per a un dia amb energia.', beginner: 'Pensada per començar.' },
         tags: { 'home': 'Casa', 'gym': 'Gimnàs', 'low-impact': 'Baix impacte', 'high-impact': 'Alt impacte', 'beginner': 'Principiant', 'intermediate': 'Intermedi', 'full-body': 'Cos sencer', 'joint-friendly': 'Cuida les articulacions', 'cardio': 'Cardio', 'hiit': 'HIIT', 'lower-body': 'Tren inferior', 'glutes': 'Glutis', 'legs': 'Cames', 'core': 'Core', 'abs': 'Abdominals', 'bands': 'Goma elàstica', 'trx': 'TRX', 'mobility': 'Mobilitat', 'stretching': 'Estiraments', 'recovery': 'Recuperació', 'hypertrophy': 'Hipertròfia', 'push-pull-legs': 'Empenta/estirada/cames', 'upper-lower': 'Tors/cames', 'general-fitness': 'Forma general', 'machines': 'Màquines', 'chest': 'Pit', 'triceps': 'Tríceps', 'back': 'Esquena', 'biceps': 'Bíceps', 'shoulders': 'Espatlles', 'arms': 'Braços', 'short': 'Sessió curta', 'dumbbells': 'Manuelles' },
     },
     es: {
@@ -50,7 +52,9 @@ export default {
         view: 'Ver rutina',
         available: 'Rutinas disponibles',
         noDays: 'Esta rutina no tiene días.',
-        why: { home: 'Se puede hacer en casa.', gym: 'Para el gimnasio.', gentle: 'Suave para hoy.', intense: 'Para un día con energía.', beginner: 'Pensada para empezar.' },
+        whyFresh: 'Esta semana todavía no has trabajado: {{groups}}.',
+        startDay: 'Empezar este día',
+        why: { week_empty: 'Esta semana todavía no has entrenado: buen momento para empezar.', home: 'Se puede hacer en casa.', gym: 'Para el gimnasio.', gentle: 'Suave para hoy.', intense: 'Para un día con energía.', beginner: 'Pensada para empezar.' },
         tags: { 'home': 'Casa', 'gym': 'Gimnasio', 'low-impact': 'Bajo impacto', 'high-impact': 'Alto impacto', 'beginner': 'Principiante', 'intermediate': 'Intermedio', 'full-body': 'Cuerpo entero', 'joint-friendly': 'Cuida las articulaciones', 'cardio': 'Cardio', 'hiit': 'HIIT', 'lower-body': 'Tren inferior', 'glutes': 'Glúteos', 'legs': 'Piernas', 'core': 'Core', 'abs': 'Abdominales', 'bands': 'Banda elástica', 'trx': 'TRX', 'mobility': 'Movilidad', 'stretching': 'Estiramientos', 'recovery': 'Recuperación', 'hypertrophy': 'Hipertrofia', 'push-pull-legs': 'Empuje/tirón/piernas', 'upper-lower': 'Torso/piernas', 'general-fitness': 'Forma general', 'machines': 'Máquinas', 'chest': 'Pecho', 'triceps': 'Tríceps', 'back': 'Espalda', 'biceps': 'Bíceps', 'shoulders': 'Hombros', 'arms': 'Brazos', 'short': 'Sesión corta', 'dumbbells': 'Mancuernas' },
     },
     en: {
@@ -77,7 +81,9 @@ export default {
         view: 'View routine',
         available: 'Available routines',
         noDays: 'This routine has no days.',
-        why: { home: 'Can be done at home.', gym: 'For the gym.', gentle: 'Gentle for today.', intense: 'For a day with energy.', beginner: 'Made to get started.' },
+        whyFresh: 'This week you have not trained yet: {{groups}}.',
+        startDay: 'Start this day',
+        why: { week_empty: 'You have not trained yet this week: a good time to start.', home: 'Can be done at home.', gym: 'For the gym.', gentle: 'Gentle for today.', intense: 'For a day with energy.', beginner: 'Made to get started.' },
         tags: { 'home': 'Home', 'gym': 'Gym', 'low-impact': 'Low impact', 'high-impact': 'High impact', 'beginner': 'Beginner', 'intermediate': 'Intermediate', 'full-body': 'Full body', 'joint-friendly': 'Joint friendly', 'cardio': 'Cardio', 'hiit': 'HIIT', 'lower-body': 'Lower body', 'glutes': 'Glutes', 'legs': 'Legs', 'core': 'Core', 'abs': 'Abs', 'bands': 'Bands', 'trx': 'TRX', 'mobility': 'Mobility', 'stretching': 'Stretching', 'recovery': 'Recovery', 'hypertrophy': 'Hypertrophy', 'push-pull-legs': 'Push/pull/legs', 'upper-lower': 'Upper/lower', 'general-fitness': 'General fitness', 'machines': 'Machines', 'chest': 'Chest', 'triceps': 'Triceps', 'back': 'Back', 'biceps': 'Biceps', 'shoulders': 'Shoulders', 'arms': 'Arms', 'short': 'Short', 'dumbbells': 'Dumbbells' },
     },
 };
