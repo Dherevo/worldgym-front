@@ -66,17 +66,6 @@
                     <button class="btn-finish-small" @click="finishWorkout()">{{ $t('workout.header.finish') }}</button>
                 </div>
 
-                <!-- Progress bar (només rutina) -->
-                <div class="progress-bar" v-if="!isFreeWorkout && exercises.length > 0">
-                    <div
-                        class="progress-fill"
-                        :style="{ width: (currentExerciseIdx / exercises.length * 100) + '%' }"
-                    ></div>
-                </div>
-                <div class="progress-label" v-if="!isFreeWorkout">
-                    {{ $t('workout.exerciseProgress', { current: currentExerciseIdx + 1, total: exercises.length }) }}
-                </div>
-
                 <!-- STATE: abs-offer (optional abdominals before closing a routine workout) -->
                 <div v-if="state === 'abs-offer'" class="action-block pick-exercise-block">
                     <p class="action-label">{{ $t('workout.abs.question') }}</p>
@@ -123,39 +112,52 @@
                 <div class="exercise-card" v-if="currentExercise && state !== 'pick-exercise'">
 
                     <!-- Info exercici -->
-                    <exercise-animation class="exercise-gif" :exercise="currentExercise.exercise" />
-                    <a class="exercise-name exercise-link" :href="'/exercise/' + currentExercise.exercise?.id" @click.prevent="to('/exercise/' + currentExercise.exercise?.id)">{{ currentExercise.exercise?.name }}</a>
-                    <div class="exercise-eq" v-if="currentExercise.exercise?.equipment">
-                        {{ currentExercise.exercise.equipment.name }}
+                    <div class="ex-media">
+                        <exercise-animation class="exercise-gif" :exercise="currentExercise.exercise" />
+                        <!-- Progress of the routine: a segment per exercise, over the photo -->
+                        <div class="ex-steps" v-if="!isFreeWorkout && exercises.length > 1">
+                            <span v-for="n in exercises.length" :key="n" class="ex-step" :class="{ done: n - 1 < currentExerciseIdx, current: n - 1 === currentExerciseIdx }"></span>
+                        </div>
+                        <span class="ex-count" v-if="!isFreeWorkout">{{ $t('workout.exerciseProgress', { current: currentExerciseIdx + 1, total: exercises.length }) }}</span>
+                        <button v-if="canPickVariant" type="button" class="ex-variant-chip no-lift" @click="variantOpen = !variantOpen">⚙ {{ currentExercise.variant || $t('workout.variant.usual') }} ▾</button>
+                        <span v-else-if="currentExercise.variant" class="ex-variant-chip">⚙ {{ currentExercise.variant }}</span>
+                    </div>
+
+                    <div class="exercise-title">
+                        <a class="exercise-name exercise-link" :href="'/exercise/' + currentExercise.exercise?.id" @click.prevent="to('/exercise/' + currentExercise.exercise?.id)">{{ currentExercise.exercise?.name }}</a>
+                        <span class="exercise-eq" v-if="currentExercise.exercise?.equipment">({{ currentExercise.exercise.equipment.name }})</span>
                     </div>
 
                     <!-- Variant: how this exercise is done today (comparisons only use the same variant) -->
-                    <div class="variant-row" v-if="canPickVariant">
-                        <span class="variant-label">{{ $t('workout.variant.label') }}</span>
-                        <button type="button" class="variant-chip" :class="{ active: !currentExercise.variant }" @click="setVariant(null)">{{ $t('workout.variant.usual') }}</button>
-                        <button v-for="v in variantOptions" :key="v" type="button" class="variant-chip" :class="{ active: currentExercise.variant === v }" @click="setVariant(v)">{{ v }}</button>
-                        <button v-if="!addingVariant" type="button" class="variant-chip add" @click="addingVariant = true">+ {{ $t('workout.variant.new') }}</button>
+                    <div class="variant-panel" v-if="canPickVariant && variantOpen">
+                        <div class="variant-row">
+                            <span class="variant-label">{{ $t('workout.variant.label') }}</span>
+                            <button type="button" class="variant-chip" :class="{ active: !currentExercise.variant }" @click="setVariant(null); variantOpen = false">{{ $t('workout.variant.usual') }}</button>
+                            <button v-for="v in variantOptions" :key="v" type="button" class="variant-chip" :class="{ active: currentExercise.variant === v }" @click="setVariant(v); variantOpen = false">{{ v }}</button>
+                            <button v-if="!addingVariant" type="button" class="variant-chip add" @click="addingVariant = true">+ {{ $t('workout.variant.new') }}</button>
+                        </div>
+                        <form class="variant-add" v-if="addingVariant" @submit.prevent="addVariant(); variantOpen = false">
+                            <input type="text" maxlength="60" v-model="newVariant" :placeholder="$t('workout.variant.placeholder')" />
+                            <button type="submit" class="variant-chip active">✓</button>
+                            <button type="button" class="variant-chip" @click="addingVariant = false">✕</button>
+                        </form>
                     </div>
-                    <form class="variant-add" v-if="canPickVariant && addingVariant" @submit.prevent="addVariant()">
-                        <input type="text" maxlength="60" v-model="newVariant" :placeholder="$t('workout.variant.placeholder')" />
-                        <button type="submit" class="variant-chip active">✓</button>
-                        <button type="button" class="variant-chip" @click="addingVariant = false">✕</button>
-                    </form>
-                    <div class="variant-current" v-else-if="currentExercise.variant">{{ $t('workout.variant.label') }} {{ currentExercise.variant }}</div>
-                    <div class="set-info" v-if="totalSets > 0 && doneCount < totalSets">
-                        {{ $t('workout.card.setOf', { current: doneCount + 1, total: totalSets }) }}
-                    </div>
-                    <div class="set-info" v-else-if="totalSets > 0 && (state === 'resting' || state === 'choose')">
-                        {{ $t('workout.card.plannedDone') }}
-                    </div>
-                    <div class="set-info" v-else-if="totalSets > 0">
-                        {{ $t('workout.card.extraSet', { current: doneCount + 1 }) }}
-                    </div>
-                    <div class="set-info" v-else>
-                        {{ $t('workout.card.set', { current: doneCount + 1 }) }}
-                    </div>
-                    <div class="target-hint" v-if="targetSet">
-                        {{ $t('workout.card.target') }}: {{ targetSet.reps_target ?? targetSet.reps }} {{ $t('workout.history.reps') }}<template v-if="targetSet.weight > 0"> · {{ targetSet.weight }} kg</template><template v-if="targetRestLabel"> · {{ targetRestLabel }}</template>
+                    <div class="set-line">
+                        <div class="set-info" v-if="totalSets > 0 && doneCount < totalSets">
+                            {{ $t('workout.card.setOf', { current: doneCount + 1, total: totalSets }) }}
+                        </div>
+                        <div class="set-info" v-else-if="totalSets > 0 && (state === 'resting' || state === 'choose')">
+                            {{ $t('workout.card.plannedDone') }}
+                        </div>
+                        <div class="set-info" v-else-if="totalSets > 0">
+                            {{ $t('workout.card.extraSet', { current: doneCount + 1 }) }}
+                        </div>
+                        <div class="set-info" v-else>
+                            {{ $t('workout.card.set', { current: doneCount + 1 }) }}
+                        </div>
+                        <div class="target-hint" v-if="targetSet">
+                            {{ $t('workout.card.target') }}: {{ targetSet.reps_target ?? targetSet.reps }} {{ $t('workout.history.reps') }}<template v-if="targetSet.weight > 0"> · {{ targetSet.weight }} kg</template><template v-if="targetRestLabel"> · {{ targetRestLabel }}</template>
+                        </div>
                     </div>
 
                     <div class="last-time" v-if="lastTimeLabel && (state === 'idle' || state === 'active')">
@@ -163,19 +165,19 @@
                         <div class="last-time-note" v-if="lastTimeNote">💬 {{ lastTimeNote }}</div>
                     </div>
 
-                    <div class="wk-extra" v-if="showGeneralWarmup">
-                        <div class="wk-extra-title">{{ $t('recommendation.workout.warmupTitle') }}</div>
+                    <details class="wk-extra" v-if="showGeneralWarmup" :open="state === 'idle'">
+                        <summary class="wk-extra-title">{{ $t('recommendation.workout.warmupTitle') }}</summary>
                         <div class="wk-extra-text">{{ $t('recommendation.workout.warmupText') }}</div>
                         <button class="wk-extra-btn" @click="markHabit('warmup')">{{ $t('recommendation.workout.warmupMark') }}</button>
-                    </div>
+                    </details>
 
-                    <div class="wk-extra" v-if="warmupSets.length">
-                        <div class="wk-extra-title">{{ $t('recommendation.workout.warmupSets') }}</div>
+                    <details class="wk-extra" v-if="warmupSets.length" :open="state === 'idle'">
+                        <summary class="wk-extra-title">{{ $t('recommendation.workout.warmupSets') }}</summary>
                         <div class="wk-extra-text">{{ $t('recommendation.workout.warmupSetsText') }}</div>
                         <div class="wk-warmup-sets">
                             <span v-for="(w, i) in warmupSets" :key="i" class="wk-pill">{{ w.reps }} × {{ w.weight }} kg</span>
                         </div>
-                    </div>
+                    </details>
 
                     <div class="card-divider"></div>
 
