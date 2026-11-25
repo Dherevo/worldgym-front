@@ -259,6 +259,11 @@
                 <div class="fa-sheet" role="dialog" aria-modal="true">
                     <h2>{{ tplSheet.t.name }}</h2>
                     <p class="muted">{{ tplSheet.t.kcal }} kcal<template v-if="tplSheet.t.kind === 'recipe'"> {{ $t('foodAdd.tpl.perServing') }}</template> · {{ $t('foodAdd.tpl.items', { n: tplSheet.t.items.length }) }}</p>
+                    <!-- How a recipe is made (the shared ones come with their steps) -->
+                    <details class="fa-steps" v-if="tplSheet.t.steps?.length">
+                        <summary>{{ $t('foodAdd.tpl.steps') }}</summary>
+                        <ol><li v-for="(step, i) in tplSheet.t.steps" :key="i">{{ step }}</li></ol>
+                    </details>
                     <label class="fa-field">
                         <span>{{ $t('foodAdd.meal') }}</span>
                         <select v-model="meal">
