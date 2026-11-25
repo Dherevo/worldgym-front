@@ -89,6 +89,7 @@
 
                         <template v-if="repRecords.length">
                             <h3 class="ed-section">{{ $t('exerciseDetail.setRecords.title') }}</h3>
+                            <p class="ed-hint">{{ $t('exerciseDetail.setRecords.hint') }}</p>
                             <table class="ed-table">
                                 <thead><tr><th>{{ $t('exerciseDetail.setRecords.reps') }}</th><th>{{ $t('exerciseDetail.setRecords.best') }}</th></tr></thead>
                                 <tbody>

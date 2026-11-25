@@ -24,7 +24,7 @@ export default {
             maxReps: "Reps màx. (sèrie)",
             sessionReps: "Reps totals (sessió)"
         },
-        setRecords: { title: "Rècords de sèrie", reps: "Reps", best: "Millor marca" }
+        setRecords: { title: "Pes màxim per repeticions", hint: "El pes més alt que has aixecat fent cada nombre de repeticions. Per exemple, 8 reps → 27 kg vol dir que amb 8 repeticions el màxim ha estat 27 kg.", reps: "Reps", best: "Pes màxim" }
     },
     es: {
         loading: "Cargando...",
@@ -51,7 +51,7 @@ export default {
             maxReps: "Reps máx. (serie)",
             sessionReps: "Reps totales (sesión)"
         },
-        setRecords: { title: "Récords de serie", reps: "Reps", best: "Mejor marca" }
+        setRecords: { title: "Peso máximo por repeticiones", hint: "El peso más alto que has levantado haciendo cada número de repeticiones. Por ejemplo, 8 reps → 27 kg significa que con 8 repeticiones tu máximo ha sido 27 kg.", reps: "Reps", best: "Peso máximo" }
     },
     en: {
         loading: "Loading...",
@@ -78,6 +78,6 @@ export default {
             maxReps: "Max reps (set)",
             sessionReps: "Total reps (session)"
         },
-        setRecords: { title: "Set records", reps: "Reps", best: "Best mark" }
+        setRecords: { title: "Max weight by reps", hint: "The heaviest weight you have lifted for each number of reps. For example, 8 reps → 27 kg means your best with 8 reps was 27 kg.", reps: "Reps", best: "Max weight" }
     }
 }

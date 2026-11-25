@@ -198,7 +198,8 @@
         .exercise-card {
             background: var(--surface-color);
             border-radius: 16px;
-            padding: 2rem;
+            --card-pad: 2rem;
+            padding: var(--card-pad);
             text-align: center;
             border: 1px solid var(--border-color);
             display: flex;
@@ -206,10 +207,13 @@
             align-items: center;
             gap: 1.25rem;
 
+            // The animation takes the whole width of the card (it ignores the padding)
             .exercise-gif {
-                width: 80%;
+                width: calc(100% + 2 * var(--card-pad));
+                max-width: none;
+                margin: calc(-1 * var(--card-pad)) calc(-1 * var(--card-pad)) 0;
                 height: auto;
-                border-radius: 12px;
+                border-radius: 15px 15px 0 0;
                 object-fit: contain;
                 background: var(--lottie-bg, #ffffff);
             }
@@ -764,7 +768,7 @@
             gap: 1rem;
 
             .exercise-card {
-                padding: 1.25rem;
+                --card-pad: 1.25rem;
                 gap: 1rem;
 
                 .exercise-name { font-size: 1.3rem; }

@@ -111,6 +111,7 @@
         }
     }
 
+    .ed-hint { margin: 0 0 0.5rem; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4; }
     .ed-section { margin: 1.75rem 0 0.5rem; font-size: 1.1rem; font-weight: 700; color: var(--text-color); }
 
     .ed-records .ed-record {
@@ -135,13 +136,19 @@
     .ed-session {
         display: block;
         width: 100%;
-        margin: 0 0 1.5rem;
-        padding: 0;
+        margin: 0 -0.75rem 1rem;
+        width: calc(100% + 1.5rem);
+        padding: 0.65rem 0.75rem;
         text-align: left;
         background: none;
         border: none;
+        border-radius: 14px;
         color: inherit;
         cursor: pointer;
+        // Soft tint instead of the shadow of every button; the text keeps its air inside
+        @media (hover: hover) { &:hover { transform: none; box-shadow: none; background: color-mix(in srgb, var(--primary-color) 7%, transparent); .ed-chevron { transform: translateX(3px); } } }
+        &:active { transform: none; box-shadow: none; background: color-mix(in srgb, var(--primary-color) 12%, transparent); }
+        .ed-chevron { transition: transform 0.2s ease; }
 
         .ed-session-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
         .ed-session-title { font-weight: 700; font-size: 1.05rem; color: var(--text-color); }
