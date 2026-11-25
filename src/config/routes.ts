@@ -12,6 +12,8 @@ import ProgressPage from '../pages/progress/progress.vue';
 import ExerciseCatalogPage from '../pages/exercise-catalog/exercise-catalog.vue';
 import FoodHistoryWrapPage from '../pages/food-history-wrap/food-history-wrap.vue';
 import RoutineDetailPage from '../pages/routine-detail/routine-detail.vue';
+import RoutineTemplatesPage from '../pages/routine-templates/routine-templates.vue';
+import RoutineTemplateDetailPage from '../pages/routine-template-detail/routine-template-detail.vue';
 import WorkoutDetailPage from '../pages/workout-detail/workout-detail.vue';
 import ExerciseDetailPage from '../pages/exercise-detail/exercise-detail.vue';
 import CalendarPage from '../pages/calendar/calendar.vue';
@@ -70,6 +72,14 @@ const routes : IRoutes = {
         {
             path: '/routines/:id',
             component: RoutineDetailPage
+        },
+        {
+            path: '/routine-templates',
+            component: RoutineTemplatesPage
+        },
+        {
+            path: '/routine-templates/:id',
+            component: RoutineTemplateDetailPage
         },
         {
             path: '/workouts',

@@ -3,6 +3,7 @@ import home from './pages/home';
 import login from './pages/login';
 import exercises from './pages/exercises';
 import routines from './pages/routines';
+import routineTemplates from './pages/routineTemplates';
 import routineDetail from './pages/routineDetail';
 import workouts from './pages/workouts';
 import workoutDetail from './pages/workoutDetail';
@@ -40,6 +41,7 @@ const es = {
     login: login.es,
     exercises: exercises.es,
     routines: routines.es,
+    routineTemplates: routineTemplates.es,
     routineDetail: routineDetail.es,
     workouts: workouts.es,
     workoutDetail: workoutDetail.es,

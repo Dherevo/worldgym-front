@@ -7,7 +7,6 @@ import SwipeRow from "@/components/swipe-row/swipe-row.vue";
 class RoutinesPage extends Vue {
 
     routines: any[] = [];
-    templates: any[] = [];
     cloningId: number | null = null;
     loading = false;
     showForm = false;
@@ -36,9 +35,6 @@ class RoutinesPage extends Vue {
         this.editingRoutine = null;
         this.form = { name: '', description: '', no_weekly_goal: false };
         this.showForm = true;
-        http.get('/routines?only_global=true')
-        .then((res: any) => { this.templates = res.items ?? []; })
-        .catch(() => { this.templates = []; });
     }
 
     openEdit(r: any) {
