@@ -156,7 +156,7 @@
                             {{ $t('workout.card.set', { current: doneCount + 1 }) }}
                         </div>
                         <div class="target-hint" v-if="targetSet">
-                            {{ $t('workout.card.target') }}: {{ targetSet.reps_target ?? targetSet.reps }} {{ isTimed ? 's' : $t('workout.history.reps') }}<template v-if="targetSet.weight > 0 && !isTimed"> · {{ targetSet.weight }} kg</template><template v-if="targetRestLabel"> · {{ targetRestLabel }}</template>
+                            {{ $t('workout.card.target') }}:<template v-if="(targetSet.reps_target ?? targetSet.reps) != null"> {{ targetSet.reps_target ?? targetSet.reps }} {{ isTimed ? 's' : $t('workout.history.reps') }}</template><template v-if="targetSet.weight > 0 && !isTimed"> · {{ targetSet.weight }} kg</template><template v-if="targetRestLabel"> · {{ targetRestLabel }}</template>
                         </div>
                     </div>
 
