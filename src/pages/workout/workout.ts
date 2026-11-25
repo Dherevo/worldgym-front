@@ -11,8 +11,9 @@ import SectionTile from "@/components/section-tile/section-tile.vue";
 type State = 'loading' | 'pick-exercise' | 'idle' | 'active' | 'logging' | 'resting' | 'choose' | 'abs-offer' | 'done';
 
 import SearchInput from "@/components/search-input/search-input.vue";
+import SwipeRow from "@/components/swipe-row/swipe-row.vue";
 import ExerciseAnimation from "@/components/exercise-animation/exercise-animation.vue";
-@Component({ components: { ExerciseAnimation, SectionTile, SearchInput } })
+@Component({ components: { ExerciseAnimation, SectionTile, SearchInput, SwipeRow } })
 class WorkoutPage extends Vue {
 
     workout: any = null;

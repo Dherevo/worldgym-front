@@ -194,7 +194,7 @@
                                 </div>
                             </SectionTile>
                             <div class="idle-links" v-if="canFinishEarly">
-                                <button class="link-btn" @click="finishExerciseEarly()">{{ $t('workout.finishEarly', { done: doneCount }) }}</button>
+                                <button class="btn-finish" @click="finishExerciseEarly()">{{ $t('workout.finishEarly', { done: doneCount }) }}</button>
                             </div>
                             <div class="idle-links" v-if="canAdd">
                                 <button v-if="canReshuffle" class="link-btn danger" @click="skipExercise()">{{ $t('workout.skip.button') }}</button>
@@ -281,7 +281,7 @@
                         </div>
                         <button class="btn-action skip" @click="skipRest()">{{ $t('workout.rest.skip') }}</button>
                         <div class="idle-links" v-if="canFinishEarly">
-                            <button class="link-btn" @click="finishExerciseEarly()">{{ $t('workout.finishEarly', { done: doneCount }) }}</button>
+                            <button class="btn-finish" @click="finishExerciseEarly()">{{ $t('workout.finishEarly', { done: doneCount }) }}</button>
                         </div>
                     </template>
 
@@ -340,23 +340,20 @@
                             <button v-else-if="canReshuffle" class="progress-ex-go" @click="startWith(exIdx)">{{ $t('workout.plan.startWith') }}</button>
                         </div>
 
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>{{ $t('workout.progress.reps') }}</th>
-                                    <th>{{ $t('workout.progress.weight') }}</th>
-                                    <th>{{ $t('workout.progress.notes') }}</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                        <div class="sets-table">
+                            <div class="set-row set-head">
+                            <span>#</span>
+                            <span>{{ $t('workout.progress.reps') }}</span>
+                            <span>{{ $t('workout.progress.weight') }}</span>
+                            <span>{{ $t('workout.progress.notes') }}</span>
+                        </div>
+                            
 
                                 <!-- Exercici passat o actual: sèries fetes, editables i eliminables -->
                                 <template v-if="exIdx <= currentExerciseIdx">
                                     <template v-for="(s, i) in setRows(exIdx)" :key="'done-' + (s.id ?? i)">
-                                    <tr v-if="editing?.set === s" class="set-row-editing">
-                                        <td colspan="5" class="edit-form-cell">
+                                    <div v-if="editing?.set === s" class="set-row set-row-editing">
+                                        <div class="edit-form-cell">
                                             <div class="edit-form-title">{{ $t('workout.editSet.title', { n: s.set_number ?? i + 1 }) }}</div>
                                             <div class="edit-grid">
                                                 <label>{{ $t('workout.progress.reps') }}<input type="number" inputmode="numeric" v-model.number="editing.reps" min="1" class="cell-input" /></label>
@@ -373,23 +370,21 @@
                                                 <button type="button" class="edit-btn" :disabled="savingEdit" @click="closeEdit()">{{ $t('workout.editSet.cancel') }}</button>
                                                 <button type="button" class="edit-btn primary" :disabled="savingEdit" @click="saveEdit()">{{ $t('workout.editSet.save') }}</button>
                                             </div>
-                                        </td>
-                                    </tr>
-                                    <tr v-else class="set-row-done">
-                                        <td>{{ s.set_number ?? i + 1 }}</td>
-                                        <td>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, prevFor(i, setRows(exIdx), ex.exercise?.id, ex.variant)?.reps) }}</small></td>
-                                        <td>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || prevFor(i, setRows(exIdx), ex.exercise?.id, ex.variant)?.weight > 0">{{ compareText(s.weight, prevFor(i, setRows(exIdx), ex.exercise?.id, ex.variant)?.weight, ' kg') }}</small></td>
-                                        <td class="note-cell" @click="openNote($event, s.notes)">{{ s.notes || '—' }}</td>
-                                        <td class="edit-cell">
-                                            <button class="set-edit-btn" :title="$t('workout.editSet.edit')" @click="openEdit(exIdx, s)">✎</button>
-                                            <button class="set-edit-btn danger" :title="$t('workout.editSet.remove')" :disabled="savingEdit" @click="deleteSet(exIdx, s)">✕</button>
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </div>
+                                    <SwipeRow v-else @edit="openEdit(exIdx, s)" @delete="deleteSet(exIdx, s)">
+                                        <div class="set-row set-row-done">
+                                        <span>{{ s.set_number ?? i + 1 }}</span>
+                                        <span>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, prevFor(i, setRows(exIdx), ex.exercise?.id, ex.variant)?.reps) }}</small></span>
+                                        <span>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || prevFor(i, setRows(exIdx), ex.exercise?.id, ex.variant)?.weight > 0">{{ compareText(s.weight, prevFor(i, setRows(exIdx), ex.exercise?.id, ex.variant)?.weight, ' kg') }}</small></span>
+                                        <span class="note-cell" @click="openNote($event, s.notes)">{{ s.notes || '—' }}</span>
+                                    </div>
+                                    </SwipeRow>
                                     </template>
 
                                     <!-- Sèrie nova (afegida a mà) -->
-                                    <tr v-if="editing?.isNew && editing.exIdx === exIdx" class="set-row-editing">
-                                        <td colspan="5" class="edit-form-cell">
+                                    <div v-if="editing?.isNew && editing.exIdx === exIdx" class="set-row set-row-editing">
+                                        <div class="edit-form-cell">
                                             <div class="edit-form-title">{{ $t('workout.editSet.title', { n: setRows(exIdx).length + 1 }) }}</div>
                                             <div class="edit-grid">
                                                 <label>{{ $t('workout.progress.reps') }}<input type="number" inputmode="numeric" v-model.number="editing.reps" min="1" class="cell-input" /></label>
@@ -406,64 +401,61 @@
                                                 <button type="button" class="edit-btn" :disabled="savingEdit" @click="closeEdit()">{{ $t('workout.editSet.cancel') }}</button>
                                                 <button type="button" class="edit-btn primary" :disabled="savingEdit" @click="saveEdit()">{{ $t('workout.editSet.save') }}</button>
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </div>
 
                                     <!-- Exercici actual: fila live i sèries pendents -->
                                     <template v-if="exIdx === currentExerciseIdx">
-                                        <tr v-if="state === 'logging'" class="set-row-live">
-                                            <td>{{ doneCount + 1 }}</td>
-                                            <td>{{ logReps }} <small class="cmp">{{ compareText(logReps, prevFor(doneCount, loggedSets)?.reps) }}</small></td>
-                                            <td>{{ isBodyweight ? $t('workout.log.bodyweightShort') : (logWeight + ' kg') }} <small class="cmp" v-if="!isBodyweight">{{ compareText(logWeight, prevFor(doneCount, loggedSets)?.weight, ' kg') }}</small></td>
-                                            <td>{{ logNotes || '—' }}</td>
-                                            <td></td>
-                                        </tr>
+                                        <div v-if="state === 'logging'" class="set-row set-row-live">
+                                            <span>{{ doneCount + 1 }}</span>
+                                            <span>{{ logReps }} <small class="cmp">{{ compareText(logReps, prevFor(doneCount, loggedSets)?.reps) }}</small></span>
+                                            <span>{{ isBodyweight ? $t('workout.log.bodyweightShort') : (logWeight + ' kg') }} <small class="cmp" v-if="!isBodyweight">{{ compareText(logWeight, prevFor(doneCount, loggedSets)?.weight, ' kg') }}</small></span>
+                                            <span>{{ logNotes || '—' }}</span>
+                                        </div>
 
                                         <template v-if="totalSets > 0">
-                                            <tr
+                                            <div
                                                 v-for="(s, i) in currentExercise.sets.slice(doneCount + (state === 'logging' ? 1 : 0))"
                                                 :key="'pend-' + i"
-                                                class="set-row-pending"
+                                                class="set-row set-row-pending"
                                             >
-                                                <td>{{ doneCount + (state === 'logging' ? 1 : 0) + i + 1 }}</td>
-                                                <td><span class="plan-val">{{ s.reps_target ?? s.reps }}</span></td>
-                                                <td><span class="plan-val">{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</span></td>
-                                                <td><span class="plan-val">—</span></td>
-                                                <td></td>
-                                            </tr>
+                                                <span>{{ doneCount + (state === 'logging' ? 1 : 0) + i + 1 }}</span>
+                                                <span><span class="plan-val">{{ s.reps_target ?? s.reps }}</span></span>
+                                                <span><span class="plan-val">{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</span></span>
+                                                <span><span class="plan-val">—</span></span>
+                                            </div>
                                         </template>
 
-                                        <tr v-if="loggedSets.length === 0 && state !== 'logging' && totalSets <= 0" class="set-row-empty">
-                                            <td colspan="5">{{ $t('workout.progress.noSetsYet') }}</td>
-                                        </tr>
+                                        <div v-if="loggedSets.length === 0 && state !== 'logging' && totalSets <= 0" class="set-row set-row-empty">
+                                            <div class="span-all">{{ $t('workout.progress.noSetsYet') }}</div>
+                                        </div>
                                     </template>
-                                    <tr v-else-if="!setRows(exIdx).length && !editing?.isNew" class="set-row-empty">
-                                        <td colspan="5">{{ $t('workout.progress.noSetsLogged') }}</td>
-                                    </tr>
+                                    <div v-else-if="!setRows(exIdx).length && !editing?.isNew" class="set-row set-row-empty">
+                                        <div class="span-all">{{ $t('workout.progress.noSetsLogged') }}</div>
+                                    </div>
 
-                                    <tr v-if="canAddSet(exIdx) && !editing?.isNew" class="set-row-add">
-                                        <td colspan="5"><button type="button" class="add-set-btn" @click="openAddSet(exIdx)">+ {{ $t('workout.editSet.add') }}</button></td>
-                                    </tr>
+                                    <div v-if="canAddSet(exIdx) && !editing?.isNew" class="set-row set-row-add">
+                                        <div class="span-all"><button type="button" class="add-set-btn" @click="openAddSet(exIdx)">+ {{ $t('workout.editSet.add') }}</button></div>
+                                    </div>
                                 </template>
 
                                 <!-- Exercici futur: mostrar pla si en té -->
                                 <template v-else>
                                     <template v-if="ex.sets && ex.sets.length > 0">
-                                        <tr v-for="(s, i) in ex.sets" :key="s.id ?? i" class="set-row-future">
-                                            <td>{{ i + 1 }}</td>
-                                            <td><span class="plan-val">{{ s.reps_target ?? s.reps }}</span></td>
-                                            <td><span class="plan-val">{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</span></td>
-                                            <td><span class="plan-val">—</span></td>
-                                            <td></td>
-                                        </tr>
+                                        <div v-for="(s, i) in ex.sets" :key="s.id ?? i" class="set-row set-row-future">
+                                            <span>{{ i + 1 }}</span>
+                                            <span><span class="plan-val">{{ s.reps_target ?? s.reps }}</span></span>
+                                            <span><span class="plan-val">{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</span></span>
+                                            <span><span class="plan-val">—</span></span>
+                                        </div>
                                     </template>
-                                    <tr v-else class="set-row-empty">
-                                        <td colspan="5">{{ $t('workout.progress.pending') }}</td>
-                                    </tr>
+                                    <div v-else class="set-row set-row-empty">
+                                        <div class="span-all">{{ $t('workout.progress.pending') }}</div>
+                                    </div>
                                 </template>
 
-                            </tbody>
-                        </table>
+                            
+                        </div>
                     </div>
                 </div>
 
