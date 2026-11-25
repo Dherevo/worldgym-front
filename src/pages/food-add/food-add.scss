@@ -16,6 +16,9 @@
         background: var(--surface-color); color: inherit; font-size: 1rem;
     }
 
+    // The dropdown of a select is drawn by the system: its options must not inherit the blue of the meal title
+    select option { background: var(--surface-color); color: var(--text-color); }
+
     .btn { background: var(--primary-color); color: #fff; border: none; border-radius: 10px; padding: 0.55rem 1rem; font-weight: 600; cursor: pointer; &:disabled { opacity: 0.5; cursor: default; } }
     .btn-link { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0.5rem; }
 
@@ -132,6 +135,21 @@
         border: 1px solid var(--border-color); border-radius: 12px; padding: 0.6rem 0.9rem; background: var(--surface-2);
         summary { cursor: pointer; font-weight: 700; font-size: 0.9rem; color: var(--primary-color); }
         ol { margin: 0.6rem 0 0.2rem; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.45; color: var(--text-color); li + li { margin-top: 0.4rem; } }
+    }
+    .fa-tplseg { max-width: 22rem; }
+    .fa-tplmacros {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; text-align: center; padding: 0.5rem 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+        b { display: block; font-size: 1.05rem; small { font-size: 0.8rem; font-weight: 500; } }
+        > div > small { color: var(--text-muted); font-size: 0.72rem; display: block; }
+        .protein b { color: var(--macro-protein); } .carbs b { color: var(--macro-carbs); } .fat b { color: var(--macro-fat); }
+    }
+    .fa-ingredients {
+        summary small { font-weight: 500; color: var(--text-muted); }
+        ul { list-style: none; margin: 0.5rem 0 0.1rem; padding: 0; }
+        li { display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem; padding: 0.4rem 0; border-top: 1px solid var(--border-color); font-size: 0.9rem; &:first-child { border-top: none; } }
+        .fa-ing-name { min-width: 0; small { color: var(--text-muted); } }
+        b { flex: none; font-weight: 600; white-space: nowrap; }
+        .fa-ing-total { font-weight: 700; border-top: 2px solid var(--border-color); .fa-ing-name { color: var(--text-secondary); font-weight: 500; } b { color: var(--primary-color); } }
     }
     .fa-sheet-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.6rem; }
     .fa-danger { color: var(--primary-color); margin-right: auto; }

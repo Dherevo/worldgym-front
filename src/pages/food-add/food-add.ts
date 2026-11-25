@@ -94,6 +94,9 @@ class FoodAddPage extends Vue {
 
     // Meals and recipes
     templates: any[] = [];
+    // Of the user's own or the ones that come with WorldGym; if the user has none of their own it opens on the shared ones (once)
+    tplSub: 'mine' | 'shared' = 'mine';
+    tplSubTouched = false;
     // Meals and recipes (own and shared) that match what is typed on "all foods"
     tplMatches: any[] = [];
     tplToken = 0;
@@ -173,6 +176,15 @@ class FoodAddPage extends Vue {
         this.tplMatches = [];
         if (tab === 'all') this.loadTplMatches();
         this.sub = null;
+        this.tplSub = 'mine';
+        this.tplSubTouched = false;
+        this.reload();
+    }
+
+    selectTplSub(s: 'mine' | 'shared') {
+        this.tplSubTouched = true;
+        if (s === this.tplSub) return;
+        this.tplSub = s;
         this.reload();
     }
 
@@ -693,11 +705,23 @@ class FoodAddPage extends Vue {
         this.request += 1;
         const id = this.request;
         this.loading = true;
-        const data: any = { kind: this.tab === 'meals' ? 'meal' : 'recipe' };
+        const data: any = { kind: this.tab === 'meals' ? 'meal' : 'recipe', scope: this.tplSub === 'shared' ? 'shared' : 'mine' };
         if (this.query.trim()) data.q = this.query.trim();
+        const sub = this.tplSub;
 
         http.get('/meal-templates').data(data)
-        .then((res: any) => { if (id === this.request) this.templates = res.items ?? []; })
+        .then((res: any) => {
+            if (id !== this.request) return;
+            // The ones the user shared (an administrator) are with the shared ones
+            const items: any[] = res.items ?? [];
+            this.templates = sub === 'mine' ? items.filter(t => !t.shared) : items;
+            // Nothing of their own and not looking for anything: show what WorldGym brings
+            if (sub === 'mine' && !this.templates.length && !this.tplSubTouched && !data.q) {
+                this.tplSubTouched = true;
+                this.tplSub = 'shared';
+                this.loadTemplates();
+            }
+        })
         .catch(() => { if (id === this.request) App.notification(translate.get('foodAdd.errors.tplLoad')).setType('error').show(); })
         .finally(() => { if (id === this.request) this.loading = false; });
     }
@@ -720,6 +744,30 @@ class FoodAddPage extends Vue {
             .then(() => { App.notification(translate.get('foodAdd.tpl.shareDone')).show(); this.reload(); })
             .catch(() => App.notification(translate.get('foodAdd.share.error')).setType('error').show());
         });
+    }
+
+    get tplEmpty(): string {
+        if (this.tplSub === 'shared') return translate.get('foodAdd.tpl.emptyShared');
+        return translate.get(this.tab === 'recipes' ? 'foodAdd.tpl.emptyRecipes' : 'foodAdd.tpl.emptyMeals');
+    }
+
+    // "522 kcal per ració" (a recipe is per serving; a meal is the whole)
+    kcalLabel(t: any): string {
+        return `${t.kcal} kcal` + (t.kind === 'recipe' ? ` ${translate.get('foodAdd.tpl.perServing')}` : '');
+    }
+
+    // Protein, carbs and fat of a serving (of the meal); null where no food of it knows the value
+    tplMacros(t: any): { key: string; grams: number | null }[] {
+        return [
+            { key: 'protein', grams: t.protein_g ?? null },
+            { key: 'carbs', grams: t.carbs_g ?? null },
+            { key: 'fat', grams: t.fat_g ?? null },
+        ];
+    }
+
+    // Kcal of all the ingredients (what is divided among the servings)
+    tplTotalKcal(t: any): number {
+        return t.items.reduce((sum: number, i: any) => sum + (i.kcal || 0), 0);
     }
 
     openTplSheet(t: any) {
@@ -826,6 +874,8 @@ class FoodAddPage extends Vue {
             this.builder = null;
             App.notification(translate.get('foodAdd.tpl.saved')).show();
             this.tab = body.kind === 'recipe' ? 'recipes' : 'meals';
+            this.tplSub = 'mine';
+            this.tplSubTouched = true;
             this.reload();
         })
         .catch((e: any) => {
