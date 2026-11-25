@@ -128,6 +128,7 @@ class WorkoutPage extends Vue {
 
     // "45 s" for a held exercise, the plain number for the others
     repsText(exercise: any, n: any): string {
+        if (n === null || n === undefined || n === '') return '—';
         return exercise?.is_timed ? `${n} s` : String(n);
     }
 
