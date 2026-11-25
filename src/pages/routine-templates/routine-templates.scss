@@ -21,11 +21,11 @@
         background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px;
     }
     .rt-cover {
-        position: relative; width: 100%; aspect-ratio: 16 / 10; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        width: 100%; min-height: 10rem; display: flex; align-items: center; justify-content: center; overflow: hidden;
         background: var(--lottie-bg, #ffffff); color: var(--text-muted);
         > svg { width: 2.4rem; height: 2.4rem; }
-        // The animation (or the image) takes the height of the cover and keeps its shape
-        .rt-anim { position: absolute; inset: 0; margin: auto; height: 100%; width: auto; max-width: 100%; object-fit: contain; }
+        // As in the workout: the animation takes the width (its shape gives the height), up to a limit
+        .rt-anim { display: block; width: 100%; max-height: 14rem; margin: 0 auto; object-fit: contain; }
     }
     .rt-body { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.9rem 1rem 1rem; }
     .rt-body h3 { margin: 0; font-size: 1.05rem; line-height: 1.25; }

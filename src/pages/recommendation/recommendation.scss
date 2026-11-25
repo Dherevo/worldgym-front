@@ -134,7 +134,7 @@
         .reco-cover {
             flex: none; width: 4.5rem; height: 4.5rem; border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center;
             background: var(--lottie-bg, #fff);
-            .reco-anim { height: 100%; width: auto; max-width: 100%; object-fit: contain; }
+            .reco-anim { display: block; width: 100%; height: 100%; object-fit: contain; }
         }
         .reco-body { min-width: 0; display: flex; flex-direction: column; gap: 0.15rem; small { color: var(--text-muted); } .reco-why { color: var(--primary-color); font-weight: 600; } }
         .btn-link { align-self: flex-start; background: none; border: none; color: var(--primary-color); font-weight: 600; padding: 0.4rem 0; cursor: pointer; }

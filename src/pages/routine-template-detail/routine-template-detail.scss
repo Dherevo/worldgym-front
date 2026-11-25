@@ -1,9 +1,9 @@
 .stats-page.rtd-view {
     .rtd-hero {
         display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 16px; border: 1px solid var(--border-color);
-        background: var(--lottie-bg, #ffffff); height: min(40vh, 18rem);
-        // The animation takes the height of the box and keeps its shape
-        .rtd-anim { height: 100%; width: auto; max-width: 100%; object-fit: contain; }
+        background: var(--lottie-bg, #ffffff); min-height: 10rem;
+        // As in the workout: the animation takes the width (its shape gives the height), up to a limit
+        .rtd-anim { display: block; width: 100%; max-height: min(40vh, 18rem); margin: 0 auto; object-fit: contain; }
     }
     .rtd-desc { margin: 0; color: var(--text-secondary); line-height: 1.5; }
     .rtd-meta { display: flex; flex-wrap: wrap; gap: 0.2rem 1rem; font-size: 0.9rem; font-weight: 600; }
