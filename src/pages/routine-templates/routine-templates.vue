@@ -25,7 +25,7 @@
                         <span v-if="reasonsOf(r)" class="rt-badge">{{ $t('routineTemplates.forToday') }}</span>
                         <h3>{{ r.name }}</h3>
                         <p v-if="r.description" class="rt-desc">{{ r.description }}</p>
-                        <p v-if="reasonsOf(r)" class="rt-why">{{ reasonsOf(r) }}</p>
+                        <p v-if="reasonsOf(r)" class="rt-why">{{ dayOf(r) }}<template v-if="dayOf(r)"> · </template>{{ reasonsOf(r) }}</p>
                         <div class="rt-meta">
                             <span>{{ $t('routineTemplates.days', { n: r.days }) }}</span>
                             <span>{{ $t('routineTemplates.exercises', { n: r.exercises }) }}</span>

@@ -1,6 +1,7 @@
 import { Component, Vue, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
+import { routineWhy, routineDayLabel } from "@/modules/routineWhy";
 import BackButton from "@/components/back-button/back-button.vue";
 import ExerciseAnimation from "@/components/exercise-animation/exercise-animation.vue";
 
@@ -12,7 +13,7 @@ class RoutineTemplatesPage extends Vue {
     readonly filterTags = ['home', 'gym', 'low-impact', 'beginner', 'intermediate'];
 
     items: any[] = [];
-    recommended: { id: number; reasons: string[] }[] = [];
+    recommended: any[] = [];
     loading = true;
     filter = '';
     // The animation of a card starts when it comes into view: 18 at once would be heavy
@@ -49,11 +50,16 @@ class RoutineTemplatesPage extends Vue {
             .sort((a, b) => rank(a.id) - rank(b.id) || a.id - b.id);
     }
 
-    // The first reason that makes it fit today, as a sentence; '' when it is not one of the recommended
+    // Why it fits today, as a sentence; '' when it is not one of the recommended
     reasonsOf(r: any): string {
         const rec = this.recommended.find(x => x.id === r.id);
-        const why = rec?.reasons.find(k => k === 'gentle' || k === 'intense' || k === 'beginner') ?? rec?.reasons[0];
-        return rec && why ? translate.get(`routineTemplates.why.${why}`) : '';
+        return rec ? routineWhy(rec) : '';
+    }
+
+    // Which day of it comes today (the muscles not trained this week), '' when it is not one of the recommended
+    dayOf(r: any): string {
+        const rec = this.recommended.find(x => x.id === r.id);
+        return rec ? routineDayLabel(rec) : '';
     }
 
     watchCovers() {
