@@ -1,0 +1,43 @@
+.stats-page.rt-view {
+    .rt-sub { margin: 0; color: var(--text-secondary); font-size: 0.95rem; }
+
+    // Filters: a strip that scrolls sideways
+    .rt-filters {
+        display: flex; gap: 0.4rem; overflow-x: auto; scrollbar-width: none; margin: 0 -1rem; padding: 0 1rem;
+        &::-webkit-scrollbar { display: none; }
+        button {
+            flex: none; border: 1px solid var(--border-color); background: var(--surface-2); color: var(--text-secondary);
+            border-radius: 999px; padding: 0.35rem 0.9rem; font-size: 0.88rem; cursor: pointer; white-space: nowrap;
+            &.on { background: var(--primary-color); border-color: var(--primary-color); color: #fff; font-weight: 700; }
+        }
+    }
+
+    .rt-empty { color: var(--text-secondary); margin: 0; }
+
+    .rt-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; @media (min-width: 720px) { grid-template-columns: 1fr 1fr; } }
+
+    .rt-card {
+        display: flex; flex-direction: column; text-align: left; padding: 0; overflow: hidden; cursor: pointer; color: inherit;
+        background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px;
+    }
+    .rt-cover {
+        position: relative; width: 100%; aspect-ratio: 16 / 10; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        background: var(--lottie-bg, #ffffff); color: var(--text-muted);
+        > svg { width: 2.4rem; height: 2.4rem; }
+        // The animation (or the image) takes the height of the cover and keeps its shape
+        .rt-anim { height: 100%; width: auto; max-width: 100%; object-fit: contain; }
+    }
+    .rt-body { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.9rem 1rem 1rem; }
+    .rt-body h3 { margin: 0; font-size: 1.05rem; line-height: 1.25; }
+    .rt-badge {
+        align-self: flex-start; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+        color: var(--primary-color); background: var(--tint-blue-bg, var(--surface-3)); border-radius: 999px; padding: 0.15rem 0.6rem;
+    }
+    .rt-desc {
+        margin: 0; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.4;
+        display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .rt-why { margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--primary-color); }
+    .rt-meta { display: flex; flex-wrap: wrap; gap: 0.2rem 0.8rem; font-size: 0.82rem; color: var(--text-muted); }
+    .rt-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; span { font-size: 0.74rem; padding: 0.15rem 0.55rem; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border-subtle, var(--border-color)); color: var(--text-secondary); } }
+}

@@ -3,9 +3,14 @@
 
             <div class="page-header">
                 <h1>{{ $t('routines.title') }}</h1>
-                <button class="btn-primary" @click="openCreate()">
-                    {{ $t('routines.newRoutine') }}
-                </button>
+                <div class="header-actions">
+                    <button class="btn-secondary" @click="to('/routine-templates')">
+                        {{ $t('routines.available') }}
+                    </button>
+                    <button class="btn-primary" @click="openCreate()">
+                        {{ $t('routines.newRoutine') }}
+                    </button>
+                </div>
             </div>
 
             <div v-if="loading" class="loading-text">{{ $t('routines.loading') }}</div>
@@ -54,19 +59,6 @@
                         <input type="checkbox" v-model="form.no_weekly_goal" />
                         <span>{{ $t('routines.form.noWeeklyGoal') }}<small>{{ $t('routines.form.noWeeklyGoalHint') }}</small></span>
                     </label>
-
-                    <div class="form-templates" v-if="!editingRoutine && templates.length">
-                        <div class="form-templates-title">{{ $t('routines.form.fromTemplate') }}</div>
-                        <div v-for="t in templates" :key="t.id" class="form-template">
-                            <div>
-                                <div class="routine-name">{{ t.name }}</div>
-                                <div class="routine-desc" v-if="t.description">{{ t.description }}</div>
-                            </div>
-                            <button type="button" class="use-template" @click="cloneRoutine(t)" :disabled="cloningId === t.id">
-                                {{ cloningId === t.id ? $t('routines.cloning') : $t('routines.useTemplate') }}
-                            </button>
-                        </div>
-                    </div>
 
                     <div class="form-actions">
                         <button class="btn-cancel" @click="showForm = false">{{ $t('routines.form.cancel') }}</button>

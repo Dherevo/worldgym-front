@@ -67,6 +67,23 @@
                 </div>
             </template>
 
+            <!-- Ready-made routines that fit the same day and place -->
+            <section v-if="proposal?.routines?.length" class="reco-routines">
+                <h2>{{ $t('routineTemplates.routines') }}</h2>
+                <p class="reco-routines-sub">{{ $t('routineTemplates.routinesSub') }}</p>
+                <button v-for="r in proposal.routines" :key="r.id" type="button" class="reco-routine" @click="to('/routine-templates/' + r.id)">
+                    <span class="reco-cover">
+                        <exercise-animation v-if="r.cover" class="reco-anim" :exercise="r.cover" />
+                    </span>
+                    <span class="reco-body">
+                        <b>{{ r.name }}</b>
+                        <small>{{ $t('routineTemplates.days', { n: r.days }) }} · {{ $t('routineTemplates.minutes', { n: r.minutes }) }}</small>
+                        <small class="reco-why">{{ routineWhy(r) }}</small>
+                    </span>
+                </button>
+                <button type="button" class="btn-link" @click="to('/routine-templates')">{{ $t('routineTemplates.available') }} →</button>
+            </section>
+
             <p class="note">{{ $t('recommendation.note') }}</p>
         </div>
     </AppPage>

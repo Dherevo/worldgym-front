@@ -3,6 +3,7 @@ import home from './pages/home';
 import login from './pages/login';
 import exercises from './pages/exercises';
 import routines from './pages/routines';
+import routineTemplates from './pages/routineTemplates';
 import routineDetail from './pages/routineDetail';
 import workouts from './pages/workouts';
 import workoutDetail from './pages/workoutDetail';
@@ -40,6 +41,7 @@ const ca = {
     login: login.ca,
     exercises: exercises.ca,
     routines: routines.ca,
+    routineTemplates: routineTemplates.ca,
     routineDetail: routineDetail.ca,
     workouts: workouts.ca,
     workoutDetail: workoutDetail.ca,

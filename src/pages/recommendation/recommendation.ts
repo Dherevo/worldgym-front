@@ -47,6 +47,12 @@ class RecommendationPage extends Vue {
         this.fetchProposal();
     }
 
+    // Why a ready-made routine fits today: the most telling reason as a sentence
+    routineWhy(r: any): string {
+        const why = r.reasons.find((k: string) => k === 'gentle' || k === 'intense' || k === 'beginner') ?? r.reasons[0];
+        return why ? translate.get(`routineTemplates.why.${why}`) : '';
+    }
+
     start() {
         if (!this.proposal?.exercises?.length || this.starting) return;
         this.starting = true;
