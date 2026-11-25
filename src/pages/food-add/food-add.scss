@@ -136,7 +136,7 @@
         summary { cursor: pointer; font-weight: 700; font-size: 0.9rem; color: var(--primary-color); }
         ol { margin: 0.6rem 0 0.2rem; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.45; color: var(--text-color); li + li { margin-top: 0.4rem; } }
     }
-    .fa-tplseg { max-width: 22rem; }
+    .fa-tplseg { max-width: 22rem; margin-bottom: 0.8rem; }
     .fa-tplmacros {
         display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; text-align: center; padding: 0.5rem 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
         b { display: block; font-size: 1.05rem; small { font-size: 0.8rem; font-weight: 500; } }
