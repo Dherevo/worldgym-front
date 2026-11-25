@@ -77,7 +77,8 @@ html { --ion-font-family: var(--font-body); }
 .modal-overlay { animation: fade-in 0.2s ease-out backwards; }
 .modal-overlay > .modal { animation: modal-in 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.1) backwards; }
 
-// Buttons: smooth hover, press feedback
+// Buttons: smooth hover, press feedback. Tabs (underline, no box) and anything with `.no-lift` get neither lift nor shadow:
+// a shadow on a button with no background is just a rectangle
 button,
 [class*="btn-"]:not(.btn-content),
 .tab-bar-item {
@@ -85,14 +86,14 @@ button,
 }
 
 @media (hover: hover) {
-    button:not(:disabled):hover,
+    button:not(:disabled):not([role="tab"]):not(.tab):not(.no-lift):hover,
     [class*="btn-"]:not(.btn-content):not(:disabled):hover {
         transform: translateY(-1px);
         box-shadow: var(--shadow-md);
     }
 }
 
-button:not(:disabled):active,
+button:not(:disabled):not([role="tab"]):not(.tab):not(.no-lift):active,
 [class*="btn-"]:not(.btn-content):not(:disabled):active,
 .tab-bar-item:active {
     transform: scale(0.96);
