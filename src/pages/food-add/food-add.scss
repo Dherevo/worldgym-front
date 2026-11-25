@@ -128,6 +128,11 @@
         .eaten { background: var(--fa-color); transition: width 0.3s ease; }
         .add { background: var(--fa-color); opacity: 0.45; transition: width 0.3s ease; }
     }
+    .fa-steps {
+        border: 1px solid var(--border-color); border-radius: 12px; padding: 0.6rem 0.9rem; background: var(--surface-2);
+        summary { cursor: pointer; font-weight: 700; font-size: 0.9rem; color: var(--primary-color); }
+        ol { margin: 0.6rem 0 0.2rem; padding-left: 1.2rem; font-size: 0.9rem; line-height: 1.45; color: var(--text-color); li + li { margin-top: 0.4rem; } }
+    }
     .fa-sheet-actions { display: flex; justify-content: flex-end; align-items: center; gap: 0.6rem; }
     .fa-danger { color: var(--primary-color); margin-right: auto; }
     .fa-items {
