@@ -69,6 +69,7 @@ class WorkoutPage extends Vue {
     // Ways the current exercise has been done before (Smith machine, free barbell...) and the form to add a new one
     variantOptions: string[] = [];
     addingVariant = false;
+    variantOpen = false;
     newVariant = '';
     lastSetRef: { weId: number; id: number } | null = null;
     pendingRest: { weId: number; id: number; taken: number } | null = null;
@@ -535,6 +536,7 @@ class WorkoutPage extends Vue {
         const exerciseId = this.currentExercise?.exercise?.id;
         this.variantOptions = [];
         this.addingVariant = false;
+        this.variantOpen = false;
         this.newVariant = '';
         if (!exerciseId) return;
         http.get(`/stats/exercises/${exerciseId}/variants`)
