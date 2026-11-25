@@ -122,8 +122,14 @@ class ExerciseDetailPage extends Vue {
         return text.split(/(?<=[.!?])\s+/).map(l => l.trim()).filter(Boolean);
     }
 
+    // Held exercise (plank): the "reps" are seconds
+    get repsUnit(): string {
+        return this.exercise?.is_timed ? 's' : translate.get('exerciseDetail.repsUnit');
+    }
+
     // No set with weight: the exercise is done with the body weight, so reps are what progresses
     get bodyweightOnly(): boolean {
+        if (this.exercise?.is_timed) return this.sessions.length > 0;
         return this.sessions.length > 0 && !this.sessions.some(s => s.sets.some((x: any) => x.weight > 0));
     }
 
@@ -166,8 +172,8 @@ class ExerciseDetailPage extends Vue {
     }
 
     get unit(): string {
-        if (this.metric === 'reps') return translate.get('exerciseDetail.repsUnit');
-        return this.bodyweightOnly ? translate.get('exerciseDetail.repsUnit') : 'kg';
+        if (this.metric === 'reps') return this.repsUnit;
+        return this.bodyweightOnly ? this.repsUnit : 'kg';
     }
 
     // Sessions of this exercise inside the chosen period
@@ -210,7 +216,7 @@ class ExerciseDetailPage extends Vue {
 
         const now = this.sessionFigures(cur);
         const before = prev ? this.sessionFigures(prev) : null;
-        const unit = this.bodyweightOnly ? translate.get('exerciseDetail.repsUnit') : 'kg';
+        const unit = this.bodyweightOnly ? this.repsUnit : 'kg';
         const label = (n: number) => `${n} ${unit}`;
 
         // What changed since the previous session: heaviest weight and number of sets
@@ -370,7 +376,7 @@ class ExerciseDetailPage extends Vue {
     }
 
     setLabel(s: any): string {
-        return s.weight > 0 ? `${s.weight} kg × ${s.reps}` : `${s.reps} ${translate.get('exerciseDetail.repsUnit')}`;
+        return s.weight > 0 ? `${s.weight} kg × ${s.reps}` : `${s.reps} ${this.repsUnit}`;
     }
 
     goBack() {

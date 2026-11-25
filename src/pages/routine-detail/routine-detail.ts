@@ -223,6 +223,12 @@ class RoutineDetailPage extends Vue {
             .map(name => ({ name, items: groups[name] }));
     }
 
+    // The selected exercise is held for a time: its target is in seconds
+    get selectedTimed(): boolean {
+        const id = this.exerciseForm.exercise_id;
+        return !!(this.allExercises.find((e: any) => e.id === id) ?? this.editingExercise?.exercise)?.is_timed;
+    }
+
     get selectedExerciseName(): string {
         const id = this.exerciseForm.exercise_id;
         return this.allExercises.find((e: any) => e.id === id)?.name ?? this.editingExercise?.exercise?.name ?? '';

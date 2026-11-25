@@ -38,6 +38,7 @@ class ExercisesPage extends Vue {
         description: '',
         equipment_id: null,
         is_bodyweight: false,
+        is_timed: false,
         muscles: []
     };
     savingExercise = false;
@@ -144,7 +145,7 @@ class ExercisesPage extends Vue {
 
     openCreate() {
         this.editingExercise = null;
-        this.form = { name: '', description: '', equipment_id: null, is_bodyweight: false, intensity: 2, type: 'strength', impact: 'low', muscles: [] };
+        this.form = { name: '', description: '', equipment_id: null, is_bodyweight: false, is_timed: false, intensity: 2, type: 'strength', impact: 'low', muscles: [] };
         this.texts = this.emptyTexts();
         this.resetMedia(null);
         this.showForm = true;
@@ -157,6 +158,7 @@ class ExercisesPage extends Vue {
             description: ex.description || '',
             equipment_id: ex.equipment?.id || null,
             is_bodyweight: ex.is_bodyweight ?? false,
+            is_timed: ex.is_timed ?? false,
             intensity: ex.intensity ?? 2,
             type: ex.type ?? 'strength',
             impact: ex.impact ?? 'low',
@@ -228,6 +230,7 @@ class ExercisesPage extends Vue {
         const body: any = {
             equipment_id: this.form.is_bodyweight ? null : this.form.equipment_id,
             muscles: this.form.muscles,
+            is_timed: !!this.form.is_timed,
             intensity: this.form.intensity,
             type: this.form.type,
             impact: this.form.impact,

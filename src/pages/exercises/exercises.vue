@@ -136,6 +136,13 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="check-row">
+                            <input type="checkbox" v-model="form.is_timed" />
+                            {{ $t('exercises.form.isTimed') }}
+                        </label>
+                    </div>
+
+                    <div class="form-group">
                         <label>{{ $t('recommendation.tags.intensity') }}</label>
                         <select v-model.number="form.intensity">
                             <option :value="1">{{ $t('recommendation.tags.low') }}</option>

@@ -108,8 +108,27 @@ class WorkoutPage extends Vue {
         return this.currentExercise?.sets?.[this.doneCount] ?? null;
     }
 
+    // Held for a time (plank): the "reps" of its sets are seconds, and it has no weight
+    get isTimed(): boolean {
+        return !!this.currentExercise?.exercise?.is_timed;
+    }
+
     get isBodyweight() {
-        return this.currentExercise?.exercise?.is_bodyweight ?? false;
+        return (this.currentExercise?.exercise?.is_bodyweight ?? false) || this.isTimed;
+    }
+
+    // Seconds to hold in the current set (0 when there is no target)
+    get targetSeconds(): number {
+        return this.isTimed ? Number(this.targetSet?.reps_target ?? this.targetSet?.reps) || 0 : 0;
+    }
+
+    get holdReached(): boolean {
+        return this.targetSeconds > 0 && this.exerciseSeconds >= this.targetSeconds;
+    }
+
+    // "45 s" for a held exercise, the plain number for the others
+    repsText(exercise: any, n: any): string {
+        return exercise?.is_timed ? `${n} s` : String(n);
     }
 
     get totalSets() {
@@ -450,6 +469,7 @@ class WorkoutPage extends Vue {
                 this.completedExercises.push({
                     weId: this.exercises[i].id,
                     name: this.exercises[i].exercise?.name,
+                    timed: !!this.exercises[i].exercise?.is_timed,
                     sets: logged,
                 });
                 this.currentExerciseIdx = i + 1;
@@ -476,6 +496,7 @@ class WorkoutPage extends Vue {
         const prev = this.previousSet(this.doneCount);
         if (!prev || Number(prev.reps) <= 0) return null;
         const weight = Number(prev.weight) || 0;
+        if (this.isTimed) return translate.get('workout.card.lastTimeHold', { s: Number(prev.reps) });
         return weight > 0
             ? translate.get('workout.card.lastTime', { reps: Number(prev.reps), weight })
             : translate.get('workout.card.lastTimeBodyweight', { reps: Number(prev.reps) });
@@ -668,7 +689,8 @@ class WorkoutPage extends Vue {
     }
 
     get editingBodyweight(): boolean {
-        return !!this.exercises[this.editing?.exIdx ?? -1]?.exercise?.is_bodyweight;
+        const ex = this.exercises[this.editing?.exIdx ?? -1]?.exercise;
+        return !!(ex?.is_bodyweight || ex?.is_timed);
     }
 
     saveEdit() {
@@ -925,6 +947,8 @@ class WorkoutPage extends Vue {
 
         // The API sends decimals as strings ("20.00"): they must be numbers or "+" concatenates
         this.logReps = Number(prev?.reps ?? this.targetSet?.reps_target ?? this.targetSet?.reps ?? 12) || 12;
+        // A held exercise: what was held in this set (the timer) is what is logged
+        if (this.isTimed) this.logReps = Math.max(1, this.exerciseSeconds);
         this.logWeight = this.isBodyweight ? 0 : (Number(prev?.weight ?? this.targetSet?.weight ?? lastSessionWeight) || 0);
         if (this.nextWeight !== null && !this.isBodyweight) this.logWeight = Number(this.nextWeight) || 0;
         this.nextWeight = null;
@@ -1107,9 +1131,9 @@ class WorkoutPage extends Vue {
         showLoggingNotification({
             title: translate.get('workout.rest.notificationLogTitle'),
             text: this.currentExercise?.exercise?.name ?? '',
-            sameLabel: bodyweight ? `✓ ${this.logReps} reps` : `✓ ${this.logReps} × ${this.logWeight} kg`,
+            sameLabel: this.isTimed ? `✓ ${this.logReps} s` : bodyweight ? `✓ ${this.logReps} reps` : `✓ ${this.logReps} × ${this.logWeight} kg`,
             editLabel: translate.get('workout.rest.notificationEdit'),
-            inputHint: translate.get(bodyweight ? 'workout.rest.notificationHintBodyweight' : 'workout.rest.notificationHint'),
+            inputHint: translate.get(this.isTimed ? 'workout.rest.notificationHintHold' : bodyweight ? 'workout.rest.notificationHintBodyweight' : 'workout.rest.notificationHint'),
             savingText: translate.get('workout.rest.notificationSaving'),
             reps: this.logReps,
             weight: this.logWeight,
@@ -1184,6 +1208,7 @@ class WorkoutPage extends Vue {
             this.completedExercises.push({
                 weId: this.currentExercise.id,
                 name: this.currentExercise.exercise?.name,
+                timed: this.isTimed,
                 sets: [...this.loggedSets],
             });
         }

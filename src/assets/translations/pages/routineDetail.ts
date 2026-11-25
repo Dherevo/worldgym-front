@@ -32,6 +32,7 @@ export default {
             circuitHint: "Buit = dia normal. En un circuit repeteixes els exercicis sense descans fins que s'acabi el temps.",
         },
         exerciseForm: {
+            seconds: 'Segons',
             titleEdit: 'Editar exercici',
             titleNew: 'Afegir exercici',
             exercise: 'Exercici *',
@@ -92,6 +93,7 @@ export default {
             circuitHint: "Vacío = día normal. En un circuito repites los ejercicios sin descanso hasta que se acabe el tiempo.",
         },
         exerciseForm: {
+            seconds: 'Segundos',
             titleEdit: 'Editar ejercicio',
             titleNew: 'Añadir ejercicio',
             exercise: 'Ejercicio *',
@@ -152,6 +154,7 @@ export default {
             circuitHint: "Empty = a normal day. In a circuit you repeat the exercises without rest until the time is up.",
         },
         exerciseForm: {
+            seconds: 'Seconds',
             titleEdit: 'Edit exercise',
             titleNew: 'Add exercise',
             exercise: 'Exercise *',

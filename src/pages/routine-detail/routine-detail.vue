@@ -49,7 +49,7 @@
                                     <small class="rest-sub" v-if="!day.circuit_minutes && ex.rest_seconds">⏱ {{ ex.rest_seconds }}s</small>
                                 </span>
                                 <span v-if="!day.circuit_minutes">{{ ex.sets_target }}</span>
-                                <span v-if="day.circuit_minutes || hasValues(day, 'reps_target')">{{ ex.reps_target }}</span>
+                                <span v-if="day.circuit_minutes || hasValues(day, 'reps_target')">{{ ex.exercise?.is_timed && ex.reps_target ? ex.reps_target + ' s' : ex.reps_target }}</span>
                                 <span v-if="hasValues(day, 'weight_target')">{{ ex.weight_target }}</span>
                                 <span v-if="!day.circuit_minutes" class="c-rest">{{ ex.rest_seconds }}s</span>
                             </div>
@@ -123,7 +123,7 @@
                             <input type="number" v-model.number="exerciseForm.sets_target" min="1" />
                         </div>
                         <div class="form-group">
-                            <label>{{ $t('routineDetail.exerciseForm.reps') }}</label>
+                            <label>{{ selectedTimed ? $t('routineDetail.exerciseForm.seconds') : $t('routineDetail.exerciseForm.reps') }}</label>
                             <input type="number" v-model.number="exerciseForm.reps_target" min="1" />
                         </div>
                         <div class="form-group">
