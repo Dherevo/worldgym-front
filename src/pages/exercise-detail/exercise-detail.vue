@@ -55,7 +55,7 @@
                             <div class="ed-cmp-card record" v-if="comparison.record">
                                 <div class="ed-cmp-label">🏆 {{ $t('stats.dash2.progress.record') }}</div>
                                 <div class="ed-cmp-value">{{ comparison.record.value }}</div>
-                                <div class="ed-cmp-sub">{{ comparison.record.reps }} {{ $t('stats.dash2.progress.reps') }} · {{ shortDate(comparison.record.date) }}</div>
+                                <div class="ed-cmp-sub">{{ comparison.record.reps }} {{ exercise?.is_timed ? 's' : $t('stats.dash2.progress.reps') }} · {{ shortDate(comparison.record.date) }}</div>
                             </div>
                         </div>
 

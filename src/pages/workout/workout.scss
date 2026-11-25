@@ -884,6 +884,9 @@
     color: var(--text-muted);
 }
 
+// Held exercise: the timer turns green when the target is reached
+.workout-page .big-timer.reached { color: var(--tint-green-text); }
+
 .workout-page .variant-row {
     display: flex;
     flex-wrap: wrap;

@@ -27,7 +27,7 @@
                             <div class="done-ex-name">{{ ex.name }}</div>
                             <div class="done-ex-sets">
                                 <span v-for="(s, i) in ex.sets" :key="i" class="done-set-pill" :class="{ failed: s.is_failed, dropset: s.is_dropset }">
-                                    {{ s.reps }} × {{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}
+                                    <template v-if="ex.timed">{{ s.reps }} s</template><template v-else>{{ s.reps }} × {{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</template>
                                 </span>
                             </div>
                         </div>
@@ -156,7 +156,7 @@
                             {{ $t('workout.card.set', { current: doneCount + 1 }) }}
                         </div>
                         <div class="target-hint" v-if="targetSet">
-                            {{ $t('workout.card.target') }}: {{ targetSet.reps_target ?? targetSet.reps }} {{ $t('workout.history.reps') }}<template v-if="targetSet.weight > 0"> · {{ targetSet.weight }} kg</template><template v-if="targetRestLabel"> · {{ targetRestLabel }}</template>
+                            {{ $t('workout.card.target') }}: {{ targetSet.reps_target ?? targetSet.reps }} {{ isTimed ? 's' : $t('workout.history.reps') }}<template v-if="targetSet.weight > 0 && !isTimed"> · {{ targetSet.weight }} kg</template><template v-if="targetRestLabel"> · {{ targetRestLabel }}</template>
                         </div>
                     </div>
 
@@ -205,8 +205,9 @@
 
                     <!-- STATE: active -->
                     <template v-else-if="state === 'active'">
-                        <div class="big-timer">{{ exerciseFormatted }}</div>
-                        <p class="action-label">{{ $t('workout.card.inProgress') }}</p>
+                        <div class="big-timer" :class="{ reached: holdReached }">{{ exerciseFormatted }}</div>
+                        <p class="action-label" v-if="targetSeconds > 0">{{ holdReached ? $t('workout.card.holdReached') : $t('workout.card.holdTarget', { s: targetSeconds }) }}</p>
+                        <p class="action-label" v-else>{{ $t('workout.card.inProgress') }}</p>
                         <button class="btn-action stop" @click="stopSet()">{{ $t('workout.card.stop') }}</button>
                     </template>
 
@@ -215,7 +216,7 @@
                         <p class="action-label">{{ $t('workout.log.question') }}</p>
                         <div class="log-form">
                             <div class="log-field">
-                                <label>{{ $t('workout.log.repetitions') }}</label>
+                                <label>{{ isTimed ? $t('workout.log.seconds') : $t('workout.log.repetitions') }}</label>
                                 <div class="number-input">
                                     <button @click="logReps = Math.max(1, logReps - 1)">−</button>
                                     <input type="number" v-model.number="logReps" min="1" />
@@ -345,7 +346,7 @@
                         <div class="sets-table">
                             <div class="set-row set-head">
                             <span>#</span>
-                            <span>{{ $t('workout.progress.reps') }}</span>
+                            <span>{{ ex.exercise?.is_timed ? $t('workout.progress.time') : $t('workout.progress.reps') }}</span>
                             <span>{{ $t('workout.progress.weight') }}</span>
                             <span>{{ $t('workout.progress.notes') }}</span>
                         </div>
@@ -358,7 +359,7 @@
                                         <div class="edit-form-cell">
                                             <div class="edit-form-title">{{ $t('workout.editSet.title', { n: s.set_number ?? i + 1 }) }}</div>
                                             <div class="edit-grid">
-                                                <label>{{ $t('workout.progress.reps') }}<input type="number" inputmode="numeric" v-model.number="editing.reps" min="1" class="cell-input" /></label>
+                                                <label>{{ ex.exercise?.is_timed ? $t('workout.log.seconds') : $t('workout.progress.reps') }}<input type="number" inputmode="numeric" v-model.number="editing.reps" min="1" class="cell-input" /></label>
                                                 <label v-if="!editingBodyweight">{{ $t('workout.progress.weight') }} (kg)<input type="number" inputmode="decimal" v-model.number="editing.weight" min="0" step="0.5" class="cell-input" /></label>
                                                 <label>{{ $t('workout.editSet.rest') }}<input type="number" inputmode="numeric" v-model.number="editing.rest" min="0" class="cell-input" /></label>
                                                 <label>{{ $t('workout.editSet.duration') }}<input type="number" inputmode="numeric" v-model.number="editing.duration" min="0" class="cell-input" /></label>
@@ -377,7 +378,7 @@
                                     <SwipeRow v-else @edit="openEdit(exIdx, s)" @delete="deleteSet(exIdx, s)">
                                         <div class="set-row set-row-done">
                                         <span>{{ s.set_number ?? i + 1 }}</span>
-                                        <span>{{ s.reps }} <small class="cmp">{{ compareText(s.reps, prevFor(i, setRows(exIdx), ex.exercise?.id, ex.variant)?.reps) }}</small></span>
+                                        <span>{{ repsText(ex.exercise, s.reps) }} <small class="cmp">{{ compareText(s.reps, prevFor(i, setRows(exIdx), ex.exercise?.id, ex.variant)?.reps, ex.exercise?.is_timed ? ' s' : '') }}</small></span>
                                         <span>{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }} <small class="cmp" v-if="s.weight > 0 || prevFor(i, setRows(exIdx), ex.exercise?.id, ex.variant)?.weight > 0">{{ compareText(s.weight, prevFor(i, setRows(exIdx), ex.exercise?.id, ex.variant)?.weight, ' kg') }}</small></span>
                                         <span class="note-cell" @click="openNote($event, s.notes)">{{ s.notes || '—' }}</span>
                                     </div>
@@ -389,7 +390,7 @@
                                         <div class="edit-form-cell">
                                             <div class="edit-form-title">{{ $t('workout.editSet.title', { n: setRows(exIdx).length + 1 }) }}</div>
                                             <div class="edit-grid">
-                                                <label>{{ $t('workout.progress.reps') }}<input type="number" inputmode="numeric" v-model.number="editing.reps" min="1" class="cell-input" /></label>
+                                                <label>{{ ex.exercise?.is_timed ? $t('workout.log.seconds') : $t('workout.progress.reps') }}<input type="number" inputmode="numeric" v-model.number="editing.reps" min="1" class="cell-input" /></label>
                                                 <label v-if="!editingBodyweight">{{ $t('workout.progress.weight') }} (kg)<input type="number" inputmode="decimal" v-model.number="editing.weight" min="0" step="0.5" class="cell-input" /></label>
                                                 <label>{{ $t('workout.editSet.rest') }}<input type="number" inputmode="numeric" v-model.number="editing.rest" min="0" class="cell-input" /></label>
                                                 <label>{{ $t('workout.editSet.duration') }}<input type="number" inputmode="numeric" v-model.number="editing.duration" min="0" class="cell-input" /></label>
@@ -410,7 +411,7 @@
                                     <template v-if="exIdx === currentExerciseIdx">
                                         <div v-if="state === 'logging'" class="set-row set-row-live">
                                             <span>{{ doneCount + 1 }}</span>
-                                            <span>{{ logReps }} <small class="cmp">{{ compareText(logReps, prevFor(doneCount, loggedSets)?.reps) }}</small></span>
+                                            <span>{{ repsText(currentExercise.exercise, logReps) }} <small class="cmp">{{ compareText(logReps, prevFor(doneCount, loggedSets)?.reps, isTimed ? ' s' : '') }}</small></span>
                                             <span>{{ isBodyweight ? $t('workout.log.bodyweightShort') : (logWeight + ' kg') }} <small class="cmp" v-if="!isBodyweight">{{ compareText(logWeight, prevFor(doneCount, loggedSets)?.weight, ' kg') }}</small></span>
                                             <span>{{ logNotes || '—' }}</span>
                                         </div>
@@ -422,7 +423,7 @@
                                                 class="set-row set-row-pending"
                                             >
                                                 <span>{{ doneCount + (state === 'logging' ? 1 : 0) + i + 1 }}</span>
-                                                <span><span class="plan-val">{{ s.reps_target ?? s.reps }}</span></span>
+                                                <span><span class="plan-val">{{ repsText(ex.exercise, s.reps_target ?? s.reps) }}</span></span>
                                                 <span><span class="plan-val">{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</span></span>
                                                 <span><span class="plan-val">—</span></span>
                                             </div>
@@ -446,7 +447,7 @@
                                     <template v-if="ex.sets && ex.sets.length > 0">
                                         <div v-for="(s, i) in ex.sets" :key="s.id ?? i" class="set-row set-row-future">
                                             <span>{{ i + 1 }}</span>
-                                            <span><span class="plan-val">{{ s.reps_target ?? s.reps }}</span></span>
+                                            <span><span class="plan-val">{{ repsText(ex.exercise, s.reps_target ?? s.reps) }}</span></span>
                                             <span><span class="plan-val">{{ s.weight > 0 ? s.weight + ' kg' : $t('workout.log.bodyweightShort') }}</span></span>
                                             <span><span class="plan-val">—</span></span>
                                         </div>

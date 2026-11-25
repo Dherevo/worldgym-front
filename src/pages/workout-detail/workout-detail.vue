@@ -54,7 +54,7 @@
                             <SwipeRow v-if="editingSet?.id !== s.id" @edit="openSetEdit(we, s)" @delete="deleteSet(we, s)">
                                 <div class="set-row" :class="{ 'failed-row': s.is_failed }">
                                     <span class="c-set">{{ s.set_number }}</span>
-                                    <span class="c-reps">{{ s.reps }}<small class="cmp" v-if="prevSet(we, si)">{{ diffText(s.reps, prevSet(we, si)?.reps) }}</small></span>
+                                    <span class="c-reps">{{ we.exercise?.is_timed ? s.reps + ' s' : s.reps }}<small class="cmp" v-if="prevSet(we, si)">{{ diffText(s.reps, prevSet(we, si)?.reps) }}</small></span>
                                     <span class="c-weight">{{ weightLabel(s.weight) }}<small class="cmp" v-if="s.weight > 0 || prevSet(we, si)?.weight > 0">{{ diffText(s.weight, prevSet(we, si)?.weight, 'kg') }}</small></span>
                                     <span class="c-rest">{{ s.rest_seconds ?? '—' }}<small class="cmp" v-if="s.duration_seconds">{{ $t('workoutDetail.table.setTime') }} {{ s.duration_seconds }}s</small></span>
                                     <div class="set-extra" v-if="s.is_failed || s.is_dropset || s.notes">
