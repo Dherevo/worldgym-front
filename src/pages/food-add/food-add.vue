@@ -58,6 +58,12 @@
                 <button v-for="s in subCats" :key="s.id" type="button" :class="{ on: sub === s.id }" @click="selectSub(s.id)">{{ catName(s) }}</button>
             </div>
 
+            <!-- Meals and recipes: the ones of the user or the ones that come with WorldGym -->
+            <div v-if="isTemplateTab" class="fa-seg fa-tplseg" role="tablist">
+                <button type="button" role="tab" :class="{ on: tplSub === 'mine' }" @click="selectTplSub('mine')">{{ $t('foodAdd.tpl.subMine') }}</button>
+                <button type="button" role="tab" :class="{ on: tplSub === 'shared' }" @click="selectTplSub('shared')">{{ $t('foodAdd.tpl.subShared') }}</button>
+            </div>
+
             <div v-if="!isTemplateTab" class="fa-actions">
                 <button v-if="isApp" type="button" class="fa-big" :disabled="scanning" @click="scanFood()">
                     <span class="fa-icon">▥</span>
@@ -68,7 +74,7 @@
                     <span>{{ $t('foodAdd.newFood') }}</span>
                 </button>
             </div>
-            <div v-else class="fa-actions">
+            <div v-else-if="tplSub === 'mine'" class="fa-actions">
                 <button type="button" class="fa-big" @click="openBuilder(null)">
                     <span class="fa-icon">＋</span>
                     <span>{{ tab === 'recipes' ? $t('foodAdd.tpl.newRecipe') : $t('foodAdd.tpl.newMeal') }}</span>
@@ -102,7 +108,7 @@
                                 <span class="fa-thumb fa-thumb-empty">{{ t.kind === 'recipe' ? '🍲' : '🍽' }}</span>
                                 <span class="fa-main">
                                     <span class="fa-name">{{ t.name }}<check-badge v-if="addedTemplates.includes(t.id)" /></span>
-                                    <small>{{ t.kind === 'recipe' ? $t('foodAdd.tpl.recipe') : $t('foodAdd.tpl.meal') }} · {{ t.kcal }} kcal<template v-if="t.kind === 'recipe'"> {{ $t('foodAdd.tpl.perServing') }}</template><template v-if="t.shared && !t.own"> · {{ $t('foodAdd.tpl.sharedBy') }}</template></small>
+                                    <small>{{ t.kind === 'recipe' ? $t('foodAdd.tpl.recipe') : $t('foodAdd.tpl.meal') }} · {{ kcalLabel(t) }}<template v-if="t.shared && !t.own"> · {{ $t('foodAdd.tpl.sharedBy') }}</template></small>
                                 </span>
                                 <span class="fa-plus">+</span>
                             </button>
@@ -165,7 +171,7 @@
                         <button type="button" class="fa-row" @click="openTplSheet(t)">
                             <span class="fa-main">
                                 <span class="fa-name">{{ t.name }}<check-badge v-if="addedTemplates.includes(t.id)" /></span>
-                                <small>{{ t.kcal }} kcal<template v-if="t.kind === 'recipe'"> {{ $t('foodAdd.tpl.perServing') }}</template> · {{ $t('foodAdd.tpl.items', { n: t.items.length }) }}<template v-if="t.shared"> · {{ t.own ? $t('foodAdd.tpl.shared') : $t('foodAdd.tpl.sharedBy') }}</template></small>
+                                <small>{{ kcalLabel(t) }} · {{ $t('foodAdd.tpl.items', { n: t.items.length }) }}<template v-if="t.shared"> · {{ t.own ? $t('foodAdd.tpl.shared') : $t('foodAdd.tpl.sharedBy') }}</template></small>
                             </span>
                             <span class="fa-plus">+</span>
                         </button>
@@ -173,7 +179,7 @@
                         <button v-if="t.own" type="button" class="fa-edit" :aria-label="$t('foodAdd.tpl.edit')" @click="openBuilder(t)">✎</button>
                     </li>
                 </ul>
-                <p v-else-if="!loading" class="muted">{{ tab === 'recipes' ? $t('foodAdd.tpl.emptyRecipes') : $t('foodAdd.tpl.emptyMeals') }}</p>
+                <p v-else-if="!loading" class="muted">{{ tplEmpty }}</p>
             </template>
                     </template>
                     <skeleton-block v-else :rows="6" height="3.4rem" />
@@ -258,7 +264,31 @@
             <div v-if="tplSheet" class="fa-backdrop" @click.self="tplSheet = null">
                 <div class="fa-sheet" role="dialog" aria-modal="true">
                     <h2>{{ tplSheet.t.name }}</h2>
-                    <p class="muted">{{ tplSheet.t.kcal }} kcal<template v-if="tplSheet.t.kind === 'recipe'"> {{ $t('foodAdd.tpl.perServing') }}</template> · {{ $t('foodAdd.tpl.items', { n: tplSheet.t.items.length }) }}</p>
+                    <p class="muted">{{ kcalLabel(tplSheet.t) }} · {{ $t('foodAdd.tpl.items', { n: tplSheet.t.items.length }) }}</p>
+
+                    <!-- Macros of a serving (of the whole meal) -->
+                    <div class="fa-tplmacros">
+                        <div v-for="m in tplMacros(tplSheet.t)" :key="m.key" :class="m.key">
+                            <b>{{ m.grams ?? '—' }}<small v-if="m.grams !== null"> g</small></b>
+                            <small>{{ $t('foodAdd.sheet.' + m.key) }}</small>
+                        </div>
+                    </div>
+
+                    <!-- What goes in it: the amount of each food and what it adds, so the kcal of a serving can be followed -->
+                    <details class="fa-steps fa-ingredients" open v-if="tplSheet.t.items.length">
+                        <summary>{{ $t('foodAdd.tpl.ingredients') }}<small v-if="tplSheet.t.kind === 'recipe'"> · {{ $t('foodAdd.tpl.forServings', { n: tplSheet.t.servings }) }}</small></summary>
+                        <ul>
+                            <li v-for="(it, i) in tplSheet.t.items" :key="i">
+                                <span class="fa-ing-name">{{ it.name }}<small v-if="it.amount"> {{ it.amount }} {{ unitLabel({ unit: it.unit ?? 'g' }) }}</small></span>
+                                <b>{{ it.kcal }} kcal</b>
+                            </li>
+                            <li v-if="tplSheet.t.kind === 'recipe'" class="fa-ing-total">
+                                <span class="fa-ing-name">{{ tplTotalKcal(tplSheet.t) }} kcal ÷ {{ tplSheet.t.servings }} {{ $t('foodAdd.tpl.servingsWord') }}</span>
+                                <b>{{ tplSheet.t.kcal }} kcal {{ $t('foodAdd.tpl.perServing') }}</b>
+                            </li>
+                        </ul>
+                    </details>
+
                     <!-- How a recipe is made (the shared ones come with their steps) -->
                     <details class="fa-steps" v-if="tplSheet.t.steps?.length">
                         <summary>{{ $t('foodAdd.tpl.steps') }}</summary>
@@ -303,7 +333,7 @@
                         </label>
                     </div>
 
-                    <h3>{{ $t('foodAdd.tpl.foods') }} <small class="muted">· {{ builderKcal }} kcal<template v-if="builder.kind === 'recipe'"> {{ $t('foodAdd.tpl.perServing') }}</template></small></h3>
+                    <h3>{{ $t('foodAdd.tpl.foods') }} <small class="muted">· {{ builderKcal }} kcal{{ builder.kind === 'recipe' ? ' ' + $t('foodAdd.tpl.perServing') : '' }}</small></h3>
                     <ul v-if="builder.items.length" class="fa-items">
                         <li v-for="(it, i) in builder.items" :key="i">
                             <span class="fa-name">{{ it.name }}</span>
