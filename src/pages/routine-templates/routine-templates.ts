@@ -1,4 +1,4 @@
-import { Component, Vue, toNative } from "vue-facing-decorator";
+import { Component, Vue, Watch, toNative } from "vue-facing-decorator";
 import { http, App, translate } from "lib";
 import localDate from "@/modules/localDate";
 import { routineWhy, routineDayLabel } from "@/modules/routineWhy";
@@ -62,16 +62,29 @@ class RoutineTemplatesPage extends Vue {
         return rec ? routineDayLabel(rec) : '';
     }
 
+    // A filter shows other cards: the ones that were hidden are watched again
+    @Watch('filter')
+    onFilter() {
+        this.$nextTick(() => this.watchCovers());
+    }
+
     watchCovers() {
-        this.observer?.disconnect();
-        this.observer = new IntersectionObserver(entries => {
-            for (const e of entries) {
-                if (!e.isIntersecting) continue;
-                this.seen[Number((e.target as HTMLElement).dataset.id)] = true;
-                this.observer?.unobserve(e.target);
-            }
-        }, { rootMargin: '200px' });
-        (this.$el as HTMLElement).querySelectorAll('.rt-cover').forEach(el => this.observer?.observe(el));
+        const covers = Array.from(document.querySelectorAll<HTMLElement>('.rt-cover')).filter(el => !this.seen[Number(el.dataset.id)]);
+        // No observer (very old WebView): every animation starts
+        if (typeof IntersectionObserver === 'undefined') {
+            covers.forEach(el => { this.seen[Number(el.dataset.id)] = true; });
+            return;
+        }
+        if (!this.observer) {
+            this.observer = new IntersectionObserver(entries => {
+                for (const e of entries) {
+                    if (!e.isIntersecting) continue;
+                    this.seen[Number((e.target as HTMLElement).dataset.id)] = true;
+                    this.observer?.unobserve(e.target);
+                }
+            }, { rootMargin: '300px' });
+        }
+        covers.forEach(el => this.observer?.observe(el));
     }
 
     goBack() {
