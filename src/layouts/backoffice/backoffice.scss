@@ -217,6 +217,39 @@
         }
     }
 
+    // ---- bell of the notifications inbox, with the badge of unread ones
+    .top-bell {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        margin-right: 6px;
+        border-radius: 50%;
+        color: var(--text-secondary);
+        text-decoration: none;
+
+        svg { width: 24px; height: 24px; }
+        &.active { color: #E09132; }
+
+        .bell-badge {
+            position: absolute;
+            top: 2px;
+            right: 0;
+            min-width: 17px;
+            height: 17px;
+            padding: 0 4px;
+            border-radius: 9px;
+            background: #e5484d;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            line-height: 17px;
+            text-align: center;
+        }
+    }
+
     // ---- app only: profile avatar at the right of the top bar
     .top-avatar {
         display: flex;

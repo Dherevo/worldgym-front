@@ -22,6 +22,9 @@ class RoutineDetailPage extends Vue {
         return !!this.routine && !this.routine.is_global;
     }
 
+    // The drag handles only show while reordering, so scrolling with a finger cannot move anything by mistake
+    reordering = false;
+
     loading = false;
     starting = false;
 

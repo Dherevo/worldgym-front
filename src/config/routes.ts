@@ -32,6 +32,7 @@ import ChallengesPage from '../pages/challenges/challenges.vue';
 import NutritionPage from '../pages/nutrition/nutrition.vue';
 import FoodAddPage from '../pages/food-add/food-add.vue';
 import WeeklySummaryPage from '../pages/weekly-summary/weekly-summary.vue';
+import NotificationsPage from '../pages/notifications/notifications.vue';
 
 const routes : IRoutes = {
     layouts: {
@@ -164,6 +165,10 @@ const routes : IRoutes = {
         {
             path: '/weekly-summary',
             component: WeeklySummaryPage
+        },
+        {
+            path: '/notifications',
+            component: NotificationsPage
         },
 
         // Leave always 404 Page always at the end

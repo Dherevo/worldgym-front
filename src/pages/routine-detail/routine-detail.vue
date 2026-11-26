@@ -8,6 +8,9 @@
             </div>
             <div class="rd-actions" v-if="routine && canEdit">
                 <button class="btn-secondary" @click="openAddDay()">{{ $t('routineDetail.addDay') }}</button>
+                <button class="btn-secondary" :class="{ active: reordering }" @click="reordering = !reordering">
+                    {{ reordering ? $t('routineDetail.reorderDone') : $t('routineDetail.reorder') }}
+                </button>
             </div>
 
             <p class="kcal-note" v-if="showKcalNote">{{ $t('energy.short') }}</p>
@@ -21,7 +24,7 @@
                 <div v-for="(day, di) in routine.days" :key="day.id" class="day-card">
                     <div class="day-header">
                         <div class="day-title">
-                            <span v-if="canEdit" class="drag-handle" :title="$t('routineDetail.dragToReorder')"
+                            <span v-if="canEdit && reordering" class="drag-handle" :title="$t('routineDetail.dragToReorder')"
                                 @pointerdown="startReorder($event, 'day', di)">⠿</span>
                             <span class="day-name">{{ day.name || $t('routineDetail.dayNumber', { n: day.day_number }) }}</span>
                             <span v-for="g in dayGroups(day)" :key="g.id" class="group-chip">{{ g.name }}</span>
@@ -42,7 +45,7 @@
                             @edit="openEditExercise(day, ex)" @delete="deleteExercise(day, ex)">
                             <div class="ex-row">
                                 <span class="c-name">
-                                    <span v-if="canEdit" class="drag-handle" :title="$t('routineDetail.dragToReorder')"
+                                    <span v-if="canEdit && reordering" class="drag-handle" :title="$t('routineDetail.dragToReorder')"
                                         @pointerdown="startReorder($event, 'exercise', ei, day)">⠿</span>
                                     <span class="exercise-link" @click="to('/exercise/' + ex.exercise?.id)">{{ ex.exercise?.name }}</span>
                                     <span class="muscle-label" v-if="muscleLabel(ex.exercise)">({{ muscleLabel(ex.exercise) }})</span>

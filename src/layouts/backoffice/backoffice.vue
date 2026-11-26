@@ -15,6 +15,13 @@
         <template #top>
             <div class="flex-grow"></div>
 
+            <!-- Bell: what was sent to the phone, kept until it is read or deleted -->
+            <a class="top-bell" href="/notifications" :class="{ active: isActive({ path: '/notifications' }) }"
+                :aria-label="$t('notifications.bell')" @click.prevent="to('/notifications')">
+                <svg-icon name="heroicons-outline/bell" />
+                <span v-if="unread" class="bell-badge">{{ unread > 9 ? '9+' : unread }}</span>
+            </a>
+
             <!-- App: the profile is the avatar at the right of the top bar -->
             <a v-if="isApp && user" class="top-avatar" href="/profile" :class="{ active: isProfileActive() }"
                 :aria-label="$t('layout.profile')" @click.prevent="to('/profile')">

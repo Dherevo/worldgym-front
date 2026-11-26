@@ -28,6 +28,7 @@ import splash from './pages/splash';
 import offline from './pages/offline';
 import push from './pages/push';
 import weekly from './pages/weekly';
+import notifications from './pages/notifications';
 import foodAdd from './pages/foodAdd';
 import common from './pages/common';
 
@@ -35,6 +36,7 @@ const ca = {
     layout: layout.ca,
     push: push.ca,
     weekly: weekly.ca,
+    notifications: notifications.ca,
     foodAdd: foodAdd.ca,
     common: common.ca,
     home: home.ca,

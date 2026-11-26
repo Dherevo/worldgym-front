@@ -1,6 +1,7 @@
 import { PushNotifications } from "@capacitor/push-notifications";
 import { App, http, translate } from "lib";
 import { isApp, platform } from "@/modules/platform";
+import { refreshUnread, state as inbox } from "@/modules/notifications";
 
 // Push notifications (Firebase Cloud Messaging) of the installed app: asks for the permission, sends the token of the
 // phone to the API and opens the screen a notification points to. Only exists in the app: in the browser every
@@ -78,12 +79,17 @@ export async function initPush(): Promise<void> {
 
     // A notification tapped: open the screen it points to (only paths of the app)
     PushNotifications.addListener('pushNotificationActionPerformed', action => {
-        const route = action.notification?.data?.route;
+        const data = action.notification?.data;
+        // Tapping it counts as reading it
+        if (data?.id) http.patch(`/notifications/${data.id}/read`).promise().then(refreshUnread).catch(() => {});
+        const route = data?.route;
         if (typeof route === 'string' && route.startsWith('/')) open(route);
     });
 
     // With the app open the system shows nothing: say it inside
     PushNotifications.addListener('pushNotificationReceived', n => {
+        inbox.unread++;
+        refreshUnread();
         if (n.title) App.notification(n.body ? `${n.title}: ${n.body}` : n.title).show();
     });
 

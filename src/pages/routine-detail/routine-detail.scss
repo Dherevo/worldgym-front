@@ -11,7 +11,7 @@
         margin-bottom: 1rem;
         h1 { margin: 0; flex: 1; font-size: 1.4rem; line-height: 1.25; }
     }
-    .rd-actions { margin-bottom: 1.25rem; .btn-secondary { width: 100%; } }
+    .rd-actions { margin-bottom: 1.25rem; display: flex; gap: .5rem; .btn-secondary { flex: 1; &.active { background: var(--primary-color); color: var(--surface-color); } } }
 
     .btn-secondary {
         background: transparent;
