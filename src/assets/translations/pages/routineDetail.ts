@@ -2,6 +2,8 @@ export default {
     ca: {
         back: 'Rutines',
         addDay: '+ Afegir dia',
+        reorder: 'Reordenar',
+        reorderDone: 'Fet',
         loading: 'Carregant...',
         noDays: 'No hi ha dies configurats. Afegeix-ne un!',
         dayNumber: 'Dia {{n}}',
@@ -63,6 +65,8 @@ export default {
     es: {
         back: 'Rutinas',
         addDay: '+ Añadir día',
+        reorder: 'Reordenar',
+        reorderDone: 'Hecho',
         loading: 'Cargando...',
         noDays: 'No hay días configurados. ¡Añade uno!',
         dayNumber: 'Día {{n}}',
@@ -124,6 +128,8 @@ export default {
     en: {
         back: 'Routines',
         addDay: '+ Add day',
+        reorder: 'Reorder',
+        reorderDone: 'Done',
         loading: 'Loading...',
         noDays: 'No days set up yet. Add one!',
         dayNumber: 'Day {{n}}',

@@ -28,6 +28,7 @@ import splash from './pages/splash';
 import offline from './pages/offline';
 import push from './pages/push';
 import weekly from './pages/weekly';
+import notifications from './pages/notifications';
 import foodAdd from './pages/foodAdd';
 import common from './pages/common';
 
@@ -35,6 +36,7 @@ const es = {
     layout: layout.es,
     push: push.es,
     weekly: weekly.es,
+    notifications: notifications.es,
     foodAdd: foodAdd.es,
     common: common.es,
     home: home.es,

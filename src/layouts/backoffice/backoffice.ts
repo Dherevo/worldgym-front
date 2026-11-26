@@ -6,6 +6,7 @@ import { applyUserPalette } from "@/modules/theme";
 import { LANGUAGES, currentLanguage, setLanguage, isDarkTheme, toggleDarkTheme, logout } from "@/modules/preferences";
 import { isApp } from "@/modules/platform";
 import { initPush, setPushRouteHandler } from "@/modules/push";
+import { state as inbox, refreshUnread } from "@/modules/notifications";
 import UserAvatar from "@/components/user-avatar/user-avatar.vue";
 
 // Not component data: kept out of Vue's reactivity
@@ -108,7 +109,16 @@ class Backoffice extends Vue {
         this.tabbarHidden = dy > 0 && y > 80 && !nearEnd;
     }
 
+    // The badge of the bell: what is unread in the inbox
+    get unread(): number {
+        return inbox.unread;
+    }
+
+    // Back to the app after a while: the inbox may have new notifications
+    onVisible = () => { if (!document.hidden) refreshUnread(); };
+
     mounted() {
+        document.addEventListener('visibilitychange', this.onVisible);
         document.documentElement.classList.toggle('is-app', isApp);
         if (isApp) {
             scrollHandler = (e: Event) => this.handleScroll(e);
@@ -121,6 +131,7 @@ class Backoffice extends Vue {
     }
 
     unmounted() {
+        document.removeEventListener('visibilitychange', this.onVisible);
         if (scrollHandler) document.removeEventListener('scroll', scrollHandler, { capture: true });
         document.removeEventListener('keydown', this.onKeydown);
         document.removeEventListener('touchstart', this.onTouchStart);
@@ -150,6 +161,7 @@ class Backoffice extends Vue {
 
     requireProfile() {
         applyUserPalette(this.user);
+        refreshUnread();
         if (auth.needsProfile(this.user)) {
             this.to('/onboarding');
             return;
